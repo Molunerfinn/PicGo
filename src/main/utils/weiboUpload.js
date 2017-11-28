@@ -20,35 +20,39 @@ function postOptions (formData) {
   }
 }
 
-const weiboUpload = async function (img, type) {
+const weiboUpload = async function (img, type, webContents) {
   try {
+    webContents.send('uploadProgress', 0)
     const formData = {
       username: db.read().get('picBed.weibo.username').value(),
       password: db.read().get('picBed.weibo.password').value()
     }
+    const quality = db.read().get('picBed.weibo.quality').value()
     const options = postOptions(formData)
     const res = await rp(options)
+    webContents.send('uploadProgress', 30)
     if (res.body.retcode === 20000000) {
       for (let i in res.body.data.crossdomainlist) {
         await rp.get(res.body.data.crossdomainlist[i])
       }
+      webContents.send('uploadProgress', 60)
       const imgList = await img2Base64[type](img)
-      let resText = []
       for (let i in imgList) {
         let result = await rp.post(UPLOAD_URL, {
           formData: {
             b64_data: imgList[i].base64Image
           }
         })
-        resText.push(result.replace(/<.*?\/>/, '').replace(/<(\w+).*?>.*?<\/\1>/, ''))
-      }
-      for (let i in imgList) {
-        const resTextJson = JSON.parse(resText[i])
-        imgList[i]['imgUrl'] = `https://ws1.sinaimg.cn/large/${resTextJson.data.pics.pic_1.pid}`
+        result = result.replace(/<.*?\/>/, '').replace(/<(\w+).*?>.*?<\/\1>/, '')
         delete imgList[i].base64Image
+        const resTextJson = JSON.parse(result)
+        imgList[i]['imgUrl'] = `https://ws1.sinaimg.cn/${quality}/${resTextJson.data.pics.pic_1.pid}`
+        imgList[i]['type'] = 'weibo'
       }
+      webContents.send('uploadProgress', 100)
       return imgList
     } else {
+      webContents.send('uploadProgress', -1)
       const notification = new Notification({
         title: '上传失败！',
         body: res.body.msg
@@ -56,7 +60,12 @@ const weiboUpload = async function (img, type) {
       notification.show()
     }
   } catch (err) {
-    console.log('This is error', err, err.name === 'RequestError')
+    webContents.send('uploadProgress', -1)
+    const notification = new Notification({
+      title: '上传失败！',
+      body: '服务端出错，请重试'
+    })
+    notification.show()
     throw new Error(err)
   }
 }

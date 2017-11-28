@@ -29,7 +29,26 @@ const imgFromClipboard = (file) => {
   return result
 }
 
+const imgFromUploader = async (files) => {
+  console.log(files)
+  let results = []
+  await Promise.all(files.map(async item => {
+    let buffer = await fs.readFile(item.path)
+    let base64Image = Buffer.from(buffer, 'binary').toString('base64')
+    let fileName = item.name
+    let imgSize = sizeOf(item.path)
+    results.push({
+      base64Image,
+      fileName,
+      width: imgSize.width,
+      height: imgSize.height
+    })
+  }))
+  return results
+}
+
 export {
   imgFromPath,
-  imgFromClipboard
+  imgFromClipboard,
+  imgFromUploader
 }

@@ -1,5 +1,6 @@
 <template>
   <div id="tray-page">
+    <!-- <div class="header-arrow"></div> -->
     <div class="content">
       <div class="wait-upload-img" v-if="clipboardFiles.length > 0">
         <div class="list-title">等待上传</div>
@@ -54,6 +55,11 @@
         this.$db.get('uploaded').push(...files).write()
         this.files = this.$db.get('uploaded').slice().reverse().slice(0, 5).value()
       })
+    },
+    beforeDestroy () {
+      this.$electron.ipcRenderer.removeAllListeners('dragFiles')
+      this.$electron.ipcRenderer.removeAllListeners('clipboardFiles')
+      this.$electron.ipcRenderer.removeAllListeners('uploadClipboardFiles')
     },
     methods: {
       getData () {
@@ -117,8 +123,6 @@
     position absolute
     top 0px
     width 100%
-    // padding-top 10px
-    // background-color rgba(255,255,255, 1)
   .img-list
     padding 16px 8px
     display flex

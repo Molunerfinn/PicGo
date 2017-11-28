@@ -2,7 +2,8 @@
 
 import { weiboUpload } from './utils/weiboUpload.js'
 import { app, BrowserWindow, Tray, Menu, Notification, clipboard, ipcMain } from 'electron'
-import db from '../datastore/index'
+import db from '../datastore'
+import pasteTemplate from './utils/pasteTemplate'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -29,7 +30,7 @@ function createTray () {
       label: 'Quit'
     },
     {
-      label: 'Open setting Window',
+      label: '打开详细窗口',
       click () {
         if (settingWindow === null) {
           createSettingWindow()
@@ -38,6 +39,26 @@ function createTray () {
           settingWindow.focus()
         }
       }
+    },
+    {
+      label: '选择默认图床',
+      type: 'submenu',
+      submenu: [
+        {
+          label: '微博图床',
+          type: 'radio',
+          checked: db.read().get('picBed.current').value() === 'weibo'
+        },
+        {
+          label: '七牛图床',
+          type: 'radio',
+          checked: db.read().get('picBed.current').value() === 'qiniu',
+          click () {
+            db.read().set('picBed.current', 'qiniu')
+              .write()
+          }
+        }
+      ]
     }
   ])
   tray.on('right-click', () => {
@@ -69,9 +90,10 @@ function createTray () {
   })
 
   tray.on('drop-files', async (event, files) => {
-    const imgs = await weiboUpload(files, 'imgFromPath')
+    const pasteStyle = db.read().get('picBed.pasteStyle') || 'markdown'
+    const imgs = await weiboUpload(files, 'imgFromPath', window.webContents)
     for (let i in imgs) {
-      clipboard.writeText(imgs[i].imgUrl)
+      clipboard.writeText(pasteTemplate(pasteStyle, imgs[i].imgUrl))
       const notification = new Notification({
         title: '上传成功',
         body: imgs[i].imgUrl,
@@ -81,7 +103,6 @@ function createTray () {
         notification.show()
       }, i * 100)
     }
-    console.log('drag-files')
     window.webContents.send('dragFiles', imgs)
   })
   toggleWindow()
@@ -160,15 +181,6 @@ const toggleWindow = () => {
   }
 }
 
-// const toggleSettingWindow = () => {
-//   if (settingWindow.isVisible()) {
-//     settingWindow.hide()
-//   } else {
-//     settingWindow.show()
-//     settingWindow.focus()
-//   }
-// }
-
 const showWindow = () => {
   const position = getWindowPosition()
   window.setPosition(position.x, position.y, false)
@@ -177,8 +189,9 @@ const showWindow = () => {
 }
 
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
-  const img = await weiboUpload(file, 'imgFromClipboard')
-  clipboard.writeText(img[0].imgUrl)
+  const img = await weiboUpload(file, 'imgFromClipboard', window.webContents)
+  const pasteStyle = db.read().get('picBed.pasteStyle') || 'markdown'
+  clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
   const notification = new Notification({
     title: '上传成功',
     body: img[0].imgUrl,
@@ -187,8 +200,26 @@ ipcMain.on('uploadClipboardFiles', async (evt, file) => {
   notification.show()
   clipboard.clear()
   window.webContents.send('clipboardFiles', [])
-  window.webContents.send('uploadClipboardFiles', img)
-  console.log('clipboard-upload')
+  window.webContents.send('uploadFiles', img)
+})
+
+ipcMain.on('uploadChoosedFiles', async (evt, files) => {
+  const imgs = await weiboUpload(files, 'imgFromUploader', settingWindow.webContents)
+  const pasteStyle = db.read().get('picBed.pasteStyle') || 'markdown'
+  let pasteText = ''
+  for (let i in imgs) {
+    pasteText += pasteTemplate(pasteStyle, imgs[i].imgUrl) + '\r\n'
+    const notification = new Notification({
+      title: '上传成功',
+      body: imgs[i].imgUrl,
+      icon: files[i].path
+    })
+    setTimeout(() => {
+      notification.show()
+    }, i * 100)
+  }
+  clipboard.writeText(pasteText)
+  window.webContents.send('uploadFiles', imgs)
 })
 
 app.on('ready', () => {
