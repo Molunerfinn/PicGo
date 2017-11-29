@@ -47,7 +47,11 @@ function createTray () {
         {
           label: '微博图床',
           type: 'radio',
-          checked: db.read().get('picBed.current').value() === 'weibo'
+          checked: db.read().get('picBed.current').value() === 'weibo',
+          click () {
+            db.read().set('picBed.current', 'weibo')
+              .write()
+          }
         },
         {
           label: '七牛图床',

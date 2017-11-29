@@ -24,6 +24,11 @@ export default new Router({
           path: 'weibo',
           component: require('@/components/SettingView/Weibo').default,
           name: 'weibo'
+        },
+        {
+          path: 'qiniu',
+          component: require('@/components/SettingView/Qiniu').default,
+          name: 'qiniu'
         }
       ]
     },

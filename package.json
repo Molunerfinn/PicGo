@@ -61,6 +61,7 @@
     "fs-extra": "^4.0.2",
     "image-size": "^0.6.1",
     "lowdb": "^1.0.0",
+    "qiniu": "^7.1.1",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "vue": "^2.3.3",

@@ -18,6 +18,10 @@
             <i class="el-icon-setting"></i>
             <span slot="title">微博设置</span>
           </el-menu-item>
+          <el-menu-item index="qiniu">
+            <i class="el-icon-setting"></i>
+            <span slot="title">七牛设置</span>
+          </el-menu-item>
         </el-menu>
       </el-col>
       <el-col :span="19">

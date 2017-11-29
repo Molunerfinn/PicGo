@@ -166,4 +166,12 @@ export default {
   .el-radio-button:first-child
     .el-radio-button__inner
       border-left none
+  .el-radio-button:first-child
+    .el-radio-button__inner
+      border-left none
+      border-radius 14px 0 0 14px
+  .el-radio-button:last-child
+    .el-radio-button__inner
+      border-left none
+      border-radius 0 14px 14px 0
 </style>

@@ -23,6 +23,7 @@
 </template>
 
 <script>
+  import pasteTemplate from '../../main/utils/pasteTemplate'
   export default {
     name: 'tray-page',
     data () {
@@ -51,7 +52,7 @@
       this.$electron.ipcRenderer.on('clipboardFiles', (event, files) => {
         this.clipboardFiles = files
       })
-      this.$electron.ipcRenderer.on('uploadClipboardFiles', (event, files) => {
+      this.$electron.ipcRenderer.on('uploadFiles', (event, files) => {
         this.$db.get('uploaded').push(...files).write()
         this.files = this.$db.get('uploaded').slice().reverse().slice(0, 5).value()
       })
@@ -69,8 +70,10 @@
         this.notification.body = item.imgUrl
         this.notification.icon = item.imgUrl
         const myNotification = new window.Notification(this.notification.title, this.notification)
+        const pasteStyle = this.$db.read().get('picBed.pasteStyle').value()
+        this.$electron.clipboard.writeText(pasteTemplate(pasteStyle, item.imgUrl))
         myNotification.onclick = () => {
-          this.$electron.clipboard.writeText(item.imgUrl)
+          return true
         }
       },
       calcHeight (width, height) {
