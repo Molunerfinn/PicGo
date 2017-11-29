@@ -1,6 +1,6 @@
 'use strict'
 
-import { weiboUpload } from './utils/weiboUpload.js'
+import uploader from './utils/uploader.js'
 import { app, BrowserWindow, Tray, Menu, Notification, clipboard, ipcMain } from 'electron'
 import db from '../datastore'
 import pasteTemplate from './utils/pasteTemplate'
@@ -73,10 +73,12 @@ function createTray () {
     let img = clipboard.readImage()
     let obj = []
     if (!img.isEmpty()) {
+      // 从剪贴板来的图片默认转为png
+      const imgUrl = 'data:image/png;base64,' + Buffer.from(img.toPNG(), 'binary').toString('base64')
       obj.push({
         width: img.getSize().width,
         height: img.getSize().height,
-        imgUrl: img.toDataURL()
+        imgUrl
       })
     }
     toggleWindow()
@@ -94,8 +96,8 @@ function createTray () {
   })
 
   tray.on('drop-files', async (event, files) => {
-    const pasteStyle = db.read().get('picBed.pasteStyle') || 'markdown'
-    const imgs = await weiboUpload(files, 'imgFromPath', window.webContents)
+    const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
+    const imgs = await uploader(files, 'imgFromPath', window.webContents)
     for (let i in imgs) {
       clipboard.writeText(pasteTemplate(pasteStyle, imgs[i].imgUrl))
       const notification = new Notification({
@@ -193,8 +195,8 @@ const showWindow = () => {
 }
 
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
-  const img = await weiboUpload(file, 'imgFromClipboard', window.webContents)
-  const pasteStyle = db.read().get('picBed.pasteStyle') || 'markdown'
+  const img = await uploader(file, 'imgFromClipboard', window.webContents)
+  const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
   clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
   const notification = new Notification({
     title: '上传成功',
@@ -202,14 +204,13 @@ ipcMain.on('uploadClipboardFiles', async (evt, file) => {
     icon: file[0]
   })
   notification.show()
-  clipboard.clear()
   window.webContents.send('clipboardFiles', [])
   window.webContents.send('uploadFiles', img)
 })
 
 ipcMain.on('uploadChoosedFiles', async (evt, files) => {
-  const imgs = await weiboUpload(files, 'imgFromUploader', settingWindow.webContents)
-  const pasteStyle = db.read().get('picBed.pasteStyle') || 'markdown'
+  const imgs = await uploader(files, 'imgFromUploader', settingWindow.webContents)
+  const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
   let pasteText = ''
   for (let i in imgs) {
     pasteText += pasteTemplate(pasteStyle, imgs[i].imgUrl) + '\r\n'

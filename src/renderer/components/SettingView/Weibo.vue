@@ -56,7 +56,7 @@ export default {
     }
   },
   created () {
-    const config = this.$db.get('picBed.weibo').value()
+    const config = this.$db.read().get('picBed.weibo').value()
     if (config) {
       this.form.username = config.username
       this.form.password = config.password
@@ -67,7 +67,7 @@ export default {
     confirm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$db.set('picBed.weibo', {
+          this.$db.read().set('picBed.weibo', {
             username: this.form.username,
             password: this.form.password,
             quality: this.quality

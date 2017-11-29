@@ -46,15 +46,19 @@
       this.disableDragFile()
       this.getData()
       this.$electron.ipcRenderer.on('dragFiles', (event, files) => {
-        this.$db.get('uploaded').push(...files).write()
-        this.files = this.$db.get('uploaded').slice().reverse().slice(0, 5).value()
+        files.forEach(item => {
+          this.$db.read().get('uploaded').insert(item).write()
+        })
+        this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
       })
       this.$electron.ipcRenderer.on('clipboardFiles', (event, files) => {
         this.clipboardFiles = files
       })
       this.$electron.ipcRenderer.on('uploadFiles', (event, files) => {
-        this.$db.get('uploaded').push(...files).write()
-        this.files = this.$db.get('uploaded').slice().reverse().slice(0, 5).value()
+        files.forEach(item => {
+          this.$db.read().get('uploaded').insert(item).write()
+        })
+        this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
       })
     },
     beforeDestroy () {
@@ -64,7 +68,7 @@
     },
     methods: {
       getData () {
-        this.files = this.$db.get('uploaded').slice().reverse().slice(0, 5).value()
+        this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
       },
       copyTheLink (item) {
         this.notification.body = item.imgUrl

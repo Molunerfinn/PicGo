@@ -21,8 +21,10 @@ const imgFromPath = async (imgPath) => {
 
 const imgFromClipboard = (file) => {
   let result = []
+  const today = new Date().toLocaleString()
   result.push({
     base64Image: file.imgUrl.replace(/^data\S+,/, ''),
+    fileName: `${today}.png`,
     width: file.width,
     height: file.height
   })
@@ -30,7 +32,6 @@ const imgFromClipboard = (file) => {
 }
 
 const imgFromUploader = async (files) => {
-  console.log(files)
   let results = []
   await Promise.all(files.map(async item => {
     let buffer = await fs.readFile(item.path)

@@ -109,10 +109,10 @@ export default {
       this.$electron.ipcRenderer.send('uploadChoosedFiles', sendFiles)
     },
     getPasteStyle () {
-      this.pasteStyle = this.$db.get('picBed.pasteStyle').value() || 'markdown'
+      this.pasteStyle = this.$db.read().get('picBed.pasteStyle').value() || 'markdown'
     },
     handlePasteStyleChange (val) {
-      this.$db.set('picBed.pasteStyle', val)
+      this.$db.read().set('picBed.pasteStyle', val)
         .write()
     }
   }

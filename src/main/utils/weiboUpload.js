@@ -70,6 +70,4 @@ const weiboUpload = async function (img, type, webContents) {
   }
 }
 
-export {
-  weiboUpload
-}
+export default weiboUpload
