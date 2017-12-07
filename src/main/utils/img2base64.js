@@ -21,7 +21,7 @@ const imgFromPath = async (imgPath) => {
 
 const imgFromClipboard = (file) => {
   let result = []
-  const today = new Date().toLocaleString()
+  const today = new Date().toLocaleString().replace(/[ ]+/g, '-')
   result.push({
     base64Image: file.imgUrl.replace(/^data\S+,/, ''),
     fileName: `${today}.png`,

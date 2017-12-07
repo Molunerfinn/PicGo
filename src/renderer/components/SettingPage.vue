@@ -3,7 +3,7 @@
     <div class="fake-title-bar">
       PicGo
     </div>
-    <el-row>
+    <el-row style="padding-top: 22px;">
       <el-col :span="5">
         <el-menu
           class="picgo-sidebar"
@@ -13,6 +13,10 @@
           <el-menu-item index="upload">
             <i class="el-icon-upload"></i>
             <span slot="title">上传区</span>
+          </el-menu-item>
+          <el-menu-item index="gallery">
+            <i class="el-icon-picture"></i>
+            <span slot="title">相册</span>
           </el-menu-item>
           <el-menu-item index="weibo">
             <i class="el-icon-setting"></i>
@@ -24,7 +28,7 @@
           </el-menu-item>
         </el-menu>
       </el-col>
-      <el-col :span="19">
+      <el-col :span="19" :offset="5">
         <router-view></router-view>
       </el-col>
     </el-row> 
@@ -62,11 +66,13 @@ export default {
     color #eee
     font-size 12px
     line-height h
+    position fixed
   .picgo-sidebar
     height calc(100vh - 22px)
   .el-menu
     border-right none
     background transparent
+    position fixed
     &-item
       color #eee
       position relative

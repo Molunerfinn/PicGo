@@ -1445,6 +1445,10 @@ bluebird@^3.1.1, bluebird@^3.3.0, bluebird@^3.4.7, bluebird@^3.5.0, bluebird@^3.
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
 
+blueimp-gallery@^2.27.0:
+  version "2.29.0"
+  resolved "https://registry.yarnpkg.com/blueimp-gallery/-/blueimp-gallery-2.29.0.tgz#04164eb34d7a5f502d32c518a096f988a3934e2d"
+
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
@@ -7890,6 +7894,12 @@ void-elements@^2.0.0:
 vue-electron@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/vue-electron/-/vue-electron-1.0.6.tgz#e798e03180b8933539defe31f92e53b9242b9406"
+
+vue-gallery@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/vue-gallery/-/vue-gallery-1.2.4.tgz#67799ccd9c82efbce57d7ed45d5021a57121cb3c"
+  dependencies:
+    blueimp-gallery "^2.27.0"
 
 vue-hot-reload-api@^2.2.0:
   version "2.2.4"

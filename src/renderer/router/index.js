@@ -29,6 +29,11 @@ export default new Router({
           path: 'qiniu',
           component: require('@/components/SettingView/Qiniu').default,
           name: 'qiniu'
+        },
+        {
+          path: 'gallery',
+          component: require('@/components/SettingView/Gallery').default,
+          name: 'gallery'
         }
       ]
     },

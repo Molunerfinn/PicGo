@@ -34,7 +34,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="confirm('weiboForm')">确定</el-button>
+            <el-button type="primary" @click="confirm('weiboForm')" round>确定</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -102,7 +102,6 @@ export default {
       color #eee
     .el-button
       width 100%
-      border-radius 19px
     .el-input__inner
       border-radius 19px
     .el-radio-group
