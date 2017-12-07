@@ -6,6 +6,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 import db from '../datastore/index'
+import './assets/fonts/iconfont.css'
 Vue.use(ElementUI)
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))

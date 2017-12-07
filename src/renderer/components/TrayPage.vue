@@ -60,11 +60,15 @@
         })
         this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
       })
+      this.$electron.ipcRenderer.on('updateFiles', (event) => {
+        this.getData()
+      })
     },
     beforeDestroy () {
       this.$electron.ipcRenderer.removeAllListeners('dragFiles')
       this.$electron.ipcRenderer.removeAllListeners('clipboardFiles')
       this.$electron.ipcRenderer.removeAllListeners('uploadClipboardFiles')
+      this.$electron.ipcRenderer.removeAllListeners('updateFiles')
     },
     methods: {
       getData () {

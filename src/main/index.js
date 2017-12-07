@@ -190,6 +190,7 @@ const toggleWindow = () => {
 const showWindow = () => {
   const position = getWindowPosition()
   window.setPosition(position.x, position.y, false)
+  window.webContents.send('updateFiles')
   window.show()
   window.focus()
 }
