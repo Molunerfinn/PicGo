@@ -23,7 +23,7 @@ const settingWinURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html#setting/upload`
 
 function createTray () {
-  tray = new Tray(`${__static}/menubarDefaultTemplate.png`)
+  tray = new Tray(`${__static}/menubar.png`)
   const contextMenu = Menu.buildFromTemplate([
     {
       role: 'quit',
@@ -111,7 +111,7 @@ function createTray () {
     }
     window.webContents.send('dragFiles', imgs)
   })
-  toggleWindow()
+  // toggleWindow()
 }
 
 const createWindow = () => {
@@ -146,7 +146,7 @@ const createSettingWindow = () => {
   settingWindow = new BrowserWindow({
     height: 450,
     width: 800,
-    show: true,
+    show: false,
     frame: true,
     center: true,
     fullscreenable: false,
