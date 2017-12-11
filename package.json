@@ -19,10 +19,12 @@
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
     "test": "npm run unit && npm run e2e",
     "unit": "karma start test/unit/karma.conf.js",
-    "postinstall": "npm run lint:fix"
+    "postinstall": "npm run lint:fix",
+    "build:docs": "webpack -p --config .electron-vue/webpack.docs.config.js",
+    "docs": "webpack-dev-server --content-base docs/dist --config .electron-vue/webpack.docs.config.js --hot --inline"
   },
   "build": {
-    "productName": "picgo",
+    "productName": "PicGo",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
       "output": "build"
@@ -46,7 +48,10 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/icon.icns"
+      "icon": "build/icons/icon.icns",
+      "extendInfo": {
+        "LSUIElement": 1
+      }
     },
     "win": {
       "icon": "build/icons/icon.ico"
@@ -62,6 +67,7 @@
     "image-size": "^0.6.1",
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0",
+    "melody.css": "^1.0.2",
     "qiniu": "^7.1.1",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
@@ -118,6 +124,8 @@
     "mocha": "^3.0.2",
     "multispinner": "^0.2.1",
     "node-loader": "^0.6.0",
+    "pug": "^2.0.0-rc.4",
+    "pug-loader": "^2.3.0",
     "require-dir": "^0.3.0",
     "spectron": "^3.7.1",
     "style-loader": "^0.18.2",

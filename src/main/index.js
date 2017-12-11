@@ -26,14 +26,11 @@ function createTray () {
   tray = new Tray(`${__static}/menubar.png`)
   const contextMenu = Menu.buildFromTemplate([
     {
-      role: 'quit',
-      label: 'Quit'
-    },
-    {
       label: '打开详细窗口',
       click () {
         if (settingWindow === null) {
           createSettingWindow()
+          settingWindow.show()
         } else {
           settingWindow.show()
           settingWindow.focus()
@@ -63,6 +60,10 @@ function createTray () {
           }
         }
       ]
+    },
+    {
+      role: 'quit',
+      label: '退出'
     }
   ])
   tray.on('right-click', () => {
@@ -92,7 +93,7 @@ function createTray () {
   })
 
   tray.on('drag-end', () => {
-    tray.setImage(`${__static}/menubarDefaultTemplate.png`)
+    tray.setImage(`${__static}/menubar.png`)
   })
 
   tray.on('drop-files', async (event, files) => {

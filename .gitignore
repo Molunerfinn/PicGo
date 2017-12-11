@@ -10,3 +10,4 @@ npm-debug.log.*
 thumbs.db
 !.gitkeep
 yarn-error.log
+docs/dist/
