@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
-    "build": "node .electron-vue/build.js && electron-builder",
+    "build": "node .electron-vue/build.js && electron-builder --publish onTagOrDraft",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
@@ -20,7 +20,7 @@
     "test": "npm run unit && npm run e2e",
     "unit": "karma start test/unit/karma.conf.js",
     "postinstall": "npm run lint:fix",
-    "build:docs": "webpack -p --config .electron-vue/webpack.docs.config.js",
+    "build:docs": "cross-env NODE_ENV=production webpack -p --config .electron-vue/webpack.docs.config.js",
     "docs": "webpack-dev-server --content-base docs/dist --config .electron-vue/webpack.docs.config.js --hot --inline"
   },
   "build": {
