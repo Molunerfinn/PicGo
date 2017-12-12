@@ -49,4 +49,4 @@ after_script:
   - git config user.email "marksz@teamsz.xyz"
   - git add .
   - git commit -m "Travis build docs"
-  - git push  --force --quiet "https://${GITHUB_TOKEN}@github.com/Molunerfinn/PicGo.git" master:gh-pages
+  - git push  --force --quiet "https://${GH_TOKEN}@github.com/Molunerfinn/PicGo.git" master:gh-pages
