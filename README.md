@@ -2,7 +2,7 @@
 
 > 图片上传+管理新体验 
 <p align="center">
-  <img src="https://ws1.sinaimg.cn/large/8700af19ly1fmd6ou9eynj2046046glj" alt="">
+  <img src="https://user-images.githubusercontent.com/12621342/33876119-85a5148e-df5f-11e7-8843-46224e595d52.png" alt="">
 </p>
 <p align="center">
   <a href="https://github.com/feross/standard">
@@ -12,25 +12,25 @@
 
 ## 精致设计
 
-![](https://ws1.sinaimg.cn/large/8700af19ly1fma907llb5j20m30ed46a)
+![](https://user-images.githubusercontent.com/12621342/33876294-14f7cf5a-df60-11e7-9c59-a8d4565c61d4.png)
 
 macOS系统下，支持拖拽至menubar图标实现上传。menubar app 窗口显示最新上传的5张图片以及剪贴板里的图片。点击图片自动将上传的链接复制到剪贴板。
 
 ## 便捷管理
 
-![](https://ws1.sinaimg.cn/large/8700af19ly1fmd56zm2nej218g0p0teb)
+![](https://user-images.githubusercontent.com/12621342/33876349-3ee314a0-df60-11e7-8c9f-9904264d6ddb.png)
 
 查看你的上传记录，重复使用更方便。支持点击图片大图查看。支持删除图片（仅本地记录），让界面更加干净。
 
 ## 可选图床
 
-![](https://ws1.sinaimg.cn/large/8700af19ly1fmd5ck9m0wj20lr0cxmzs)
+![](https://user-images.githubusercontent.com/12621342/33876259-f7620af0-df5f-11e7-807e-0dc84a5cee50.png)
 
 目前支持微博图床和七牛图床。未来将支持更多。方便不同图床的上传需求。
 
 ## 多样链接
 
-![](https://ws1.sinaimg.cn/large/8700af19gy1fmayjwttnbj218g0p0q4e)
+![](https://user-images.githubusercontent.com/12621342/33876419-70107f68-df60-11e7-8858-9c062bdb4e6e.png)
 
 支持4种剪贴板链接格式，让你的文本编辑游刃有余。
 
