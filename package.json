@@ -21,7 +21,10 @@
     "unit": "karma start test/unit/karma.conf.js",
     "postinstall": "npm run lint:fix",
     "build:docs": "cross-env NODE_ENV=production webpack -p --config .electron-vue/webpack.docs.config.js",
-    "docs": "webpack-dev-server --content-base docs/dist --config .electron-vue/webpack.docs.config.js --hot --inline"
+    "docs": "webpack-dev-server --content-base docs/dist --config .electron-vue/webpack.docs.config.js --hot --inline",
+    "patch": "npm version patch && git push origin master && git push origin --tags",
+    "minor": "npm version minor && git push origin master && git push origin --tags",
+    "major": "npm version major && git push origin master && git push origin --tags"
   },
   "build": {
     "productName": "PicGo",
