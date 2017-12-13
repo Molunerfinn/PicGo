@@ -74,7 +74,7 @@ h1
   position relative
 .mask
   position absolute
-  width 100vw
+  width 100%
   height 100vh
   top 0
   left 0
@@ -82,7 +82,7 @@ h1
   z-index -1
 #header
   height 100vh
-  width 100vw
+  width 100%
   background-image url("https://ws1.sinaimg.cn/large/8700af19ly1fm9ru6fqvjj22p81stdta")
   background-attachment fixed
   background-size cover
