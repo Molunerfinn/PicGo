@@ -15,6 +15,7 @@ if (process.env.NODE_ENV !== 'development') {
 let window
 let settingWindow
 let tray
+let menu
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
@@ -168,6 +169,30 @@ const createSettingWindow = () => {
   })
 }
 
+const createMenu = () => {
+  const template = [{
+    label: 'Edit',
+    submenu: [
+      { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
+      { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
+      { type: 'separator' },
+      { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
+      { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
+      { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
+      { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' },
+      {
+        label: 'Quit',
+        accelerator: 'CmdOrCtrl+Q',
+        click () {
+          app.quit()
+        }
+      }
+    ]
+  }]
+  menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
+}
+
 const getWindowPosition = () => {
   const windowBounds = window.getBounds()
   const trayBounds = tray.getBounds()
@@ -232,6 +257,7 @@ ipcMain.on('uploadChoosedFiles', async (evt, files) => {
 app.on('ready', () => {
   createWindow()
   createTray()
+  createMenu()
 })
 
 app.on('window-all-closed', () => {
@@ -244,6 +270,7 @@ app.on('activate', () => {
   if (window === null || settingWindow === null) {
     createWindow()
     createTray()
+    createMenu()
   }
 })
 
