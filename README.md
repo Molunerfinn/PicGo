@@ -34,6 +34,18 @@ macOS系统下，支持拖拽至menubar图标实现上传。menubar app 窗口�
 
 支持4种剪贴板链接格式，让你的文本编辑游刃有余。
 
+## 赞助
+
+如果你喜欢PicGo并且它对你确实有帮助，欢迎给我打赏一杯咖啡的钱哈~
+
+支付宝：
+
+![](https://user-images.githubusercontent.com/12621342/34188165-e7cdf372-e56f-11e7-8732-1338c88b9bb7.jpg)
+
+微信：
+
+![](https://user-images.githubusercontent.com/12621342/34188201-212cda84-e570-11e7-9b7a-abb298699d85.jpg)
+
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)
