@@ -59,6 +59,15 @@ function createTray () {
             db.read().set('picBed.current', 'qiniu')
               .write()
           }
+        },
+        {
+          label: '腾讯云COS',
+          type: 'radio',
+          checked: db.read().get('picBed.current').value() === 'tcyun',
+          click () {
+            db.read().set('picBed.current', 'tcyun')
+              .write()
+          }
         }
       ]
     },

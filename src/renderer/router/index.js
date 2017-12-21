@@ -31,6 +31,11 @@ export default new Router({
           name: 'qiniu'
         },
         {
+          path: 'tcyun',
+          component: require('@/components/SettingView/TcYun').default,
+          name: 'tcyun'
+        },
+        {
           path: 'gallery',
           component: require('@/components/SettingView/Gallery').default,
           name: 'gallery'

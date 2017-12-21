@@ -26,6 +26,10 @@
             <i class="el-icon-ui-qiniu"></i>
             <span slot="title">七牛设置</span>
           </el-menu-item>
+          <el-menu-item index="tcyun">
+            <i class="el-icon-ui-tcyun"></i>
+            <span slot="title">腾讯COS设置</span>
+          </el-menu-item>
         </el-menu>
       </el-col>
       <el-col :span="19" :offset="5">
