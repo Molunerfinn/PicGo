@@ -23,6 +23,14 @@ const settingWinURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080/#setting/upload`
   : `file://${__dirname}/index.html#setting/upload`
 
+const uploadFailed = () => {
+  const notification = new Notification({
+    title: '上传失败',
+    body: '请检查你的图床配置！'
+  })
+  notification.show()
+}
+
 function createTray () {
   tray = new Tray(`${__static}/menubar.png`)
   const contextMenu = Menu.buildFromTemplate([
@@ -68,6 +76,15 @@ function createTray () {
             db.read().set('picBed.current', 'tcyun')
               .write()
           }
+        },
+        {
+          label: '又拍云图床',
+          type: 'radio',
+          checked: db.read().get('picBed.current').value() === 'upyun',
+          click () {
+            db.read().set('picBed.current', 'upyun')
+              .write()
+          }
         }
       ]
     },
@@ -109,18 +126,22 @@ function createTray () {
   tray.on('drop-files', async (event, files) => {
     const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
     const imgs = await uploader(files, 'imgFromPath', window.webContents)
-    for (let i in imgs) {
-      clipboard.writeText(pasteTemplate(pasteStyle, imgs[i].imgUrl))
-      const notification = new Notification({
-        title: '上传成功',
-        body: imgs[i].imgUrl,
-        icon: files[i]
-      })
-      setTimeout(() => {
-        notification.show()
-      }, i * 100)
+    if (imgs !== false) {
+      for (let i in imgs) {
+        clipboard.writeText(pasteTemplate(pasteStyle, imgs[i].imgUrl))
+        const notification = new Notification({
+          title: '上传成功',
+          body: imgs[i].imgUrl,
+          icon: files[i]
+        })
+        setTimeout(() => {
+          notification.show()
+        }, i * 100)
+      }
+      window.webContents.send('dragFiles', imgs)
+    } else {
+      uploadFailed()
     }
-    window.webContents.send('dragFiles', imgs)
   })
   // toggleWindow()
 }
@@ -232,35 +253,43 @@ const showWindow = () => {
 
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
   const img = await uploader(file, 'imgFromClipboard', window.webContents)
-  const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
-  clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
-  const notification = new Notification({
-    title: '上传成功',
-    body: img[0].imgUrl,
-    icon: file[0]
-  })
-  notification.show()
-  window.webContents.send('clipboardFiles', [])
-  window.webContents.send('uploadFiles', img)
+  if (img !== false) {
+    const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
+    clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
+    const notification = new Notification({
+      title: '上传成功',
+      body: img[0].imgUrl,
+      icon: file[0]
+    })
+    notification.show()
+    window.webContents.send('clipboardFiles', [])
+    window.webContents.send('uploadFiles', img)
+  } else {
+    uploadFailed()
+  }
 })
 
 ipcMain.on('uploadChoosedFiles', async (evt, files) => {
   const imgs = await uploader(files, 'imgFromUploader', settingWindow.webContents)
-  const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
-  let pasteText = ''
-  for (let i in imgs) {
-    pasteText += pasteTemplate(pasteStyle, imgs[i].imgUrl) + '\r\n'
-    const notification = new Notification({
-      title: '上传成功',
-      body: imgs[i].imgUrl,
-      icon: files[i].path
-    })
-    setTimeout(() => {
-      notification.show()
-    }, i * 100)
+  if (imgs !== false) {
+    const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
+    let pasteText = ''
+    for (let i in imgs) {
+      pasteText += pasteTemplate(pasteStyle, imgs[i].imgUrl) + '\r\n'
+      const notification = new Notification({
+        title: '上传成功',
+        body: imgs[i].imgUrl,
+        icon: files[i].path
+      })
+      setTimeout(() => {
+        notification.show()
+      }, i * 100)
+    }
+    clipboard.writeText(pasteText)
+    window.webContents.send('uploadFiles', imgs)
+  } else {
+    uploadFailed()
   }
-  clipboard.writeText(pasteText)
-  window.webContents.send('uploadFiles', imgs)
 })
 
 app.on('ready', () => {

@@ -24,11 +24,15 @@
           </el-menu-item>
           <el-menu-item index="qiniu">
             <i class="el-icon-ui-qiniu"></i>
-            <span slot="title">七牛设置</span>
+            <span slot="title">七牛云设置</span>
           </el-menu-item>
           <el-menu-item index="tcyun">
             <i class="el-icon-ui-tcyun"></i>
             <span slot="title">腾讯COS设置</span>
+          </el-menu-item>
+          <el-menu-item index="upyun">
+            <i class="el-icon-ui-upyun"></i>
+            <span slot="title">又拍云设置</span>
           </el-menu-item>
         </el-menu>
       </el-col>

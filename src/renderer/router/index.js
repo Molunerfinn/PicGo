@@ -36,6 +36,11 @@ export default new Router({
           name: 'tcyun'
         },
         {
+          path: 'upyun',
+          component: require('@/components/SettingView/UpYun').default,
+          name: 'upyun'
+        },
+        {
           path: 'gallery',
           component: require('@/components/SettingView/Gallery').default,
           name: 'gallery'

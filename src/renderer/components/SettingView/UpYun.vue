@@ -1,32 +1,16 @@
 <template>
-  <div id="qiniu-view">
+  <div id="tcyun-view">
     <el-row :gutter="16">
       <el-col :span="16" :offset="4">
         <div class="view-title">
-          七牛图床设置
+          又拍云设置
         </div>
         <el-form 
-          ref="qiniu"
+          ref="tcyun"
           label-position="right"
           label-width="120px"
           :model="form"
           size="mini">
-          <el-form-item
-            label="设定AccessKey"
-            prop="accessKey"
-            :rules="{
-              required: true, message: 'AccessKey不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.accessKey" placeholder="AccessKey" @keyup.native.enter="confirm('weiboForm')"></el-input>
-          </el-form-item>
-          <el-form-item
-            label="设定SecretKey"
-            prop="secretKey"
-            :rules="{
-              required: true, message: 'SecretKey不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.secretKey" type="password" @keyup.native.enter="confirm" placeholder="SecretKey"></el-input>
-          </el-form-item>
           <el-form-item
             label="设定存储空间名"
             prop="bucket"
@@ -36,27 +20,33 @@
             <el-input v-model="form.bucket" @keyup.native.enter="confirm" placeholder="Bucket"></el-input>
           </el-form-item>
           <el-form-item
-            label="设定访问网址"
-            prop="url"
+            label="设定操作员"
+            prop="operator"
             :rules="{
-              required: true, message: '网址不能为空', trigger: 'blur'
+              required: true, message: '操作员不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.url" @keyup.native.enter="confirm" placeholder="例如：http://xxx.yyy.glb.clouddn.com"></el-input>
+            <el-input v-model="form.operator" @keyup.native.enter="confirm" placeholder="例如：me"></el-input>
           </el-form-item>
           <el-form-item
-            label="确认存储区域"
-            >
-            <el-radio-group v-model="form.area" size="mini">
-              <el-radio-button label="z0">华东</el-radio-button>
-              <el-radio-button label="z1">华北</el-radio-button>
-              <el-radio-button label="z2">华南</el-radio-button>
-              <el-radio-button label="na0">北美</el-radio-button>
-            </el-radio-group>
+            label="设定操作员密码"
+            prop="password"
+            :rules="{
+              required: true, message: '操作员密码不能为空', trigger: 'blur'
+            }">
+            <el-input v-model="form.password" @keyup.native.enter="confirm" placeholder="输入操作员密码" type="password"></el-input>
+          </el-form-item>
+          <el-form-item
+            label="设定加速域名"
+            prop="url"
+            :rules="{
+              required: true, message: '加速域名不能为空', trigger: 'blur'
+            }">
+            <el-input v-model="form.url" placeholder="例如http://xxx.test.upcdn.net" @keyup.native.enter="confirm()"></el-input>
           </el-form-item>
           <el-form-item
             label="设定网址后缀"
             >
-            <el-input v-model="form.options" @keyup.native.enter="confirm" placeholder="例如?imageslim"></el-input>
+            <el-input v-model="form.options" @keyup.native.enter="confirm" placeholder="例如!imgslim"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="confirm">确定</el-button>
@@ -69,22 +59,20 @@
 <script>
 import mixin from '../mixin'
 export default {
-  name: 'qiniu',
+  name: 'upyun',
   mixins: [mixin],
   data () {
     return {
       form: {
-        accessKey: '',
-        secretKey: '',
         bucket: '',
-        url: '',
-        area: 'z0',
+        operator: '',
+        password: '',
         options: ''
       }
     }
   },
   created () {
-    const config = this.$db.get('picBed.qiniu').value()
+    const config = this.$db.get('picBed.upyun').value()
     if (config) {
       for (let i in config) {
         this.form[i] = config[i]
@@ -93,9 +81,9 @@ export default {
   },
   methods: {
     confirm () {
-      this.$refs.qiniu.validate((valid) => {
+      this.$refs.tcyun.validate((valid) => {
         if (valid) {
-          this.$db.set('picBed.qiniu', this.form).write()
+          this.$db.set('picBed.upyun', this.form).write()
           const successNotification = new window.Notification('设置结果', {
             body: '设置成功'
           })
@@ -116,7 +104,7 @@ export default {
   font-size 20px
   text-align center
   margin 20px auto
-#qiniu-view
+#tcyun-view
   .el-form
     label  
       line-height 22px
