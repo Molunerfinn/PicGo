@@ -4,6 +4,7 @@ import uploader from './utils/uploader.js'
 import { app, BrowserWindow, Tray, Menu, Notification, clipboard, ipcMain } from 'electron'
 import db from '../datastore'
 import pasteTemplate from './utils/pasteTemplate'
+import updateChecker from './utils/updateChecker'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -296,6 +297,7 @@ app.on('ready', () => {
   createWindow()
   createTray()
   createMenu()
+  updateChecker()
 })
 
 app.on('window-all-closed', () => {
