@@ -1,7 +1,7 @@
 'use strict'
 
 import uploader from './utils/uploader.js'
-import { app, BrowserWindow, Tray, Menu, Notification, clipboard, ipcMain } from 'electron'
+import { app, BrowserWindow, Tray, Menu, Notification, clipboard, ipcMain, globalShortcut } from 'electron'
 import db from '../datastore'
 import pasteTemplate from './utils/pasteTemplate'
 import updateChecker from './utils/updateChecker'
@@ -252,6 +252,35 @@ const showWindow = () => {
   window.focus()
 }
 
+const uploadClipboardFiles = async () => {
+  let img = clipboard.readImage()
+  let uploadImg = null
+  if (!img.isEmpty()) {
+    // 从剪贴板来的图片默认转为png
+    const imgUrl = 'data:image/png;base64,' + Buffer.from(img.toPNG(), 'binary').toString('base64')
+    uploadImg = {
+      width: img.getSize().width,
+      height: img.getSize().height,
+      imgUrl
+    }
+  }
+  img = await uploader(uploadImg, 'imgFromClipboard', window.webContents)
+  if (img !== false) {
+    const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
+    clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
+    const notification = new Notification({
+      title: '上传成功',
+      body: img[0].imgUrl,
+      icon: img[0].imgUrl
+    })
+    notification.show()
+    window.webContents.send('clipboardFiles', [])
+    window.webContents.send('uploadFiles', img)
+  } else {
+    uploadFailed()
+  }
+}
+
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
   const img = await uploader(file, 'imgFromClipboard', window.webContents)
   if (img !== false) {
@@ -260,7 +289,8 @@ ipcMain.on('uploadClipboardFiles', async (evt, file) => {
     const notification = new Notification({
       title: '上传成功',
       body: img[0].imgUrl,
-      icon: file[0]
+      // icon: file[0]
+      icon: img[0].imgUrl
     })
     notification.show()
     window.webContents.send('clipboardFiles', [])
@@ -298,6 +328,11 @@ app.on('ready', () => {
   createTray()
   createMenu()
   updateChecker()
+
+  globalShortcut.register('CommandOrControl+Shift+P', () => {
+    console.log(1)
+    uploadClipboardFiles()
+  })
 })
 
 app.on('window-all-closed', () => {
@@ -312,6 +347,10 @@ app.on('activate', () => {
     createTray()
     createMenu()
   }
+})
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll()
 })
 
 /**

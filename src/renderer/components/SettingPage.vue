@@ -1,7 +1,7 @@
 <template>
   <div id="setting-page">
     <div class="fake-title-bar">
-      PicGo
+      PicGo - {{ version }}
     </div>
     <el-row style="padding-top: 22px;">
       <el-col :span="5">
@@ -43,10 +43,12 @@
   </div>
 </template>
 <script>
+import pkg from '../../../package.json'
 export default {
   name: 'setting-page',
   data () {
     return {
+      version: pkg.version,
       defaultActive: 'upload'
     }
   },

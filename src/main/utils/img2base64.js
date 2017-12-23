@@ -21,13 +21,15 @@ const imgFromPath = async (imgPath) => {
 
 const imgFromClipboard = (file) => {
   let result = []
-  const today = new Date().toLocaleString().replace(/[ ]+/g, '-')
-  result.push({
-    base64Image: file.imgUrl.replace(/^data\S+,/, ''),
-    fileName: `${today}.png`,
-    width: file.width,
-    height: file.height
-  })
+  if (file !== null) {
+    const today = new Date().toLocaleString().replace(/[ ]+/g, '-').replace(/\/+/g, '-')
+    result.push({
+      base64Image: file.imgUrl.replace(/^data\S+,/, ''),
+      fileName: `${today}.png`,
+      width: file.width,
+      height: file.height
+    })
+  }
   return result
 }
 
