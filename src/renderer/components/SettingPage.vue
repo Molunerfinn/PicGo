@@ -68,7 +68,6 @@
 <script>
 import pkg from '../../../package.json'
 import { remote } from 'electron'
-import os from 'os'
 const { Menu, dialog, BrowserWindow } = remote
 export default {
   name: 'setting-page',
@@ -82,7 +81,7 @@ export default {
     }
   },
   created () {
-    this.os = os.platform()
+    this.os = process.platform
     this.buildMenu()
   },
   methods: {
@@ -116,6 +115,15 @@ export default {
           label: '赞助PicGo',
           click () {
             _this.visible = true
+          }
+        },
+        {
+          label: '打开更新助手',
+          type: 'checkbox',
+          checked: _this.$db.get('picBed.showUpdateTip').value(),
+          click () {
+            const value = _this.$db.read().get('picBed.showUpdateTip').value()
+            _this.$db.read().set('picBed.showUpdateTip', !value).write()
           }
         }
       ]

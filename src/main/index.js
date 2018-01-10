@@ -102,6 +102,15 @@ function createTray () {
       ]
     },
     {
+      label: '打开更新助手',
+      type: 'checkbox',
+      checked: db.get('picBed.showUpdateTip').value(),
+      click () {
+        const value = db.read().get('picBed.showUpdateTip').value()
+        db.read().set('picBed.showUpdateTip', !value).write()
+      }
+    },
+    {
       role: 'quit',
       label: '退出'
     }
