@@ -1,10 +1,11 @@
 'use strict'
 
 import uploader from './utils/uploader.js'
-import { app, BrowserWindow, Tray, Menu, Notification, clipboard, ipcMain, globalShortcut } from 'electron'
+import { app, BrowserWindow, Tray, Menu, Notification, clipboard, ipcMain, globalShortcut, dialog } from 'electron'
 import db from '../datastore'
 import pasteTemplate from './utils/pasteTemplate'
 import updateChecker from './utils/updateChecker'
+import pkg from '../../package.json'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -35,6 +36,16 @@ const uploadFailed = () => {
 function createTray () {
   tray = new Tray(`${__static}/menubar.png`)
   const contextMenu = Menu.buildFromTemplate([
+    {
+      label: '关于',
+      click () {
+        dialog.showMessageBox({
+          title: 'PicGo',
+          message: 'PicGo',
+          detail: `Version: ${pkg.version}\nAuthor: Molunerfinn\nGithub: https://github.com/Molunerfinn/PicGo`
+        })
+      }
+    },
     {
       label: '打开详细窗口',
       click () {
@@ -173,6 +184,7 @@ const createWindow = () => {
   })
 
   createSettingWindow()
+  createMenu()
 }
 
 const createSettingWindow = () => {
@@ -201,27 +213,29 @@ const createSettingWindow = () => {
 }
 
 const createMenu = () => {
-  const template = [{
-    label: 'Edit',
-    submenu: [
-      { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
-      { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
-      { type: 'separator' },
-      { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
-      { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
-      { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
-      { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' },
-      {
-        label: 'Quit',
-        accelerator: 'CmdOrCtrl+Q',
-        click () {
-          app.quit()
+  if (process.env.NODE_ENV !== 'development') {
+    const template = [{
+      label: 'Edit',
+      submenu: [
+        { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
+        { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
+        { type: 'separator' },
+        { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
+        { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
+        { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
+        { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' },
+        {
+          label: 'Quit',
+          accelerator: 'CmdOrCtrl+Q',
+          click () {
+            app.quit()
+          }
         }
-      }
-    ]
-  }]
-  menu = Menu.buildFromTemplate(template)
-  Menu.setApplicationMenu(menu)
+      ]
+    }]
+    menu = Menu.buildFromTemplate(template)
+    Menu.setApplicationMenu(menu)
+  }
 }
 
 const getWindowPosition = () => {
@@ -323,14 +337,26 @@ ipcMain.on('uploadChoosedFiles', async (evt, files) => {
   }
 })
 
+const isSecondInstance = app.makeSingleInstance(() => {
+  if (settingWindow) {
+    if (settingWindow.isMinimized()) {
+      settingWindow.restore()
+    }
+    settingWindow.focus()
+  }
+})
+
+if (isSecondInstance) {
+  console.log('is 2')
+  app.quit()
+}
+
 app.on('ready', () => {
   createWindow()
   createTray()
-  createMenu()
   updateChecker()
 
   globalShortcut.register('CommandOrControl+Shift+P', () => {
-    console.log(1)
     uploadClipboardFiles()
   })
 })
@@ -344,8 +370,6 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (window === null || settingWindow === null) {
     createWindow()
-    createTray()
-    createMenu()
   }
 })
 
