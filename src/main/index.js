@@ -34,7 +34,8 @@ const uploadFailed = () => {
 }
 
 function createTray () {
-  tray = new Tray(`${__static}/menubar.png`)
+  const menubarPic = process.platform === 'darwin' ? `${__static}/menubar.png` : `${__static}/menubar-nodarwin.png`
+  tray = new Tray(menubarPic)
   const contextMenu = Menu.buildFromTemplate([
     {
       label: '关于',
@@ -110,21 +111,32 @@ function createTray () {
     tray.popUpContextMenu(contextMenu)
   })
   tray.on('click', () => {
-    let img = clipboard.readImage()
-    let obj = []
-    if (!img.isEmpty()) {
-      // 从剪贴板来的图片默认转为png
-      const imgUrl = 'data:image/png;base64,' + Buffer.from(img.toPNG(), 'binary').toString('base64')
-      obj.push({
-        width: img.getSize().width,
-        height: img.getSize().height,
-        imgUrl
-      })
+    if (process.platform === 'darwin') {
+      let img = clipboard.readImage()
+      let obj = []
+      if (!img.isEmpty()) {
+        // 从剪贴板来的图片默认转为png
+        const imgUrl = 'data:image/png;base64,' + Buffer.from(img.toPNG(), 'binary').toString('base64')
+        obj.push({
+          width: img.getSize().width,
+          height: img.getSize().height,
+          imgUrl
+        })
+      }
+      toggleWindow()
+      setTimeout(() => {
+        window.webContents.send('clipboardFiles', obj)
+      }, 0)
+    } else {
+      window.hide()
+      if (settingWindow === null) {
+        createSettingWindow()
+        settingWindow.show()
+      } else {
+        settingWindow.show()
+        settingWindow.focus()
+      }
     }
-    toggleWindow()
-    setTimeout(() => {
-      window.webContents.send('clipboardFiles', obj)
-    }, 0)
   })
 
   tray.on('drag-enter', () => {
@@ -188,7 +200,7 @@ const createWindow = () => {
 }
 
 const createSettingWindow = () => {
-  settingWindow = new BrowserWindow({
+  const options = {
     height: 450,
     width: 800,
     show: false,
@@ -196,14 +208,20 @@ const createSettingWindow = () => {
     center: true,
     fullscreenable: false,
     resizable: false,
-    title: 'Pic',
+    title: 'PicGo',
     vibrancy: 'ultra-dark',
     transparent: true,
     titleBarStyle: 'hidden',
     webPreferences: {
       backgroundThrottling: false
     }
-  })
+  }
+  if (process.platform === 'win32') {
+    options.show = true
+    options.frame = false
+    options.backgroundColor = '#3f3c37'
+  }
+  settingWindow = new BrowserWindow(options)
 
   settingWindow.loadURL(settingWinURL)
 
@@ -349,6 +367,11 @@ const isSecondInstance = app.makeSingleInstance(() => {
 if (isSecondInstance) {
   console.log('is 2')
   app.quit()
+}
+
+if (process.platform === 'win32') {
+  console.log(pkg.build.appId)
+  app.setAppUserModelId(pkg.build.appId)
 }
 
 app.on('ready', () => {

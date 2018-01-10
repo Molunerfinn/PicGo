@@ -2,8 +2,12 @@
   <div id="setting-page">
     <div class="fake-title-bar">
       PicGo - {{ version }}
+      <div class="handle-bar" v-if="os === 'win32'">
+        <i class="el-icon-minus" @click="minimizeWindow"></i>
+        <i class="el-icon-close" @click="closeWindow"></i>
+      </div>
     </div>
-    <el-row style="padding-top: 22px;">
+    <el-row style="padding-top: 22px;" class="main-content">
       <el-col :span="5">
         <el-menu
           class="picgo-sidebar"
@@ -64,7 +68,8 @@
 <script>
 import pkg from '../../../package.json'
 import { remote } from 'electron'
-const { Menu, dialog } = remote
+import os from 'os'
+const { Menu, dialog, BrowserWindow } = remote
 export default {
   name: 'setting-page',
   data () {
@@ -72,10 +77,12 @@ export default {
       version: pkg.version,
       defaultActive: 'upload',
       menu: null,
-      visible: false
+      visible: false,
+      os: ''
     }
   },
   created () {
+    this.os = os.platform()
     this.buildMenu()
   },
   methods: {
@@ -83,6 +90,14 @@ export default {
       this.$router.push({
         name: index
       })
+    },
+    minimizeWindow () {
+      const window = BrowserWindow.getFocusedWindow()
+      window.minimize()
+    },
+    closeWindow () {
+      const window = BrowserWindow.getFocusedWindow()
+      window.close()
     },
     buildMenu () {
       const _this = this
@@ -128,6 +143,23 @@ export default {
     font-size 12px
     line-height h
     position fixed
+    z-index 100
+    .handle-bar
+      position absolute
+      top 2px
+      right 4px
+      width 40px
+      z-index 10000
+      -webkit-app-region no-drag
+      i
+        cursor pointer
+        font-size 16px
+      .el-icon-minus
+        &:hover
+          color #409EFF
+      .el-icon-close
+        &:hover
+          color #F15140
   .picgo-sidebar
     height calc(100vh - 22px)
   .el-menu
@@ -160,6 +192,12 @@ export default {
           right 0
           top 18px
           background active-color
+  .main-content
+    padding-top 22px
+    position relative
+    z-index 10
+  .el-dialog__body 
+    padding 20px
   .support
     text-align center
     &-title

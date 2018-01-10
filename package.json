@@ -29,7 +29,7 @@
   },
   "build": {
     "productName": "PicGo",
-    "appId": "org.simulatedgreg.electron-vue",
+    "appId": "com.molunerfinn.picgo",
     "directories": {
       "output": "build"
     },
@@ -58,7 +58,12 @@
       }
     },
     "win": {
-      "icon": "build/icons/icon.ico"
+      "icon": "build/icons/icon.ico",
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     },
     "linux": {
       "icon": "build/icons"

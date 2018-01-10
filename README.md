@@ -24,7 +24,7 @@
 
 PicGo目前支持了`微博图床`，`七牛图床`，`腾讯云COS`，`又拍云`。未来将支持更多图床。
 
-暂时只支持macOS系统，未来将支持windows和linux。
+支持macOS、windows 64位（v1.3.0以上）系统，未来将支持linux。
 
 点击此处下载[应用](https://github.com/Molunerfinn/PicGo/releases)，macOS用户请下载最新版本的`dmg`文件。
 
@@ -36,13 +36,14 @@ PicGo目前支持了`微博图床`，`七牛图床`，`腾讯云COS`，`又拍�
 
 ## 开发说明
 
-> 目前仅针对Mac平台。Windows和Linux平台并未测试。
+> 目前仅针对Mac、Windows。Linux平台并未测试。
 
 如果你想要学习、开发、修改或自行构建PicGo，可以依照下面的指示：
 
 1. 你需要有node、git环境。需要了解npm的相关知识。
 2. `git clone https://github.com/Molunerfinn/PicGo.git` 并进入项目
 3. `npm install` 下载依赖
+4. Mac需要有Xcode环境，Windows需要有VS环境。
 
 ### 开发模式
 

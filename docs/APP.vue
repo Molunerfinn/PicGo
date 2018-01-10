@@ -6,6 +6,7 @@
       h1.title PicGo
       h2.desc 图片上传+管理新体验
       button.download(@click="goLink('https://github.com/Molunerfinn/picgo/releases')") 免费下载Mac版
+      button.download(@click="goLink('https://github.com/Molunerfinn/picgo/releases')") 免费下载Windows版
       button.download(@click="goLink('https://github.com/Molunerfinn/picgo')") 在github上查看
       h3.desc
         | 基于#[a(href="https://github.com/SimulatedGREG/electron-vue" target="_blank") electron-vue]开发
@@ -32,7 +33,7 @@ export default {
         {
           url: 'https://ws1.sinaimg.cn/large/8700af19ly1fma907llb5j20m30ed46a',
           title: '精致设计',
-          desc: 'macOS系统下，支持拖拽至menubar图标实现上传。menubar app 窗口显示最新上传的5张图片以及剪贴板里的图片。点击图片自动将上传的链接复制到剪贴板。'
+          desc: 'macOS系统下，支持拖拽至menubar图标实现上传。menubar app 窗口显示最新上传的5张图片以及剪贴板里的图片。点击图片自动将上传的链接复制到剪贴板。（Windows平台不支持）'
         },
         {
           url: 'https://ws1.sinaimg.cn/large/8700af19ly1fmd56zm2nej218g0p0teb',
@@ -42,7 +43,7 @@ export default {
         {
           url: 'https://ws1.sinaimg.cn/large/8700af19ly1fmd5ck9m0wj20lr0cxmzs',
           title: '可选图床',
-          desc: '目前支持微博图床和七牛图床。未来将支持更多。方便不同图床的上传需求。'
+          desc: '目前支持微博图床、七牛图床、腾讯云COS、又拍云。未来将支持更多。方便不同图床的上传需求。'
         },
         {
           url: 'https://ws1.sinaimg.cn/large/8700af19gy1fmayjwttnbj218g0p0q4e',
@@ -172,6 +173,8 @@ h1
       text-decoration none
       color #fff
 @media (max-width: 768px)
+  #header
+    padding 10vh
   #container
     .display-list
       &__item
