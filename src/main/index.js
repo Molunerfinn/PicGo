@@ -13,6 +13,9 @@ import pkg from '../../package.json'
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
+if (process.env.DEBUG_ENV === 'debug') {
+  global.__static = require('path').join(__dirname, '../../static').replace(/\\/g, '\\\\')
+}
 
 let window
 let settingWindow
@@ -50,6 +53,7 @@ function createTray () {
     {
       label: '打开详细窗口',
       click () {
+        console.log(1)
         if (settingWindow === null) {
           createSettingWindow()
           settingWindow.show()

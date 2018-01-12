@@ -24,4 +24,15 @@ require('electron').app.on('ready', () => {
 })
 
 // Require `main` process to boot app
+if (process.env.DEBUG_ENV === 'debug') {
+  require('babel-core/register')({
+    'presets': [
+      ['env', {
+        'targets': {
+          'node': true
+        }
+      }]
+    ]
+  })
+}
 require('./index')

@@ -5,13 +5,33 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/src/main/index.dev.js",
+      "env": {
+        "DEBUG_ENV": "debug"
+      },
+      "stopOnEntry": false,
+      "args": [],
+      "cwd": "${workspaceRoot}",
+                      // this points to the electron task runner
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "sourceMaps": true
+    },
+    {
       "name": "Attach",
       "type": "node",
       "request": "attach",
       "port": 5858,
-      "sourceMaps": false,
+      "sourceMaps": true,
+      "restart": true,
       "outFiles": [],
       "localRoot": "${workspaceRoot}",
+      "protocol": "inspector",
       "remoteRoot": null
     }
   ]
