@@ -1,4 +1,5 @@
 import weiboUpload from './weiboUpload'
+import weiboCookieUpload from './weiboCookieUpload'
 import qiniuUpload from './qiniuUpload'
 import tcYunUpload from './tcYunUpload'
 import upYunUpload from './upYunUpload'
@@ -19,6 +20,8 @@ const uploader = (img, type, webContents) => {
     switch (uploadType) {
       case 'weibo':
         return weiboUpload(img, type, webContents)
+      case 'weiboCookie':
+        return weiboCookieUpload(img, type, webContents)
       case 'qiniu':
         return qiniuUpload(img, type, webContents)
       case 'tcyun':
