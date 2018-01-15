@@ -26,6 +26,11 @@ export default new Router({
           name: 'weibo'
         },
         {
+          path: 'weibo-cookie',
+          component: require('@/components/SettingView/WeiboCookie').default,
+          name: 'weibo-cookie'
+        },
+        {
           path: 'qiniu',
           component: require('@/components/SettingView/Qiniu').default,
           name: 'qiniu'

@@ -77,6 +77,15 @@ function createTray () {
           }
         },
         {
+          label: '微博Cookie图床',
+          type: 'radio',
+          checked: db.read().get('picBed.current').value() === 'weiboCookie',
+          click () {
+            db.read().set('picBed.current', 'weiboCookie')
+              .write()
+          }
+        },
+        {
           label: '七牛图床',
           type: 'radio',
           checked: db.read().get('picBed.current').value() === 'qiniu',

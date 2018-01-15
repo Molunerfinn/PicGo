@@ -26,6 +26,10 @@
             <i class="el-icon-ui-weibo"></i>
             <span slot="title">微博设置</span>
           </el-menu-item>
+          <el-menu-item index="weibo-cookie">
+            <i class="el-icon-ui-weibo"></i>
+            <span slot="title">微博Cookie设置</span>
+          </el-menu-item>
           <el-menu-item index="qiniu">
             <i class="el-icon-ui-qiniu"></i>
             <span slot="title">七牛云设置</span>
