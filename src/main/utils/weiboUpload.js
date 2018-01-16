@@ -28,21 +28,34 @@ const weiboUpload = async function (img, type, webContents) {
       password: db.read().get('picBed.weibo.password').value()
     }
     const quality = db.read().get('picBed.weibo.quality').value()
+    const cookie = db.read().get('picBed.weibo.cookie').value()
+    const chooseCookie = db.read().get('picBed.weibo.chooseCookie').value()
     const options = postOptions(formData)
-    const res = await rp(options)
+    let res
+    if (!chooseCookie) {
+      res = await rp(options)
+    }
     webContents.send('uploadProgress', 30)
-    if (res.body.retcode === 20000000) {
-      for (let i in res.body.data.crossdomainlist) {
-        await rp.get(res.body.data.crossdomainlist[i])
+    if (chooseCookie || res.body.retcode === 20000000) {
+      if (res) {
+        for (let i in res.body.data.crossdomainlist) {
+          await rp.get(res.body.data.crossdomainlist[i])
+        }
       }
       webContents.send('uploadProgress', 60)
       const imgList = await img2Base64[type](img)
+      let opt = {
+        formData: {
+          b64_data: imgList[i].base64Image
+        }
+      }
+      if (chooseCookie) {
+        opt.headers = {
+          Cookie: cookie
+        }
+      }
       for (let i in imgList) {
-        let result = await rp.post(UPLOAD_URL, {
-          formData: {
-            b64_data: imgList[i].base64Image
-          }
-        })
+        let result = await rp.post(UPLOAD_URL, opt)
         result = result.replace(/<.*?\/>/, '').replace(/<(\w+).*?>.*?<\/\1>/, '')
         delete imgList[i].base64Image
         const resTextJson = JSON.parse(result)

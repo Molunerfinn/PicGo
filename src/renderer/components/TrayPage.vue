@@ -80,6 +80,7 @@
         const myNotification = new window.Notification(this.notification.title, this.notification)
         const pasteStyle = this.$db.read().get('picBed.pasteStyle').value()
         this.$electron.clipboard.writeText(pasteTemplate(pasteStyle, item.imgUrl))
+        console.log(pasteTemplate(pasteStyle, item.imgUrl))
         myNotification.onclick = () => {
           return true
         }

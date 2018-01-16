@@ -1,30 +1,47 @@
 <template>
   <div id="weibo-view">
     <el-row :gutter="16">
-      <el-col :span="12" :offset="6">
+      <el-col :span="16" :offset="4">
         <div class="view-title">
           微博图床设置
         </div>
         <el-form 
           ref="weiboForm"
-          label-position="top"
-          label-width="80px"
+          label-position="right"
+          label-width="120px"
+          size="small"
           :model="form">
           <el-form-item
             label="设定用户名"
             prop="username"
             :rules="{
-              required: true, message: '用户名不能为空', trigger: 'blur'
+              required: !chooseCookie, message: '用户名不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.username" placeholder="用户名" @keyup.native.enter="confirm('weiboForm')"></el-input>
+            <el-input v-model="form.username" placeholder="用户名" @keyup.native.enter="confirm('weiboForm')" :disabled="chooseCookie"></el-input>
           </el-form-item>
           <el-form-item
             label="设定密码"
             prop="password"
+            :rules="{required: !chooseCookie,messsage: '密码不能为空',trigger: 'blur'}">
+            <el-input v-model="form.password" type="password" @keyup.native.enter="confirm('weiboForm')" placeholder="密码" :disabled="chooseCookie"></el-input>
+          </el-form-item>
+          <el-form-item
+            label="使用Cookie上传"
+          >
+            <el-switch
+              v-model="chooseCookie"
+              active-text="cookie模式"
+              @change="handleSwitchChange"
+            ></el-switch>
+            <i class="el-icon-question" @click="openWiki"></i>
+          </el-form-item>
+          <el-form-item
+            label="设定Cookie"
+            prop="cookie"
             :rules="{
-              required: true, message: '密码不能为空', trigger: 'blur'
+              required: chooseCookie, message: '密码不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.password" type="password" @keyup.native.enter="confirm('weiboForm')" placeholder="密码"></el-input>
+            <el-input v-model="form.cookie" @keyup.native.enter="confirm('weiboForm')" placeholder="Cookie" :disabled="!chooseCookie"></el-input>
           </el-form-item>
           <el-form-item label="* 图片质量">
             <el-radio-group v-model="quality">
@@ -50,8 +67,10 @@ export default {
     return {
       form: {
         username: '',
-        password: ''
+        password: '',
+        cookie: ''
       },
+      chooseCookie: false,
       quality: 'large'
     }
   },
@@ -61,6 +80,8 @@ export default {
       this.form.username = config.username
       this.form.password = config.password
       this.quality = config.quality || 'large'
+      this.form.cookie = config.cookie
+      this.chooseCookie = config.chooseCookie
     }
   },
   methods: {
@@ -70,7 +91,9 @@ export default {
           this.$db.read().set('picBed.weibo', {
             username: this.form.username,
             password: this.form.password,
-            quality: this.quality
+            quality: this.quality,
+            cookie: this.form.cookie,
+            chooseCookie: this.chooseCookie
           }).write()
           const successNotification = new window.Notification('设置结果', {
             body: '设置成功'
@@ -82,6 +105,12 @@ export default {
           return false
         }
       })
+    },
+    handleSwitchChange () {
+      this.$refs['weiboForm'].resetFields()
+    },
+    openWiki () {
+      this.$electron.remote.shell.openExternal('https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#%E5%BE%AE%E5%8D%9A%E5%9B%BE%E5%BA%8A')
     }
   }
 }
@@ -106,4 +135,17 @@ export default {
       border-radius 19px
     .el-radio-group
       margin-left 25px
+    .el-switch__label
+      color #eee
+      &.is-active
+        color #409EFF
+    .el-icon-question
+      font-size 20px
+      float right
+      margin-top 9px
+      color #eee
+      cursor pointer
+      transition .2s color ease-in-out
+      &:hover
+        color #409EFF
 </style>
