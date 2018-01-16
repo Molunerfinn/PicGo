@@ -44,17 +44,17 @@ const weiboUpload = async function (img, type, webContents) {
       }
       webContents.send('uploadProgress', 60)
       const imgList = await img2Base64[type](img)
-      let opt = {
-        formData: {
-          b64_data: imgList[i].base64Image
-        }
-      }
-      if (chooseCookie) {
-        opt.headers = {
-          Cookie: cookie
-        }
-      }
       for (let i in imgList) {
+        let opt = {
+          formData: {
+            b64_data: imgList[i].base64Image
+          }
+        }
+        if (chooseCookie) {
+          opt.headers = {
+            Cookie: cookie
+          }
+        }
         let result = await rp.post(UPLOAD_URL, opt)
         result = result.replace(/<.*?\/>/, '').replace(/<(\w+).*?>.*?<\/\1>/, '')
         delete imgList[i].base64Image
