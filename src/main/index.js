@@ -53,7 +53,6 @@ function createTray () {
     {
       label: '打开详细窗口',
       click () {
-        console.log(1)
         if (settingWindow === null) {
           createSettingWindow()
           settingWindow.show()
@@ -378,12 +377,10 @@ const isSecondInstance = app.makeSingleInstance(() => {
 })
 
 if (isSecondInstance) {
-  console.log('is 2')
   app.quit()
 }
 
 if (process.platform === 'win32') {
-  console.log(pkg.build.appId)
   app.setAppUserModelId(pkg.build.appId)
 }
 

@@ -26,7 +26,9 @@ PicGo目前支持了`微博图床`，`七牛图床`，`腾讯云COS`，`又拍�
 
 支持macOS、windows 64位（v1.3.0以上）系统，未来将支持linux。
 
-点击此处下载[应用](https://github.com/Molunerfinn/PicGo/releases)，macOS用户请下载最新版本的`dmg`文件，windows用户请下载最新版本的`exe`文件。
+支持快捷键`command+shift+p`（macOS）或者`control+shift+p`（windows）用以支持快捷上传剪贴板里的图片（第一张）。
+
+点击此处下载[应用](https://github.com/Molunerfinn/PicGo/releases)，macOS用户请下载最新版本的`dmg`文件，windows用户请下载最新版本的`exe`文件。**如果是国内用户下载github release文件速度很慢的话，推荐使用[Free Download Manager](http://www.freedownloadmanager.org/download.htm)来下载，速度会快。**
 
 如果第一次使用，请参考应用使用[手册](https://github.com/Molunerfinn/PicGo/wiki)。
 
