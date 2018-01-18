@@ -59,8 +59,17 @@ const weiboUpload = async function (img, type, webContents) {
         result = result.replace(/<.*?\/>/, '').replace(/<(\w+).*?>.*?<\/\1>/, '')
         delete imgList[i].base64Image
         const resTextJson = JSON.parse(result)
-        imgList[i]['imgUrl'] = `https://ws1.sinaimg.cn/${quality}/${resTextJson.data.pics.pic_1.pid}`
-        imgList[i]['type'] = 'weibo'
+        if (resTextJson.data.pics.pic_1.pid === undefined) {
+          webContents.send('uploadProgress', -1)
+          const notification = new Notification({
+            title: '上传失败！',
+            body: '微博Cookie失效，请在网页版重新登录一遍'
+          })
+          notification.show()
+        } else {
+          imgList[i]['imgUrl'] = `https://ws1.sinaimg.cn/${quality}/${resTextJson.data.pics.pic_1.pid}`
+          imgList[i]['type'] = 'weibo'
+        }
       }
       webContents.send('uploadProgress', 100)
       return imgList
