@@ -389,7 +389,7 @@ app.on('ready', () => {
   createTray()
   updateChecker()
 
-  globalShortcut.register('CommandOrControl+Shift+P', () => {
+  globalShortcut.register('CommandOrControl+Shift+U', () => {
     uploadClipboardFiles()
   })
 })
