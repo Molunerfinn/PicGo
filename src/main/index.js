@@ -309,7 +309,8 @@ const uploadClipboardFiles = async () => {
       imgUrl
     }
   }
-  img = await uploader(uploadImg, 'imgFromClipboard', settingWindow.webContents)
+  const win = settingWindow || window
+  img = await uploader(uploadImg, 'imgFromClipboard', win.webContents)
   if (img !== false) {
     if (img.length > 0) {
       const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
