@@ -20,4 +20,8 @@
   #app
     overflow-x hidden
     user-select none
+  .el-button-group
+    width 100%
+    .el-button
+      width 50%
 </style>

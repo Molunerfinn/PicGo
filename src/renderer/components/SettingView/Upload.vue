@@ -25,19 +25,27 @@
           :status="showError ? 'exception' : ''"
         ></el-progress>
         <div class="paste-style">
-          <div class="paste-style__text">
-            链接格式
+          <div class="el-col-16">
+            <div class="paste-style__text">
+              链接格式
+            </div>
+            <el-radio-group v-model="pasteStyle" size="mini"
+              @change="handlePasteStyleChange"
+            >
+              <el-radio-button label="markdown">
+                Markdown
+              </el-radio-button>
+              <el-radio-button label="HTML"></el-radio-button>
+              <el-radio-button label="URL"></el-radio-button>
+              <el-radio-button label="UBB"></el-radio-button>
+            </el-radio-group>
           </div>
-          <el-radio-group v-model="pasteStyle" size="mini"
-            @change="handlePasteStyleChange"
-          >
-            <el-radio-button label="markdown">
-              Markdown
-            </el-radio-button>
-            <el-radio-button label="HTML">          </el-radio-button>
-            <el-radio-button label="URL">           </el-radio-button>
-            <el-radio-button label="UBB">            </el-radio-button>
-          </el-radio-group>
+          <div class="el-col-8">
+            <div class="paste-style__text">
+              快捷上传
+            </div>
+            <el-button type="primary" round size="mini" @click="uploadClipboardFiles">剪贴板图片上传</el-button>
+          </div>
         </div>
       </el-col>
     </el-row>
@@ -114,6 +122,9 @@ export default {
     handlePasteStyleChange (val) {
       this.$db.read().set('picBed.pasteStyle', val)
         .write()
+    },
+    uploadClipboardFiles () {
+      this.$electron.ipcRenderer.send('uploadClipboardFilesFromUploadPage')
     }
   }
 }

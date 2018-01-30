@@ -49,7 +49,10 @@
             <el-input v-model="form.options" @keyup.native.enter="confirm" placeholder="例如!imgslim"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="confirm">确定</el-button>
+            <el-button-group>
+              <el-button type="primary" @click="confirm" round>确定</el-button>
+              <el-button type="success" @click="setDefaultPicBed('upyun')" round :disabled="defaultPicBed === 'upyun'">设为默认图床</el-button>
+            </el-button-group>
           </el-form-item>
         </el-form>
       </el-col>
@@ -110,9 +113,6 @@ export default {
       line-height 22px
       padding-bottom 0
       color #eee
-    .el-button
-      width 100%
-      border-radius 19px
     .el-input__inner
       border-radius 19px
   .el-radio-group
