@@ -63,11 +63,36 @@
         </el-col>
       </el-row>
     </el-dialog>
+    <el-dialog
+      title="修改快捷键"
+      :visible.sync="keyBindingVisible"
+    >
+      <el-form
+        label-width="80px"
+      >
+        <el-form-item
+          label="快捷上传"
+        >
+          <el-input 
+            class="align-center"
+            @keydown.native.prevent="keyDetect('upload', $event)"
+            v-model="shortKey.upload"
+            :autofocus="true"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="cancelKeyBinding">取消</el-button>
+        <el-button type="primary" @click="confirmKeyBinding">确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
 import pkg from '../../../package.json'
+import keyDetect from 'utils/key-binding'
 import { remote } from 'electron'
+import db from '../../datastore'
 const { Menu, dialog, BrowserWindow } = remote
 export default {
   name: 'setting-page',
@@ -77,7 +102,11 @@ export default {
       defaultActive: 'upload',
       menu: null,
       visible: false,
-      os: ''
+      keyBindingVisible: false,
+      os: '',
+      shortKey: {
+        upload: db.read().get('shortKey.upload').value()
+      }
     }
   },
   created () {
@@ -118,6 +147,12 @@ export default {
           }
         },
         {
+          label: '修改快捷键',
+          click () {
+            _this.keyBindingVisible = true
+          }
+        },
+        {
           label: '打开更新助手',
           type: 'checkbox',
           checked: _this.$db.get('picBed.showUpdateTip').value(),
@@ -131,6 +166,19 @@ export default {
     },
     openDialog () {
       this.menu.popup(remote.getCurrentWindow)
+    },
+    keyDetect (type, event) {
+      this.shortKey[type] = keyDetect(event).join('+')
+    },
+    cancelKeyBinding () {
+      this.keyBindingVisible = false
+      this.shortKey = db.read().get('shortKey').value()
+    },
+    confirmKeyBinding () {
+      const oldKey = db.read().get('shortKey').value()
+      db.read().set('shortKey', this.shortKey).write()
+      this.keyBindingVisible = false
+      this.$electron.ipcRenderer.send('updateShortKey', oldKey)
     }
   },
   beforeRouteEnter: (to, from, next) => {
@@ -211,4 +259,7 @@ export default {
     &-title
       text-align center
       color #878d99
+  .align-center
+    input
+      text-align center
 </style>

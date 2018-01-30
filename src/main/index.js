@@ -21,6 +21,7 @@ let window
 let settingWindow
 let tray
 let menu
+let contextMenu
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
@@ -39,7 +40,7 @@ const uploadFailed = () => {
 function createTray () {
   const menubarPic = process.platform === 'darwin' ? `${__static}/menubar.png` : `${__static}/menubar-nodarwin.png`
   tray = new Tray(menubarPic)
-  const contextMenu = Menu.buildFromTemplate([
+  contextMenu = Menu.buildFromTemplate([
     {
       label: '关于',
       click () {
@@ -308,18 +309,26 @@ const uploadClipboardFiles = async () => {
       imgUrl
     }
   }
-  img = await uploader(uploadImg, 'imgFromClipboard', window.webContents)
+  img = await uploader(uploadImg, 'imgFromClipboard', settingWindow.webContents)
   if (img !== false) {
-    const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
-    clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
-    const notification = new Notification({
-      title: '上传成功',
-      body: img[0].imgUrl,
-      icon: img[0].imgUrl
-    })
-    notification.show()
-    window.webContents.send('clipboardFiles', [])
-    window.webContents.send('uploadFiles', img)
+    if (img.length > 0) {
+      const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
+      clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
+      const notification = new Notification({
+        title: '上传成功',
+        body: img[0].imgUrl,
+        icon: img[0].imgUrl
+      })
+      notification.show()
+      window.webContents.send('clipboardFiles', [])
+      window.webContents.send('uploadFiles', img)
+    } else {
+      const notification = new Notification({
+        title: '上传不成功',
+        body: '你剪贴板最新的一条记录不是图片哦'
+      })
+      notification.show()
+    }
   } else {
     uploadFailed()
   }
@@ -342,6 +351,10 @@ ipcMain.on('uploadClipboardFiles', async (evt, file) => {
   } else {
     uploadFailed()
   }
+})
+
+ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
+  uploadClipboardFiles()
 })
 
 ipcMain.on('uploadChoosedFiles', async (evt, files) => {
@@ -367,6 +380,35 @@ ipcMain.on('uploadChoosedFiles', async (evt, files) => {
   }
 })
 
+ipcMain.on('updateShortKey', (evt, oldKey) => {
+  globalShortcut.unregisterAll()
+  for (let key in oldKey) {
+    globalShortcut.register(db.read().get('shortKey').value()[key], () => {
+      return shortKeyHash[key]()
+    })
+  }
+  const notification = new Notification({
+    title: '操作成功',
+    body: '你的快捷键已经修改成功'
+  })
+  notification.show()
+})
+
+ipcMain.on('updateDefaultPicBed', (evt) => {
+  const types = ['weibo', 'qiniu', 'tcyun', 'upyun']
+  let submenuItem = contextMenu.items[2].submenu.items
+  submenuItem.forEach((item, index) => {
+    const result = db.read().get('picBed.current').value() === types[index]
+    if (result) {
+      item.click() // It's a bug which can not set checked status
+    }
+  })
+})
+
+const shortKeyHash = {
+  upload: uploadClipboardFiles
+}
+
 const isSecondInstance = app.makeSingleInstance(() => {
   if (settingWindow) {
     if (settingWindow.isMinimized()) {
@@ -389,7 +431,7 @@ app.on('ready', () => {
   createTray()
   updateChecker()
 
-  globalShortcut.register('CommandOrControl+Shift+P', () => {
+  globalShortcut.register(db.read().get('shortKey.upload').value(), () => {
     uploadClipboardFiles()
   })
 })

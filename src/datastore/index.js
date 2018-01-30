@@ -29,4 +29,10 @@ if (!db.has('picBed').value()) {
   }).write()
 }
 
+if (!db.has('shortKey').value()) {
+  db.set('shortKey', {
+    upload: 'CommandOrControl+Shift+P'
+  }).write()
+}
+
 export default db
