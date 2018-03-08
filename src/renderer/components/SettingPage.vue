@@ -98,7 +98,7 @@ export default {
   name: 'setting-page',
   data () {
     return {
-      version: pkg.version,
+      version: process.env.NODE_ENV === 'production' ? pkg.version : 'Dev',
       defaultActive: 'upload',
       menu: null,
       visible: false,

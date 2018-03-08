@@ -67,9 +67,11 @@ const weiboUpload = async function (img, type, webContents) {
           })
           notification.show()
         } else {
-          imgList[i]['imgUrl'] = `https://ws1.sinaimg.cn/${quality}/${resTextJson.data.pics.pic_1.pid}`
+          const extname = imgList[i].extname === '.gif' ? '.gif' : '.jpg'
+          imgList[i]['imgUrl'] = `https://ws1.sinaimg.cn/${quality}/${resTextJson.data.pics.pic_1.pid}${extname}`
           imgList[i]['type'] = 'weibo'
         }
+        delete imgList[i].extname
       }
       webContents.send('uploadProgress', 100)
       return imgList

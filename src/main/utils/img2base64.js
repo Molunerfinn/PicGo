@@ -1,6 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 import sizeOf from 'image-size'
+import fecha from 'fecha'
 
 const imgFromPath = async (imgPath) => {
   let results = []
@@ -13,7 +14,8 @@ const imgFromPath = async (imgPath) => {
       base64Image,
       fileName,
       width: imgSize.width,
-      height: imgSize.height
+      height: imgSize.height,
+      extname: path.extname(item.name)
     })
   }))
   return results
@@ -22,12 +24,13 @@ const imgFromPath = async (imgPath) => {
 const imgFromClipboard = (file) => {
   let result = []
   if (file !== null) {
-    const today = new Date().toLocaleString().replace(/[ ]+/g, '-').replace(/\/+/g, '-')
+    const today = fecha.format(new Date(), 'YYYYMMDDHHmmss')
     result.push({
       base64Image: file.imgUrl.replace(/^data\S+,/, ''),
       fileName: `${today}.png`,
       width: file.width,
-      height: file.height
+      height: file.height,
+      extname: '.png'
     })
   }
   return result
@@ -44,7 +47,8 @@ const imgFromUploader = async (files) => {
       base64Image,
       fileName,
       width: imgSize.width,
-      height: imgSize.height
+      height: imgSize.height,
+      extname: path.extname(item.name)
     })
   }))
   return results
