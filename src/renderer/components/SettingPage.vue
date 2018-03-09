@@ -115,13 +115,17 @@
     >
       <el-form
         label-position="top"
+        :model="customLink"
+        ref="customLink"
+        :rules="rules"
       >
         <el-form-item
           label="用占位符$url来表示url的位置"
+          prop="value"
         >
           <el-input 
             class="align-center"
-            v-model="customLink"
+            v-model="customLink.value"
             :autofocus="true"
           ></el-input>
         </el-form-item>
@@ -145,6 +149,13 @@ const { Menu, dialog, BrowserWindow } = remote
 export default {
   name: 'setting-page',
   data () {
+    const customLinkRule = (rule, value, callback) => {
+      if (!/\$url/.test(value)) {
+        return callback(new Error('必须含有$url'))
+      } else {
+        return callback()
+      }
+    }
     return {
       version: process.env.NODE_ENV === 'production' ? pkg.version : 'Dev',
       defaultActive: 'upload',
@@ -152,7 +163,14 @@ export default {
       visible: false,
       keyBindingVisible: false,
       customLinkVisible: false,
-      customLink: db.read().get('customLink').value() || '$url',
+      customLink: {
+        value: db.read().get('customLink').value() || '$url'
+      },
+      rules: {
+        value: [
+          { validator: customLinkRule, trigger: 'blur' }
+        ]
+      },
       os: '',
       shortKey: {
         upload: db.read().get('shortKey.upload').value()
@@ -238,12 +256,18 @@ export default {
     },
     cancelCustomLink () {
       this.customLinkVisible = false
-      this.customLink = db.read().get('customLink').value() || '$url'
+      this.customLink.value = db.read().get('customLink').value() || '$url'
     },
     confirmCustomLink () {
-      db.read().set('customLink', this.customLink).write()
-      this.customLinkVisible = false
-      this.$electron.ipcRenderer.send('updateCustomLink')
+      this.$refs.customLink.validate((valid) => {
+        if (valid) {
+          db.read().set('customLink', this.customLink.value).write()
+          this.customLinkVisible = false
+          this.$electron.ipcRenderer.send('updateCustomLink')
+        } else {
+          return false
+        }
+      })
     }
   },
   beforeRouteEnter: (to, from, next) => {
