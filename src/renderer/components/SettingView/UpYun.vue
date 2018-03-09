@@ -48,6 +48,11 @@
             >
             <el-input v-model="form.options" @keyup.native.enter="confirm" placeholder="例如!imgslim"></el-input>
           </el-form-item>
+          <el-form-item
+            label="指定存储路径"
+            >
+            <el-input v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/"></el-input>
+          </el-form-item>
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
@@ -70,7 +75,8 @@ export default {
         bucket: '',
         operator: '',
         password: '',
-        options: ''
+        options: '',
+        path: ''
       }
     }
   },

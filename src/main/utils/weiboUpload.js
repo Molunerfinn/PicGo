@@ -83,6 +83,7 @@ const weiboUpload = async function (img, type, webContents) {
         body: res.body.msg
       })
       notification.show()
+      return new Error()
     }
   } catch (err) {
     webContents.send('uploadProgress', -1)
