@@ -166,6 +166,8 @@ export default {
     margin-top 20px
     opacity 0
     transition all .2s ease-in-out
+    width 450px
+    margin-left 25px
     &.show
       opacity 1
     .el-progress-bar__inner
