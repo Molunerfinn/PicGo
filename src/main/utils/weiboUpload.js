@@ -66,6 +66,7 @@ const weiboUpload = async function (img, type, webContents) {
             body: '微博Cookie失效，请在网页版重新登录一遍'
           })
           notification.show()
+          return new Error()
         } else {
           const extname = imgList[i].extname === '.gif' ? '.gif' : '.jpg'
           imgList[i]['imgUrl'] = `https://ws1.sinaimg.cn/${quality}/${resTextJson.data.pics.pic_1.pid}${extname}`

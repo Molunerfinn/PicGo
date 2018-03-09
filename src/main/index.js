@@ -395,7 +395,15 @@ ipcMain.on('updateShortKey', (evt, oldKey) => {
   notification.show()
 })
 
-ipcMain.on('updateDefaultPicBed', (evt) => {
+ipcMain.on('updateCustomLink', (evt, oldLink) => {
+  const notification = new Notification({
+    title: '操作成功',
+    body: '你的自定义链接格式已经修改成功'
+  })
+  notification.show()
+})
+
+ipcMain.on('updteDefaultPicBed', (evt) => {
   const types = ['weibo', 'qiniu', 'tcyun', 'upyun']
   let submenuItem = contextMenu.items[2].submenu.items
   submenuItem.forEach((item, index) => {

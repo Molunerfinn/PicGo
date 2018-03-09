@@ -86,6 +86,54 @@
         <el-button type="primary" @click="confirmKeyBinding">确定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="修改快捷键"
+      :visible.sync="keyBindingVisible"
+    >
+      <el-form
+        label-width="80px"
+      >
+        <el-form-item
+          label="快捷上传"
+        >
+          <el-input 
+            class="align-center"
+            @keydown.native.prevent="keyDetect('upload', $event)"
+            v-model="shortKey.upload"
+            :autofocus="true"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="cancelKeyBinding">取消</el-button>
+        <el-button type="primary" @click="confirmKeyBinding">确定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="自定义链接格式"
+      :visible.sync="customLinkVisible"
+    >
+      <el-form
+        label-position="top"
+      >
+        <el-form-item
+          label="用占位符$url来表示url的位置"
+        >
+          <el-input 
+            class="align-center"
+            v-model="customLink"
+            :autofocus="true"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div>
+        如[]($url)
+      </div>
+      <span slot="footer">
+        <el-button @click="cancelCustomLink">取消</el-button>
+        <el-button type="primary" @click="confirmCustomLink">确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -103,6 +151,8 @@ export default {
       menu: null,
       visible: false,
       keyBindingVisible: false,
+      customLinkVisible: false,
+      customLink: db.read().get('customLink').value() || '$url',
       os: '',
       shortKey: {
         upload: db.read().get('shortKey.upload').value()
@@ -153,6 +203,12 @@ export default {
           }
         },
         {
+          label: '自定义链接格式',
+          click () {
+            _this.customLinkVisible = true
+          }
+        },
+        {
           label: '打开更新助手',
           type: 'checkbox',
           checked: _this.$db.get('picBed.showUpdateTip').value(),
@@ -179,6 +235,15 @@ export default {
       db.read().set('shortKey', this.shortKey).write()
       this.keyBindingVisible = false
       this.$electron.ipcRenderer.send('updateShortKey', oldKey)
+    },
+    cancelCustomLink () {
+      this.customLinkVisible = false
+      this.customLink = db.read().get('customLink').value() || '$url'
+    },
+    confirmCustomLink () {
+      db.read().set('customLink', this.customLink).write()
+      this.customLinkVisible = false
+      this.$electron.ipcRenderer.send('updateCustomLink')
     }
   },
   beforeRouteEnter: (to, from, next) => {

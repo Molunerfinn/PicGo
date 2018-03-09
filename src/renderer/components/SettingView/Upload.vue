@@ -1,7 +1,7 @@
 <template>
   <div id="upload-view">
     <el-row :gutter="16">
-      <el-col :span="16" :offset="4">
+      <el-col :span="20" :offset="2">
         <div class="view-title">
           图片上传
         </div>
@@ -38,6 +38,7 @@
               <el-radio-button label="HTML"></el-radio-button>
               <el-radio-button label="URL"></el-radio-button>
               <el-radio-button label="UBB"></el-radio-button>
+              <el-radio-button label="Custom" title="自定义"></el-radio-button>
             </el-radio-group>
           </div>
           <div class="el-col-8">
@@ -141,6 +142,8 @@ export default {
     border 2px dashed #dddddd
     border-radius 8px
     text-align center
+    width 450px
+    margin-left 25px
     color #dddddd
     cursor pointer
     transition all .2s ease-in-out
