@@ -111,14 +111,6 @@ export default {
     padding 8px 0
     overflow-y auto
     overflow-x hidden
-    &::-webkit-scrollbar
-      width 8px
-      height 8px
-    &::-webkit-scrollbar-thumb
-      border-radius 4px
-      background #6f6f6f
-    &::&::-webkit-scrollbar-track
-      background-color transparent
     .el-col
       height 150px
       position relative

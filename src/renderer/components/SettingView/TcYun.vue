@@ -56,6 +56,11 @@
             >
             <el-input v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/"></el-input>
           </el-form-item>
+          <el-form-item
+            label="设定自定义域名"
+            >
+            <el-input v-model="form.customUrl" @keyup.native.enter="confirm" placeholder="例如https://xxxx.com"></el-input>
+          </el-form-item>
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
@@ -80,7 +85,8 @@ export default {
         bucket: '',
         appId: '',
         area: '',
-        path: ''
+        path: '',
+        customUrl: ''
       }
     }
   },
@@ -125,6 +131,8 @@ export default {
       color #eee
     .el-input__inner
       border-radius 19px
+    &-item
+      margin-bottom 10.5px
   .el-radio-group
     width 100%
     label

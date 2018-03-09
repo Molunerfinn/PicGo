@@ -52,13 +52,20 @@ const tcYunUpload = async (img, type, webContents) => {
     webContents.send('uploadProgress', 30)
     const singature = generateSignature()
     const length = imgList.length
+    const tcYunOptions = db.read().get('picBed.tcyun').value()
+    const customUrl = tcYunOptions.customUrl
+    const path = tcYunOptions.path
     for (let i in imgList) {
       const options = postOptions(imgList[i].fileName, singature, imgList[i].base64Image)
       const res = await request(options)
       const body = JSON.parse(res)
       if (body.message === 'SUCCESS') {
         delete imgList[i].base64Image
-        imgList[i]['imgUrl'] = body.data.source_url
+        if (customUrl) {
+          imgList[i]['imgUrl'] = `${customUrl}/${path}${imgList[i].fileName}`
+        } else {
+          imgList[i]['imgUrl'] = body.data.source_url
+        }
         imgList[i]['type'] = 'tcyun'
         if (i - length === -1) {
           webContents.send('uploadProgress', 60)
