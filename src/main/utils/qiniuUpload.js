@@ -6,7 +6,7 @@ import { Notification } from 'electron'
 
 function postOptions (fileName, token, imgBase64) {
   const area = selectArea(db.read().get('picBed.qiniu.area').value() || 'z0')
-  const path = db.read().get('picBed.qiniu.path') || ''
+  const path = db.read().get('picBed.qiniu.path').value() || ''
   const base64FileName = Buffer.from(path + fileName, 'utf-8').toString('base64').replace(/\+/g, '-').replace(/\//g, '_')
   return {
     method: 'POST',
