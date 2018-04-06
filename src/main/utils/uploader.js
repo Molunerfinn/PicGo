@@ -2,6 +2,7 @@ import weiboUpload from './weiboUpload'
 import qiniuUpload from './qiniuUpload'
 import tcYunUpload from './tcYunUpload'
 import upYunUpload from './upYunUpload'
+import githubUpload from './githubUpload'
 import db from '../../datastore/index'
 
 const checkUploader = (type) => {
@@ -25,6 +26,8 @@ const uploader = (img, type, webContents) => {
         return tcYunUpload(img, type, webContents)
       case 'upyun':
         return upYunUpload(img, type, webContents)
+      case 'github':
+        return githubUpload(img, type, webContents)
     }
   } else {
     return false

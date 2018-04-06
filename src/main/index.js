@@ -102,6 +102,15 @@ function createTray () {
             db.read().set('picBed.current', 'upyun')
               .write()
           }
+        },
+        {
+          label: 'GitHub图床',
+          type: 'radio',
+          checked: db.read().get('picBed.current').value() === 'github',
+          click () {
+            db.read().set('picBed.current', 'github')
+              .write()
+          }
         }
       ]
     },
