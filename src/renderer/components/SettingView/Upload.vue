@@ -3,7 +3,7 @@
     <el-row :gutter="16">
       <el-col :span="20" :offset="2">
         <div class="view-title">
-          图片上传
+          图片上传 - {{ picBed }}
         </div>
         <div
           id="upload-area"
@@ -54,6 +54,7 @@
 </template>
 <script>
 import mixin from '../mixin'
+import picBed from '../../../datastore/pic-bed'
 export default {
   name: 'upload',
   mixins: [mixin],
@@ -63,7 +64,8 @@ export default {
       progress: 0,
       showProgress: false,
       showError: false,
-      pasteStyle: ''
+      pasteStyle: '',
+      picBed: ''
     }
   },
   mounted () {
@@ -77,6 +79,7 @@ export default {
       }
     })
     this.getPasteStyle()
+    this.getDefaultPicBed()
   },
   watch: {
     progress (val) {
@@ -126,6 +129,14 @@ export default {
     },
     uploadClipboardFiles () {
       this.$electron.ipcRenderer.send('uploadClipboardFilesFromUploadPage')
+    },
+    getDefaultPicBed () {
+      const current = this.$db.read().get('picBed.current').value()
+      picBed.forEach(item => {
+        if (item.value === current) {
+          this.picBed = item.title
+        }
+      })
     }
   }
 }
