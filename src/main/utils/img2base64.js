@@ -15,7 +15,7 @@ const imgFromPath = async (imgPath) => {
       fileName,
       width: imgSize.width,
       height: imgSize.height,
-      extname: path.extname(item.name)
+      extname: path.extname(item)
     })
   }))
   return results
