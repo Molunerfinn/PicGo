@@ -20,13 +20,26 @@
             >
             </div>
             <div class="gallery-list__tool-panel">
-              <i class="el-icon-document" @click="copy(item.imgUrl)"></i>
+              <i class="el-icon-document" @click="copy(item)"></i>
+              <i class="el-icon-edit-outline" @click="openDialog(item)"></i>
               <i class="el-icon-delete" @click="remove(item.id)"></i>
             </div> 
           </el-col>
         </el-row>
       </el-col>
     </el-row>
+    <el-dialog
+      :visible.sync="dialogVisible"
+      title="修改图片URL"
+      width="500px"
+      :modal-append-to-body="false"
+    >
+      <el-input v-model="imgInfo.imgUrl"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmModify">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -45,6 +58,11 @@ export default {
         titleProperty: 'fileName',
         urlProperty: 'imgUrl',
         closeOnSlideClick: true
+      },
+      dialogVisible: false,
+      imgInfo: {
+        id: null,
+        imgUrl: ''
       }
     }
   },
@@ -94,6 +112,28 @@ export default {
       }).catch(() => {
         return true
       })
+    },
+    openDialog (item) {
+      this.imgInfo.id = item.id
+      this.imgInfo.imgUrl = item.imgUrl
+      this.dialogVisible = true
+    },
+    confirmModify () {
+      this.$db.read().get('uploaded')
+        .getById(this.imgInfo.id)
+        .assign({imgUrl: this.imgInfo.imgUrl})
+        .write()
+      const obj = {
+        title: '修改图片URL成功',
+        body: this.imgInfo.imgUrl,
+        icon: this.imgInfo.imgUrl
+      }
+      const myNotification = new window.Notification(obj.title, obj)
+      myNotification.onclick = () => {
+        return true
+      }
+      this.dialogVisible = false
+      this.getGallery()
     }
   }
 }
@@ -142,6 +182,9 @@ export default {
         &.el-icon-document
           &:hover
             color #49B1F5
+        &.el-icon-edit-outline
+          &:hover
+            color #69C282
         &.el-icon-delete
           &:hover
             color #F15140
