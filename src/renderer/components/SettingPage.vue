@@ -8,7 +8,7 @@
       </div>
     </div>
     <el-row style="padding-top: 22px;" class="main-content">
-      <el-col :span="5">
+      <el-col :span="5" class="side-bar-menu">
         <el-menu
           class="picgo-sidebar"
           :default-active="defaultActive"
@@ -22,28 +22,36 @@
             <i class="el-icon-picture"></i>
             <span slot="title">相册</span>
           </el-menu-item>
-          <el-menu-item index="weibo">
-            <i class="el-icon-ui-weibo"></i>
-            <span slot="title">微博设置</span>
-          </el-menu-item>
-          <el-menu-item index="qiniu">
-            <i class="el-icon-ui-qiniu"></i>
-            <span slot="title">七牛云设置</span>
-          </el-menu-item>
-          <el-menu-item index="tcyun">
-            <i class="el-icon-ui-tcyun"></i>
-            <span slot="title">腾讯COS设置</span>
-          </el-menu-item>
-          <el-menu-item index="upyun">
-            <i class="el-icon-ui-upyun"></i>
-            <span slot="title">又拍云设置</span>
-          </el-menu-item>
-          <el-menu-item index="github">
-            <i class="el-icon-ui-github"></i>
-            <span slot="title">GitHub设置</span>
-          </el-menu-item>
-          <i class="el-icon-setting" @click="openDialog"></i>
+          <el-submenu
+            index="sub-menu"
+          >
+            <template slot="title">
+              <i class="el-icon-menu"></i>
+              <span>图床设置</span>
+            </template>
+            <el-menu-item index="weibo">
+              <i class="el-icon-ui-weibo"></i>
+              <span slot="title">微博设置</span>
+            </el-menu-item>
+            <el-menu-item index="qiniu">
+              <i class="el-icon-ui-qiniu"></i>
+              <span slot="title">七牛云设置</span>
+            </el-menu-item>
+            <el-menu-item index="tcyun">
+              <i class="el-icon-ui-tcyun"></i>
+              <span slot="title">腾讯COS设置</span>
+            </el-menu-item>
+            <el-menu-item index="upyun">
+              <i class="el-icon-ui-upyun"></i>
+              <span slot="title">又拍云设置</span>
+            </el-menu-item>
+            <el-menu-item index="github">
+              <i class="el-icon-ui-github"></i>
+              <span slot="title">GitHub设置</span>
+            </el-menu-item>
+          </el-submenu>
         </el-menu>
+        <i class="el-icon-setting" @click="openDialog"></i>
       </el-col>
       <el-col :span="19" :offset="5">
         <router-view></router-view>
@@ -309,14 +317,14 @@ export default {
       .el-icon-close
         &:hover
           color #F15140
-  .picgo-sidebar
-    height calc(100vh - 22px)
-  .el-menu
-    border-right none
-    background transparent
+  .side-bar-menu
     position fixed
+    height calc(100vh - 22px)
+    overflow-x hidden
+    overflow-y auto
+    width 170px
     .el-icon-setting
-      position absolute
+      position fixed 
       bottom 4px
       left 4px
       cursor pointer
@@ -324,6 +332,10 @@ export default {
       transition .2s all ease-in-out
       &:hover
         color #409EFF
+  .el-menu
+    border-right none
+    background transparent
+    width 170px
     &-item
       color #eee
       position relative
@@ -341,6 +353,19 @@ export default {
           right 0
           top 18px
           background active-color
+  .el-submenu__title
+    span
+      color #eee
+    &:hover
+      background transparent
+      span
+        color #fff
+  .el-submenu
+    .el-menu-item
+      min-width 166px
+      &.is-active
+        &:before
+          top 16px
   .main-content
     padding-top 22px
     position relative
