@@ -13,6 +13,7 @@
           class="picgo-sidebar"
           :default-active="defaultActive"
           @select="handleSelect"
+          :unique-opened="true"
           >
           <el-menu-item index="upload">
             <i class="el-icon-upload"></i>
@@ -29,29 +30,21 @@
               <i class="el-icon-menu"></i>
               <span>图床设置</span>
             </template>
-            <el-menu-item index="weibo">
-              <i class="el-icon-ui-weibo"></i>
-              <span slot="title">微博设置</span>
-            </el-menu-item>
-            <el-menu-item index="qiniu">
-              <i class="el-icon-ui-qiniu"></i>
-              <span slot="title">七牛云设置</span>
-            </el-menu-item>
-            <el-menu-item index="tcyun">
-              <i class="el-icon-ui-tcyun"></i>
-              <span slot="title">腾讯COS设置</span>
-            </el-menu-item>
-            <el-menu-item index="upyun">
-              <i class="el-icon-ui-upyun"></i>
-              <span slot="title">又拍云设置</span>
-            </el-menu-item>
-            <el-menu-item index="github">
-              <i class="el-icon-ui-github"></i>
-              <span slot="title">GitHub设置</span>
+            <el-menu-item
+              v-for="item in picBed"
+              :index="item.type"
+              :key="item.type"
+            >
+              <i :class="`el-icon-ui-${item.type}`"></i>
+              <span slot="title">{{ item.name }}</span>
             </el-menu-item>
           </el-submenu>
+          <el-menu-item index="setting">
+            <i class="el-icon-setting"></i>
+            <span slot="title">PicGo设置</span>
+          </el-menu-item>
         </el-menu>
-        <i class="el-icon-setting" @click="openDialog"></i>
+        <i class="el-icon-setting setting-window" @click="openDialog"></i>
       </el-col>
       <el-col :span="19" :offset="5">
         <router-view></router-view>
@@ -157,6 +150,7 @@ import pkg from '../../../package.json'
 import keyDetect from 'utils/key-binding'
 import { remote } from 'electron'
 import db from '../../datastore'
+import { picBed } from '../../datastore/pic-bed'
 const { Menu, dialog, BrowserWindow } = remote
 export default {
   name: 'setting-page',
@@ -186,7 +180,8 @@ export default {
       os: '',
       shortKey: {
         upload: db.read().get('shortKey.upload').value()
-      }
+      },
+      picBed
     }
   },
   created () {
@@ -323,7 +318,7 @@ export default {
     overflow-x hidden
     overflow-y auto
     width 170px
-    .el-icon-setting
+    .el-icon-setting.setting-window
       position fixed 
       bottom 4px
       left 4px

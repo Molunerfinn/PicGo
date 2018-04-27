@@ -54,7 +54,7 @@
 </template>
 <script>
 import mixin from '../mixin'
-import picBed from '../../../datastore/pic-bed'
+import { picBed } from '../../../datastore/pic-bed'
 export default {
   name: 'upload',
   mixins: [mixin],
@@ -133,8 +133,8 @@ export default {
     getDefaultPicBed () {
       const current = this.$db.read().get('picBed.current').value()
       picBed.forEach(item => {
-        if (item.value === current) {
-          this.picBed = item.title
+        if (item.type === current) {
+          this.picBed = item.name
         }
       })
     }

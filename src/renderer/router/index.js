@@ -49,6 +49,11 @@ export default new Router({
           path: 'gallery',
           component: require('@/components/SettingView/Gallery').default,
           name: 'gallery'
+        },
+        {
+          path: 'setting',
+          component: require('@/components/SettingView/PicGoSetting').default,
+          name: 'setting'
         }
       ]
     },

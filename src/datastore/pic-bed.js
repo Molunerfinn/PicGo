@@ -1,24 +1,41 @@
+import weiboUpload from '../main/utils/weiboUpload'
+import qiniuUpload from '../main/utils/qiniuUpload'
+import tcYunUpload from '../main/utils/tcYunUpload'
+import upYunUpload from '../main/utils/upYunUpload'
+import githubUpload from '../main/utils/githubUpload'
+
 const picBed = [
   {
-    title: '微博图床',
-    value: 'weibo'
+    type: 'weibo',
+    name: '微博图床'
   },
   {
-    title: '七牛云',
-    value: 'qiniu'
+    type: 'qiniu',
+    name: '七牛图床'
   },
   {
-    title: '腾讯COS',
-    value: 'tcyun'
+    type: 'tcyun',
+    name: '腾讯云COS'
   },
   {
-    title: '又拍云',
-    value: 'upyun'
+    type: 'upyun',
+    name: '又拍云图床'
   },
   {
-    title: 'GitHub图床',
-    value: 'github'
+    type: 'github',
+    name: 'GitHub图床'
   }
 ]
 
-export default picBed
+const picBedHandler = {
+  weibo: weiboUpload,
+  qiniu: qiniuUpload,
+  tcyun: tcYunUpload,
+  upyun: upYunUpload,
+  github: githubUpload
+}
+
+export {
+  picBed,
+  picBedHandler
+}

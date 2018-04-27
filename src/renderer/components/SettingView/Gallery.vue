@@ -20,7 +20,7 @@
             >
             </div>
             <div class="gallery-list__tool-panel">
-              <i class="el-icon-document" @click="copy(item)"></i>
+              <i class="el-icon-document" @click="copy(item.imgUrl)"></i>
               <i class="el-icon-edit-outline" @click="openDialog(item)"></i>
               <i class="el-icon-delete" @click="remove(item.id)"></i>
             </div> 
