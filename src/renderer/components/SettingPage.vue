@@ -44,7 +44,7 @@
             <span slot="title">PicGo设置</span>
           </el-menu-item>
         </el-menu>
-        <i class="el-icon-setting setting-window" @click="openDialog"></i>
+        <i class="el-icon-info setting-window" @click="openDialog"></i>
       </el-col>
       <el-col :span="19" :offset="5">
         <router-view></router-view>
@@ -150,7 +150,6 @@ import pkg from '../../../package.json'
 import keyDetect from 'utils/key-binding'
 import { remote } from 'electron'
 import db from '../../datastore'
-import { picBed } from '../../datastore/pic-bed'
 const { Menu, dialog, BrowserWindow } = remote
 export default {
   name: 'setting-page',
@@ -181,7 +180,7 @@ export default {
       shortKey: {
         upload: db.read().get('shortKey.upload').value()
       },
-      picBed
+      picBed: this.$picBed
     }
   },
   created () {
@@ -318,7 +317,7 @@ export default {
     overflow-x hidden
     overflow-y auto
     width 170px
-    .el-icon-setting.setting-window
+    .el-icon-info.setting-window
       position fixed 
       bottom 4px
       left 4px

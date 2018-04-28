@@ -143,7 +143,9 @@ export default {
   color #eee
   font-size 20px
   text-align center
-  margin 20px auto
+  margin 10px auto
+  .sub-title
+    font-size 14px
 #gallery-view
   .gallery-list
     height 360px
