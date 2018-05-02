@@ -45,7 +45,7 @@
             <div class="paste-style__text">
               快捷上传
             </div>
-            <el-button type="primary" round size="mini" @click="uploadClipboardFiles">剪贴板图片上传</el-button>
+            <el-button type="primary" round size="mini" @click="uploadClipboardFiles" class="paste-upload">剪贴板图片上传</el-button>
           </div>
         </div>
       </el-col>
@@ -154,7 +154,7 @@ export default {
     border-radius 8px
     text-align center
     width 450px
-    margin-left 25px
+    margin 0 auto
     color #dddddd
     cursor pointer
     transition all .2s ease-in-out
@@ -201,4 +201,6 @@ export default {
     .el-radio-button__inner
       border-left none
       border-radius 0 14px 14px 0
+  .paste-upload
+    width 100%
 </style>

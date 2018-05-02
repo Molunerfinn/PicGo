@@ -95,8 +95,10 @@ export default {
   text-align center
   margin 20px auto
 #picgo-setting
+  .sub-title
+    font-size 14px
   .setting-list
-    height 360px
+    height 340px
     box-sizing border-box
     overflow-y auto
     overflow-x hidden
