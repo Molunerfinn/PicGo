@@ -30,14 +30,18 @@
               <i class="el-icon-menu"></i>
               <span>图床设置</span>
             </template>
-            <el-menu-item
+            <template
               v-for="item in picBed"
-              :index="item.type"
-              :key="item.type"
             >
-              <i :class="`el-icon-ui-${item.type}`"></i>
-              <span slot="title">{{ item.name }}</span>
-            </el-menu-item>
+              <el-menu-item
+                v-if="item.visible"
+                :index="item.type"
+                :key="item.type"
+              >
+                <i :class="`el-icon-ui-${item.type}`"></i>
+                <span slot="title">{{ item.name }}</span>
+              </el-menu-item>
+            </template>
           </el-submenu>
           <el-menu-item index="setting">
             <i class="el-icon-setting"></i>
@@ -67,29 +71,6 @@
           <div class="support-title">微信</div>
         </el-col>
       </el-row>
-    </el-dialog>
-    <el-dialog
-      title="修改快捷键"
-      :visible.sync="keyBindingVisible"
-    >
-      <el-form
-        label-width="80px"
-      >
-        <el-form-item
-          label="快捷上传"
-        >
-          <el-input 
-            class="align-center"
-            @keydown.native.prevent="keyDetect('upload', $event)"
-            v-model="shortKey.upload"
-            :autofocus="true"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer">
-        <el-button @click="cancelKeyBinding">取消</el-button>
-        <el-button type="primary" @click="confirmKeyBinding">确定</el-button>
-      </span>
     </el-dialog>
     <el-dialog
       title="修改快捷键"
@@ -218,27 +199,6 @@ export default {
           label: '赞助PicGo',
           click () {
             _this.visible = true
-          }
-        },
-        {
-          label: '修改快捷键',
-          click () {
-            _this.keyBindingVisible = true
-          }
-        },
-        {
-          label: '自定义链接格式',
-          click () {
-            _this.customLinkVisible = true
-          }
-        },
-        {
-          label: '打开更新助手',
-          type: 'checkbox',
-          checked: _this.$db.get('picBed.showUpdateTip').value(),
-          click () {
-            const value = _this.$db.read().get('picBed.showUpdateTip').value()
-            _this.$db.read().set('picBed.showUpdateTip', !value).write()
           }
         }
       ]
