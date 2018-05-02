@@ -423,6 +423,12 @@ ipcMain.on('updteDefaultPicBed', (evt) => {
   })
 })
 
+ipcMain.on('autoStart', (evt, val) => {
+  app.setLoginItemSettings({
+    openAtLogin: val
+  })
+})
+
 const shortKeyHash = {
   upload: uploadClipboardFiles
 }

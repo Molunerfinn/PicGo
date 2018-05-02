@@ -211,7 +211,11 @@ export default {
     },
     handleAutoStartChange (val) {
       this.$db.read().set('picBed.autoStart', val).write()
+      this.$electron.ipcRenderer.send('autoStart', val)
     }
+  },
+  beforeDestroy () {
+    this.$electron.ipcRenderer.removeAllListeners('autoStart')
   }
 }
 </script>
