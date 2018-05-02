@@ -8,7 +8,7 @@ import store from './store'
 import db from '../datastore/index'
 import { webFrame } from 'electron'
 import './assets/fonts/iconfont.css'
-import { picBed } from '../datastore/pic-bed'
+import picBed from '../datastore/pic-bed'
 Vue.use(ElementUI)
 
 webFrame.setVisualZoomLevelLimits(1, 1)
