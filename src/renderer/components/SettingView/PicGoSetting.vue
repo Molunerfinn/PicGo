@@ -38,6 +38,7 @@
               v-model="form.autoStart"
               active-text="开"
               inactive-text="关"
+              @change="handleAutoStartChange"
             ></el-switch>
           </el-form-item>
           <el-form-item
@@ -164,7 +165,6 @@ export default {
         return item.name
       }
     })
-    console.log(this.picBed)
   },
   methods: {
     keyDetect (type, event) {
@@ -208,6 +208,9 @@ export default {
         return item
       })
       this.$db.read().set('picBed.list', list).write()
+    },
+    handleAutoStartChange (val) {
+      this.$db.read().set('picBed.autoStart', val).write()
     }
   }
 }

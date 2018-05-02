@@ -470,6 +470,10 @@ app.on('will-quit', () => {
   globalShortcut.unregisterAll()
 })
 
+app.setLoginItemSettings({
+  openAtLogin: db.read().get('picBed.autoStart').value() || false
+})
+
 /**
  * Auto Updater
  *
