@@ -12,6 +12,19 @@
           :model="form"
           size="mini">
           <el-form-item
+            label="COS版本"
+          >
+            <el-switch
+              v-model="form.version"
+              active-text="v4"
+              inactive-text="v5"
+              active-value="v4"
+              inactive-value="v5"
+              inactive-color="#67C23A"
+            ></el-switch>
+            <i class="el-icon-question" @click="openWiki"></i>
+          </el-form-item>
+          <el-form-item
             label="设定SecretId"
             prop="secretId"
             :rules="{
@@ -86,7 +99,8 @@ export default {
         appId: '',
         area: '',
         path: '',
-        customUrl: ''
+        customUrl: '',
+        version: 'v4'
       }
     }
   },
@@ -113,6 +127,9 @@ export default {
           return false
         }
       })
+    },
+    openWiki () {
+      this.$electron.remote.shell.openExternal('https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#%E5%BE%AE%E5%8D%9A%E5%9B%BE%E5%BA%8A')
     }
   }
 }
@@ -147,4 +164,17 @@ export default {
     .el-radio-button__inner
       border-left none
       border-radius 0 14px 14px 0
+  .el-switch__label
+    color #eee
+    &.is-active
+      color #409EFF
+  .el-icon-question
+    font-size 20px
+    float right
+    margin-top 9px
+    color #eee
+    cursor pointer
+    transition .2s color ease-in-out
+    &:hover
+      color #409EFF
 </style>
