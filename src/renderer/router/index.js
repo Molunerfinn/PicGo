@@ -11,6 +11,11 @@ export default new Router({
       component: require('@/components/TrayPage').default
     },
     {
+      path: '/rename-page',
+      name: 'rename-page',
+      component: require('@/components/RenamePage').default
+    },
+    {
       path: '/setting',
       name: 'setting-page',
       component: require('@/components/SettingPage').default,

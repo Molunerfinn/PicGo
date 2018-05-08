@@ -63,7 +63,7 @@ const postOptions = (fileName, signature, imgBase64) => {
   } else {
     return {
       method: 'PUT',
-      url: `http://${options.bucket}.cos.${options.area}.myqcloud.com/${path}${fileName}`,
+      url: `http://${options.bucket}.cos.${options.area}.myqcloud.com/${path}${encodeURI(fileName)}`,
       headers: {
         Host: `${options.bucket}.cos.${options.area}.myqcloud.com`,
         Authorization: `q-sign-algorithm=sha1&q-ak=${options.secretId}&q-sign-time=${signature.signTime}&q-key-time=${signature.signTime}&q-header-list=host&q-url-param-list=&q-signature=${signature.signature}`,

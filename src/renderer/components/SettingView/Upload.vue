@@ -173,11 +173,10 @@ export default {
   #file-uploader
     display none
   .upload-progress
-    margin-top 20px
     opacity 0
     transition all .2s ease-in-out
     width 450px
-    margin-left 25px
+    margin 20px auto 0
     &.show
       opacity 1
     .el-progress-bar__inner

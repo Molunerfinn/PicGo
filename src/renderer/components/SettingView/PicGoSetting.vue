@@ -48,6 +48,7 @@
               v-model="form.rename"
               active-text="开"
               inactive-text="关"
+              @change="handleRename"
             ></el-switch>
           </el-form-item>
           <el-form-item
@@ -58,8 +59,9 @@
               @change="handleShowPicBedListChange"
             >
               <el-checkbox
-                v-for="(item, index) in picBed"
+                v-for="item in picBed"
                 :label="item.name"
+                :key="item.name"
               ></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
@@ -212,6 +214,9 @@ export default {
     handleAutoStartChange (val) {
       this.$db.read().set('picBed.autoStart', val).write()
       this.$electron.ipcRenderer.send('autoStart', val)
+    },
+    handleRename (val) {
+      this.$db.read().set('picBed.rename', val).write()
     }
   },
   beforeDestroy () {
