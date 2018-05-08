@@ -1,12 +1,15 @@
 <template>
   <div id="rename-page">
-    <el-form>
+    <el-form
+      @submit.native.prevent
+    >
       <el-form-item
         label="文件改名"
       >
         <el-input 
           v-model="fileName"
           size="small"
+          @keyup.enter.native="confirmName"
         ></el-input>
       </el-form-item>
     </el-form>
