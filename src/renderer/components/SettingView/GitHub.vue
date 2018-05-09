@@ -17,7 +17,7 @@
             :rules="{
               required: true, message: '仓库名不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.repo" @keyup.native.enter="confirm" placeholder="username"></el-input>
+            <el-input v-model="form.repo" @keyup.native.enter="confirm" placeholder="格式：username/repo"></el-input>
           </el-form-item>
           <el-form-item
             label="设定分支名"
