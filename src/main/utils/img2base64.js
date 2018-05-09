@@ -22,6 +22,7 @@ const createRenameWindow = () => {
   if (process.platform === 'win32') {
     options.show = true
     options.backgroundColor = '#3f3c37'
+    options.autoHideMenuBar = true
   }
 
   const window = new BrowserWindow(options)
