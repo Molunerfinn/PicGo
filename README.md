@@ -42,6 +42,8 @@ PicGo目前支持了`微博图床`，`七牛图床`，`腾讯云COS v4\v5版本`
 
 如果你想要学习、开发、修改或自行构建PicGo，可以依照下面的指示：
 
+> 如果想学习Electron-vue的开发，可以查看我写的系列教程——[Electron-vue开发实战](https://molunerfinn.com/tags/Electron-vue/)
+
 1. 你需要有node、git环境。需要了解npm的相关知识。
 2. `git clone https://github.com/Molunerfinn/PicGo.git` 并进入项目
 3. `npm install` 下载依赖
