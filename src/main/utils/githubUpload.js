@@ -36,7 +36,11 @@ const githubUpload = async function (img, type, webContents) {
       const body = await request(postConfig)
       if (body) {
         delete imgList[i].base64Image
-        imgList[i]['imgUrl'] = body.content.download_url
+        if (githubOptions.customUrl) {
+          imgList[i]['imgUrl'] = `${githubOptions.customUrl}/${githubOptions.path}${imgList[i].fileName}`
+        } else {
+          imgList[i]['imgUrl'] = body.content.download_url
+        }
         imgList[i]['type'] = 'github'
         if (i - length === -1) {
           webContents.send('uploadProgress', 60)

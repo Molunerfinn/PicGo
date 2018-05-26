@@ -32,6 +32,8 @@ PicGo目前支持了`微博图床`，`七牛图床`，`腾讯云COS v4\v5版本`
 
 如果第一次使用，请参考应用使用[手册](https://github.com/Molunerfinn/PicGo/wiki)。
 
+开发进度可以查看[Projects](https://github.com/Molunerfinn/PicGo/projects)，会同步更新开发进度。
+
 ![](https://user-images.githubusercontent.com/12621342/34242857-d177930a-e658-11e7-9688-7405851dd5e5.gif)
 
 ![picgo-menubar](https://user-images.githubusercontent.com/12621342/34242310-b5056510-e655-11e7-8568-60ffd4f71910.gif)
