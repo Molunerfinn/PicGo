@@ -8,7 +8,7 @@ const postOptions = (fileName, options, data) => {
   const {token, repo} = options
   return {
     method: 'PUT',
-    url: `https://api.github.com/repos/${repo}/contents/${path}${encodeURI(fileName)}`,
+    url: `https://api.github.com/repos/${repo}/contents/${encodeURI(path)}${encodeURI(fileName)}`,
     headers: {
       Authorization: `token ${token}`,
       'User-Agent': 'PicGo'
