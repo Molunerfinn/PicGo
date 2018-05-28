@@ -7,7 +7,7 @@ export default (style, url) => {
     'HTML': `<img src="${url}"/>`,
     'URL': url,
     'UBB': `[IMG]${url}[/IMG]`,
-    'Custom': customLink.replace(/\$url/, url)
+    'Custom': customLink.replace(/\$url/g, url)
   }
   return tpl[style]
 }
