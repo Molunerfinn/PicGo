@@ -22,6 +22,11 @@
             <el-button type="primary" round size="mini" @click="customLinkVisible = true">点击设置</el-button>
           </el-form-item>
           <el-form-item
+            label="检查更新"
+          >
+            <el-button type="primary" round size="mini" @click="checkUpdate">点击设置</el-button>
+          </el-form-item>
+          <el-form-item
             label="打开更新助手"
           >
             <el-switch
@@ -133,13 +138,44 @@
         <el-button type="primary" @click="confirmCustomLink">确定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="检查更新"
+      :visible.sync="checkUpdateVisible"
+      :modal-append-to-body="false"
+    >
+      <div>
+        当前版本：{{ version }}
+      </div>
+      <div>
+        最新版本：{{ latestVersion ? latestVersion : '正在获取中...' }}
+      </div>
+      <div v-if="needUpdate">
+        PicGo更新啦，请点击确定打开下载页面
+      </div>
+      <span slot="footer">
+        <el-button @click="cancelCheckVersion">取消</el-button>
+        <el-button type="primary" @click="confirmCheckVersion">确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
 import db from '../../../datastore'
 import keyDetect from 'utils/key-binding'
+import pkg from '../../../../package.json'
+const release = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
+const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
 export default {
   name: 'picgo-setting',
+  computed: {
+    needUpdate () {
+      if (this.latestVersion) {
+        return this.compareVersion2Update(this.version, this.latestVersion)
+      } else {
+        return false
+      }
+    }
+  },
   data () {
     const customLinkRule = (rule, value, callback) => {
       if (!/\$url/.test(value)) {
@@ -159,6 +195,7 @@ export default {
       picBed: this.$picBed,
       keyBindingVisible: false,
       customLinkVisible: false,
+      checkUpdateVisible: false,
       customLink: {
         value: db.read().get('customLink').value() || '$url'
       },
@@ -169,7 +206,9 @@ export default {
         value: [
           { validator: customLinkRule, trigger: 'blur' }
         ]
-      }
+      },
+      version: pkg.version,
+      latestVersion: ''
     }
   },
   created () {
@@ -231,6 +270,38 @@ export default {
     },
     handleAutoRename (val) {
       this.$db.read().set('picBed.autoRename', val).write()
+    },
+    compareVersion2Update (current, latest) {
+      const currentVersion = current.split('.').map(item => parseInt(item))
+      const latestVersion = latest.split('.').map(item => parseInt(item))
+
+      for (let i = 0; i < 3; i++) {
+        if (currentVersion[i] < latestVersion[i]) {
+          return true
+        }
+        if (currentVersion[i] > latestVersion[i]) {
+          return false
+        }
+      }
+      return false
+    },
+    checkUpdate () {
+      this.checkUpdateVisible = true
+      this.$http.get(release)
+        .then(res => {
+          this.latestVersion = res.data.name
+        }).catch(err => {
+          console.log(err)
+        })
+    },
+    confirmCheckVersion () {
+      if (this.needUpdate) {
+        this.$electron.remote.shell.openExternal(downloadUrl)
+      }
+      this.checkUpdateVisible = false
+    },
+    cancelCheckVersion () {
+      this.checkUpdateVisible = false
     }
   },
   beforeDestroy () {
