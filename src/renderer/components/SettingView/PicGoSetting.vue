@@ -52,6 +52,16 @@
             ></el-switch>
           </el-form-item>
           <el-form-item
+            label="时间戳重命名"
+          >
+            <el-switch
+              v-model="form.autoRename"
+              active-text="开"
+              inactive-text="关"
+              @change="handleAutoRename"
+            ></el-switch>
+          </el-form-item>
+          <el-form-item
             label="选择显示的图床"
           >
             <el-checkbox-group
@@ -143,7 +153,8 @@ export default {
         updateHelper: this.$db.get('picBed.showUpdateTip').value(),
         showPicBedList: [],
         autoStart: this.$db.get('picBed.autoStart').value() || false,
-        rename: this.$db.get('picBed.rename').value() || false
+        rename: this.$db.get('picBed.rename').value() || false,
+        autoRename: this.$db.get('picBed.autoRename').value() || false
       },
       picBed: this.$picBed,
       keyBindingVisible: false,
@@ -217,6 +228,9 @@ export default {
     },
     handleRename (val) {
       this.$db.read().set('picBed.rename', val).write()
+    },
+    handleAutoRename (val) {
+      this.$db.read().set('picBed.autoRename', val).write()
     }
   },
   beforeDestroy () {

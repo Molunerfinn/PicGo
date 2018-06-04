@@ -4,6 +4,7 @@ import tcYunUpload from './tcYunUpload'
 import upYunUpload from './upYunUpload'
 import githubUpload from './githubUpload'
 import db from '../../datastore/index'
+import { Notification } from 'electron'
 
 const checkUploader = (type) => {
   const currentUploader = db.read().get(`picBed.${type}`).value()
@@ -15,6 +16,11 @@ const checkUploader = (type) => {
 }
 
 const uploader = (img, type, webContents) => {
+  const notification = new Notification({
+    title: '上传进度',
+    body: '正在上传'
+  })
+  notification.show()
   const uploadType = db.read().get('picBed.current').value()
   if (checkUploader(uploadType)) {
     switch (uploadType) {

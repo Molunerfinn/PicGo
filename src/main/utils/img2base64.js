@@ -32,10 +32,16 @@ const createRenameWindow = () => {
 
 const imgFromPath = async (imgPath) => {
   let results = []
-  let rename = db.read().get('picBed.rename').value()
+  const rename = db.read().get('picBed.rename').value()
+  const autoRename = db.read().get('picBed.autoRename').value()
   await Promise.all(imgPath.map(async item => {
     let name
-    let fileName = path.basename(item)
+    let fileName
+    if (autoRename) {
+      fileName = fecha.format(new Date(), 'YYYYMMDDHHmmss') + path.extname(item)
+    } else {
+      fileName = path.basename(item)
+    }
     if (rename) {
       const window = createRenameWindow()
       await waitForShow(window.webContents)
@@ -81,22 +87,28 @@ const imgFromClipboard = async (file) => {
 
 const imgFromUploader = async (files) => {
   let results = []
-  let rename = db.read().get('picBed.rename').value()
+  const rename = db.read().get('picBed.rename').value()
+  const autoRename = db.read().get('picBed.autoRename').value()
   await Promise.all(files.map(async item => {
     let name
+    let fileName
+    if (autoRename) {
+      fileName = fecha.format(new Date(), 'YYYYMMDDHHmmss') + path.extname(item.name)
+    } else {
+      fileName = path.basename(item.path)
+    }
     if (rename) {
       const window = createRenameWindow()
       await waitForShow(window.webContents)
-      window.webContents.send('rename', item.name, window.webContents.id)
+      window.webContents.send('rename', fileName, window.webContents.id)
       name = await waitForRename(window, window.webContents.id)
     }
     let buffer = await fs.readFile(item.path)
     let base64Image = Buffer.from(buffer, 'binary').toString('base64')
-    let fileName = name || item.name
     let imgSize = sizeOf(item.path)
     results.push({
       base64Image,
-      fileName,
+      fileName: name || fileName,
       width: imgSize.width,
       height: imgSize.height,
       extname: path.extname(item.name)
