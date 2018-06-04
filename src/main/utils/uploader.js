@@ -3,6 +3,7 @@ import qiniuUpload from './qiniuUpload'
 import tcYunUpload from './tcYunUpload'
 import upYunUpload from './upYunUpload'
 import githubUpload from './githubUpload'
+import smmsUpload from './smmsUpload'
 import db from '../../datastore/index'
 import { Notification } from 'electron'
 
@@ -34,6 +35,8 @@ const uploader = (img, type, webContents) => {
         return upYunUpload(img, type, webContents)
       case 'github':
         return githubUpload(img, type, webContents)
+      case 'smms':
+        return smmsUpload(img, type, webContents)
     }
   } else {
     return false

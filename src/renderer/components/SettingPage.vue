@@ -38,7 +38,7 @@
                 :index="item.type"
                 :key="item.type"
               >
-                <i :class="`el-icon-ui-${item.type}`"></i>
+                <!-- <i :class="`el-icon-ui-${item.type}`"></i> -->
                 <span slot="title">{{ item.name }}</span>
               </el-menu-item>
             </template>

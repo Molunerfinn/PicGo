@@ -51,6 +51,11 @@ export default new Router({
           name: 'github'
         },
         {
+          path: 'smms',
+          component: require('@/components/SettingView/SMMS').default,
+          name: 'smms'
+        },
+        {
           path: 'gallery',
           component: require('@/components/SettingView/Gallery').default,
           name: 'gallery'
