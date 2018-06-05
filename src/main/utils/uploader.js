@@ -1,11 +1,6 @@
-import weiboUpload from './weiboUpload'
-import qiniuUpload from './qiniuUpload'
-import tcYunUpload from './tcYunUpload'
-import upYunUpload from './upYunUpload'
-import githubUpload from './githubUpload'
-import smmsUpload from './smmsUpload'
 import db from '../../datastore/index'
 import { Notification } from 'electron'
+import picBeds from '../../datastore/pic-bed-handler'
 
 const checkUploader = (type) => {
   const currentUploader = db.read().get(`picBed.${type}`).value()
@@ -24,20 +19,7 @@ const uploader = (img, type, webContents) => {
   notification.show()
   const uploadType = db.read().get('picBed.current').value()
   if (checkUploader(uploadType)) {
-    switch (uploadType) {
-      case 'weibo':
-        return weiboUpload(img, type, webContents)
-      case 'qiniu':
-        return qiniuUpload(img, type, webContents)
-      case 'tcyun':
-        return tcYunUpload(img, type, webContents)
-      case 'upyun':
-        return upYunUpload(img, type, webContents)
-      case 'github':
-        return githubUpload(img, type, webContents)
-      case 'smms':
-        return smmsUpload(img, type, webContents)
-    }
+    return picBeds[uploadType](img, type, webContents)
   } else {
     return false
   }

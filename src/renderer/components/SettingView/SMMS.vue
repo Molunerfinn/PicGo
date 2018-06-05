@@ -5,6 +5,9 @@
         <div class="view-title">
           SM.MS设置
         </div>
+        <div class="content">
+          感谢SM.MS提供的优质服务
+        </div>
         <div style="text-align: center; margin-top: 20px;">
           <el-button type="success" @click="confirm" round :disabled="defaultPicBed === 'smms'" size="mini">设为默认图床</el-button>
         </div>
@@ -40,4 +43,9 @@ export default {
   font-size 20px
   text-align center
   margin 20px auto
+#smms-view
+  .content
+    text-align center
+    font-size 14px
+    color #eee
 </style>
