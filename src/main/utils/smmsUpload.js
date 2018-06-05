@@ -6,12 +6,19 @@ const postOptions = (fileName, imgBase64) => {
   return {
     method: 'POST',
     url: `https://sm.ms/api/upload`,
-    formData: {
-      smfile: Buffer.from(imgBase64, 'base64'),
-      filename: fileName,
-      ssl: true
+    headers: {
+      contentType: 'multipart/form-data',
+      'User-Agent': 'PicGo'
     },
-    json: true
+    formData: {
+      smfile: {
+        value: Buffer.from(imgBase64, 'base64'),
+        options: {
+          filename: fileName
+        }
+      },
+      ssl: 'true'
+    }
   }
 }
 
@@ -22,8 +29,9 @@ const smmsUpload = async function (img, type, webContents) {
     webContents.send('uploadProgress', 30)
     for (let i in imgList) {
       const postConfig = postOptions(imgList[i].fileName, imgList[i].base64Image)
-      const body = await request(postConfig)
-      if (body) {
+      let body = await request(postConfig)
+      body = JSON.parse(body)
+      if (body.code === 'success') {
         delete imgList[i].base64Image
         imgList[i]['imgUrl'] = body.data.url
       } else {

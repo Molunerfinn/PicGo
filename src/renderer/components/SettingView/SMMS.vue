@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     confirm () {
-      this.$db.set('picBed.smms', this.form).write()
+      this.$db.set('picBed.smms', true).write()
       this.setDefaultPicBed('smms')
       const successNotification = new window.Notification('设置结果', {
         body: '设置成功'
