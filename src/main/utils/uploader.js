@@ -12,11 +12,13 @@ const checkUploader = (type) => {
 }
 
 const uploader = (img, type, webContents) => {
-  const notification = new Notification({
-    title: '上传进度',
-    body: '正在上传'
-  })
-  notification.show()
+  if (db.read().get('picBed.uploadNotification').value()) {
+    const notification = new Notification({
+      title: '上传进度',
+      body: '正在上传'
+    })
+    notification.show()
+  }
   const uploadType = db.read().get('picBed.current').value()
   if (checkUploader(uploadType)) {
     return picBeds[uploadType](img, type, webContents)

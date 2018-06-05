@@ -67,6 +67,16 @@
             ></el-switch>
           </el-form-item>
           <el-form-item
+            label="开启上传提示"
+          >
+            <el-switch
+              v-model="form.uploadNotification"
+              active-text="开"
+              inactive-text="关"
+              @change="handleUploadNotification"
+            ></el-switch>
+          </el-form-item>
+          <el-form-item
             label="选择显示的图床"
           >
             <el-checkbox-group
@@ -190,7 +200,8 @@ export default {
         showPicBedList: [],
         autoStart: this.$db.get('picBed.autoStart').value() || false,
         rename: this.$db.get('picBed.rename').value() || false,
-        autoRename: this.$db.get('picBed.autoRename').value() || false
+        autoRename: this.$db.get('picBed.autoRename').value() || false,
+        uploadNotification: this.$db.get('picBed.uploadNotification').value() || false
       },
       picBed: this.$picBed,
       keyBindingVisible: false,
@@ -302,6 +313,9 @@ export default {
     },
     cancelCheckVersion () {
       this.checkUpdateVisible = false
+    },
+    handleUploadNotification (val) {
+      this.$db.read().set('picBed.uploadNotification', val).write()
     }
   },
   beforeDestroy () {
