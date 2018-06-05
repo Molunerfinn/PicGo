@@ -6,6 +6,7 @@ import db from '../datastore'
 import pasteTemplate from './utils/pasteTemplate'
 import updateChecker from './utils/updateChecker'
 import pkg from '../../package.json'
+import picBed from '../datastore/pic-bed'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -40,6 +41,16 @@ const uploadFailed = () => {
 function createTray () {
   const menubarPic = process.platform === 'darwin' ? `${__static}/menubar.png` : `${__static}/menubar-nodarwin.png`
   tray = new Tray(menubarPic)
+  const submenu = picBed.map(item => {
+    return {
+      label: item.name,
+      type: 'radio',
+      checked: db.read().get('picBed.current').value() === item.type,
+      click () {
+        db.read().set('picBed.current', item.type).write()
+      }
+    }
+  })
   contextMenu = Menu.buildFromTemplate([
     {
       label: '关于',
@@ -66,53 +77,7 @@ function createTray () {
     {
       label: '选择默认图床',
       type: 'submenu',
-      submenu: [
-        {
-          label: '微博图床',
-          type: 'radio',
-          checked: db.read().get('picBed.current').value() === 'weibo',
-          click () {
-            db.read().set('picBed.current', 'weibo')
-              .write()
-          }
-        },
-        {
-          label: '七牛图床',
-          type: 'radio',
-          checked: db.read().get('picBed.current').value() === 'qiniu',
-          click () {
-            db.read().set('picBed.current', 'qiniu')
-              .write()
-          }
-        },
-        {
-          label: '腾讯云COS',
-          type: 'radio',
-          checked: db.read().get('picBed.current').value() === 'tcyun',
-          click () {
-            db.read().set('picBed.current', 'tcyun')
-              .write()
-          }
-        },
-        {
-          label: '又拍云图床',
-          type: 'radio',
-          checked: db.read().get('picBed.current').value() === 'upyun',
-          click () {
-            db.read().set('picBed.current', 'upyun')
-              .write()
-          }
-        },
-        {
-          label: 'GitHub图床',
-          type: 'radio',
-          checked: db.read().get('picBed.current').value() === 'github',
-          click () {
-            db.read().set('picBed.current', 'github')
-              .write()
-          }
-        }
-      ]
+      submenu
     },
     {
       label: '打开更新助手',
