@@ -10,6 +10,7 @@
       button.download(@click="goLink('https://github.com/Molunerfinn/picgo')") 在github上查看
       h3.desc
         | 基于#[a(href="https://github.com/SimulatedGREG/electron-vue" target="_blank") electron-vue]开发
+      iframe(src="https://ghbtns.com/github-btn.html?user=Molunerfinn&repo=PicGo&type=star&count=true&size=large" frameborder="0" scrolling="0" width="140px" height="30px")
     #container.container-fluid
       .row.ex-width
         img.gallery.col-xs-10.col-xs-offset-1.col-md-offset-2.col-md-8(src="https://ws1.sinaimg.cn/large/8700af19gy1fmayjwttnbj218g0p0q4e")
@@ -43,7 +44,7 @@ export default {
         {
           url: 'https://ws1.sinaimg.cn/large/8700af19ly1fmd5ck9m0wj20lr0cxmzs',
           title: '可选图床',
-          desc: '目前支持微博图床、七牛图床、腾讯云COS、又拍云。未来将支持更多。方便不同图床的上传需求。'
+          desc: '目前支持微博图床、七牛图床、腾讯云COS、又拍云、GitHub、SM.MS。未来将支持更多。方便不同图床的上传需求。'
         },
         {
           url: 'https://ws1.sinaimg.cn/large/8700af19gy1fmayjwttnbj218g0p0q4e',
