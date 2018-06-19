@@ -5,6 +5,18 @@
     </div>
     <el-row class="gallery-list">
       <el-col :span="20" :offset="2">
+        <el-row class="handle-bar" :gutter="16">
+          <el-col :span="6" v-for="(item, index) in $picBed" :key="item.type">
+            <div class="pic-bed-item" @click="choosePicBed(item.type)" :class="{active: choosedPicBed.indexOf(item.type) !== -1}">
+              {{ item.name }}
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="item-base delete">
+              <i class="el-icon-delete"></i> 批量删除
+            </div>
+          </el-col>
+        </el-row>
         <el-row :gutter="16">
           <gallerys
             :images="images"
@@ -12,7 +24,7 @@
             @close="handleClose"
             :options="options"
           ></gallerys>
-          <el-col :span="6" v-for="(item, index) in images" :key="item.id">
+          <el-col :span="6" v-for="(item, index) in images" :key="item.id" class="gallery-list__img">
             <div 
               class="gallery-list__item"
               :style="{ 'background-image': `url(${item.imgUrl})` }"
@@ -23,6 +35,7 @@
               <i class="el-icon-document" @click="copy(item.imgUrl)"></i>
               <i class="el-icon-edit-outline" @click="openDialog(item)"></i>
               <i class="el-icon-delete" @click="remove(item.id)"></i>
+              <el-checkbox v-model="choosedList[item.id]" class="pull-right"></el-checkbox>
             </div> 
           </el-col>
         </el-row>
@@ -63,11 +76,30 @@ export default {
       imgInfo: {
         id: null,
         imgUrl: ''
-      }
+      },
+      choosedList: {},
+      choosedPicBed: []
     }
   },
   created () {
     this.getGallery()
+  },
+  watch: {
+    choosedPicBed (val) {
+      if (val.length > 0) {
+        this.images = []
+        let arr = []
+        val.forEach(item => {
+          arr = arr.concat(this.$db.read().get('uploaded').filter({type: item}).reverse().value())
+        })
+        this.images = arr
+      } else {
+        this.images = this.$db.read().get('uploaded').slice().reverse().value()
+      }
+    },
+    choosedList (val) {
+      console.log(val)
+    }
   },
   methods: {
     getGallery () {
@@ -134,6 +166,14 @@ export default {
       }
       this.dialogVisible = false
       this.getGallery()
+    },
+    choosePicBed (type) {
+      let idx = this.choosedPicBed.indexOf(type)
+      if (idx !== -1) {
+        this.choosedPicBed.splice(idx, 1)
+      } else {
+        this.choosedPicBed.push(type)
+      }
     }
   }
 }
@@ -146,14 +186,30 @@ export default {
   margin 10px auto
   .sub-title
     font-size 14px
+.item-base
+  background #2E2E2E
+  text-align center
+  margin-bottom 10px
+  padding 6px 0
+  cursor pointer
+  font-size 13px
+  transition all .2s ease-in-out
+  &.delete
+    cursor not-allowed
+  &.delete.active
+    cursor pointer
+    background #49B1F5
+    color #fff
 #gallery-view
+  .pull-right
+    float right
   .gallery-list
     height 360px
     box-sizing border-box
     padding 8px 0
     overflow-y auto
     overflow-x hidden
-    .el-col
+    &__img
       height 150px
       position relative
       margin-bottom 16px
@@ -193,4 +249,12 @@ export default {
   .blueimp-gallery
     .title
       top 30px
+  .handle-bar
+    color #ddd
+    .pic-bed-item
+      @extend .item-base
+      &:hover,
+      &.active
+        background #49B1F5
+        color #fff
 </style>
