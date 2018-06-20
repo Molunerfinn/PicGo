@@ -1,18 +1,28 @@
 <template>
   <div id="gallery-view">
     <div class="view-title">
-      相册
+      相册 - {{ filterList.length }}
     </div>
     <el-row class="gallery-list">
       <el-col :span="20" :offset="2">
         <el-row class="handle-bar" :gutter="16">
-          <el-col :span="6" v-for="(item, index) in $picBed" :key="item.type">
+          <el-col :span="6" v-for="item in $picBed" :key="item.type">
             <div class="pic-bed-item" @click="choosePicBed(item.type)" :class="{active: choosedPicBed.indexOf(item.type) !== -1}">
               {{ item.name }}
             </div>
           </el-col>
+        </el-row>
+        <el-row class="handle-bar" :gutter="16">
+          <el-col :span="12">
+            <el-input placeholder="搜索" size="mini" v-model="searchText"></el-input>
+          </el-col>
           <el-col :span="6">
-            <div class="item-base delete">
+            <div class="item-base" @click="cleanSearch">
+              清空搜索
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="item-base delete" :class="{ active: isMultiple(choosedList)}" @click="multiDelete">
               <i class="el-icon-delete"></i> 批量删除
             </div>
           </el-col>
@@ -78,32 +88,46 @@ export default {
         imgUrl: ''
       },
       choosedList: {},
-      choosedPicBed: []
+      choosedPicBed: [],
+      searchText: ''
     }
   },
   created () {
     this.getGallery()
   },
-  watch: {
-    choosedPicBed (val) {
-      if (val.length > 0) {
-        this.images = []
-        let arr = []
-        val.forEach(item => {
-          arr = arr.concat(this.$db.read().get('uploaded').filter({type: item}).reverse().value())
-        })
-        this.images = arr
-      } else {
-        this.images = this.$db.read().get('uploaded').slice().reverse().value()
-      }
-    },
-    choosedList (val) {
-      console.log(val)
+  computed: {
+    filterList (val) {
+      return this.getGallery()
     }
   },
   methods: {
     getGallery () {
-      this.images = this.$db.read().get('uploaded').slice().reverse().value()
+      if (this.choosedPicBed.length > 0) {
+        let arr = []
+        this.choosedPicBed.forEach(item => {
+          let obj = {
+            type: item
+          }
+          if (this.searchText) {
+            obj.fileName = this.searchText
+          }
+          arr = arr.concat(this.$db.read().get('uploaded').filter(obj => {
+            return obj.fileName.indexOf(this.searchText) !== -1 && obj.type === item
+          }).reverse().value())
+        })
+        this.images = arr
+      } else {
+        if (this.searchText) {
+          let data = this.$db.read().get('uploaded')
+            .filter(item => {
+              return item.fileName.indexOf(this.searchText) !== -1
+            }).reverse().value()
+          this.images = data
+        } else {
+          this.images = this.$db.read().get('uploaded').slice().reverse().value()
+        }
+      }
+      return this.images
     },
     zoomImage (index) {
       this.idx = index
@@ -174,6 +198,39 @@ export default {
       } else {
         this.choosedPicBed.push(type)
       }
+    },
+    cleanSearch () {
+      this.searchText = ''
+    },
+    isMultiple (obj) {
+      return Object.values(obj).some(item => item)
+    },
+    multiDelete () {
+      if (Object.values(this.choosedList).some(item => item)) {
+        this.$confirm('将删除刚才选中的图片，是否继续？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          Object.keys(this.choosedList).forEach(key => {
+            if (this.choosedList[key]) {
+              this.$db.read().get('uploaded').removeById(key).write()
+            }
+          })
+          this.choosedList = {}
+          this.getGallery()
+          const obj = {
+            title: '操作结果',
+            body: '删除成功'
+          }
+          const myNotification = new window.Notification(obj.title, obj)
+          myNotification.onclick = () => {
+            return true
+          }
+        }).catch(() => {
+          return true
+        })
+      }
     }
   }
 }
@@ -190,15 +247,16 @@ export default {
   background #2E2E2E
   text-align center
   margin-bottom 10px
-  padding 6px 0
+  padding 5px 0
   cursor pointer
   font-size 13px
   transition all .2s ease-in-out
   &.delete
     cursor not-allowed
+    background #F47466
   &.delete.active
     cursor pointer
-    background #49B1F5
+    background #F15140
     color #fff
 #gallery-view
   .pull-right
@@ -253,8 +311,12 @@ export default {
     color #ddd
     .pic-bed-item
       @extend .item-base
-      &:hover,
+      &:hover
+        background #A4D8FA
+        color #fff
       &.active
         background #49B1F5
         color #fff
+  .el-input__inner
+    border-radius 0
 </style>
