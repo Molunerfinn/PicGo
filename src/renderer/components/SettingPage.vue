@@ -2,7 +2,7 @@
   <div id="setting-page">
     <div class="fake-title-bar">
       PicGo - {{ version }}
-      <div class="handle-bar" v-if="os === 'win32'">
+      <div class="handle-bar" v-if="os !== 'darwin'">
         <i class="el-icon-minus" @click="minimizeWindow"></i>
         <i class="el-icon-close" @click="closeWindow"></i>
       </div>
@@ -50,10 +50,10 @@
         </el-menu>
         <i class="el-icon-info setting-window" @click="openDialog"></i>
       </el-col>
-      <el-col :span="19" :offset="5">
+      <el-col :span="19" :offset="5" style="height: 428px">
         <router-view></router-view>
       </el-col>
-    </el-row> 
+    </el-row>
     <el-dialog
       title="赞助PicGo"
       :visible.sync="visible"
