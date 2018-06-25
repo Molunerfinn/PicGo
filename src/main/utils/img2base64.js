@@ -19,10 +19,11 @@ const createRenameWindow = () => {
     }
   }
 
-  if (process.platform === 'win32') {
+  if (process.platform !== 'darwin') {
     options.show = true
     options.backgroundColor = '#3f3c37'
     options.autoHideMenuBar = true
+    options.transparent = false
   }
 
   const window = new BrowserWindow(options)

@@ -203,10 +203,11 @@ const createSettingWindow = () => {
       backgroundThrottling: false
     }
   }
-  if (process.platform === 'win32') {
+  if (process.platform !== 'darwin') {
     options.show = true
     options.frame = false
     options.backgroundColor = '#3f3c37'
+    options.transparent = false
   }
   settingWindow = new BrowserWindow(options)
 
