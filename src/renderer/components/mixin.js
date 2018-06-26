@@ -25,7 +25,7 @@ export default {
     setDefaultPicBed (type) {
       db.read().set('picBed.current', type).write()
       this.defaultPicBed = type
-      this.$electron.ipcRenderer.send('updateDefaultPicBed')
+      this.$electron.ipcRenderer.send('updateDefaultPicBed', type)
       const successNotification = new window.Notification('设置默认图床', {
         body: '设置成功'
       })

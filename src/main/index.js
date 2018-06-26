@@ -94,7 +94,9 @@ function createTray () {
     }
   ])
   tray.on('right-click', () => {
-    window.hide()
+    if (window) {
+      window.hide()
+    }
     tray.popUpContextMenu(contextMenu)
   })
   tray.on('click', () => {
@@ -115,7 +117,9 @@ function createTray () {
         window.webContents.send('clipboardFiles', obj)
       }, 0)
     } else {
-      window.hide()
+      if (window) {
+        window.hide()
+      }
       if (settingWindow === null) {
         createSettingWindow()
         settingWindow.show()
@@ -158,6 +162,9 @@ function createTray () {
 }
 
 const createWindow = () => {
+  if (process.platform !== 'darwin' && process.platform !== 'win32') {
+    return
+  }
   window = new BrowserWindow({
     height: 350,
     width: 196, // 196
@@ -181,9 +188,6 @@ const createWindow = () => {
   window.on('blur', () => {
     window.hide()
   })
-
-  createSettingWindow()
-  createMenu()
 }
 
 const createSettingWindow = () => {
@@ -208,6 +212,7 @@ const createSettingWindow = () => {
     options.frame = false
     options.backgroundColor = '#3f3c37'
     options.transparent = false
+    options.icon = `${__static}/256x256.png`
   }
   settingWindow = new BrowserWindow(options)
 
@@ -216,6 +221,7 @@ const createSettingWindow = () => {
   settingWindow.on('closed', () => {
     settingWindow = null
   })
+  createMenu()
 }
 
 const createMenu = () => {
@@ -378,8 +384,8 @@ ipcMain.on('updateCustomLink', (evt, oldLink) => {
   notification.show()
 })
 
-ipcMain.on('updteDefaultPicBed', (evt) => {
-  const types = ['weibo', 'qiniu', 'tcyun', 'upyun']
+ipcMain.on('updateDefaultPicBed', (evt) => {
+  const types = picBed.map(item => item.type)
   let submenuItem = contextMenu.items[2].submenu.items
   submenuItem.forEach((item, index) => {
     const result = db.read().get('picBed.current').value() === types[index]
@@ -416,9 +422,16 @@ if (process.platform === 'win32') {
   app.setAppUserModelId(pkg.build.appId)
 }
 
+if (process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity')) {
+  process.env.XDG_CURRENT_DESKTOP = 'Unity'
+}
+
 app.on('ready', () => {
   createWindow()
-  createTray()
+  createSettingWindow()
+  if (process.platform === 'darwin' || process.platform === 'win32') {
+    createTray()
+  }
   updateChecker()
 
   globalShortcut.register(db.read().get('shortKey.upload').value(), () => {
@@ -433,8 +446,11 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-  if (window === null || settingWindow === null) {
+  if (window === null) {
     createWindow()
+  }
+  if (settingWindow === null) {
+    createSettingWindow()
   }
 })
 
