@@ -56,6 +56,11 @@ export default new Router({
           name: 'smms'
         },
         {
+          path: 'aliyun',
+          component: require('@/components/SettingView/AliYun').default,
+          name: 'aliyun'
+        },
+        {
           path: 'gallery',
           component: require('@/components/SettingView/Gallery').default,
           name: 'gallery'

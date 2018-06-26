@@ -30,6 +30,11 @@ let picBed = [
     type: 'smms',
     name: 'SM.MS图床',
     visible: true
+  },
+  {
+    type: 'aliyun',
+    name: '阿里云OSS',
+    visible: true
   }
 ]
 
