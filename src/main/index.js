@@ -385,14 +385,18 @@ ipcMain.on('updateCustomLink', (evt, oldLink) => {
 })
 
 ipcMain.on('updateDefaultPicBed', (evt) => {
-  const types = picBed.map(item => item.type)
-  let submenuItem = contextMenu.items[2].submenu.items
-  submenuItem.forEach((item, index) => {
-    const result = db.read().get('picBed.current').value() === types[index]
-    if (result) {
-      item.click() // It's a bug which can not set checked status
-    }
-  })
+  if (process.platform === 'darwin' || process.platform === 'win32') {
+    const types = picBed.map(item => item.type)
+    let submenuItem = contextMenu.items[2].submenu.items
+    submenuItem.forEach((item, index) => {
+      const result = db.read().get('picBed.current').value() === types[index]
+      if (result) {
+        item.click() // It's a bug which can not set checked status
+      }
+    })
+  } else {
+    return false
+  }
 })
 
 ipcMain.on('autoStart', (evt, val) => {
