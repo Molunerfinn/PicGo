@@ -37,7 +37,7 @@
           <el-col :span="6" v-for="(item, index) in images" :key="item.id" class="gallery-list__img">
             <div 
               class="gallery-list__item"
-              :style="{ 'background-image': `url(${item.imgUrl})` }"
+              v-lazy:background-image="item.imgUrl"
               @click="zoomImage(index)"
             >
             </div>

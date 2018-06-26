@@ -9,7 +9,10 @@ import db from '../datastore/index'
 import { webFrame } from 'electron'
 import './assets/fonts/iconfont.css'
 import picBed from '../datastore/pic-bed'
+import VueLazyLoad from 'vue-lazyload'
+
 Vue.use(ElementUI)
+Vue.use(VueLazyLoad)
 
 webFrame.setVisualZoomLevelLimits(1, 1)
 webFrame.setLayoutZoomLevelLimits(0, 0)
