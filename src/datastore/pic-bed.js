@@ -35,6 +35,11 @@ let picBed = [
     type: 'aliyun',
     name: '阿里云OSS',
     visible: true
+  },
+  {
+    type: 'imgur',
+    name: 'Imgur图床',
+    visible: true
   }
 ]
 

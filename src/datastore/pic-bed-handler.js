@@ -5,6 +5,7 @@ import upYunUpload from '../main/utils/upYunUpload'
 import githubUpload from '../main/utils/githubUpload'
 import smmsUpload from '../main/utils/smmsUpload'
 import aliYunUpload from '../main/utils/aliYunUpload'
+import imgurUpload from '../main/utils/imgurUpload'
 
 const picBedHandler = {
   weibo: weiboUpload,
@@ -13,7 +14,8 @@ const picBedHandler = {
   upyun: upYunUpload,
   github: githubUpload,
   smms: smmsUpload,
-  aliyun: aliYunUpload
+  aliyun: aliYunUpload,
+  imgur: imgurUpload
 }
 
 export default picBedHandler

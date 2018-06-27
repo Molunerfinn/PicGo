@@ -61,6 +61,11 @@ export default new Router({
           name: 'aliyun'
         },
         {
+          path: 'imgur',
+          component: require('@/components/SettingView/Imgur').default,
+          name: 'imgur'
+        },
+        {
           path: 'gallery',
           component: require('@/components/SettingView/Gallery').default,
           name: 'gallery'
