@@ -20,6 +20,7 @@ if (process.env.DEBUG_ENV === 'debug') {
 
 let window
 let settingWindow
+let miniWindow
 let tray
 let menu
 let contextMenu
@@ -29,6 +30,9 @@ const winURL = process.env.NODE_ENV === 'development'
 const settingWinURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080/#setting/upload`
   : `file://${__dirname}/index.html#setting/upload`
+const miniWinURL = process.env.NODE_ENV === 'development'
+  ? `http://localhost:9080/#mini-page`
+  : `file://${__dirname}/index.html#mini-page`
 
 const uploadFailed = () => {
   const notification = new Notification({
@@ -71,6 +75,7 @@ function createTray () {
         } else {
           settingWindow.show()
           settingWindow.focus()
+          miniWindow.show()
         }
       }
     },
@@ -190,6 +195,27 @@ const createWindow = () => {
   })
 }
 
+const createMiniWidow = () => {
+  miniWindow = new BrowserWindow({
+    height: 64,
+    width: 64, // 196
+    show: true,
+    frame: false,
+    fullscreenable: false,
+    resizable: false,
+    transparent: true,
+    webPreferences: {
+      backgroundThrottling: false
+    }
+  })
+
+  miniWindow.loadURL(miniWinURL)
+
+  miniWindow.on('closed', () => {
+    miniWindow = null
+  })
+}
+
 const createSettingWindow = () => {
   const options = {
     height: 450,
@@ -212,7 +238,7 @@ const createSettingWindow = () => {
     options.frame = false
     options.backgroundColor = '#3f3c37'
     options.transparent = false
-    options.icon = `${__static}/256x256.png`
+    options.icon = `${__static}/logo.png`
   }
   settingWindow = new BrowserWindow(options)
 
@@ -222,6 +248,7 @@ const createSettingWindow = () => {
     settingWindow = null
   })
   createMenu()
+  createMiniWidow()
 }
 
 const createMenu = () => {
@@ -340,7 +367,7 @@ ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
 })
 
 ipcMain.on('uploadChoosedFiles', async (evt, files) => {
-  const imgs = await uploader(files, 'imgFromUploader', settingWindow.webContents)
+  const imgs = await uploader(files, 'imgFromUploader', evt.sender)
   if (imgs !== false) {
     const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
     let pasteText = ''

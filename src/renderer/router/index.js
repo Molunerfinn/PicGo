@@ -16,6 +16,11 @@ export default new Router({
       component: require('@/components/RenamePage').default
     },
     {
+      path: '/mini-page',
+      name: 'mini-page',
+      component: require('@/components/MiniPage').default
+    },
+    {
       path: '/setting',
       name: 'setting-page',
       component: require('@/components/SettingPage').default,
