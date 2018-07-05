@@ -1,32 +1,38 @@
 <template>
   <div id="gallery-view">
     <div class="view-title">
-      相册 - {{ filterList.length }}
+      相册 - {{ filterList.length }} <i class="el-icon-caret-bottom" @click="toggleHandleBar" :class="{'active': handleBarActive}"></i>
     </div>
-    <el-row class="gallery-list">
+    <transition name="el-zoom-in-center">
+      <el-row v-show="handleBarActive">
+        <el-col :span="20" :offset="2" :class="{ 'long-list': filterList.length > 4 }">
+          <el-row class="handle-bar" :gutter="16">
+            <el-col :span="6" v-for="item in $picBed" :key="item.type">
+              <div class="pic-bed-item" @click="choosePicBed(item.type)" :class="{active: choosedPicBed.indexOf(item.type) !== -1}">
+                {{ item.name }}
+              </div>
+            </el-col>
+          </el-row>
+          <el-row class="handle-bar" :gutter="16">
+            <el-col :span="12">
+              <el-input placeholder="搜索" size="mini" v-model="searchText"></el-input>
+            </el-col>
+            <el-col :span="6">
+              <div class="item-base" @click="cleanSearch">
+                清空搜索
+              </div>
+            </el-col>
+            <el-col :span="6">
+              <div class="item-base delete" :class="{ active: isMultiple(choosedList)}" @click="multiDelete">
+                <i class="el-icon-delete"></i> 批量删除
+              </div>
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-row>
+    </transition>
+    <el-row class="gallery-list" :class="{ small: handleBarActive }">
       <el-col :span="20" :offset="2">
-        <el-row class="handle-bar" :gutter="16">
-          <el-col :span="6" v-for="item in $picBed" :key="item.type">
-            <div class="pic-bed-item" @click="choosePicBed(item.type)" :class="{active: choosedPicBed.indexOf(item.type) !== -1}">
-              {{ item.name }}
-            </div>
-          </el-col>
-        </el-row>
-        <el-row class="handle-bar" :gutter="16">
-          <el-col :span="12">
-            <el-input placeholder="搜索" size="mini" v-model="searchText"></el-input>
-          </el-col>
-          <el-col :span="6">
-            <div class="item-base" @click="cleanSearch">
-              清空搜索
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div class="item-base delete" :class="{ active: isMultiple(choosedList)}" @click="multiDelete">
-              <i class="el-icon-delete"></i> 批量删除
-            </div>
-          </el-col>
-        </el-row>
         <el-row :gutter="16">
           <gallerys
             :images="images"
@@ -45,7 +51,7 @@
               <i class="el-icon-document" @click="copy(item.imgUrl)"></i>
               <i class="el-icon-edit-outline" @click="openDialog(item)"></i>
               <i class="el-icon-delete" @click="remove(item.id)"></i>
-              <el-checkbox v-model="choosedList[item.id]" class="pull-right"></el-checkbox>
+              <el-checkbox v-model="choosedList[item.id]" class="pull-right" @change=" handleBarActive = true"></el-checkbox>
             </div> 
           </el-col>
         </el-row>
@@ -89,7 +95,8 @@ export default {
       },
       choosedList: {},
       choosedPicBed: [],
-      searchText: ''
+      searchText: '',
+      handleBarActive: false
     }
   },
   created () {
@@ -231,6 +238,9 @@ export default {
           return true
         })
       }
+    },
+    toggleHandleBar () {
+      this.handleBarActive = !this.handleBarActive
     }
   }
 }
@@ -243,6 +253,11 @@ export default {
   margin 10px auto
   .sub-title
     font-size 14px
+  .el-icon-caret-bottom
+    cursor: pointer
+    transition all .2s ease-in-out
+    &.active
+      transform: rotate(180deg)
 .item-base
   background #2E2E2E
   text-align center
@@ -258,7 +273,10 @@ export default {
     cursor pointer
     background #F15140
     color #fff
+.long-list
+  width: calc(83.3333333% - 6px)
 #gallery-view
+  position relative
   .pull-right
     float right
   .gallery-list
@@ -267,6 +285,12 @@ export default {
     padding 8px 0
     overflow-y auto
     overflow-x hidden
+    position absolute
+    top: 38px
+    transition all .2s ease-in-out .1s
+    &.small
+      height: 245px
+      top: 152px
     &__img
       height 150px
       position relative
