@@ -8,13 +8,6 @@ let client
 // generate OSS Options
 const generateOSSOptions = () => {
   const options = db.read().get('picBed.aliyun').value()
-  let obj = {
-    region: `${options.area}`,
-    accessKeyId: `${options.accessKeyId}`,
-    accessKeySecret: `${options.accessKeySecret}`,
-    bucket: `${options.bucket}`,
-    secure: true
-  }
   client = new OSS({
     region: `${options.area}`,
     accessKeyId: `${options.accessKeyId}`,
@@ -22,7 +15,6 @@ const generateOSSOptions = () => {
     bucket: `${options.bucket}`,
     secure: true
   })
-  console.log(obj)
   return client
 }
 
@@ -65,7 +57,7 @@ const aliYunUpload = async (img, type, webContents) => {
     webContents.send('uploadProgress', -1)
     const notification = new Notification({
       title: '上传失败！',
-      body: `请检查你的配置`
+      body: `请检查你的配置项是否正确`
     })
     notification.show()
     clipboard.writeText('https://cloud.tencent.com/document/product/436/8432')
