@@ -206,6 +206,7 @@ const createMiniWidow = () => {
     fullscreenable: false,
     resizable: false,
     transparent: true,
+    icon: `${__static}/logo.png`,
     webPreferences: {
       backgroundThrottling: false
     }
