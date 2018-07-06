@@ -140,14 +140,24 @@ const tcYunUpload = async (img, type, webContents) => {
     webContents.send('uploadProgress', 100)
     return imgList
   } catch (err) {
-    const body = JSON.parse(err.error)
+    const options = db.read().get('picBed.tcyun').value()
+    let body
+    if (!options.version || options.version === 'v4') {
+      body = JSON.parse(err.error)
+      const notification = new Notification({
+        title: '上传失败！',
+        body: `错误码：${body.code}，请打开浏览器粘贴地址查看相关原因。`
+      })
+      notification.show()
+      clipboard.writeText('https://cloud.tencent.com/document/product/436/8432')
+    } else {
+      const notification = new Notification({
+        title: '上传失败！',
+        body: `请检查你的配置项是否正确`
+      })
+      notification.show()
+    }
     webContents.send('uploadProgress', -1)
-    const notification = new Notification({
-      title: '上传失败！',
-      body: `错误码：${body.code}，请打开浏览器粘贴地址查看相关原因。`
-    })
-    notification.show()
-    clipboard.writeText('https://cloud.tencent.com/document/product/436/8432')
     throw new Error(err)
   }
 }
