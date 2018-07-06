@@ -4,6 +4,7 @@
       PicGo - {{ version }}
       <div class="handle-bar" v-if="os !== 'darwin'">
         <i class="el-icon-minus" @click="minimizeWindow"></i>
+        <i class="el-icon-circle-plus-outline" @click="openMiniWindow"></i>
         <i class="el-icon-close" @click="closeWindow"></i>
       </div>
     </div>
@@ -205,7 +206,7 @@ export default {
       this.menu = Menu.buildFromTemplate(template)
     },
     openDialog () {
-      this.menu.popup(remote.getCurrentWindow)
+      this.menu.popup(remote.getCurrentWindow())
     },
     keyDetect (type, event) {
       this.shortKey[type] = keyDetect(event).join('+')
@@ -234,6 +235,9 @@ export default {
           return false
         }
       })
+    },
+    openMiniWindow () {
+      this.$electron.ipcRenderer.send('openMiniWindow')
     }
   },
   beforeRouteEnter: (to, from, next) => {
@@ -259,7 +263,7 @@ export default {
       position absolute
       top 2px
       right 4px
-      width 40px
+      width 60px
       z-index 10000
       -webkit-app-region no-drag
       i
@@ -271,6 +275,9 @@ export default {
       .el-icon-close
         &:hover
           color #F15140
+      .el-icon-circle-plus-outline
+        &:hover
+          color #69C282
   .side-bar-menu
     position fixed
     height calc(100vh - 22px)

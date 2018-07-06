@@ -288,6 +288,7 @@ export default {
     position absolute
     top: 38px
     transition all .2s ease-in-out .1s
+    width 100%
     &.small
       height: 245px
       top: 152px

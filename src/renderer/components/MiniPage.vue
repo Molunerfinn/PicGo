@@ -25,7 +25,13 @@ export default {
       dragover: false,
       progress: 0,
       showProgress: false,
-      showError: false
+      showError: false,
+      dragging: false,
+      wX: '',
+      wY: '',
+      screenX: '',
+      screenY: '',
+      menu: null
     }
   },
   mounted () {
@@ -38,6 +44,10 @@ export default {
         this.showError = true
       }
     })
+    this.buildMenu()
+    window.addEventListener('mousedown', this.handleMouseDown, false)
+    window.addEventListener('mousemove', this.handleMouseMove, false)
+    window.addEventListener('mouseup', this.handleMouseUp, false)
   },
   watch: {
     progress (val) {
@@ -74,10 +84,58 @@ export default {
         sendFiles.push(obj)
       })
       this.$electron.ipcRenderer.send('uploadChoosedFiles', sendFiles)
+    },
+    handleMouseDown (e) {
+      this.dragging = true
+      this.wX = e.pageX
+      this.wY = e.pageY
+      this.screenX = e.screenX
+      this.screenY = e.screenY
+    },
+    handleMouseMove (e) {
+      e.preventDefault()
+      e.stopPropagation()
+      if (this.dragging) {
+        const xLoc = e.screenX - this.wX
+        const yLoc = e.screenY - this.wY
+        this.$electron.remote.BrowserWindow.getFocusedWindow().setPosition(xLoc, yLoc)
+      }
+    },
+    handleMouseUp (e) {
+      this.dragging = false
+      if (this.screenX === e.screenX && this.screenY === e.screenY) {
+        if (e.button === 0) { // left mouse
+          this.openUplodWindow()
+        } else {
+          this.openContextMenu()
+        }
+      }
+    },
+    openContextMenu () {
+      this.menu.popup(this.$electron.remote.getCurrentWindow())
+    },
+    buildMenu () {
+      const _this = this
+      const template = [
+        {
+          label: '打开详细窗口',
+          click () {
+            _this.$electron.ipcRenderer.send('openSettingWindow')
+          }
+        },
+        {
+          role: 'quit',
+          label: '退出'
+        }
+      ]
+      this.menu = this.$electron.remote.Menu.buildFromTemplate(template)
     }
   },
   beforeDestroy () {
     this.$electron.ipcRenderer.removeAllListeners('uploadProgress')
+    window.removeEventListener('mousedown', this.handleMouseDown, false)
+    window.removeEventListener('mousemove', this.handleMouseMove, false)
+    window.removeEventListener('mouseup', this.handleMouseUp, false)
   }
 }
 </script>
@@ -87,7 +145,6 @@ export default {
     color #FFF
     height 100vh
     width 100vw
-    -webkit-app-region: drag
     border-radius 50%
     text-align center
     line-height 100vh
@@ -98,6 +155,7 @@ export default {
     position relative
     border 4px solid #fff
     box-sizing border-box
+    cursor pointer
     #upload-area
       height 100%
       width 100%

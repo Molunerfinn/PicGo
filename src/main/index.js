@@ -75,7 +75,6 @@ function createTray () {
         } else {
           settingWindow.show()
           settingWindow.focus()
-          miniWindow.show()
         }
       }
     },
@@ -196,10 +195,13 @@ const createWindow = () => {
 }
 
 const createMiniWidow = () => {
+  if (miniWindow) {
+    return false
+  }
   miniWindow = new BrowserWindow({
     height: 64,
-    width: 64, // 196
-    show: true,
+    width: 64,
+    show: false,
     frame: false,
     fullscreenable: false,
     resizable: false,
@@ -430,6 +432,23 @@ ipcMain.on('autoStart', (evt, val) => {
   app.setLoginItemSettings({
     openAtLogin: val
   })
+})
+
+ipcMain.on('openSettingWindow', (evt) => {
+  if (!settingWindow) {
+    createSettingWindow()
+  } else {
+    settingWindow.show()
+  }
+  miniWindow.hide()
+})
+
+ipcMain.on('openMiniWindow', (evt) => {
+  if (!miniWindow) {
+    createMiniWidow()
+  }
+  miniWindow.show()
+  settingWindow.hide()
 })
 
 const shortKeyHash = {
