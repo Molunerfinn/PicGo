@@ -124,6 +124,12 @@ export default {
           }
         },
         {
+          label: '剪贴板图片上传',
+          click () {
+            _this.$electron.ipcRenderer.send('uploadClipboardFilesFromUploadPage')
+          }
+        },
+        {
           role: 'quit',
           label: '退出'
         }

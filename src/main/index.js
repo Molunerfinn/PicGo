@@ -323,7 +323,12 @@ const uploadClipboardFiles = async () => {
       imgUrl
     }
   }
-  const win = settingWindow || window
+  let win
+  if (miniWindow.isVisible) {
+    win = miniWindow
+  } else {
+    win = settingWindow || window
+  }
   img = await uploader(uploadImg, 'imgFromClipboard', win.webContents)
   if (img !== false) {
     if (img.length > 0) {
