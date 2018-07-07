@@ -76,6 +76,9 @@ function createTray () {
           settingWindow.show()
           settingWindow.focus()
         }
+        if (miniWindow) {
+          miniWindow.hide()
+        }
       }
     },
     {
@@ -449,6 +452,7 @@ ipcMain.on('openMiniWindow', (evt) => {
     createMiniWidow()
   }
   miniWindow.show()
+  miniWindow.focus()
   settingWindow.hide()
 })
 
