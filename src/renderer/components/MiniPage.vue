@@ -16,6 +16,7 @@
 </template>
 <script>
 import mixin from './mixin'
+import picBed from '../../datastore/pic-bed.js'
 export default {
   name: 'mini-page',
   mixins: [mixin],
@@ -107,6 +108,16 @@ export default {
         if (e.button === 0) { // left mouse
           this.openUplodWindow()
         } else {
+          let _this = this
+          const types = picBed.map(item => item.type)
+          let submenuItem = this.menu.items[1].submenu.items
+          submenuItem.forEach((item, index) => {
+            const result = _this.$db.read().get('picBed.current').value() === types[index]
+            if (result) {
+              item.click()
+              return true
+            }
+          })
           this.openContextMenu()
         }
       }
@@ -116,12 +127,28 @@ export default {
     },
     buildMenu () {
       const _this = this
+      const submenu = picBed.map(item => {
+        return {
+          label: item.name,
+          type: 'radio',
+          checked: this.$db.read().get('picBed.current').value() === item.type,
+          click () {
+            _this.$db.read().set('picBed.current', item.type).write()
+            _this.$electron.ipcRenderer.send('syncPicBed')
+          }
+        }
+      })
       const template = [
         {
           label: '打开详细窗口',
           click () {
             _this.$electron.ipcRenderer.send('openSettingWindow')
           }
+        },
+        {
+          label: '选择默认图床',
+          type: 'submenu',
+          submenu
         },
         {
           label: '剪贴板图片上传',

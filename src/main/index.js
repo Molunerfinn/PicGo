@@ -52,6 +52,9 @@ function createTray () {
       checked: db.read().get('picBed.current').value() === item.type,
       click () {
         db.read().set('picBed.current', item.type).write()
+        if (settingWindow) {
+          settingWindow.webContents.send('syncPicBed')
+        }
       }
     }
   })
@@ -354,6 +357,22 @@ const uploadClipboardFiles = async () => {
   }
 }
 
+const updateDefaultPicBed = () => {
+  if (process.platform === 'darwin' || process.platform === 'win32') {
+    const types = picBed.map(item => item.type)
+    let submenuItem = contextMenu.items[2].submenu.items
+    submenuItem.forEach((item, index) => {
+      const result = db.read().get('picBed.current').value() === types[index]
+      if (result) {
+        item.click() // It's a bug which can not set checked status
+        return true
+      }
+    })
+  } else {
+    return false
+  }
+}
+
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
   const img = await uploader(file, 'imgFromClipboard', window.webContents)
   if (img !== false) {
@@ -422,21 +441,6 @@ ipcMain.on('updateCustomLink', (evt, oldLink) => {
   notification.show()
 })
 
-ipcMain.on('updateDefaultPicBed', (evt) => {
-  if (process.platform === 'darwin' || process.platform === 'win32') {
-    const types = picBed.map(item => item.type)
-    let submenuItem = contextMenu.items[2].submenu.items
-    submenuItem.forEach((item, index) => {
-      const result = db.read().get('picBed.current').value() === types[index]
-      if (result) {
-        item.click() // It's a bug which can not set checked status
-      }
-    })
-  } else {
-    return false
-  }
-})
-
 ipcMain.on('autoStart', (evt, val) => {
   app.setLoginItemSettings({
     openAtLogin: val
@@ -459,6 +463,19 @@ ipcMain.on('openMiniWindow', (evt) => {
   miniWindow.show()
   miniWindow.focus()
   settingWindow.hide()
+})
+
+// update
+ipcMain.on('updateDefaultPicBed', (evt) => {
+  updateDefaultPicBed()
+})
+
+//  from mini window
+ipcMain.on('syncPicBed', (evt) => {
+  if (settingWindow) {
+    settingWindow.webContents.send('syncPicBed')
+  }
+  updateDefaultPicBed()
 })
 
 const shortKeyHash = {

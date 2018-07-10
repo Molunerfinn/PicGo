@@ -79,6 +79,9 @@ export default {
     })
     this.getPasteStyle()
     this.getDefaultPicBed()
+    this.$electron.ipcRenderer.on('syncPicBed', () => {
+      this.getDefaultPicBed()
+    })
   },
   watch: {
     progress (val) {
@@ -95,6 +98,7 @@ export default {
   },
   beforeDestroy () {
     this.$electron.ipcRenderer.removeAllListeners('uploadProgress')
+    this.$electron.ipcRenderer.removeAllListeners('syncPicBed')
   },
   methods: {
     onDrop (e) {
