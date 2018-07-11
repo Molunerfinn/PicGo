@@ -1,11 +1,12 @@
 <template>
   <div id="mini-page"
-    :style="{ 'backgroundImage': 'url(' + logo + ')' }"
+    :style="{ backgroundImage: 'url(' + logo + ')' }"
+    :class="{ linux: os === 'linux' }"
   >
     <!-- <i class="el-icon-upload2"></i> -->
   <div
     id="upload-area"
-    :class="{ 'is-dragover': dragover, 'uploading': showProgress }" @drop.prevent="onDrop" @dragover.prevent="dragover = true" @dragleave.prevent="dragover = false"
+    :class="{ 'is-dragover': dragover, uploading: showProgress, linux: os === 'linux' }" @drop.prevent="onDrop" @dragover.prevent="dragover = true" @dragleave.prevent="dragover = false"
     :style="{ backgroundPosition: '0 ' + progress + '%'}"
   >
     <div id="upload-dragger" @dblclick="openUplodWindow">
@@ -32,8 +33,12 @@ export default {
       wY: '',
       screenX: '',
       screenY: '',
-      menu: null
+      menu: null,
+      os: ''
     }
+  },
+  created () {
+    this.os = process.platform
   },
   mounted () {
     this.$electron.ipcRenderer.on('uploadProgress', (event, progress) => {
@@ -189,11 +194,16 @@ export default {
     border 4px solid #fff
     box-sizing border-box
     cursor pointer
+    &.linux
+      border-radius 0
+      background-size 100vh 100vw
     #upload-area
       height 100%
       width 100%
       border-radius 50%
       transition all .2s ease-in-out
+      &.linux
+        border-radius 0
       &.uploading
         background: linear-gradient(to top, #409EFF 50%, #fff 51%)
         background-size 200%

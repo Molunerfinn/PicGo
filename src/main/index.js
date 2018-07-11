@@ -204,7 +204,7 @@ const createMiniWidow = () => {
   if (miniWindow) {
     return false
   }
-  miniWindow = new BrowserWindow({
+  let obj = {
     height: 64,
     width: 64,
     show: false,
@@ -216,7 +216,13 @@ const createMiniWidow = () => {
     webPreferences: {
       backgroundThrottling: false
     }
-  })
+  }
+
+  if (process.platform === 'linux') {
+    obj.transparent = false
+  }
+
+  miniWindow = new BrowserWindow(obj)
 
   miniWindow.loadURL(miniWinURL)
 
