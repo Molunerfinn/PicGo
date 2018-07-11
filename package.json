@@ -67,7 +67,7 @@
       "allowToChangeInstallationDirectory": true
     },
     "linux": {
-      "icon": "build/icons/256x256.png"
+      "icon": "build/icons/"
     }
   },
   "dependencies": {
