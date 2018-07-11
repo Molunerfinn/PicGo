@@ -86,8 +86,8 @@ const tcYunUpload = async (img, type, webContents) => {
     const path = tcYunOptions.path
     const useV4 = !tcYunOptions.version || tcYunOptions.version === 'v4'
     for (let i in imgList) {
-      const singature = generateSignature(imgList[i].fileName)
-      const options = postOptions(imgList[i].fileName, singature, imgList[i].base64Image)
+      const signature = generateSignature(imgList[i].fileName)
+      const options = postOptions(imgList[i].fileName, signature, imgList[i].base64Image)
       const res = await request(options)
         .then(res => res)
         .catch(err => {
