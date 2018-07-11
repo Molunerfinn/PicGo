@@ -261,6 +261,9 @@ const createSettingWindow = () => {
 
   settingWindow.on('closed', () => {
     settingWindow = null
+    if (process.platform === 'linux') {
+      app.quit()
+    }
   })
   createMenu()
   createMiniWidow()
