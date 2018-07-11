@@ -22,11 +22,24 @@
 
 ## 应用说明
 
-PicGo目前支持了`微博图床`，`七牛图床`，`腾讯云COS v4\v5版本`，`又拍云`，`GitHub`，`SM.MS`。未来将支持更多图床。
+PicGo目前支持了
 
-支持macOS、windows 64位（v1.3.0以上）系统，未来将支持linux。
+- `微博图床` v1.0
+- `七牛图床` v1.0
+- `腾讯云COS v4\v5版本` v1.1 & v1.5.0
+- `又拍云` v1.2.0
+- `GitHub` v1.5.0
+- `SM.MS` v1.5.1
+- `阿里云OSS` v1.6.0
+- `Imgur` v1.6.0
 
-支持快捷键`command+shift+p`（macOS）或者`control+shift+p`（windows）用以支持快捷上传剪贴板里的图片（第一张）。PicGo v1.4.0版本及以上支持自定义快捷键啦，使用方法见[配置手册](https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BF%AB%E6%8D%B7%E9%94%AE)。
+未来将不增加默认的图床支持。待PicGo v2.0出来后你可以自行开发第三方图床插件。
+
+支持macOS、windows 64位（>= v1.3.1），linux（>= v1.6.0）。
+
+支持快捷键`command+shift+p`（macOS）或者`control+shift+p`（windows\linux）用以支持快捷上传剪贴板里的图片（第一张）。
+
+PicGo v1.4.0版本及以上支持自定义快捷键，使用方法见[配置手册](https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BF%AB%E6%8D%B7%E9%94%AE)。
 
 点击此处下载[应用](https://github.com/Molunerfinn/PicGo/releases)，macOS用户请下载最新版本的`dmg`文件，windows用户请下载最新版本的`exe`文件。**如果是国内用户下载github release文件速度很慢的话，推荐使用[Free Download Manager](http://www.freedownloadmanager.org/download.htm)来下载，速度会快。**
 
