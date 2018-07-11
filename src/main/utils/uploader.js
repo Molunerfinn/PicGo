@@ -2,14 +2,14 @@ import db from '../../datastore/index'
 import { Notification } from 'electron'
 import picBeds from '../../datastore/pic-bed-handler'
 
-const checkUploader = (type) => {
-  const currentUploader = db.read().get(`picBed.${type}`).value()
-  if (currentUploader) {
-    return true
-  } else {
-    return false
-  }
-}
+// const checkUploader = (type) => {
+//   const currentUploader = db.read().get(`picBed.${type}`).value()
+//   if (currentUploader) {
+//     return true
+//   } else {
+//     return false
+//   }
+// }
 
 const uploader = (img, type, webContents) => {
   if (db.read().get('picBed.uploadNotification').value()) {
@@ -20,11 +20,16 @@ const uploader = (img, type, webContents) => {
     notification.show()
   }
   const uploadType = db.read().get('picBed.current').value()
-  if (checkUploader(uploadType)) {
+  // if (checkUploader(uploadType)) {
+  try {
     return picBeds[uploadType](img, type, webContents)
-  } else {
+  } catch (e) {
+    console.log(e)
     return false
   }
+  // } else {
+  //   return false
+  // }
 }
 
 export default uploader
