@@ -1,21 +1,32 @@
+import request from 'request-promise'
 import * as img2Base64 from './img2base64'
 import db from '../../datastore/index'
 import { Notification, clipboard } from 'electron'
-import { Wrapper as OSS } from 'ali-oss'
+import crypto from 'crypto'
 
-let client
-
-// generate OSS Options
-const generateOSSOptions = () => {
+// generate OSS signature
+const generateSignature = (fileName) => {
   const options = db.read().get('picBed.aliyun').value()
-  client = new OSS({
-    region: `${options.area}`,
-    accessKeyId: `${options.accessKeyId}`,
-    accessKeySecret: `${options.accessKeySecret}`,
-    bucket: `${options.bucket}`,
-    secure: true
-  })
-  return client
+  const date = new Date().toGMTString()
+  const signString = `PUT\n\n\n${date}\n/${options.bucket}/${options.path}${fileName}`
+
+  const signature = crypto.createHmac('sha1', options.accessKeySecret).update(signString).digest('base64')
+  return `OSS ${options.accessKeyId}:${signature}`
+}
+
+const postOptions = (fileName, signature, imgBase64) => {
+  const options = db.read().get('picBed.aliyun').value()
+  return {
+    method: 'PUT',
+    url: `https://${options.bucket}.${options.area}.aliyuncs.com/${encodeURI(options.path)}${encodeURI(fileName)}`,
+    headers: {
+      Host: `${options.bucket}.${options.area}.aliyuncs.com`,
+      Authorization: signature,
+      Date: new Date().toGMTString()
+    },
+    body: Buffer.from(imgBase64, 'base64'),
+    resolveWithFullResponse: true
+  }
 }
 
 const aliYunUpload = async (img, type, webContents) => {
@@ -27,15 +38,17 @@ const aliYunUpload = async (img, type, webContents) => {
     const customUrl = aliYunOptions.customUrl
     const path = aliYunOptions.path
     const length = imgList.length
-    generateOSSOptions()
+    generateSignature()
     for (let i in imgList) {
-      let body = await client.put(`${path}${imgList[i].fileName}`, Buffer.from(imgList[i].base64Image, 'base64'))
-      if (body.res.status === 200) {
+      const signature = generateSignature(imgList[i].fileName)
+      const options = postOptions(imgList[i].fileName, signature, imgList[i].base64Image)
+      let body = await request(options)
+      if (body.statusCode === 200) {
         delete imgList[i].base64Image
         if (customUrl) {
           imgList[i]['imgUrl'] = `${customUrl}/${path}${imgList[i].fileName}`
         } else {
-          imgList[i]['imgUrl'] = body.url
+          imgList[i]['imgUrl'] = `https://${aliYunOptions.bucket}.${aliYunOptions.area}.aliyuncs.com/${path}${imgList[0].fileName}`
         }
         imgList[i]['type'] = 'aliyun'
         if (i - length === -1) {
