@@ -3,12 +3,13 @@ import * as img2Base64 from './img2base64'
 import db from '../../datastore/index'
 import { Notification, clipboard } from 'electron'
 import crypto from 'crypto'
+import mime from 'mime-types'
 
 // generate OSS signature
 const generateSignature = (fileName) => {
   const options = db.read().get('picBed.aliyun').value()
   const date = new Date().toGMTString()
-  const signString = `PUT\n\n\n${date}\n/${options.bucket}/${options.path}${fileName}`
+  const signString = `PUT\n\n${mime.lookup(fileName)}\n${date}\n/${options.bucket}/${options.path}${fileName}`
 
   const signature = crypto.createHmac('sha1', options.accessKeySecret).update(signString).digest('base64')
   return `OSS ${options.accessKeyId}:${signature}`
@@ -22,7 +23,8 @@ const postOptions = (fileName, signature, imgBase64) => {
     headers: {
       Host: `${options.bucket}.${options.area}.aliyuncs.com`,
       Authorization: signature,
-      Date: new Date().toGMTString()
+      Date: new Date().toGMTString(),
+      'content-type': mime.lookup(fileName)
     },
     body: Buffer.from(imgBase64, 'base64'),
     resolveWithFullResponse: true
