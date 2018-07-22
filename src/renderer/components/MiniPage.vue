@@ -104,7 +104,12 @@ export default {
       if (this.dragging) {
         const xLoc = e.screenX - this.wX
         const yLoc = e.screenY - this.wY
-        this.$electron.remote.BrowserWindow.getFocusedWindow().setPosition(xLoc, yLoc)
+        this.$electron.remote.BrowserWindow.getFocusedWindow().setBounds({
+          x: xLoc,
+          y: yLoc,
+          width: 64,
+          height: 64
+        })
       }
     },
     handleMouseUp (e) {
