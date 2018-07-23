@@ -15,11 +15,13 @@
           </el-row>
           <el-row class="handle-bar" :gutter="16">
             <el-col :span="12">
-              <el-input placeholder="搜索" size="mini" v-model="searchText"></el-input>
+              <el-input placeholder="搜索" size="mini" v-model="searchText">
+                <i slot="suffix" class="el-input__icon el-icon-close" v-if="searchText" @click="cleanSearch" style="cursor: pointer"></i>
+              </el-input>
             </el-col>
             <el-col :span="6">
-              <div class="item-base" @click="cleanSearch">
-                清空搜索
+              <div class="item-base copy" :class="{ active: isMultiple(choosedList)}" @click="multiCopy">
+                <i class="el-icon-document"></i> 批量复制
               </div>
             </el-col>
             <el-col :span="6">
@@ -143,7 +145,7 @@ export default {
       this.idx = null
     },
     copy (url) {
-      const style = this.$db.read().get('picBed.pasteStyle').value()
+      const style = this.$db.read().get('picBed.pasteStyle').value() || 'markdown'
       const copyLink = pasteStyle(style, url)
       const obj = {
         title: '复制链接成功',
@@ -153,7 +155,7 @@ export default {
       const myNotification = new window.Notification(obj.title, obj)
       this.$electron.clipboard.writeText(copyLink)
       myNotification.onclick = () => {
-        return true
+        console.log(123)
       }
     },
     remove (id) {
@@ -239,6 +241,25 @@ export default {
         })
       }
     },
+    multiCopy () {
+      let copyString = ''
+      const style = this.$db.read().get('picBed.pasteStyle').value() || 'markdown'
+      Object.keys(this.choosedList).forEach(key => {
+        if (this.choosedList[key]) {
+          console.log(pasteStyle(style, this.$db.read().get('uploaded').getById(key).value().imgUrl), style)
+          copyString += pasteStyle(style, this.$db.read().get('uploaded').getById(key).value().imgUrl) + '\n'
+        }
+      })
+      const obj = {
+        title: '复制链接成功',
+        body: copyString
+      }
+      const myNotification = new window.Notification(obj.title, obj)
+      this.$electron.clipboard.writeText(copyString)
+      myNotification.onclick = () => {
+        return true
+      }
+    },
     toggleHandleBar () {
       this.handleBarActive = !this.handleBarActive
     }
@@ -266,13 +287,20 @@ export default {
   cursor pointer
   font-size 13px
   transition all .2s ease-in-out
+  &.copy
+    cursor not-allowed
+    background #49B1F5
+    &.active
+      cursor pointer
+      background #1B9EF3
+      color #fff
   &.delete
     cursor not-allowed
     background #F47466
-  &.delete.active
-    cursor pointer
-    background #F15140
-    color #fff
+    &.active
+      cursor pointer
+      background #F15140
+      color #fff
 .long-list
   width: calc(83.3333333% - 6px)
 #gallery-view

@@ -3,6 +3,7 @@ import * as img2Base64 from './img2base64'
 import db from '../../datastore/index'
 import { Notification, clipboard } from 'electron'
 import crypto from 'crypto'
+import mime from 'mime-types'
 
 // generate COS signature string
 const generateSignature = (fileName) => {
@@ -67,7 +68,7 @@ const postOptions = (fileName, signature, imgBase64) => {
       headers: {
         Host: `${options.bucket}.cos.${options.area}.myqcloud.com`,
         Authorization: `q-sign-algorithm=sha1&q-ak=${options.secretId}&q-sign-time=${signature.signTime}&q-key-time=${signature.signTime}&q-header-list=host&q-url-param-list=&q-signature=${signature.signature}`,
-        contentType: 'multipart/form-data'
+        contentType: mime.lookup(fileName)
       },
       body: Buffer.from(imgBase64, 'base64'),
       resolveWithFullResponse: true

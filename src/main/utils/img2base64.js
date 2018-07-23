@@ -50,7 +50,7 @@ const imgFromPath = async (imgPath) => {
       name = await waitForRename(window, window.webContents.id)
     }
     let buffer = await fs.readFile(item)
-    let base64Image = Buffer.from(buffer, 'binary').toString('base64')
+    let base64Image = Buffer.from(buffer).toString('base64')
     let imgSize = sizeOf(item)
     results.push({
       base64Image,
@@ -105,7 +105,7 @@ const imgFromUploader = async (files) => {
       name = await waitForRename(window, window.webContents.id)
     }
     let buffer = await fs.readFile(item.path)
-    let base64Image = Buffer.from(buffer, 'binary').toString('base64')
+    let base64Image = Buffer.from(buffer).toString('base64')
     let imgSize = sizeOf(item.path)
     results.push({
       base64Image,
