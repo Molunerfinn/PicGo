@@ -22,6 +22,8 @@
 
 ## 应用说明
 
+**PicGo在上传图片之后自动会将图片链接复制到你的剪贴板里，可选5种复制的链接格式。**
+
 PicGo目前支持了
 
 - `微博图床` v1.0
@@ -37,13 +39,11 @@ PicGo目前支持了
 
 支持macOS、windows 64位（>= v1.3.1），linux（>= v1.6.0）。
 
-支持快捷键`command+shift+p`（macOS）或者`control+shift+p`（windows\linux）用以支持快捷上传剪贴板里的图片（第一张）。
+支持快捷键`command+shift+p`（macOS）或者`control+shift+p`（windows\linux）用以支持快捷上传剪贴板里的图片（第一张）。PicGo v1.4.0版本及以上支持自定义快捷键，使用方法见[配置手册](https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BF%AB%E6%8D%B7%E9%94%AE)。
 
-PicGo v1.4.0版本及以上支持自定义快捷键，使用方法见[配置手册](https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BF%AB%E6%8D%B7%E9%94%AE)。
+**如果第一次使用，请参考应用使用[手册](https://github.com/Molunerfinn/PicGo/wiki)。遇到问题了还可以看看[FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md)以及被关闭的[issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)。**
 
 点击此处下载[应用](https://github.com/Molunerfinn/PicGo/releases)，macOS用户请下载最新版本的`dmg`文件，windows用户请下载最新版本的`exe`文件，linux用户请下载`AppImage`文件。**如果是国内用户下载github release文件速度很慢的话，推荐使用[Free Download Manager](http://www.freedownloadmanager.org/download.htm)来下载，速度会快。**
-
-如果第一次使用，请参考应用使用[手册](https://github.com/Molunerfinn/PicGo/wiki)。
 
 开发进度可以查看[Projects](https://github.com/Molunerfinn/PicGo/projects)，会同步更新开发进度。
 
@@ -88,7 +88,7 @@ npm run build
 
 ## 赞助
 
-如果你喜欢PicGo并且它对你确实有帮助，欢迎给我打赏一杯咖啡的钱哈~
+如果你喜欢PicGo并且它对你确实有帮助，欢迎给我打赏一杯咖啡哈~
 
 支付宝：
 
