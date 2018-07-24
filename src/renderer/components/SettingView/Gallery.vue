@@ -155,7 +155,7 @@ export default {
       const myNotification = new window.Notification(obj.title, obj)
       this.$electron.clipboard.writeText(copyLink)
       myNotification.onclick = () => {
-        console.log(123)
+        return true
       }
     },
     remove (id) {
@@ -242,22 +242,23 @@ export default {
       }
     },
     multiCopy () {
-      let copyString = ''
-      const style = this.$db.read().get('picBed.pasteStyle').value() || 'markdown'
-      Object.keys(this.choosedList).forEach(key => {
-        if (this.choosedList[key]) {
-          console.log(pasteStyle(style, this.$db.read().get('uploaded').getById(key).value().imgUrl), style)
-          copyString += pasteStyle(style, this.$db.read().get('uploaded').getById(key).value().imgUrl) + '\n'
+      if (Object.values(this.choosedList).some(item => item)) {
+        let copyString = ''
+        const style = this.$db.read().get('picBed.pasteStyle').value() || 'markdown'
+        Object.keys(this.choosedList).forEach(key => {
+          if (this.choosedList[key]) {
+            copyString += pasteStyle(style, this.$db.read().get('uploaded').getById(key).value().imgUrl) + '\n'
+          }
+        })
+        const obj = {
+          title: '批量复制链接成功',
+          body: copyString
         }
-      })
-      const obj = {
-        title: '复制链接成功',
-        body: copyString
-      }
-      const myNotification = new window.Notification(obj.title, obj)
-      this.$electron.clipboard.writeText(copyString)
-      myNotification.onclick = () => {
-        return true
+        const myNotification = new window.Notification(obj.title, obj)
+        this.$electron.clipboard.writeText(copyString)
+        myNotification.onclick = () => {
+          return true
+        }
       }
     },
     toggleHandleBar () {
