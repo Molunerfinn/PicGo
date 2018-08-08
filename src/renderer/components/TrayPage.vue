@@ -54,10 +54,7 @@
       this.$electron.ipcRenderer.on('clipboardFiles', (event, files) => {
         this.clipboardFiles = files
       })
-      this.$electron.ipcRenderer.on('uploadFiles', (event, files) => {
-        files.forEach(item => {
-          this.$db.read().get('uploaded').insert(item).write()
-        })
+      this.$electron.ipcRenderer.on('uploadFiles', (event) => {
         this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
       })
       this.$electron.ipcRenderer.on('updateFiles', (event) => {

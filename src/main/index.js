@@ -352,6 +352,9 @@ const uploadClipboardFiles = async () => {
         icon: img[0].imgUrl
       })
       notification.show()
+      img.forEach(item => {
+        db.read().get('uploaded').insert(item).write()
+      })
       window.webContents.send('clipboardFiles', [])
       window.webContents.send('uploadFiles', img)
       if (settingWindow) {
@@ -397,8 +400,11 @@ ipcMain.on('uploadClipboardFiles', async (evt, file) => {
       icon: img[0].imgUrl
     })
     notification.show()
+    img.forEach(item => {
+      db.read().get('uploaded').insert(item).write()
+    })
     window.webContents.send('clipboardFiles', [])
-    window.webContents.send('uploadFiles', img)
+    window.webContents.send('uploadFiles')
     if (settingWindow) {
       settingWindow.webContents.send('updateGallery')
     }
@@ -428,6 +434,9 @@ ipcMain.on('uploadChoosedFiles', async (evt, files) => {
       }, i * 100)
     }
     clipboard.writeText(pasteText)
+    imgs.forEach(item => {
+      db.read().get('uploaded').insert(item).write()
+    })
     window.webContents.send('uploadFiles', imgs)
     if (settingWindow) {
       settingWindow.webContents.send('updateGallery')

@@ -104,7 +104,9 @@ export default {
   created () {
     this.getGallery()
     this.$electron.ipcRenderer.on('updateGallery', (event) => {
-      this.filterList = this.getGallery()
+      this.$nextTick(() => {
+        this.filterList = this.getGallery()
+      })
     })
   },
   computed: {
