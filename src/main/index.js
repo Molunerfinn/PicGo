@@ -163,6 +163,9 @@ function createTray () {
           notification.show()
         }, i * 100)
       }
+      imgs.forEach(item => {
+        db.read().get('uploaded').insert(item).write()
+      })
       window.webContents.send('dragFiles', imgs)
     } else {
       uploadFailed()
