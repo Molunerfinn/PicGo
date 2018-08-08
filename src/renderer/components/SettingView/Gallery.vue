@@ -103,10 +103,18 @@ export default {
   },
   created () {
     this.getGallery()
+    this.$electron.ipcRenderer.on('updateGallery', (event) => {
+      this.filterList = this.getGallery()
+    })
   },
   computed: {
-    filterList (val) {
-      return this.getGallery()
+    filterList: {
+      get () {
+        return this.getGallery()
+      },
+      set (val) {
+        return this.val
+      }
     }
   },
   methods: {
@@ -264,6 +272,9 @@ export default {
     toggleHandleBar () {
       this.handleBarActive = !this.handleBarActive
     }
+  },
+  beforeDestroy () {
+    this.$electron.ipcRenderer.removeAllListeners('updateGallery')
   }
 }
 </script>

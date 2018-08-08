@@ -34,6 +34,7 @@ const smmsUpload = async function (img, type, webContents) {
       if (body.code === 'success') {
         delete imgList[i].base64Image
         imgList[i]['imgUrl'] = body.data.url
+        imgList[i]['type'] = 'smms'
       } else {
         webContents.send('uploadProgress', -1)
         return new Error()

@@ -354,6 +354,9 @@ const uploadClipboardFiles = async () => {
       notification.show()
       window.webContents.send('clipboardFiles', [])
       window.webContents.send('uploadFiles', img)
+      if (settingWindow) {
+        settingWindow.webContents.send('updateGallery')
+      }
     } else {
       const notification = new Notification({
         title: '上传不成功',
@@ -396,6 +399,9 @@ ipcMain.on('uploadClipboardFiles', async (evt, file) => {
     notification.show()
     window.webContents.send('clipboardFiles', [])
     window.webContents.send('uploadFiles', img)
+    if (settingWindow) {
+      settingWindow.webContents.send('updateGallery')
+    }
   } else {
     uploadFailed()
   }
@@ -423,6 +429,9 @@ ipcMain.on('uploadChoosedFiles', async (evt, files) => {
     }
     clipboard.writeText(pasteText)
     window.webContents.send('uploadFiles', imgs)
+    if (settingWindow) {
+      settingWindow.webContents.send('updateGallery')
+    }
   } else {
     uploadFailed()
   }
