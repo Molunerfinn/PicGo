@@ -40,7 +40,6 @@ const aliYunUpload = async (img, type, webContents) => {
     const customUrl = aliYunOptions.customUrl
     const path = aliYunOptions.path
     const length = imgList.length
-    generateSignature()
     for (let i in imgList) {
       const signature = generateSignature(imgList[i].fileName)
       const options = postOptions(imgList[i].fileName, signature, imgList[i].base64Image)
@@ -75,7 +74,6 @@ const aliYunUpload = async (img, type, webContents) => {
       body: `请检查你的配置项是否正确`
     })
     notification.show()
-    clipboard.writeText('https://cloud.tencent.com/document/product/436/8432')
     throw new Error(err)
   }
 }
