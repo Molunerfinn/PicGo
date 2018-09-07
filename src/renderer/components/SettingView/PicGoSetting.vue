@@ -77,6 +77,16 @@
             ></el-switch>
           </el-form-item>
           <el-form-item
+            label="mini窗口置顶"
+          >
+            <el-switch
+              v-model="form.miniWindowOntop"
+              active-text="开"
+              inactive-text="关"
+              @change="handleMiniWindowOntop"
+            ></el-switch>
+          </el-form-item>
+          <el-form-item
             label="选择显示的图床"
           >
             <el-checkbox-group
@@ -201,7 +211,8 @@ export default {
         autoStart: this.$db.get('picBed.autoStart').value() || false,
         rename: this.$db.get('picBed.rename').value() || false,
         autoRename: this.$db.get('picBed.autoRename').value() || false,
-        uploadNotification: this.$db.get('picBed.uploadNotification').value() || false
+        uploadNotification: this.$db.get('picBed.uploadNotification').value() || false,
+        miniWindowOntop: db.read().get('miniWindowOntop').value() || false
       },
       picBed: this.$picBed,
       keyBindingVisible: false,
@@ -316,6 +327,10 @@ export default {
     },
     handleUploadNotification (val) {
       this.$db.read().set('picBed.uploadNotification', val).write()
+    },
+    handleMiniWindowOntop (val) {
+      this.$db.read().set('miniWindowOntop', val).write()
+      this.$message('需要重启生效')
     }
   },
   beforeDestroy () {

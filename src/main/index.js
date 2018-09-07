@@ -225,6 +225,10 @@ const createMiniWidow = () => {
     obj.transparent = false
   }
 
+  if (db.read().get('miniWindowOntop').value()) {
+    obj.alwaysOnTop = true
+  }
+
   miniWindow = new BrowserWindow(obj)
 
   miniWindow.loadURL(miniWinURL)

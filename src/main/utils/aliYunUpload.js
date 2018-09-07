@@ -1,7 +1,7 @@
 import request from 'request-promise'
 import * as img2Base64 from './img2base64'
 import db from '../../datastore/index'
-import { Notification, clipboard } from 'electron'
+import { Notification } from 'electron'
 import crypto from 'crypto'
 import mime from 'mime-types'
 
