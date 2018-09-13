@@ -137,6 +137,9 @@ function createTray () {
         settingWindow.show()
         settingWindow.focus()
       }
+      if (miniWindow) {
+        miniWindow.hide()
+      }
     }
   })
 
@@ -210,7 +213,7 @@ const createMiniWidow = () => {
   let obj = {
     height: 64,
     width: 64,
-    show: false,
+    show: true,
     frame: false,
     fullscreenable: false,
     resizable: false,
@@ -256,7 +259,7 @@ const createSettingWindow = () => {
     }
   }
   if (process.platform !== 'darwin') {
-    options.show = true
+    options.show = false
     options.frame = false
     options.backgroundColor = '#3f3c37'
     options.transparent = false
