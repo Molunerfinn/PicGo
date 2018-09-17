@@ -48,6 +48,10 @@
             <i class="el-icon-setting"></i>
             <span slot="title">PicGo设置</span>
           </el-menu-item>
+          <el-menu-item index="plugin">
+            <i class="el-icon-share"></i>
+            <span slot="title">插件设置</span>
+          </el-menu-item>
         </el-menu>
         <i class="el-icon-info setting-window" @click="openDialog"></i>
       </el-col>

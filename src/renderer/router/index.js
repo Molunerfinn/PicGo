@@ -79,6 +79,11 @@ export default new Router({
           path: 'setting',
           component: require('@/components/SettingView/PicGoSetting').default,
           name: 'setting'
+        },
+        {
+          path: 'plugin',
+          component: require('@/components/SettingView/Plugin').default,
+          name: 'plugin'
         }
       ]
     },
