@@ -428,7 +428,8 @@ ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
 })
 
 ipcMain.on('uploadChoosedFiles', async (evt, files) => {
-  const imgs = await uploader(files, 'imgFromUploader', evt.sender)
+  const input = files.map(item => item.path)
+  const imgs = await uploader(input, 'imgFromUploader', evt.sender)
   if (imgs !== false) {
     const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
     let pasteText = ''

@@ -1,36 +1,75 @@
-// import db from '../../datastore/index'
-import { app, Notification } from 'electron'
-// import picBeds from '../../datastore/pic-bed-handler'
+import {
+  app,
+  Notification,
+  BrowserWindow,
+  ipcMain
+} from 'electron'
 import PicGo from 'picgo'
 import path from 'path'
 import fecha from 'fecha'
 
+const renameURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080/#rename-page` : `file://${__dirname}/index.html#rename-page`
+
+const createRenameWindow = () => {
+  let options = {
+    height: 175,
+    width: 300,
+    show: true,
+    fullscreenable: false,
+    resizable: false,
+    vibrancy: 'ultra-dark',
+    webPreferences: {
+      backgroundThrottling: false
+    }
+  }
+
+  if (process.platform !== 'darwin') {
+    options.show = true
+    options.backgroundColor = '#3f3c37'
+    options.autoHideMenuBar = true
+    options.transparent = false
+  }
+
+  const window = new BrowserWindow(options)
+  window.loadURL(renameURL)
+  return window
+}
+
 const STORE_PATH = app.getPath('userData')
 const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
 
-// const checkUploader = (type) => {
-//   const currentUploader = db.read().get(`picBed.${type}`).value()
-//   if (currentUploader) {
-//     return true
-//   } else {
-//     return false
-//   }
-// }
+const waitForShow = (webcontent) => {
+  return new Promise((resolve, reject) => {
+    webcontent.on('dom-ready', () => {
+      resolve()
+    })
+  })
+}
+
+const waitForRename = (window, id) => {
+  return new Promise((resolve, reject) => {
+    ipcMain.once(`rename${id}`, (evt, newName) => {
+      resolve(newName)
+      window.hide()
+    })
+    window.on('close', () => {
+      resolve(null)
+      ipcMain.removeAllListeners(`rename${id}`)
+    })
+  })
+}
 
 const uploader = (img, type, webContents) => {
   const picgo = new PicGo(CONFIG_PATH)
   let input = []
   switch (type) {
-    case 'imgFromPath':
-      input = img
-      break
     case 'imgFromClipboard':
       if (img !== null) {
         const today = fecha.format(new Date(), 'YYYYMMDDHHmmss') + '.png'
         input = [
           {
             base64Image: img.imgUrl.replace(/^data\S+,/, ''),
-            fileName: name || today,
+            fileName: today,
             width: img.width,
             height: img.height,
             extname: '.png'
@@ -39,28 +78,45 @@ const uploader = (img, type, webContents) => {
       }
       break
     default:
-      input = img.map(item => item.path)
+      input = img
       break
   }
+
+  picgo.helper.beforeUploadPlugins.register('renameFn', {
+    handle: async ctx => {
+      const rename = picgo.getConfig('picBed.rename')
+      const autoRename = picgo.getConfig('picBed.autoRename')
+      await Promise.all(ctx.output.map(async item => {
+        let name
+        let fileName
+        if (autoRename) {
+          fileName = fecha.format(new Date(), 'YYYYMMDDHHmmss') + item.extname
+        } else {
+          fileName = item.fileName
+        }
+        if (rename) {
+          const window = createRenameWindow()
+          await waitForShow(window.webContents)
+          window.webContents.send('rename', fileName, window.webContents.id)
+          name = await waitForRename(window, window.webContents.id)
+        }
+        item.fileName = name || fileName
+        console.log(item)
+      }))
+    }
+  })
+
+  picgo.on('beforeTransform', ctx => {
+    if (ctx.getConfig('picBed.uploadNotification')) {
+      const notification = new Notification({
+        title: '上传进度',
+        body: '正在上传'
+      })
+      notification.show()
+    }
+  })
+
   picgo.upload(input)
-  // if (db.read().get('picBed.uploadNotification').value()) {
-  //   const notification = new Notification({
-  //     title: '上传进度',
-  //     body: '正在上传'
-  //   })
-  //   notification.show()
-  // }
-  // const uploadType = db.read().get('picBed.current').value()
-  // // if (checkUploader(uploadType)) {
-  // try {
-  //   return picBeds[uploadType](img, type, webContents)
-  // } catch (e) {
-  //   console.log(e)
-  //   return false
-  // }
-  // } else {
-  //   return false
-  // }
 
   picgo.on('notification', message => {
     const notification = new Notification(message)
@@ -78,6 +134,9 @@ const uploader = (img, type, webContents) => {
       } else {
         resolve(false)
       }
+    })
+    picgo.on('failed', ctx => {
+      resolve(false)
     })
   })
 }
