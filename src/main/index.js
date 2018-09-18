@@ -229,6 +229,10 @@ const createMiniWidow = () => {
     obj.transparent = false
   }
 
+  if (process.platform === 'darwin') {
+    obj.show = false
+  }
+
   if (db.read().get('miniWindowOntop').value()) {
     obj.alwaysOnTop = true
   }

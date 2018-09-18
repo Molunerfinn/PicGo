@@ -6190,7 +6190,7 @@ performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
 
-picgo@^1.0.4:
+picgo@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/picgo/-/picgo-1.1.0.tgz#b9033815f40a77b7f471e478c33382622ccc54de"
   dependencies:
