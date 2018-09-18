@@ -10,31 +10,32 @@
         size="small"
       ></el-input>
     </el-row>
-    <el-row :gutter="20" class="plugin-list">
-      <el-col :span="12">
+    <el-row :gutter="10" class="plugin-list">
+      <el-col :span="12" v-for="(item, index) in pluginList" :key="item.name">
         <div class="plugin-item">
-          <img class="plugin-item__logo" src="https://user-images.githubusercontent.com/12621342/33876119-85a5148e-df5f-11e7-8843-46224e595d52.png">
+          <img class="plugin-item__logo" :src="'file://' + item.logo">
           <div class="plugin-item__content">
             <div class="plugin-item__name">
-              Uploader-SMMS2
+              {{ item.name }}
             </div>
             <div class="plugin-item__desc">
-              saldfjlsajf,ajsldfjasljfk,asmfjsalkfjsakfmasldfjlsajf,ajsfdljsalfjslafdj
+              {{ item.description }}
             </div>
             <div class="plugin-item__info-bar">
               <span class="plugin-item__author">
-                XXXXXXXX
+                {{ item.author }}
               </span>
-              <span class="plugin-item__config">
-                <i class="el-icon-setting"></i>
+              <span class="plugin-item__config" >
+                <span class="reload-button" v-if="item.reload" @click="reloadApp">
+                  重启
+                </span>
+                <i
+                  class="el-icon-setting"
+                  @click="buildContextMenu(item)"
+                ></i>
               </span>
             </div>
           </div>
-        </div>
-      </el-col>
-      <el-col :span="12">
-        <div class="plugin-item">
-          
         </div>
       </el-col>
     </el-row>
@@ -45,7 +46,54 @@ export default {
   name: 'plugin',
   data () {
     return {
-      searchText: ''
+      searchText: '',
+      pluginList: [],
+      menu: null
+    }
+  },
+  created () {
+    this.$electron.ipcRenderer.on('pluginList', (evt, list) => {
+      this.pluginList = list.map(item => {
+        item.reload = false
+        return item
+      })
+    })
+    this.getPluginList()
+    document.addEventListener('keydown', (e) => {
+      if (e.which === 123) {
+        this.$electron.remote.getCurrentWindow().toggleDevTools()
+      }
+    })
+  },
+  methods: {
+    buildContextMenu (plugin) {
+      const _this = this
+      let menu = [{
+        label: '启用插件',
+        enabled: !plugin.enabled,
+        click () {
+          _this.$db.read().set(`plugins.${plugin.name}`, true).write()
+          plugin.enabled = true
+          plugin.reload = true
+        }
+      }, {
+        label: '禁用插件',
+        enabled: plugin.enabled,
+        click () {
+          _this.$db.read().set(`plugins.${plugin.name}`, false).write()
+          plugin.enabled = false
+          plugin.reload = true
+        }
+      }]
+      this.menu = this.$electron.remote.Menu.buildFromTemplate(menu)
+      this.menu.popup(this.$electron.remote.getCurrentWindow())
+    },
+    getPluginList () {
+      this.$electron.ipcRenderer.send('getPluginList')
+    },
+    reloadApp () {
+      this.$electron.remote.app.relaunch()
+      this.$electron.remote.app.exit(0)
     }
   }
 }
@@ -70,6 +118,7 @@ export default {
     user-select text
     transition all .2s ease-in-out
     cursor pointer
+    margin-bottom 10px
     &:hover
       background #333
     &__logo
@@ -78,7 +127,7 @@ export default {
       float left
     &__content
       float left
-      width calc(100% - 74px)
+      width calc(100% - 72px)
       height 64px
       color #aaa
       margin-left 8px
@@ -100,6 +149,7 @@ export default {
       font-size 14px
       height 21px
       line-height 28px
+      position relative
     &__author
       overflow hidden
       text-overflow ellipsis
@@ -107,4 +157,15 @@ export default {
     &__config
       float right
       font-size 16px
+    .reload-button
+      font-size 12px
+      color #ddd
+      background #222
+      padding 1px 8px
+      height 18px
+      line-height 18px
+      text-align center
+      position absolute
+      top 4px
+      right 20px
 </style>

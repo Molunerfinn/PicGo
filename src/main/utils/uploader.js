@@ -4,9 +4,12 @@ import {
   BrowserWindow,
   ipcMain
 } from 'electron'
-import PicGo from 'picgo'
 import path from 'path'
 import fecha from 'fecha'
+
+// eslint-disable-next-line
+const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
+const PicGo = requireFunc('picgo')
 
 const renameURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080/#rename-page` : `file://${__dirname}/index.html#rename-page`
 

@@ -7,6 +7,7 @@ import pasteTemplate from './utils/pasteTemplate'
 import updateChecker from './utils/updateChecker'
 import pkg from '../../package.json'
 import picBed from '../datastore/pic-bed'
+import picgoCoreIPC from './utils/picgoCoreIPC'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -255,7 +256,8 @@ const createSettingWindow = () => {
     transparent: true,
     titleBarStyle: 'hidden',
     webPreferences: {
-      backgroundThrottling: false
+      backgroundThrottling: false,
+      webSecurity: false
     }
   }
   if (process.platform !== 'darwin') {
@@ -397,6 +399,8 @@ const updateDefaultPicBed = () => {
     return false
   }
 }
+
+picgoCoreIPC(app, ipcMain)
 
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
   const img = await uploader(file, 'imgFromClipboard', window.webContents)
