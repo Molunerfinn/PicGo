@@ -39,16 +39,42 @@
         </div>
       </el-col>
     </el-row>
+    <el-dialog
+      :visible.sync="dialogVisible"
+      :modal-append-to-body="false"
+      :title="`配置${configName}`"
+      width="70%"
+    >
+      <config-form
+        :config="config"
+        :type="currentType"
+        :name="configName"
+        ref="configForm"
+      >
+      </config-form>
+      <span slot="footer">
+        <el-button @click="dialogVisible = false" round>取消</el-button>
+        <el-button type="primary" @click="handleConfirmConfig" round>确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
+import ConfigForm from '../ConfigForm'
 export default {
   name: 'plugin',
+  components: {
+    ConfigForm
+  },
   data () {
     return {
       searchText: '',
       pluginList: [],
-      menu: null
+      menu: null,
+      config: [],
+      currentType: '',
+      configName: '',
+      dialogVisible: false
     }
   },
   created () {
@@ -72,7 +98,7 @@ export default {
         label: '启用插件',
         enabled: !plugin.enabled,
         click () {
-          _this.$db.read().set(`plugins.${plugin.name}`, true).write()
+          _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, true).write()
           plugin.enabled = true
           plugin.reload = true
         }
@@ -80,11 +106,26 @@ export default {
         label: '禁用插件',
         enabled: plugin.enabled,
         click () {
-          _this.$db.read().set(`plugins.${plugin.name}`, false).write()
+          _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, false).write()
           plugin.enabled = false
           plugin.reload = true
         }
       }]
+      for (let i in plugin.config) {
+        if (plugin.config[i].config.length > 0) {
+          const obj = {
+            label: `配置${i} - ${plugin.config[i].name}`,
+            click () {
+              _this.configType = i
+              _this.configName = plugin.config[i].name
+              _this.dialogVisible = true
+              _this.config = plugin.config[i].config
+              console.log(plugin.config[i].config)
+            }
+          }
+          menu.push(obj)
+        }
+      }
       this.menu = this.$electron.remote.Menu.buildFromTemplate(menu)
       this.menu.popup(this.$electron.remote.getCurrentWindow())
     },
@@ -94,6 +135,10 @@ export default {
     reloadApp () {
       this.$electron.remote.app.relaunch()
       this.$electron.remote.app.exit(0)
+    },
+    handleConfirmConfig () {
+      console.log(this.$refs.configForm)
+      this.$refs.configForm.validate()
     }
   }
 }
@@ -138,6 +183,8 @@ export default {
       font-size 16px
       height 22px
       line-height 22px
+      // font-weight 600
+      font-weight 600
     &__desc
       font-size 14px
       height 21px
