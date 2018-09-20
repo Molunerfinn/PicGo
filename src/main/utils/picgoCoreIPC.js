@@ -23,9 +23,9 @@ const getConfig = (name, type, ctx) => {
 export default (app, ipcMain) => {
   const STORE_PATH = app.getPath('userData')
   const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
-  const picgo = new PicGo(CONFIG_PATH)
 
   ipcMain.on('getPluginList', event => {
+    const picgo = new PicGo(CONFIG_PATH)
     const pluginList = picgo.pluginLoader.getList()
     const list = []
     for (let i in pluginList) {

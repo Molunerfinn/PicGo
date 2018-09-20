@@ -26,9 +26,9 @@
                 {{ item.author }}
               </span>
               <span class="plugin-item__config" >
-                <span class="reload-button" v-if="item.reload" @click="reloadApp">
+                <!-- <span class="reload-button" v-if="item.reload" @click="reloadApp">
                   重启
-                </span>
+                </span> -->
                 <i
                   class="el-icon-setting"
                   @click="buildContextMenu(item)"
@@ -80,7 +80,7 @@ export default {
   created () {
     this.$electron.ipcRenderer.on('pluginList', (evt, list) => {
       this.pluginList = list.map(item => {
-        item.reload = false
+        // item.reload = false
         return item
       })
     })
@@ -100,7 +100,7 @@ export default {
         click () {
           _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, true).write()
           plugin.enabled = true
-          plugin.reload = true
+          // plugin.reload = true
         }
       }, {
         label: '禁用插件',
@@ -108,7 +108,7 @@ export default {
         click () {
           _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, false).write()
           plugin.enabled = false
-          plugin.reload = true
+          // plugin.reload = true
         }
       }]
       for (let i in plugin.config) {
@@ -116,11 +116,10 @@ export default {
           const obj = {
             label: `配置${i} - ${plugin.config[i].name}`,
             click () {
-              _this.configType = i
+              _this.currentType = i
               _this.configName = plugin.config[i].name
               _this.dialogVisible = true
               _this.config = plugin.config[i].config
-              console.log(plugin.config[i].config)
             }
           }
           menu.push(obj)
@@ -136,9 +135,29 @@ export default {
       this.$electron.remote.app.relaunch()
       this.$electron.remote.app.exit(0)
     },
-    handleConfirmConfig () {
-      console.log(this.$refs.configForm)
-      this.$refs.configForm.validate()
+    async handleConfirmConfig () {
+      const result = await this.$refs.configForm.validate()
+      if (result !== false) {
+        switch (this.currentType) {
+          case 'plugin':
+            this.$db.read().set(`picgo-plugin-${this.configName}`, result).write()
+            break
+          case 'uploader':
+            this.$db.read().set(`picBed.${this.configName}`, result).write()
+            break
+          case 'transformer':
+            this.$db.read().set(`transformer.${this.configName}`, result).write()
+            break
+        }
+        const successNotification = new window.Notification('设置结果', {
+          body: '设置成功'
+        })
+        successNotification.onclick = () => {
+          return true
+        }
+        this.dialogVisible = false
+        this.getPluginList()
+      }
     }
   }
 }

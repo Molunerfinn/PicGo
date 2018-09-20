@@ -10,7 +10,8 @@ import fecha from 'fecha'
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
 const PicGo = requireFunc('picgo')
-
+const STORE_PATH = app.getPath('userData')
+const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
 const renameURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080/#rename-page` : `file://${__dirname}/index.html#rename-page`
 
 const createRenameWindow = () => {
@@ -37,9 +38,6 @@ const createRenameWindow = () => {
   window.loadURL(renameURL)
   return window
 }
-
-const STORE_PATH = app.getPath('userData')
-const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
 
 const waitForShow = (webcontent) => {
   return new Promise((resolve, reject) => {
