@@ -79,10 +79,7 @@ export default {
   },
   created () {
     this.$electron.ipcRenderer.on('pluginList', (evt, list) => {
-      this.pluginList = list.map(item => {
-        // item.reload = false
-        return item
-      })
+      this.pluginList = list.map(item => item)
     })
     this.getPluginList()
     document.addEventListener('keydown', (e) => {

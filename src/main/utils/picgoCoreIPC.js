@@ -20,6 +20,18 @@ const getConfig = (name, type, ctx) => {
   }
 }
 
+const handleConfigWithFunction = config => {
+  for (let i in config) {
+    if (typeof config[i].default === 'function') {
+      config[i].default = config[i].default()
+    }
+    if (typeof config[i].choices === 'function') {
+      config[i].choices = config[i].choices()
+    }
+  }
+  return config
+}
+
 export default (app, ipcMain) => {
   const STORE_PATH = app.getPath('userData')
   const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
@@ -42,15 +54,15 @@ export default (app, ipcMain) => {
         config: {
           plugin: {
             name: pluginList[i].replace(/picgo-plugin-/, ''),
-            config: plugin.config ? plugin.config(picgo) : []
+            config: plugin.config ? handleConfigWithFunction(plugin.config(picgo)) : []
           },
           uploader: {
             name: uploaderName,
-            config: getConfig(uploaderName, 'uploader', picgo)
+            config: handleConfigWithFunction(getConfig(uploaderName, 'uploader', picgo))
           },
           transformer: {
             name: transformerName,
-            config: getConfig(uploaderName, 'transformer', picgo)
+            config: handleConfigWithFunction(getConfig(uploaderName, 'transformer', picgo))
           }
         },
         enabled: picgo.getConfig(`plugins.${pluginList[i]}`)
