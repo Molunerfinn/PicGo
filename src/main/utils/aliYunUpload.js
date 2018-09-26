@@ -49,7 +49,7 @@ const aliYunUpload = async (img, type, webContents) => {
         if (customUrl) {
           imgList[i]['imgUrl'] = `${customUrl}/${path}${imgList[i].fileName}`
         } else {
-          imgList[i]['imgUrl'] = `https://${aliYunOptions.bucket}.${aliYunOptions.area}.aliyuncs.com/${path}${imgList[0].fileName}`
+          imgList[i]['imgUrl'] = `https://${aliYunOptions.bucket}.${aliYunOptions.area}.aliyuncs.com/${path}${imgList[i].fileName}`
         }
         imgList[i]['type'] = 'aliyun'
         if (i - length === -1) {
