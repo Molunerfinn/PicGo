@@ -96,6 +96,10 @@ npm run build
 
 只需第一次构建的时候指定一下国内源即可。后续构建不需要特地指定。二进制文件下载在`~/.electron/`目录下。如果想要更新`electron`构建版本，可以删除`~/.electron/`目录，然后重新运行上一步，让`electron-builder`去下载最新的`electron`二进制文件。
 
+## 其他相关
+
+- [vs-picgo](https://github.com/Spades-S/vs-picgo)：picgo的VSCode版。
+
 ## 赞助
 
 如果你喜欢PicGo并且它对你确实有帮助，欢迎给我打赏一杯咖啡哈~
