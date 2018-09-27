@@ -124,10 +124,10 @@ export default {
       this.$electron.ipcRenderer.send('uploadChoosedFiles', sendFiles)
     },
     getPasteStyle () {
-      this.pasteStyle = this.$db.read().get('picBed.pasteStyle').value() || 'markdown'
+      this.pasteStyle = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
     },
     handlePasteStyleChange (val) {
-      this.$db.read().set('picBed.pasteStyle', val)
+      this.$db.read().set('settings.pasteStyle', val)
         .write()
     },
     uploadClipboardFiles () {

@@ -155,7 +155,7 @@ export default {
       this.idx = null
     },
     copy (url) {
-      const style = this.$db.read().get('picBed.pasteStyle').value() || 'markdown'
+      const style = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
       const copyLink = pasteStyle(style, url)
       const obj = {
         title: '复制链接成功',
@@ -254,7 +254,7 @@ export default {
     multiCopy () {
       if (Object.values(this.choosedList).some(item => item)) {
         let copyString = ''
-        const style = this.$db.read().get('picBed.pasteStyle').value() || 'markdown'
+        const style = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
         Object.keys(this.choosedList).forEach(key => {
           if (this.choosedList[key]) {
             copyString += pasteStyle(style, this.$db.read().get('uploaded').getById(key).value().imgUrl) + '\n'

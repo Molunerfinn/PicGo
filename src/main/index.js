@@ -93,10 +93,10 @@ function createTray () {
     {
       label: '打开更新助手',
       type: 'checkbox',
-      checked: db.get('picBed.showUpdateTip').value(),
+      checked: db.get('settings.showUpdateTip').value(),
       click () {
-        const value = db.read().get('picBed.showUpdateTip').value()
-        db.read().set('picBed.showUpdateTip', !value).write()
+        const value = db.read().get('settings.showUpdateTip').value()
+        db.read().set('settings.showUpdateTip', !value).write()
       }
     },
     {
@@ -153,7 +153,7 @@ function createTray () {
   })
 
   tray.on('drop-files', async (event, files) => {
-    const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
+    const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
     const imgs = await uploader(files, 'imgFromPath', window.webContents)
     if (imgs !== false) {
       for (let i in imgs) {
@@ -360,7 +360,7 @@ const uploadClipboardFiles = async () => {
   img = await uploader(uploadImg, 'imgFromClipboard', win.webContents)
   if (img !== false) {
     if (img.length > 0) {
-      const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
+      const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
       clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
       const notification = new Notification({
         title: '上传成功',
@@ -409,7 +409,7 @@ picgoCoreIPC(app, ipcMain)
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
   const img = await uploader(file, 'imgFromClipboard', window.webContents)
   if (img !== false) {
-    const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
+    const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
     clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
     const notification = new Notification({
       title: '上传成功',
@@ -439,7 +439,7 @@ ipcMain.on('uploadChoosedFiles', async (evt, files) => {
   const input = files.map(item => item.path)
   const imgs = await uploader(input, 'imgFromUploader', evt.sender)
   if (imgs !== false) {
-    const pasteStyle = db.read().get('picBed.pasteStyle').value() || 'markdown'
+    const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
     let pasteText = ''
     for (let i in imgs) {
       pasteText += pasteTemplate(pasteStyle, imgs[i].imgUrl) + '\r\n'
@@ -468,7 +468,7 @@ ipcMain.on('uploadChoosedFiles', async (evt, files) => {
 ipcMain.on('updateShortKey', (evt, oldKey) => {
   globalShortcut.unregisterAll()
   for (let key in oldKey) {
-    globalShortcut.register(db.read().get('shortKey').value()[key], () => {
+    globalShortcut.register(db.read().get('settings.shortKey').value()[key], () => {
       return shortKeyHash[key]()
     })
   }
@@ -557,7 +557,7 @@ app.on('ready', () => {
   }
   updateChecker()
 
-  globalShortcut.register(db.read().get('shortKey.upload').value(), () => {
+  globalShortcut.register(db.read().get('settings.shortKey.upload').value(), () => {
     uploadClipboardFiles()
   })
 })
@@ -582,7 +582,7 @@ app.on('will-quit', () => {
 })
 
 app.setLoginItemSettings({
-  openAtLogin: db.read().get('picBed.autoStart').value() || false
+  openAtLogin: db.read().get('settings.autoStart').value() || false
 })
 
 /**

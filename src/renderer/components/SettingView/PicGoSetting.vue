@@ -180,7 +180,7 @@
   </div>
 </template>
 <script>
-import db from '../../../datastore'
+// import db from '../../../datastore'
 import keyDetect from 'utils/key-binding'
 import pkg from '../../../../package.json'
 const release = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
@@ -206,23 +206,23 @@ export default {
     }
     return {
       form: {
-        updateHelper: this.$db.get('picBed.showUpdateTip').value(),
+        updateHelper: this.$db.read().get('settings.showUpdateTip').value(),
         showPicBedList: [],
-        autoStart: this.$db.get('picBed.autoStart').value() || false,
-        rename: this.$db.get('picBed.rename').value() || false,
-        autoRename: this.$db.get('picBed.autoRename').value() || false,
-        uploadNotification: this.$db.get('picBed.uploadNotification').value() || false,
-        miniWindowOntop: db.read().get('miniWindowOntop').value() || false
+        autoStart: this.$db.read().get('settings.autoStart').value() || false,
+        rename: this.$db.read().get('settings.rename').value() || false,
+        autoRename: this.$db.read().get('settings.autoRename').value() || false,
+        uploadNotification: this.$db.read().get('settings.uploadNotification').value() || false,
+        miniWindowOntop: this.$db.read().get('settings.miniWindowOntop').value() || false
       },
       picBed: this.$picBed,
       keyBindingVisible: false,
       customLinkVisible: false,
       checkUpdateVisible: false,
       customLink: {
-        value: db.read().get('customLink').value() || '$url'
+        value: this.$db.read().get('settings.customLink').value() || '$url'
       },
       shortKey: {
-        upload: db.read().get('shortKey.upload').value()
+        upload: this.$db.read().get('settings.shortKey.upload').value()
       },
       rules: {
         value: [
@@ -246,22 +246,22 @@ export default {
     },
     cancelKeyBinding () {
       this.keyBindingVisible = false
-      this.shortKey = db.read().get('shortKey').value()
+      this.shortKey = this.$db.read().get('settings.shortKey').value()
     },
     confirmKeyBinding () {
-      const oldKey = db.read().get('shortKey').value()
-      db.read().set('shortKey', this.shortKey).write()
+      const oldKey = this.$db.read().get('settings.shortKey').value()
+      this.db.read().set('settings.shortKey', this.shortKey).write()
       this.keyBindingVisible = false
       this.$electron.ipcRenderer.send('updateShortKey', oldKey)
     },
     cancelCustomLink () {
       this.customLinkVisible = false
-      this.customLink.value = db.read().get('customLink').value() || '$url'
+      this.customLink.value = this.$db.read().get('settings.customLink').value() || '$url'
     },
     confirmCustomLink () {
       this.$refs.customLink.validate((valid) => {
         if (valid) {
-          db.read().set('customLink', this.customLink.value).write()
+          this.db.read().set('settings.customLink', this.customLink.value).write()
           this.customLinkVisible = false
           this.$electron.ipcRenderer.send('updateCustomLink')
         } else {
@@ -270,7 +270,7 @@ export default {
       })
     },
     updateHelperChange (val) {
-      this.$db.read().set('picBed.showUpdateTip', val).write()
+      this.$db.read().set('settings.showUpdateTip', val).write()
     },
     handleShowPicBedListChange (val) {
       const list = this.picBed.map(item => {
@@ -284,14 +284,14 @@ export default {
       this.$db.read().set('picBed.list', list).write()
     },
     handleAutoStartChange (val) {
-      this.$db.read().set('picBed.autoStart', val).write()
+      this.$db.read().set('settings.autoStart', val).write()
       this.$electron.ipcRenderer.send('autoStart', val)
     },
     handleRename (val) {
-      this.$db.read().set('picBed.rename', val).write()
+      this.$db.read().set('settings.rename', val).write()
     },
     handleAutoRename (val) {
-      this.$db.read().set('picBed.autoRename', val).write()
+      this.$db.read().set('settings.autoRename', val).write()
     },
     compareVersion2Update (current, latest) {
       const currentVersion = current.split('.').map(item => parseInt(item))
@@ -326,15 +326,12 @@ export default {
       this.checkUpdateVisible = false
     },
     handleUploadNotification (val) {
-      this.$db.read().set('picBed.uploadNotification', val).write()
+      this.$db.read().set('settings.uploadNotification', val).write()
     },
     handleMiniWindowOntop (val) {
-      this.$db.read().set('miniWindowOntop', val).write()
+      this.$db.read().set('settings.miniWindowOntop', val).write()
       this.$message('需要重启生效')
     }
-  },
-  beforeDestroy () {
-    this.$electron.ipcRenderer.removeAllListeners('autoStart')
   }
 }
 </script>

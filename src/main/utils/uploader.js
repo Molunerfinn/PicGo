@@ -85,8 +85,8 @@ const uploader = (img, type, webContents) => {
 
   picgo.helper.beforeUploadPlugins.register('renameFn', {
     handle: async ctx => {
-      const rename = picgo.getConfig('picBed.rename')
-      const autoRename = picgo.getConfig('picBed.autoRename')
+      const rename = picgo.getConfig('settings.rename')
+      const autoRename = picgo.getConfig('settings.autoRename')
       await Promise.all(ctx.output.map(async item => {
         let name
         let fileName
@@ -102,13 +102,12 @@ const uploader = (img, type, webContents) => {
           name = await waitForRename(window, window.webContents.id)
         }
         item.fileName = name || fileName
-        console.log(item)
       }))
     }
   })
 
   picgo.on('beforeTransform', ctx => {
-    if (ctx.getConfig('picBed.uploadNotification')) {
+    if (ctx.getConfig('settings.uploadNotification')) {
       const notification = new Notification({
         title: '上传进度',
         body: '正在上传'

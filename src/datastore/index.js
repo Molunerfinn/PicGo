@@ -29,8 +29,8 @@ if (!db.has('picBed').value()) {
   }).write()
 }
 
-if (!db.has('shortKey').value()) {
-  db.set('shortKey', {
+if (!db.has('settings.shortKey').value()) {
+  db.set('settings.shortKey', {
     upload: 'CommandOrControl+Shift+P'
   }).write()
 }

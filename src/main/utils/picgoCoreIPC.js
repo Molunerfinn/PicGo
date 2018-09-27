@@ -65,7 +65,8 @@ export default (app, ipcMain) => {
             config: handleConfigWithFunction(getConfig(uploaderName, 'transformer', picgo))
           }
         },
-        enabled: picgo.getConfig(`plugins.${pluginList[i]}`)
+        enabled: picgo.getConfig(`plugins.${pluginList[i]}`),
+        pkg: pluginPKG
       }
       list.push(obj)
     }
