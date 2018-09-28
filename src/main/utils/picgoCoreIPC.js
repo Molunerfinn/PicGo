@@ -3,6 +3,7 @@ import path from 'path'
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
 const PicGo = requireFunc('picgo')
+const PluginHandler = requireFunc('picgo/lib/PluginHandler')
 
 // get uploader or transformer config
 const getConfig = (name, type, ctx) => {
@@ -32,10 +33,7 @@ const handleConfigWithFunction = config => {
   return config
 }
 
-export default (app, ipcMain) => {
-  const STORE_PATH = app.getPath('userData')
-  const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
-
+const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   ipcMain.on('getPluginList', event => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginList = picgo.pluginLoader.getList()
@@ -50,7 +48,7 @@ export default (app, ipcMain) => {
         name: pluginList[i].replace(/picgo-plugin-/, ''),
         author: pluginPKG.author,
         description: pluginPKG.description,
-        logo: path.join(pluginPath, 'logo.png').split(path.sep).join('/'),
+        logo: 'file://' + path.join(pluginPath, 'logo.png').split(path.sep).join('/'),
         config: {
           plugin: {
             name: pluginList[i].replace(/picgo-plugin-/, ''),
@@ -66,10 +64,28 @@ export default (app, ipcMain) => {
           }
         },
         enabled: picgo.getConfig(`plugins.${pluginList[i]}`),
-        pkg: pluginPKG
+        homepage: pluginPKG.homepage ? pluginPKG.homepage : ''
       }
       list.push(obj)
     }
     event.sender.send('pluginList', list)
   })
+}
+
+const handlePluginInstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
+  ipcMain.on('installPlugin', (event, msg) => {
+    const picgo = new PicGo(CONFIG_PATH)
+    const pluginHandler = new PluginHandler(picgo)
+    picgo.on('installSuccess', (plugin) => {
+      console.log(plugin)
+    })
+    pluginHandler.install([`picgo-plugin-${msg}`])
+  })
+}
+
+export default (app, ipcMain) => {
+  const STORE_PATH = app.getPath('userData')
+  const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
+  handleGetPluginList(ipcMain, STORE_PATH, CONFIG_PATH)
+  handlePluginInstall(ipcMain, STORE_PATH, CONFIG_PATH)
 }

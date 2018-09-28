@@ -3,17 +3,21 @@
     <div class="view-title">
       插件设置
     </div>
-    <el-row class="handle-bar">
+    <el-row class="handle-bar" :class="{ 'cut-width': pluginList.length > 6 }">
       <el-input
         v-model="searchText"
         placeholder="搜索npm上的PicGo插件"
         size="small"
-      ></el-input>
+      >
+        <i slot="suffix" class="el-input__icon el-icon-close" v-if="searchText" @click="cleanSearch" style="cursor: pointer"></i>
+      </el-input>
     </el-row>
-    <el-row :gutter="10" class="plugin-list">
+    <el-row :gutter="10" class="plugin-list" v-loading="loading">
       <el-col :span="12" v-for="(item, index) in pluginList" :key="item.name">
         <div class="plugin-item">
-          <img class="plugin-item__logo" :src="'file://' + item.logo">
+          <img class="plugin-item__logo" :src="item.logo"
+          onerror="this.src='static/logo.png'"
+          >
           <div class="plugin-item__content">
             <div class="plugin-item__name">
               {{ item.name }}
@@ -26,10 +30,16 @@
                 {{ item.author }}
               </span>
               <span class="plugin-item__config" >
-                <!-- <span class="reload-button" v-if="item.reload" @click="reloadApp">
-                  重启
-                </span> -->
+                <template v-if="searchText">
+                  <span class="config-button install" v-if="!item.hasInstall" @click="installPlugin(item.name)">
+                    安装
+                  </span>
+                  <span class="config-button" v-if="item.reload" @click="reloadApp">
+                    重启
+                  </span>
+                </template>
                 <i
+                  v-else
                   class="el-icon-setting"
                   @click="buildContextMenu(item)"
                 ></i>
@@ -61,6 +71,7 @@
 </template>
 <script>
 import ConfigForm from '../ConfigForm'
+import { debounce } from 'lodash'
 export default {
   name: 'plugin',
   components: {
@@ -74,19 +85,38 @@ export default {
       config: [],
       currentType: '',
       configName: '',
-      dialogVisible: false
+      dialogVisible: false,
+      pluginNameList: [],
+      loading: true
+    }
+  },
+  computed: {
+    npmSearchText () {
+      return this.searchText.match('picgo-plugin-')
+        ? this.searchText
+        : this.searchText !== ''
+          ? `picgo-plugin-${this.searchText}`
+          : this.searchText
+    }
+  },
+  watch: {
+    npmSearchText (val) {
+      if (val) {
+        this.loading = true
+        this.getSearchResult(val)
+      } else {
+        this.getPluginList()
+      }
     }
   },
   created () {
     this.$electron.ipcRenderer.on('pluginList', (evt, list) => {
       this.pluginList = list.map(item => item)
+      this.pluginNameList = list.map(item => item.name)
+      this.loading = false
     })
     this.getPluginList()
-    document.addEventListener('keydown', (e) => {
-      if (e.which === 123) {
-        this.$electron.remote.getCurrentWindow().toggleDevTools()
-      }
-    })
+    this.getSearchResult = debounce(this.getSearchResult, 250)
   },
   methods: {
     buildContextMenu (plugin) {
@@ -128,9 +158,15 @@ export default {
     getPluginList () {
       this.$electron.ipcRenderer.send('getPluginList')
     },
+    installPlugin (val) {
+      this.$electron.ipcRenderer.send('installPlugin', val)
+    },
     reloadApp () {
       this.$electron.remote.app.relaunch()
       this.$electron.remote.app.exit(0)
+    },
+    cleanSearch () {
+      this.searchText = ''
     },
     async handleConfirmConfig () {
       const result = await this.$refs.configForm.validate()
@@ -155,20 +191,63 @@ export default {
         this.dialogVisible = false
         this.getPluginList()
       }
+    },
+    getSearchResult: function (val) {
+      this.$http.get(`https://api.npms.io/v2/search?q=${val}`)
+        .then(res => {
+          console.log(res.data.results)
+          this.pluginList = res.data.results.map(item => {
+            return this.handleSearchResult(item)
+          })
+          this.loading = false
+        })
+        .catch(err => {
+          console.log(err)
+          this.loading = false
+        })
+    },
+    handleSearchResult (item) {
+      return {
+        name: item.package.name.replace(/picgo-plugin-/, ''),
+        author: item.package.author.name,
+        description: item.package.description,
+        logo: `https://cdn.jsdelivr.net/npm/${item.package.name}/logo.png`,
+        config: {},
+        homepage: item.package.links ? item.package.links.homepage : '',
+        hasInstall: this.pluginNameList.some(plugin => plugin === item.package.name),
+        reload: false
+      }
     }
   }
 }
 </script>
 <style lang='stylus'>
-.view-title
-  color #eee
-  font-size 20px
-  text-align center
-  margin 10px auto
 #plugin-view
+  position relative
   padding 0 20px 0
+  .plugin-list
+    height: 339px;
+    box-sizing: border-box;
+    padding: 8px 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: absolute;
+    top: 70px;
+    left: 5px;
+    transition: all 0.2s ease-in-out 0.1s;
+    width: 100%
+    .el-loading-mask
+      left: 20px
+      width: calc(100% - 40px)
+  .view-title
+    color #eee
+    font-size 20px
+    text-align center
+    margin 10px auto
   .handle-bar
     margin-bottom 20px
+    &.cut-width
+      padding-right: 8px
   .el-input__inner
     border-radius 0
   .plugin-item
@@ -220,7 +299,7 @@ export default {
     &__config
       float right
       font-size 16px
-    .reload-button
+    .config-button
       font-size 12px
       color #ddd
       background #222
@@ -231,4 +310,10 @@ export default {
       position absolute
       top 4px
       right 20px
+      transition all .2s ease-in-out
+      &:hover
+        background: #1B9EF3
+        color #fff
+      &.install
+        right 0px
 </style>
