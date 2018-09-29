@@ -3,7 +3,7 @@ import path from 'path'
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
 const PicGo = requireFunc('picgo')
-const PluginHandler = requireFunc('picgo/lib/PluginHandler')
+const PluginHandler = requireFunc('picgo/dist/lib/PluginHandler').default
 
 // get uploader or transformer config
 const getConfig = (name, type, ctx) => {
@@ -46,7 +46,7 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
       const transformerName = plugin.transformer || ''
       const obj = {
         name: pluginList[i].replace(/picgo-plugin-/, ''),
-        author: pluginPKG.author,
+        author: pluginPKG.author.name || pluginPKG.author,
         description: pluginPKG.description,
         logo: 'file://' + path.join(pluginPath, 'logo.png').split(path.sep).join('/'),
         config: {
@@ -83,9 +83,22 @@ const handlePluginInstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   })
 }
 
+const handlePluginUninstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
+  ipcMain.on('uninstallPlugin', (event, msg) => {
+    const picgo = new PicGo(CONFIG_PATH)
+    const pluginHandler = new PluginHandler(picgo)
+    console.log(msg, 123)
+    picgo.on('uninstallSuccess', (plugin) => {
+      console.log(plugin)
+    })
+    pluginHandler.uninstall([`picgo-plugin-${msg}`])
+  })
+}
+
 export default (app, ipcMain) => {
   const STORE_PATH = app.getPath('userData')
   const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
   handleGetPluginList(ipcMain, STORE_PATH, CONFIG_PATH)
   handlePluginInstall(ipcMain, STORE_PATH, CONFIG_PATH)
+  handlePluginUninstall(ipcMain, STORE_PATH, CONFIG_PATH)
 }

@@ -137,6 +137,12 @@ export default {
           plugin.enabled = false
           // plugin.reload = true
         }
+      }, {
+        label: '卸载插件',
+        click () {
+          _this.loading = true
+          _this.uninstallPlugin(plugin.name)
+        }
       }]
       for (let i in plugin.config) {
         if (plugin.config[i].config.length > 0) {
@@ -160,6 +166,9 @@ export default {
     },
     installPlugin (val) {
       this.$electron.ipcRenderer.send('installPlugin', val)
+    },
+    uninstallPlugin (val) {
+      this.$electron.ipcRenderer.send('uninstallPlugin', val)
     },
     reloadApp () {
       this.$electron.remote.app.relaunch()
@@ -215,6 +224,7 @@ export default {
         config: {},
         homepage: item.package.links ? item.package.links.homepage : '',
         hasInstall: this.pluginNameList.some(plugin => plugin === item.package.name),
+        installing: false,
         reload: false
       }
     }
