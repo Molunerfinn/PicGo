@@ -35,6 +35,7 @@ const handleConfigWithFunction = config => {
 
 const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   ipcMain.on('getPluginList', event => {
+    console.log(CONFIG_PATH)
     const picgo = new PicGo(CONFIG_PATH)
     const pluginList = picgo.pluginLoader.getList()
     const list = []
@@ -76,8 +77,8 @@ const handlePluginInstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   ipcMain.on('installPlugin', (event, msg) => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginHandler = new PluginHandler(picgo)
-    picgo.on('installSuccess', (plugin) => {
-      console.log(plugin)
+    picgo.on('installSuccess', notice => {
+      event.sender.send('installSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
     })
     pluginHandler.install([`picgo-plugin-${msg}`])
   })
@@ -87,9 +88,8 @@ const handlePluginUninstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   ipcMain.on('uninstallPlugin', (event, msg) => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginHandler = new PluginHandler(picgo)
-    console.log(msg, 123)
-    picgo.on('uninstallSuccess', (plugin) => {
-      console.log(plugin)
+    picgo.on('uninstallSuccess', notice => {
+      event.sender.send('installSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
     })
     pluginHandler.uninstall([`picgo-plugin-${msg}`])
   })

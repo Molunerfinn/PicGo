@@ -31,18 +31,27 @@
               </span>
               <span class="plugin-item__config" >
                 <template v-if="searchText">
-                  <span class="config-button install" v-if="!item.hasInstall" @click="installPlugin(item.name)">
-                    安装
-                  </span>
+                  <template v-if="!item.hasInstall">
+                    <span class="config-button install" v-if="!item.installing" @click="installPlugin(item)">
+                      安装
+                    </span>
+                    <span v-else="item.installing" class="config-button installing">
+                      安装中
+                    </span>
+                    <span class="config-button reload" v-if="item.reload" @click="reloadApp">
+                      重启
+                    </span>
+                  </template>
+                </template>
+                <template v-else>
                   <span class="config-button" v-if="item.reload" @click="reloadApp">
                     重启
                   </span>
+                  <i
+                    class="el-icon-setting"
+                    @click="buildContextMenu(item)"
+                  ></i>
                 </template>
-                <i
-                  v-else
-                  class="el-icon-setting"
-                  @click="buildContextMenu(item)"
-                ></i>
               </span>
             </div>
           </div>
@@ -115,6 +124,24 @@ export default {
       this.pluginNameList = list.map(item => item.name)
       this.loading = false
     })
+    this.$electron.ipcRenderer.on('installSuccess', (evt, plugin) => {
+      this.loading = false
+      this.pluginList.forEach(item => {
+        if (item.name === plugin) {
+          item.installing = false
+          item.reload = true
+        }
+      })
+    })
+    this.$electron.ipcRenderer.on('uninstallSuccess', (evt, plugin) => {
+      this.loading = false
+      this.pluginList.forEach(item => {
+        if (item.name === plugin) {
+          item.reload = true
+          item.hasInstall = false
+        }
+      })
+    })
     this.getPluginList()
     this.getSearchResult = debounce(this.getSearchResult, 250)
   },
@@ -164,8 +191,9 @@ export default {
     getPluginList () {
       this.$electron.ipcRenderer.send('getPluginList')
     },
-    installPlugin (val) {
-      this.$electron.ipcRenderer.send('installPlugin', val)
+    installPlugin (item) {
+      item.installing = true
+      this.$electron.ipcRenderer.send('installPlugin', item.name)
     },
     uninstallPlugin (val) {
       this.$electron.ipcRenderer.send('uninstallPlugin', val)
@@ -204,7 +232,6 @@ export default {
     getSearchResult: function (val) {
       this.$http.get(`https://api.npms.io/v2/search?q=${val}`)
         .then(res => {
-          console.log(res.data.results)
           this.pluginList = res.data.results.map(item => {
             return this.handleSearchResult(item)
           })
@@ -223,7 +250,7 @@ export default {
         logo: `https://cdn.jsdelivr.net/npm/${item.package.name}/logo.png`,
         config: {},
         homepage: item.package.links ? item.package.links.homepage : '',
-        hasInstall: this.pluginNameList.some(plugin => plugin === item.package.name),
+        hasInstall: this.pluginNameList.some(plugin => plugin === item.package.name.replace(/picgo-plugin-/, '')),
         installing: false,
         reload: false
       }
@@ -321,9 +348,13 @@ export default {
       top 4px
       right 20px
       transition all .2s ease-in-out
-      &:hover
-        background: #1B9EF3
-        color #fff
+      &.reload
+        right 0px
+      &.installing
+        right 0px
       &.install
         right 0px
+        &:hover
+          background: #1B9EF3
+          color #fff
 </style>
