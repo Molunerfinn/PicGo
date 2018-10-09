@@ -120,7 +120,10 @@ export default {
   },
   created () {
     this.$electron.ipcRenderer.on('pluginList', (evt, list) => {
-      this.pluginList = list.map(item => item)
+      this.pluginList = list.map(item => {
+        item.reload = false
+        return item
+      })
       this.pluginNameList = list.map(item => item.name)
       this.loading = false
     })
@@ -255,6 +258,11 @@ export default {
         reload: false
       }
     }
+  },
+  beforeDestroy () {
+    this.$electron.ipcRenderer.removeAllListeners('pluginList')
+    this.$electron.ipcRenderer.removeAllListeners('installSuccess')
+    this.$electron.ipcRenderer.removeAllListeners('uninstallSuccess')
   }
 }
 </script>
