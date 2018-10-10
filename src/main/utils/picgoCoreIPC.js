@@ -50,6 +50,7 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
         author: pluginPKG.author.name || pluginPKG.author,
         description: pluginPKG.description,
         logo: 'file://' + path.join(pluginPath, 'logo.png').split(path.sep).join('/'),
+        version: pluginPKG.version,
         config: {
           plugin: {
             name: pluginList[i].replace(/picgo-plugin-/, ''),

@@ -20,7 +20,7 @@
           >
           <div class="plugin-item__content">
             <div class="plugin-item__name">
-              {{ item.name }}
+              {{ item.name }} <small>{{ ' ' + item.version }}</small>
             </div>
             <div class="plugin-item__desc">
               {{ item.description }}
@@ -254,6 +254,7 @@ export default {
         config: {},
         homepage: item.package.links ? item.package.links.homepage : '',
         hasInstall: this.pluginNameList.some(plugin => plugin === item.package.name.replace(/picgo-plugin-/, '')),
+        version: item.package.version,
         installing: false,
         reload: false
       }
