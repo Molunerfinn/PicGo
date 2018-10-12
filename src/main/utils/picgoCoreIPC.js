@@ -35,7 +35,6 @@ const handleConfigWithFunction = config => {
 
 const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   ipcMain.on('getPluginList', event => {
-    console.log(CONFIG_PATH)
     const picgo = new PicGo(CONFIG_PATH)
     const pluginList = picgo.pluginLoader.getList()
     const list = []

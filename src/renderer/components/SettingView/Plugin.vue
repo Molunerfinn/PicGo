@@ -233,9 +233,10 @@ export default {
       }
     },
     getSearchResult: function (val) {
-      this.$http.get(`https://api.npms.io/v2/search?q=${val}`)
+      // this.$http.get(`https://api.npms.io/v2/search?q=${val}`)
+      this.$http.get(`https://registry.npmjs.com/-/v1/search?text=${val}`)
         .then(res => {
-          this.pluginList = res.data.results.map(item => {
+          this.pluginList = res.data.objects.map(item => {
             return this.handleSearchResult(item)
           })
           this.loading = false

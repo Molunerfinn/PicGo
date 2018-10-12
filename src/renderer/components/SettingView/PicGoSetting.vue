@@ -250,7 +250,7 @@ export default {
     },
     confirmKeyBinding () {
       const oldKey = this.$db.read().get('settings.shortKey').value()
-      this.db.read().set('settings.shortKey', this.shortKey).write()
+      this.$db.read().set('settings.shortKey', this.shortKey).write()
       this.keyBindingVisible = false
       this.$electron.ipcRenderer.send('updateShortKey', oldKey)
     },
@@ -261,7 +261,7 @@ export default {
     confirmCustomLink () {
       this.$refs.customLink.validate((valid) => {
         if (valid) {
-          this.db.read().set('settings.customLink', this.customLink.value).write()
+          this.$db.read().set('settings.customLink', this.customLink.value).write()
           this.customLinkVisible = false
           this.$electron.ipcRenderer.send('updateCustomLink')
         } else {

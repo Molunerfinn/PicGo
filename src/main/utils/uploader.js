@@ -62,6 +62,7 @@ const waitForRename = (window, id) => {
 
 const uploader = (img, type, webContents) => {
   const picgo = new PicGo(CONFIG_PATH)
+  picgo.config.debug = true
   let input = []
   switch (type) {
     case 'imgFromClipboard':

@@ -35,14 +35,6 @@ const miniWinURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080/#mini-page`
   : `file://${__dirname}/index.html#mini-page`
 
-const uploadFailed = () => {
-  const notification = new Notification({
-    title: '上传失败',
-    body: '请检查你的图床配置！'
-  })
-  notification.show()
-}
-
 function createTray () {
   const menubarPic = process.platform === 'darwin' ? `${__static}/menubar.png` : `${__static}/menubar-nodarwin.png`
   tray = new Tray(menubarPic)
@@ -171,8 +163,6 @@ function createTray () {
         db.read().get('uploaded').insert(item).write()
       })
       window.webContents.send('dragFiles', imgs)
-    } else {
-      uploadFailed()
     }
   })
   // toggleWindow()
@@ -383,8 +373,6 @@ const uploadClipboardFiles = async () => {
       })
       notification.show()
     }
-  } else {
-    uploadFailed()
   }
 }
 
@@ -426,8 +414,6 @@ ipcMain.on('uploadClipboardFiles', async (evt, file) => {
     if (settingWindow) {
       settingWindow.webContents.send('updateGallery')
     }
-  } else {
-    uploadFailed()
   }
 })
 
@@ -460,8 +446,6 @@ ipcMain.on('uploadChoosedFiles', async (evt, files) => {
     if (settingWindow) {
       settingWindow.webContents.send('updateGallery')
     }
-  } else {
-    uploadFailed()
   }
 })
 
