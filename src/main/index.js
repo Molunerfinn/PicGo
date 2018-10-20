@@ -102,7 +102,7 @@ function createTray () {
     }
     tray.popUpContextMenu(contextMenu)
   })
-  tray.on('click', () => {
+  tray.on('click', (event, bounds) => {
     if (process.platform === 'darwin') {
       let img = clipboard.readImage()
       let obj = []
@@ -115,7 +115,7 @@ function createTray () {
           imgUrl
         })
       }
-      toggleWindow()
+      toggleWindow(bounds)
       setTimeout(() => {
         window.webContents.send('clipboardFiles', obj)
       }, 0)
@@ -301,29 +301,16 @@ const createMenu = () => {
   }
 }
 
-const getWindowPosition = () => {
-  const windowBounds = window.getBounds()
-  const trayBounds = tray.getBounds()
-  const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2))
-  const y = Math.round(trayBounds.y + trayBounds.height - 10)
-
-  return {
-    x,
-    y
-  }
-}
-
-const toggleWindow = () => {
+const toggleWindow = (bounds) => {
   if (window.isVisible()) {
     window.hide()
   } else {
-    showWindow()
+    showWindow(bounds)
   }
 }
 
-const showWindow = () => {
-  const position = getWindowPosition()
-  window.setPosition(position.x, position.y, false)
+const showWindow = (bounds) => {
+  window.setPosition(bounds.x - 98 + 11, bounds.y, false)
   window.webContents.send('updateFiles')
   window.show()
   window.focus()
