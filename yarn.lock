@@ -6200,9 +6200,9 @@ performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
 
-picgo@^1.1.8:
-  version "1.1.9"
-  resolved "https://registry.yarnpkg.com/picgo/-/picgo-1.1.9.tgz#0fb495a49f83fee759391966aca7dc0d6e8feac9"
+picgo@^1.1.10:
+  version "1.1.10"
+  resolved "https://registry.yarnpkg.com/picgo/-/picgo-1.1.10.tgz#a80ab4f95059e05d96e7bf9ecef9074202539f87"
   dependencies:
     chalk "^2.4.1"
     commander "^2.17.0"

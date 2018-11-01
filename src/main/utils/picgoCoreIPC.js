@@ -70,6 +70,7 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
       list.push(obj)
     }
     event.sender.send('pluginList', list)
+    picgo.cmd.program.removeAllListeners()
   })
 }
 
@@ -81,6 +82,7 @@ const handlePluginInstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
       event.sender.send('installSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
     })
     pluginHandler.install([`picgo-plugin-${msg}`])
+    picgo.cmd.program.removeAllListeners()
   })
 }
 
@@ -92,6 +94,7 @@ const handlePluginUninstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
       event.sender.send('installSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
     })
     pluginHandler.uninstall([`picgo-plugin-${msg}`])
+    picgo.cmd.program.removeAllListeners()
   })
 }
 

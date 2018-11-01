@@ -82,7 +82,7 @@
     "lowdb": "^1.0.0",
     "md5": "^2.2.1",
     "melody.css": "^1.0.2",
-    "picgo": "^1.1.8",
+    "picgo": "^1.1.10",
     "qiniu": "^7.1.1",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
