@@ -74,7 +74,6 @@
     "axios": "^0.16.1",
     "dateformat": "^3.0.3",
     "element-ui": "^2.0.5",
-    "fecha": "^2.3.3",
     "fs-extra": "^4.0.2",
     "image-size": "^0.6.1",
     "keycode": "^2.1.9",

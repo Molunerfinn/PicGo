@@ -5,7 +5,7 @@ import {
   ipcMain
 } from 'electron'
 import path from 'path'
-import fecha from 'fecha'
+import dayjs from 'dayjs'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -67,7 +67,7 @@ const uploader = (img, type, webContents) => {
   switch (type) {
     case 'imgFromClipboard':
       if (img !== null) {
-        const today = fecha.format(new Date(), 'YYYYMMDDHHmmss') + '.png'
+        const today = dayjs().format('YYYYMMDDHHmmss') + '.png'
         input = [
           {
             base64Image: img.imgUrl.replace(/^data\S+,/, ''),
@@ -88,11 +88,11 @@ const uploader = (img, type, webContents) => {
     handle: async ctx => {
       const rename = picgo.getConfig('settings.rename')
       const autoRename = picgo.getConfig('settings.autoRename')
-      await Promise.all(ctx.output.map(async item => {
+      await Promise.all(ctx.output.map(async (item, index) => {
         let name
         let fileName
         if (autoRename) {
-          fileName = fecha.format(new Date(), 'YYYYMMDDHHmmss') + item.extname
+          fileName = dayjs().add(index, 'second').format('YYYYMMDDHHmmss') + item.extname
         } else {
           fileName = item.fileName
         }
