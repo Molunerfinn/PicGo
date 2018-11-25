@@ -136,9 +136,11 @@ import pkg from '../../../package.json'
 import keyDetect from 'utils/key-binding'
 import { remote } from 'electron'
 import db from '../../datastore'
+import mixin from './mixin'
 const { Menu, dialog, BrowserWindow } = remote
 export default {
   name: 'setting-page',
+  mixins: [mixin],
   data () {
     const customLinkRule = (rule, value, callback) => {
       if (!/\$url/.test(value)) {

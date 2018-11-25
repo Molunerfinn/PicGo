@@ -81,8 +81,10 @@
 <script>
 import ConfigForm from '../ConfigForm'
 import { debounce } from 'lodash'
+import mixin from '../mixin'
 export default {
   name: 'plugin',
+  mixins: [mixin],
   components: {
     ConfigForm
   },

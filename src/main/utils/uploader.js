@@ -137,6 +137,7 @@ const uploader = (img, type, webContents) => {
       }
     })
     picgo.on('failed', ctx => {
+      console.log(ctx)
       resolve(false)
     })
   })

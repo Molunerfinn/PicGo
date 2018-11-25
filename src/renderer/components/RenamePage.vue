@@ -22,8 +22,10 @@
   </div>
 </template>
 <script>
+import mixin from './mixin'
 export default {
   name: 'rename-page',
+  mixins: [mixin],
   data () {
     return {
       fileName: '',

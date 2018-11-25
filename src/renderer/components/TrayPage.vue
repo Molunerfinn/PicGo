@@ -23,9 +23,11 @@
 </template>
 
 <script>
+  import mixin from './mixin'
   import pasteTemplate from '../../main/utils/pasteTemplate'
   export default {
     name: 'tray-page',
+    mixins: [mixin],
     data () {
       return {
         files: [],

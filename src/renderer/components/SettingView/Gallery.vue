@@ -76,8 +76,10 @@
 <script>
 import gallerys from 'vue-gallery'
 import pasteStyle from '../../../main/utils/pasteTemplate'
+import mixin from '../mixin'
 export default {
   name: 'gallery',
+  mixins: [mixin],
   components: {
     gallerys
   },
@@ -150,9 +152,18 @@ export default {
     },
     zoomImage (index) {
       this.idx = index
+      this.changeZIndexForGallery(true)
+    },
+    changeZIndexForGallery (isOpen) {
+      if (isOpen) {
+        document.querySelector('.main-content.el-row').style.zIndex = 101
+      } else {
+        document.querySelector('.main-content.el-row').style.zIndex = 10
+      }
     },
     handleClose () {
       this.idx = null
+      this.changeZIndexForGallery(false)
     },
     copy (url) {
       const style = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
@@ -371,9 +382,6 @@ export default {
         &.el-icon-delete
           &:hover
             color #F15140
-  .blueimp-gallery
-    .title
-      top 30px
   .handle-bar
     color #ddd
     .pic-bed-item
