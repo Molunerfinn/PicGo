@@ -317,24 +317,13 @@ const showWindow = (bounds) => {
 }
 
 const uploadClipboardFiles = async () => {
-  let img = clipboard.readImage()
-  let uploadImg = null
-  if (!img.isEmpty()) {
-    // 从剪贴板来的图片默认转为png
-    const imgUrl = 'data:image/png;base64,' + Buffer.from(img.toPNG(), 'binary').toString('base64')
-    uploadImg = {
-      width: img.getSize().width,
-      height: img.getSize().height,
-      imgUrl
-    }
-  }
   let win
-  if (miniWindow.isVisible) {
+  if (miniWindow.isVisible()) {
     win = miniWindow
   } else {
     win = settingWindow || window
   }
-  img = await uploader(uploadImg, 'imgFromClipboard', win.webContents)
+  let img = await uploader(undefined, 'imgFromClipboard', win.webContents)
   if (img !== false) {
     if (img.length > 0) {
       const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'

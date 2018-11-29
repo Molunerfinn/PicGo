@@ -63,26 +63,7 @@ const waitForRename = (window, id) => {
 const uploader = (img, type, webContents) => {
   const picgo = new PicGo(CONFIG_PATH)
   picgo.config.debug = true
-  let input = []
-  switch (type) {
-    case 'imgFromClipboard':
-      if (img !== null) {
-        const today = dayjs().format('YYYYMMDDHHmmss') + '.png'
-        input = [
-          {
-            base64Image: img.imgUrl.replace(/^data\S+,/, ''),
-            fileName: today,
-            width: img.width,
-            height: img.height,
-            extname: '.png'
-          }
-        ]
-      }
-      break
-    default:
-      input = img
-      break
-  }
+  let input = img
 
   picgo.helper.beforeUploadPlugins.register('renameFn', {
     handle: async ctx => {
