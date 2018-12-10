@@ -62,10 +62,8 @@
   </div>
 </template>
 <script>
-import mixin from '../mixin'
 export default {
   name: 'weibo',
-  mixins: [mixin],
   data () {
     return {
       form: {

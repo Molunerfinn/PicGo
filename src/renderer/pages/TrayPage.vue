@@ -23,8 +23,8 @@
 </template>
 
 <script>
-  import mixin from './mixin'
-  import pasteTemplate from '../../main/utils/pasteTemplate'
+  import mixin from '@/utils/mixin'
+  import pasteTemplate from '~/main/utils/pasteTemplate'
   export default {
     name: 'tray-page',
     mixins: [mixin],

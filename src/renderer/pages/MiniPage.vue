@@ -9,15 +9,15 @@
     :class="{ 'is-dragover': dragover, uploading: showProgress, linux: os === 'linux' }" @drop.prevent="onDrop" @dragover.prevent="dragover = true" @dragleave.prevent="dragover = false"
     :style="{ backgroundPosition: '0 ' + progress + '%'}"
   >
-    <div id="upload-dragger" @dblclick="openUplodWindow">
+    <div id="upload-dragger" @dblclick="openUploadWindow">
       <input type="file" id="file-uploader" @change="onChange" multiple>
     </div>
   </div>
   </div>
 </template>
 <script>
-import mixin from './mixin'
-import picBed from '../../datastore/pic-bed.js'
+import mixin from '@/utils/mixin'
+import picBed from '~/datastore/pic-bed.js'
 export default {
   name: 'mini-page',
   mixins: [mixin],
@@ -73,7 +73,7 @@ export default {
       this.dragover = false
       this.ipcSendFiles(e.dataTransfer.files)
     },
-    openUplodWindow () {
+    openUploadWindow () {
       document.getElementById('file-uploader').click()
     },
     onChange (e) {
@@ -116,7 +116,7 @@ export default {
       this.dragging = false
       if (this.screenX === e.screenX && this.screenY === e.screenY) {
         if (e.button === 0) { // left mouse
-          this.openUplodWindow()
+          this.openUploadWindow()
         } else {
           let _this = this
           const types = picBed.map(item => item.type)

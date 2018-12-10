@@ -75,11 +75,9 @@
 </template>
 <script>
 import gallerys from 'vue-gallery'
-import pasteStyle from '../../../main/utils/pasteTemplate'
-import mixin from '../mixin'
+import pasteStyle from '~/main/utils/pasteTemplate'
 export default {
   name: 'gallery',
-  mixins: [mixin],
   components: {
     gallerys
   },

@@ -1,31 +1,31 @@
 <template>
-  <div id="qiniu-view">
+  <div id="aliyun-view">
     <el-row :gutter="16">
       <el-col :span="16" :offset="4">
         <div class="view-title">
-          七牛图床设置
+          阿里云OSS设置
         </div>
         <el-form 
-          ref="qiniu"
+          ref="aliyun"
           label-position="right"
           label-width="120px"
           :model="form"
           size="mini">
           <el-form-item
-            label="设定AccessKey"
-            prop="accessKey"
+            label="设定KeyId"
+            prop="accessKeyId"
             :rules="{
-              required: true, message: 'AccessKey不能为空', trigger: 'blur'
+              required: true, message: 'AccessKeyId不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.accessKey" placeholder="AccessKey" @keyup.native.enter="confirm('weiboForm')"></el-input>
+            <el-input v-model="form.accessKeyId" placeholder="AccessKeyId" @keyup.native.enter="confirm"></el-input>
           </el-form-item>
           <el-form-item
-            label="设定SecretKey"
-            prop="secretKey"
+            label="设定KeySecret"
+            prop="accessKeySecret"
             :rules="{
-              required: true, message: 'SecretKey不能为空', trigger: 'blur'
+              required: true, message: 'AccessKeySecret不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.secretKey" type="password" @keyup.native.enter="confirm" placeholder="SecretKey"></el-input>
+            <el-input v-model="form.accessKeySecret" type="password" @keyup.native.enter="confirm" placeholder="AccessKeySecret"></el-input>
           </el-form-item>
           <el-form-item
             label="设定存储空间名"
@@ -36,37 +36,27 @@
             <el-input v-model="form.bucket" @keyup.native.enter="confirm" placeholder="Bucket"></el-input>
           </el-form-item>
           <el-form-item
-            label="设定访问网址"
-            prop="url"
-            :rules="{
-              required: true, message: '网址不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.url" @keyup.native.enter="confirm" placeholder="例如：http://xxx.yyy.glb.clouddn.com"></el-input>
-          </el-form-item>
-          <el-form-item
             label="确认存储区域"
-            >
-            <el-radio-group v-model="form.area" size="mini">
-              <el-radio-button label="z0">华东</el-radio-button>
-              <el-radio-button label="z1">华北</el-radio-button>
-              <el-radio-button label="z2">华南</el-radio-button>
-              <el-radio-button label="na0">北美</el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item
-            label="设定网址后缀"
-            >
-            <el-input v-model="form.options" @keyup.native.enter="confirm" placeholder="例如?imageslim"></el-input>
+            prop="area"
+            :rules="{
+              required: true, message: '区域代码不能为空', trigger: 'blur'
+            }">
+            <el-input v-model="form.area" @keyup.native.enter="confirm" placeholder="例如oss-cn-beijing"></el-input>
           </el-form-item>
           <el-form-item
             label="指定存储路径"
             >
             <el-input v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/"></el-input>
           </el-form-item>
+          <el-form-item
+            label="设定自定义域名"
+            >
+            <el-input v-model="form.customUrl" @keyup.native.enter="confirm" placeholder="例如https://xxxx.com"></el-input>
+          </el-form-item>
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
-              <el-button type="success" @click="setDefaultPicBed('qiniu')" round :disabled="defaultPicBed === 'qiniu'">设为默认图床</el-button>
+              <el-button type="success" @click="setDefaultPicBed('aliyun')" round :disabled="defaultPicBed === 'aliyun'">设为默认图床</el-button>
             </el-button-group>
           </el-form-item>
         </el-form>
@@ -75,25 +65,22 @@
   </div>
 </template>
 <script>
-import mixin from '../mixin'
 export default {
-  name: 'qiniu',
-  mixins: [mixin],
+  name: 'aliyun',
   data () {
     return {
       form: {
-        accessKey: '',
-        secretKey: '',
+        accessKeyId: '',
+        accessKeySecret: '',
         bucket: '',
-        url: '',
-        area: 'z0',
-        options: '',
-        path: ''
+        area: '',
+        path: '',
+        customUrl: ''
       }
     }
   },
   created () {
-    const config = this.$db.get('picBed.qiniu').value()
+    const config = this.$db.get('picBed.aliyun').value()
     if (config) {
       for (let i in config) {
         this.form[i] = config[i]
@@ -102,9 +89,9 @@ export default {
   },
   methods: {
     confirm () {
-      this.$refs.qiniu.validate((valid) => {
+      this.$refs.aliyun.validate((valid) => {
         if (valid) {
-          this.$db.set('picBed.qiniu', this.form).write()
+          this.$db.set('picBed.aliyun', this.form).write()
           const successNotification = new window.Notification('设置结果', {
             body: '设置成功'
           })
@@ -125,7 +112,7 @@ export default {
   font-size 20px
   text-align center
   margin 20px auto
-#qiniu-view
+#aliyun-view
   .el-form
     label  
       line-height 22px
@@ -149,4 +136,17 @@ export default {
     .el-radio-button__inner
       border-left none
       border-radius 0 14px 14px 0
+  .el-switch__label
+    color #eee
+    &.is-active
+      color #409EFF
+  .el-icon-question
+    font-size 20px
+    float right
+    margin-top 9px
+    color #eee
+    cursor pointer
+    transition .2s color ease-in-out
+    &:hover
+      color #409EFF
 </style>

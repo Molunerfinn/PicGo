@@ -16,10 +16,8 @@
   </div>
 </template>
 <script>
-import mixin from '../mixin'
 export default {
   name: 'upyun',
-  mixins: [mixin],
   data () {
     return {}
   },

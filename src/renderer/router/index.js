@@ -8,81 +8,81 @@ export default new Router({
     {
       path: '/',
       name: 'tray-page',
-      component: require('@/components/TrayPage').default
+      component: require('@/pages/TrayPage').default
     },
     {
       path: '/rename-page',
       name: 'rename-page',
-      component: require('@/components/RenamePage').default
+      component: require('@/pages/RenamePage').default
     },
     {
       path: '/mini-page',
       name: 'mini-page',
-      component: require('@/components/MiniPage').default
+      component: require('@/pages/MiniPage').default
     },
     {
       path: '/setting',
       name: 'setting-page',
-      component: require('@/components/SettingPage').default,
+      component: require('@/layouts/SettingPage').default,
       children: [
         {
           path: 'upload',
-          component: require('@/components/SettingView/Upload').default,
+          component: require('@/pages/Upload').default,
           name: 'upload'
         },
         {
           path: 'weibo',
-          component: require('@/components/SettingView/Weibo').default,
+          component: require('@/pages/picbeds/Weibo').default,
           name: 'weibo'
         },
         {
           path: 'qiniu',
-          component: require('@/components/SettingView/Qiniu').default,
+          component: require('@/pages/picbeds/Qiniu').default,
           name: 'qiniu'
         },
         {
           path: 'tcyun',
-          component: require('@/components/SettingView/TcYun').default,
+          component: require('@/pages/picbeds/TcYun').default,
           name: 'tcyun'
         },
         {
           path: 'upyun',
-          component: require('@/components/SettingView/UpYun').default,
+          component: require('@/pages/picbeds/UpYun').default,
           name: 'upyun'
         },
         {
           path: 'github',
-          component: require('@/components/SettingView/GitHub').default,
+          component: require('@/pages/picbeds/GitHub').default,
           name: 'github'
         },
         {
           path: 'smms',
-          component: require('@/components/SettingView/SMMS').default,
+          component: require('@/pages/picbeds/SMMS').default,
           name: 'smms'
         },
         {
           path: 'aliyun',
-          component: require('@/components/SettingView/AliYun').default,
+          component: require('@/pages/picbeds/AliYun').default,
           name: 'aliyun'
         },
         {
           path: 'imgur',
-          component: require('@/components/SettingView/Imgur').default,
+          component: require('@/pages/picbeds/Imgur').default,
           name: 'imgur'
         },
         {
           path: 'gallery',
-          component: require('@/components/SettingView/Gallery').default,
+          component: require('@/pages/Gallery').default,
           name: 'gallery'
         },
         {
           path: 'setting',
-          component: require('@/components/SettingView/PicGoSetting').default,
+          component: require('@/pages/PicGoSetting').default,
           name: 'setting'
         },
         {
           path: 'plugin',
-          component: require('@/components/SettingView/Plugin').default,
+          component: require('@/pages/Plugin').default,
           name: 'plugin'
         }
       ]

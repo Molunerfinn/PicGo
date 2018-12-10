@@ -182,7 +182,7 @@
 <script>
 // import db from '../../../datastore'
 import keyDetect from 'utils/key-binding'
-import pkg from '../../../../package.json'
+import pkg from 'root/package.json'
 const release = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
 const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
 export default {

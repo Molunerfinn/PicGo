@@ -1,31 +1,52 @@
 <template>
-  <div id="aliyun-view">
+  <div id="tcyun-view">
     <el-row :gutter="16">
       <el-col :span="16" :offset="4">
         <div class="view-title">
-          阿里云OSS设置
+          腾讯云COS设置
         </div>
         <el-form 
-          ref="aliyun"
+          ref="tcyun"
           label-position="right"
           label-width="120px"
           :model="form"
           size="mini">
           <el-form-item
-            label="设定KeyId"
-            prop="accessKeyId"
-            :rules="{
-              required: true, message: 'AccessKeyId不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.accessKeyId" placeholder="AccessKeyId" @keyup.native.enter="confirm"></el-input>
+            label="COS版本"
+          >
+            <el-switch
+              v-model="form.version"
+              active-text="v4"
+              inactive-text="v5"
+              active-value="v4"
+              inactive-value="v5"
+              inactive-color="#67C23A"
+            ></el-switch>
+            <i class="el-icon-question" @click="openWiki"></i>
           </el-form-item>
           <el-form-item
-            label="设定KeySecret"
-            prop="accessKeySecret"
+            label="设定SecretId"
+            prop="secretId"
             :rules="{
-              required: true, message: 'AccessKeySecret不能为空', trigger: 'blur'
+              required: true, message: 'SecretId不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.accessKeySecret" type="password" @keyup.native.enter="confirm" placeholder="AccessKeySecret"></el-input>
+            <el-input v-model="form.secretId" placeholder="SecretId" @keyup.native.enter="confirm('weiboForm')"></el-input>
+          </el-form-item>
+          <el-form-item
+            label="设定SecretKey"
+            prop="secretKey"
+            :rules="{
+              required: true, message: 'SecretKey不能为空', trigger: 'blur'
+            }">
+            <el-input v-model="form.secretKey" type="password" @keyup.native.enter="confirm" placeholder="SecretKey"></el-input>
+          </el-form-item>
+          <el-form-item
+            label="设定APPID"
+            prop="appId"
+            :rules="{
+              required: true, message: 'APPID不能为空', trigger: 'blur'
+            }">
+            <el-input v-model="form.appId" @keyup.native.enter="confirm" placeholder="例如1234567890"></el-input>
           </el-form-item>
           <el-form-item
             label="设定存储空间名"
@@ -41,7 +62,7 @@
             :rules="{
               required: true, message: '区域代码不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.area" @keyup.native.enter="confirm" placeholder="例如oss-cn-beijing"></el-input>
+            <el-input v-model="form.area" @keyup.native.enter="confirm" placeholder="例如tj"></el-input>
           </el-form-item>
           <el-form-item
             label="指定存储路径"
@@ -56,7 +77,7 @@
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
-              <el-button type="success" @click="setDefaultPicBed('aliyun')" round :disabled="defaultPicBed === 'aliyun'">设为默认图床</el-button>
+              <el-button type="success" @click="setDefaultPicBed('tcyun')" round :disabled="defaultPicBed === 'tcyun'">设为默认图床</el-button>
             </el-button-group>
           </el-form-item>
         </el-form>
@@ -65,24 +86,24 @@
   </div>
 </template>
 <script>
-import mixin from '../mixin'
 export default {
-  name: 'aliyun',
-  mixins: [mixin],
+  name: 'tcyun',
   data () {
     return {
       form: {
-        accessKeyId: '',
-        accessKeySecret: '',
+        secretId: '',
+        secretKey: '',
         bucket: '',
+        appId: '',
         area: '',
         path: '',
-        customUrl: ''
+        customUrl: '',
+        version: 'v4'
       }
     }
   },
   created () {
-    const config = this.$db.get('picBed.aliyun').value()
+    const config = this.$db.get('picBed.tcyun').value()
     if (config) {
       for (let i in config) {
         this.form[i] = config[i]
@@ -91,9 +112,9 @@ export default {
   },
   methods: {
     confirm () {
-      this.$refs.aliyun.validate((valid) => {
+      this.$refs.tcyun.validate((valid) => {
         if (valid) {
-          this.$db.set('picBed.aliyun', this.form).write()
+          this.$db.set('picBed.tcyun', this.form).write()
           const successNotification = new window.Notification('设置结果', {
             body: '设置成功'
           })
@@ -104,6 +125,9 @@ export default {
           return false
         }
       })
+    },
+    openWiki () {
+      this.$electron.remote.shell.openExternal('https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#腾讯云cos')
     }
   }
 }
@@ -114,7 +138,7 @@ export default {
   font-size 20px
   text-align center
   margin 20px auto
-#aliyun-view
+#tcyun-view
   .el-form
     label  
       line-height 22px

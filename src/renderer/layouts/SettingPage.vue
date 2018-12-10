@@ -132,11 +132,11 @@
   </div>
 </template>
 <script>
-import pkg from '../../../package.json'
+import pkg from 'root/package.json'
 import keyDetect from 'utils/key-binding'
 import { remote } from 'electron'
-import db from '../../datastore'
-import mixin from './mixin'
+import db from '~/datastore'
+import mixin from '@/utils/mixin'
 const { Menu, dialog, BrowserWindow } = remote
 export default {
   name: 'setting-page',

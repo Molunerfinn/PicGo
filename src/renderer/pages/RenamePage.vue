@@ -22,7 +22,7 @@
   </div>
 </template>
 <script>
-import mixin from './mixin'
+import mixin from '@/utils/mixin'
 export default {
   name: 'rename-page',
   mixins: [mixin],

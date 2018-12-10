@@ -7,7 +7,10 @@
         </div>
         <div
           id="upload-area"
-          :class="{ 'is-dragover': dragover }" @drop.prevent="onDrop" @dragover.prevent="dragover = true" @dragleave.prevent="dragover = false"
+          :class="{ 'is-dragover': dragover }"
+          @drop.prevent="onDrop"
+          @dragover.prevent="dragover = true"
+          @dragleave.prevent="dragover = false"
         >
           <div id="upload-dragger" @click="openUplodWindow">
             <i class="el-icon-upload"></i>
@@ -53,10 +56,8 @@
   </div>
 </template>
 <script>
-import mixin from '../mixin'
 export default {
   name: 'upload',
-  mixins: [mixin],
   data () {
     return {
       dragover: false,

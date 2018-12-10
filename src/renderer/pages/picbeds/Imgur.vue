@@ -37,10 +37,8 @@
   </div>
 </template>
 <script>
-import mixin from '../mixin'
 export default {
   name: 'imgur',
-  mixins: [mixin],
   data () {
     return {
       form: {
