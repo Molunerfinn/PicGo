@@ -14,7 +14,7 @@ const STORE_PATH = app.getPath('userData')
 const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
 const renameURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080/#rename-page` : `file://${__dirname}/index.html#rename-page`
 
-const createRenameWindow = () => {
+const createRenameWindow = (win) => {
   let options = {
     height: 175,
     width: 300,
@@ -36,6 +36,20 @@ const createRenameWindow = () => {
 
   const window = new BrowserWindow(options)
   window.loadURL(renameURL)
+  // check if this window is visible
+  if (win.isVisible()) {
+    // bounds: { x: 821, y: 75, width: 800, height: 450 }
+    const bounds = win.getBounds()
+    const positionX = bounds.x + bounds.width / 2 - 150
+    let positionY
+    // if is the settingWindow
+    if (bounds.height > 400) {
+      positionY = bounds.y + bounds.height / 2 - 88
+    } else { // if is the miniWindow
+      positionY = bounds.y + bounds.height / 2
+    }
+    window.setPosition(positionX, positionY, false)
+  }
   return window
 }
 
@@ -61,6 +75,7 @@ const waitForRename = (window, id) => {
 }
 
 const uploader = (img, type, webContents) => {
+  const win = BrowserWindow.fromWebContents(webContents)
   const picgo = new PicGo(CONFIG_PATH)
   picgo.config.debug = true
   let input = img
@@ -78,7 +93,7 @@ const uploader = (img, type, webContents) => {
           fileName = item.fileName
         }
         if (rename) {
-          const window = createRenameWindow()
+          const window = createRenameWindow(win)
           await waitForShow(window.webContents)
           window.webContents.send('rename', fileName, window.webContents.id)
           name = await waitForRename(window, window.webContents.id)
