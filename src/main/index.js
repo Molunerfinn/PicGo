@@ -512,6 +512,8 @@ if (process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes(
 app.on('ready', () => {
   createWindow()
   createSettingWindow()
+  // reset localstorage state
+  settingWindow.webContents.executeJavaScript(`localStorage.setItem('plugins', '')`)
   if (process.platform === 'darwin' || process.platform === 'win32') {
     createTray()
   }

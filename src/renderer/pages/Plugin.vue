@@ -81,6 +81,7 @@
 <script>
 import ConfigForm from '@/components/ConfigForm'
 import { debounce } from 'lodash'
+import LS from '@/utils/LS'
 export default {
   name: 'plugin',
   components: {
@@ -119,9 +120,15 @@ export default {
     }
   },
   created () {
+    console.log(this.pluginState)
     this.$electron.ipcRenderer.on('pluginList', (evt, list) => {
+      const plugins = LS.get('plugins')
       this.pluginList = list.map(item => {
-        item.reload = false
+        if (plugins && plugins[item.name] && plugins[item.name].reload) {
+          item.reload = true
+        } else {
+          item.reload = false
+        }
         return item
       })
       this.pluginNameList = list.map(item => item.name)
@@ -133,6 +140,7 @@ export default {
         if (item.name === plugin) {
           item.installing = false
           item.reload = true
+          this.handlePluginState(plugin, { reload: true })
         }
       })
     })
@@ -142,6 +150,7 @@ export default {
         if (item.name === plugin) {
           item.reload = true
           item.hasInstall = false
+          this.handlePluginState(plugin, { reload: true })
         }
       })
     })
@@ -157,7 +166,8 @@ export default {
         click () {
           _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, true).write()
           plugin.enabled = true
-          // plugin.reload = true
+          plugin.reload = true
+          this.handlePluginState(plugin.name, { reload: true })
         }
       }, {
         label: '禁用插件',
@@ -165,7 +175,8 @@ export default {
         click () {
           _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, false).write()
           plugin.enabled = false
-          // plugin.reload = true
+          plugin.reload = true
+          this.handlePluginState(plugin.name, { reload: true })
         }
       }, {
         label: '卸载插件',
@@ -202,6 +213,7 @@ export default {
       this.$electron.ipcRenderer.send('uninstallPlugin', val)
     },
     reloadApp () {
+      LS.set('plugins', '')
       this.$electron.remote.app.relaunch()
       this.$electron.remote.app.exit(0)
     },
@@ -247,8 +259,9 @@ export default {
         })
     },
     handleSearchResult (item) {
+      const name = item.package.name.replace(/picgo-plugin-/, '')
       return {
-        name: item.package.name.replace(/picgo-plugin-/, ''),
+        name: name,
         author: item.package.author.name,
         description: item.package.description,
         logo: `https://cdn.jsdelivr.net/npm/${item.package.name}/logo.png`,
@@ -259,6 +272,11 @@ export default {
         installing: false,
         reload: false
       }
+    },
+    handlePluginState (name, state) {
+      const plugins = LS.get('plugins')
+      plugins[name] = state
+      LS.set('plugins', plugins)
     }
   },
   beforeDestroy () {
