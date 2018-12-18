@@ -62,8 +62,10 @@
   </div>
 </template>
 <script>
+import mixin from '@/utils/ConfirmButtonMixin'
 export default {
   name: 'weibo',
+  mixins: [mixin],
   data () {
     return {
       form: {

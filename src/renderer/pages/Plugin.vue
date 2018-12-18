@@ -18,7 +18,10 @@
           <img class="plugin-item__logo" :src="item.logo"
           onerror="this.src='static/logo.png'"
           >
-          <div class="plugin-item__content">
+          <div
+            class="plugin-item__content"
+            :class="{ disabled: !item.enabled }"
+          >
             <div class="plugin-item__name">
               {{ item.name }} <small>{{ ' ' + item.version }}</small>
             </div>
@@ -32,25 +35,33 @@
               <span class="plugin-item__config" >
                 <template v-if="searchText">
                   <template v-if="!item.hasInstall">
-                    <span class="config-button install" v-if="!item.installing" @click="installPlugin(item)">
+                    <span class="config-button install" v-if="!item.ing" @click="installPlugin(item)">
                       安装
                     </span>
-                    <span v-else="item.installing" class="config-button installing">
+                    <span v-else-if="item.ing" class="config-button ing">
                       安装中
                     </span>
-                    <span class="config-button reload" v-if="item.reload" @click="reloadApp">
-                      重启
-                    </span>
                   </template>
+                  <span v-else class="config-button ing">
+                    已安装
+                  </span>
                 </template>
                 <template v-else>
-                  <span class="config-button" v-if="item.reload" @click="reloadApp">
-                    重启
+                  <span v-if="item.ing" class="config-button ing">
+                    卸载中
                   </span>
-                  <i
-                    class="el-icon-setting"
-                    @click="buildContextMenu(item)"
-                  ></i>
+                  <template v-else>
+                    <i
+                      v-if="item.enabled"
+                      class="el-icon-setting"
+                      @click="buildContextMenu(item)"
+                    ></i>
+                    <i
+                      v-else="!item.enabled"
+                      class="el-icon-remove-outline"
+                      @click="buildContextMenu(item)"
+                    ></i>
+                  </template>
                 </template>
               </span>
             </div>
@@ -81,7 +92,6 @@
 <script>
 import ConfigForm from '@/components/ConfigForm'
 import { debounce } from 'lodash'
-import LS from '@/utils/LS'
 export default {
   name: 'plugin',
   components: {
@@ -113,6 +123,7 @@ export default {
     npmSearchText (val) {
       if (val) {
         this.loading = true
+        this.pluginList = []
         this.getSearchResult(val)
       } else {
         this.getPluginList()
@@ -120,17 +131,8 @@ export default {
     }
   },
   created () {
-    console.log(this.pluginState)
     this.$electron.ipcRenderer.on('pluginList', (evt, list) => {
-      const plugins = LS.get('plugins')
-      this.pluginList = list.map(item => {
-        if (plugins && plugins[item.name] && plugins[item.name].reload) {
-          item.reload = true
-        } else {
-          item.reload = false
-        }
-        return item
-      })
+      this.pluginList = list
       this.pluginNameList = list.map(item => item.name)
       this.loading = false
     })
@@ -138,24 +140,28 @@ export default {
       this.loading = false
       this.pluginList.forEach(item => {
         if (item.name === plugin) {
-          item.installing = false
-          item.reload = true
-          this.handlePluginState(plugin, { reload: true })
+          item.ing = false
+          item.hasInstall = true
         }
       })
     })
     this.$electron.ipcRenderer.on('uninstallSuccess', (evt, plugin) => {
       this.loading = false
-      this.pluginList.forEach(item => {
-        if (item.name === plugin) {
-          item.reload = true
-          item.hasInstall = false
-          this.handlePluginState(plugin, { reload: true })
+      this.pluginList = this.pluginList.filter(item => {
+        if (item.name === plugin) { // restore Uploader & Transformer after uninstalling
+          if (item.config.transformer.name) {
+            this.handleRestoreState('transformer')
+          }
+          if (item.config.uploader.name) {
+            this.handleRestoreState('uploader')
+          }
         }
+        return item.name !== plugin
       })
+      this.pluginNameList = this.pluginNameList.filter(item => item !== plugin)
     })
     this.getPluginList()
-    this.getSearchResult = debounce(this.getSearchResult, 250)
+    this.getSearchResult = debounce(this.getSearchResult, 50)
   },
   methods: {
     buildContextMenu (plugin) {
@@ -166,8 +172,6 @@ export default {
         click () {
           _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, true).write()
           plugin.enabled = true
-          plugin.reload = true
-          this.handlePluginState(plugin.name, { reload: true })
         }
       }, {
         label: '禁用插件',
@@ -175,13 +179,10 @@ export default {
         click () {
           _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, false).write()
           plugin.enabled = false
-          plugin.reload = true
-          this.handlePluginState(plugin.name, { reload: true })
         }
       }, {
         label: '卸载插件',
         click () {
-          _this.loading = true
           _this.uninstallPlugin(plugin.name)
         }
       }]
@@ -206,14 +207,18 @@ export default {
       this.$electron.ipcRenderer.send('getPluginList')
     },
     installPlugin (item) {
-      item.installing = true
+      item.ing = true
       this.$electron.ipcRenderer.send('installPlugin', item.name)
     },
     uninstallPlugin (val) {
+      this.pluginList.forEach(item => {
+        if (item.name === val) {
+          item.ing = true
+        }
+      })
       this.$electron.ipcRenderer.send('uninstallPlugin', val)
     },
     reloadApp () {
-      LS.set('plugins', '')
       this.$electron.remote.app.relaunch()
       this.$electron.remote.app.exit(0)
     },
@@ -269,14 +274,17 @@ export default {
         homepage: item.package.links ? item.package.links.homepage : '',
         hasInstall: this.pluginNameList.some(plugin => plugin === item.package.name.replace(/picgo-plugin-/, '')),
         version: item.package.version,
-        installing: false,
-        reload: false
+        ing: false // installing or uninstalling
       }
     },
-    handlePluginState (name, state) {
-      const plugins = LS.get('plugins')
-      plugins[name] = state
-      LS.set('plugins', plugins)
+    // restore Uploader & Transformer
+    handleRestoreState (item) {
+      if (item === 'uploader') {
+        this.$db.set('picBed.current', 'smms')
+      }
+      if (item === 'transformer') {
+        this.$db.set('picBed.transformer', 'path')
+      }
     }
   },
   beforeDestroy () {
@@ -290,6 +298,8 @@ export default {
 #plugin-view
   position relative
   padding 0 20px 0
+  .el-loading-mask
+    background-color rgba(0, 0, 0, 0.8)
   .plugin-list
     height: 339px;
     box-sizing: border-box;
@@ -334,11 +344,13 @@ export default {
       float left
       width calc(100% - 72px)
       height 64px
-      color #aaa
+      color #ddd
       margin-left 8px
       display flex
       flex-direction column
       justify-content space-between
+      &.disabled
+        color #aaa
     &__name
       font-size 16px
       height 22px
@@ -378,7 +390,7 @@ export default {
       transition all .2s ease-in-out
       &.reload
         right 0px
-      &.installing
+      &.ing
         right 0px
       &.install
         right 0px

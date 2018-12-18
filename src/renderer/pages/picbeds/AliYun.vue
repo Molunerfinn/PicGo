@@ -65,7 +65,9 @@
   </div>
 </template>
 <script>
+import mixin from '@/utils/ConfirmButtonMixin'
 export default {
+  mixins: [mixin],
   name: 'aliyun',
   data () {
     return {

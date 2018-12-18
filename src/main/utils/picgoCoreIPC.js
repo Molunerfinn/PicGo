@@ -37,6 +37,7 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   ipcMain.on('getPluginList', event => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginList = picgo.pluginLoader.getList()
+    // console.log(pluginList.length)
     const list = []
     for (let i in pluginList) {
       const plugin = picgo.pluginLoader.getPlugin(pluginList[i])
@@ -65,7 +66,8 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
           }
         },
         enabled: picgo.getConfig(`plugins.${pluginList[i]}`),
-        homepage: pluginPKG.homepage ? pluginPKG.homepage : ''
+        homepage: pluginPKG.homepage ? pluginPKG.homepage : '',
+        ing: false
       }
       list.push(obj)
     }
@@ -91,7 +93,7 @@ const handlePluginUninstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginHandler = new PluginHandler(picgo)
     picgo.on('uninstallSuccess', notice => {
-      event.sender.send('installSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
+      event.sender.send('uninstallSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
     })
     pluginHandler.uninstall([`picgo-plugin-${msg}`])
     picgo.cmd.program.removeAllListeners()

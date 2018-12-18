@@ -1,6 +1,6 @@
 'use strict'
 
-import uploader from './utils/uploader.js'
+import Uploader from './utils/uploader.js'
 import { app, BrowserWindow, Tray, Menu, Notification, clipboard, ipcMain, globalShortcut, dialog } from 'electron'
 import db from '../datastore'
 import pasteTemplate from './utils/pasteTemplate'
@@ -146,7 +146,7 @@ function createTray () {
 
   tray.on('drop-files', async (event, files) => {
     const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
-    const imgs = await uploader(files, 'imgFromPath', window.webContents)
+    const imgs = await new Uploader(files, 'imgFromPath', window.webContents).upload()
     if (imgs !== false) {
       for (let i in imgs) {
         clipboard.writeText(pasteTemplate(pasteStyle, imgs[i].imgUrl))
@@ -323,7 +323,7 @@ const uploadClipboardFiles = async () => {
   } else {
     win = settingWindow || window
   }
-  let img = await uploader(undefined, 'imgFromClipboard', win.webContents)
+  let img = await new Uploader(undefined, 'imgFromClipboard', win.webContents).upload()
   if (img !== false) {
     if (img.length > 0) {
       const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
@@ -371,7 +371,7 @@ const updateDefaultPicBed = () => {
 picgoCoreIPC(app, ipcMain)
 
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
-  const img = await uploader(file, 'imgFromClipboard', window.webContents)
+  const img = await new Uploader(file, 'imgFromClipboard', window.webContents).upload()
   if (img !== false) {
     const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
     clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
@@ -399,7 +399,7 @@ ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
 
 ipcMain.on('uploadChoosedFiles', async (evt, files) => {
   const input = files.map(item => item.path)
-  const imgs = await uploader(input, 'imgFromUploader', evt.sender)
+  const imgs = await new Uploader(input, 'imgFromUploader', evt.sender).upload()
   if (imgs !== false) {
     const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
     let pasteText = ''

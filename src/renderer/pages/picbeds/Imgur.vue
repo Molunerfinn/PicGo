@@ -37,8 +37,10 @@
   </div>
 </template>
 <script>
+import mixin from '@/utils/ConfirmButtonMixin'
 export default {
   name: 'imgur',
+  mixins: [mixin],
   data () {
     return {
       form: {

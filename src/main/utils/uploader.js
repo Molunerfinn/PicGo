@@ -74,69 +74,78 @@ const waitForRename = (window, id) => {
   })
 }
 
-const uploader = (img, type, webContents) => {
-  const win = BrowserWindow.fromWebContents(webContents)
-  const picgo = new PicGo(CONFIG_PATH)
-  picgo.config.debug = true
-  let input = img
+class Uploader {
+  constructor (img, type, webContents) {
+    this.img = img
+    this.type = type
+    this.webContents = webContents
+  }
 
-  picgo.helper.beforeUploadPlugins.register('renameFn', {
-    handle: async ctx => {
-      const rename = picgo.getConfig('settings.rename')
-      const autoRename = picgo.getConfig('settings.autoRename')
-      await Promise.all(ctx.output.map(async (item, index) => {
-        let name
-        let fileName
-        if (autoRename) {
-          fileName = dayjs().add(index, 'second').format('YYYYMMDDHHmmss') + item.extname
-        } else {
-          fileName = item.fileName
-        }
-        if (rename) {
-          const window = createRenameWindow(win)
-          await waitForShow(window.webContents)
-          window.webContents.send('rename', fileName, window.webContents.id)
-          name = await waitForRename(window, window.webContents.id)
-        }
-        item.fileName = name || fileName
-      }))
-    }
-  })
+  upload () {
+    const win = BrowserWindow.fromWebContents(this.webContents)
+    const picgo = new PicGo(CONFIG_PATH)
+    console.log(picgo.pluginLoader.getList())
+    picgo.config.debug = true
+    let input = this.img
 
-  picgo.on('beforeTransform', ctx => {
-    if (ctx.getConfig('settings.uploadNotification')) {
-      const notification = new Notification({
-        title: '上传进度',
-        body: '正在上传'
-      })
-      notification.show()
-    }
-  })
-
-  picgo.upload(input)
-
-  picgo.on('notification', message => {
-    const notification = new Notification(message)
-    notification.show()
-  })
-
-  picgo.on('uploadProgress', progress => {
-    webContents.send('uploadProgress', progress)
-  })
-
-  return new Promise((resolve) => {
-    picgo.on('finished', ctx => {
-      if (ctx.output.every(item => item.imgUrl)) {
-        resolve(ctx.output)
-      } else {
-        resolve(false)
+    picgo.helper.beforeUploadPlugins.register('renameFn', {
+      handle: async ctx => {
+        const rename = picgo.getConfig('settings.rename')
+        const autoRename = picgo.getConfig('settings.autoRename')
+        await Promise.all(ctx.output.map(async (item, index) => {
+          let name
+          let fileName
+          if (autoRename) {
+            fileName = dayjs().add(index, 'second').format('YYYYMMDDHHmmss') + item.extname
+          } else {
+            fileName = item.fileName
+          }
+          if (rename) {
+            const window = createRenameWindow(win)
+            await waitForShow(window.webContents)
+            window.webContents.send('rename', fileName, window.webContents.id)
+            name = await waitForRename(window, window.webContents.id)
+          }
+          item.fileName = name || fileName
+        }))
       }
     })
-    picgo.on('failed', ctx => {
-      console.log(ctx)
-      resolve(false)
+
+    picgo.on('beforeTransform', ctx => {
+      if (ctx.getConfig('settings.uploadNotification')) {
+        const notification = new Notification({
+          title: '上传进度',
+          body: '正在上传'
+        })
+        notification.show()
+      }
     })
-  })
+
+    picgo.upload(input)
+
+    picgo.on('notification', message => {
+      const notification = new Notification(message)
+      notification.show()
+    })
+
+    picgo.on('uploadProgress', progress => {
+      this.webContents.send('uploadProgress', progress)
+    })
+
+    return new Promise((resolve) => {
+      picgo.on('finished', ctx => {
+        if (ctx.output.every(item => item.imgUrl)) {
+          resolve(ctx.output)
+        } else {
+          resolve(false)
+        }
+      })
+      picgo.on('failed', ctx => {
+        console.log(ctx)
+        resolve(false)
+      })
+    })
+  }
 }
 
-export default uploader
+export default Uploader
