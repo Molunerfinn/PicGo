@@ -3061,7 +3061,6 @@ electron@1.8.8:
 element-ui@^2.4.11:
   version "2.4.11"
   resolved "https://registry.yarnpkg.com/element-ui/-/element-ui-2.4.11.tgz#db6a2d37001b8fe5fff9f176fb58bb3908cfa9c9"
-  integrity sha512-RtgK0t840NAFTajGMWvylzZRSX1EkZ7V4YgAoBxhv4TtkeMscLuk/IdYOzPdlQq6IN0byx1YVBxCX+u4yYkGvw==
   dependencies:
     async-validator "~1.8.1"
     babel-helper-vue-jsx-merge-props "^2.0.0"
@@ -6197,10 +6196,9 @@ performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
 
-picgo@^1.1.11:
-  version "1.1.11"
-  resolved "https://registry.yarnpkg.com/picgo/-/picgo-1.1.11.tgz#a79067e37bfab84d557a7dfe51a733a63ccf7d8f"
-  integrity sha512-J4igRhH3eRHf7MrgV9eLF+nwABCQyfuKQwtRvKkJXyTiDTuhvfpjv4WOBcW5ilqWUAsgwIP/rXaw1mxxQ5bQbQ==
+picgo@^1.1.12:
+  version "1.1.12"
+  resolved "http://registry.npm.taobao.org/picgo/download/picgo-1.1.12.tgz#264f54f3b8d5712d912fc64c051421da8dad2390"
   dependencies:
     chalk "^2.4.1"
     commander "^2.17.0"

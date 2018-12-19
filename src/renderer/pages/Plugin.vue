@@ -22,10 +22,10 @@
             class="plugin-item__content"
             :class="{ disabled: !item.enabled }"
           >
-            <div class="plugin-item__name">
+            <div class="plugin-item__name" @click="openHomepage(item.homepage)">
               {{ item.name }} <small>{{ ' ' + item.version }}</small>
             </div>
-            <div class="plugin-item__desc">
+            <div class="plugin-item__desc" :title="item.description">
               {{ item.description }}
             </div>
             <div class="plugin-item__info-bar">
@@ -285,6 +285,11 @@ export default {
       if (item === 'transformer') {
         this.$db.set('picBed.transformer', 'path')
       }
+    },
+    openHomepage (url) {
+      if (url) {
+        this.$electron.remote.shell.openExternal(url)
+      }
     }
   },
   beforeDestroy () {
@@ -332,7 +337,6 @@ export default {
     padding 8px
     user-select text
     transition all .2s ease-in-out
-    cursor pointer
     margin-bottom 10px
     &:hover
       background #333
@@ -357,6 +361,10 @@ export default {
       line-height 22px
       // font-weight 600
       font-weight 600
+      cursor pointer
+      transition all .2s ease-in-out
+      &:hover
+        color: #1B9EF3
     &__desc
       font-size 14px
       height 21px
@@ -376,6 +384,10 @@ export default {
     &__config
       float right
       font-size 16px
+      cursor pointer
+      transition all .2s ease-in-out
+      &:hover
+        color: #1B9EF3
     .config-button
       font-size 12px
       color #ddd
