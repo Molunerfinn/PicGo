@@ -272,6 +272,7 @@ export default {
       return Object.values(obj).some(item => item)
     },
     multiDelete () {
+      // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
       if (Object.values(this.choosedList).some(item => item)) {
         this.$confirm('将删除刚才选中的图片，是否继续？', '提示', {
           confirmButtonText: '确定',
@@ -302,9 +303,11 @@ export default {
       if (Object.values(this.choosedList).some(item => item)) {
         let copyString = ''
         const style = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
+        // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
         Object.keys(this.choosedList).forEach(key => {
           if (this.choosedList[key]) {
             copyString += pasteStyle(style, this.$db.read().get('uploaded').getById(key).value().imgUrl) + '\n'
+            this.choosedList[key] = false
           }
         })
         const obj = {

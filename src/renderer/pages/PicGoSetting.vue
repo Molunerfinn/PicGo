@@ -12,6 +12,11 @@
           size="small"
         >
           <el-form-item
+            label="打开配置文件"
+          >
+            <el-button type="primary" round size="mini" @click="openConfigFile">点击打开</el-button>
+          </el-form-item>
+          <el-form-item
             label="修改快捷键"
           >
             <el-button type="primary" round size="mini" @click="keyBindingVisible = true">点击设置</el-button>
@@ -180,9 +185,9 @@
   </div>
 </template>
 <script>
-// import db from '../../../datastore'
 import keyDetect from 'utils/key-binding'
 import pkg from 'root/package.json'
+import path from 'path'
 const release = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
 const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
 export default {
@@ -241,6 +246,12 @@ export default {
     })
   },
   methods: {
+    openConfigFile () {
+      const { app, shell } = this.$electron.remote
+      const STORE_PATH = app.getPath('userData')
+      const CONFIG_FILE = path.join(STORE_PATH, '/data.json')
+      shell.openItem(CONFIG_FILE)
+    },
     keyDetect (type, event) {
       this.shortKey[type] = keyDetect(event).join('+')
     },
@@ -338,11 +349,6 @@ export default {
 <style lang='stylus'>
 .el-message
   left 60%
-.view-title
-  color #eee
-  font-size 20px
-  text-align center
-  margin 20px auto
 #picgo-setting
   .sub-title
     font-size 14px

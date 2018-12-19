@@ -121,11 +121,6 @@ export default {
 <style lang='stylus'>
 .el-message
   left 60%
-.view-title
-  color #eee
-  font-size 20px
-  text-align center
-  margin 20px auto
 #weibo-view
   .el-form
     label  

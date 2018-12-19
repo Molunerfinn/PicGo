@@ -120,11 +120,6 @@ export default {
 }
 </script>
 <style lang='stylus'>
-.view-title
-  color #eee
-  font-size 20px
-  text-align center
-  margin 20px auto
 #qiniu-view
   .el-form
     label  

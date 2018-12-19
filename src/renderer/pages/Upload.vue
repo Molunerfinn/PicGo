@@ -150,7 +150,7 @@ export default {
   color #eee
   font-size 20px
   text-align center
-  margin 20px auto
+  margin 10px auto
 #upload-view
   #upload-area
     height 220px
