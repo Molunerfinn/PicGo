@@ -37,7 +37,6 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   ipcMain.on('getPluginList', event => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginList = picgo.pluginLoader.getList()
-    // console.log(pluginList.length)
     const list = []
     for (let i in pluginList) {
       const plugin = picgo.pluginLoader.getPlugin(pluginList[i])

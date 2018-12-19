@@ -25,7 +25,7 @@
           :show-text="false" 
           class="upload-progress"
           :class="{ 'show': showProgress }"
-          :status="showError ? 'exception' : ''"
+          :status="showError ? 'exception' : 'text'" 
         ></el-progress>
         <div class="paste-style">
           <div class="el-col-16">

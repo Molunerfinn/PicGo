@@ -3,29 +3,58 @@
     <div class="view-title">
       相册 - {{ filterList.length }} <i class="el-icon-caret-bottom" @click="toggleHandleBar" :class="{'active': handleBarActive}"></i>
     </div>
-    <transition name="el-zoom-in-center">
+    <transition name="el-zoom-in-top">
       <el-row v-show="handleBarActive">
-        <el-col :span="20" :offset="2" :class="{ 'long-list': filterList.length > 4 }">
+        <el-col :span="20" :offset="2">
           <el-row class="handle-bar" :gutter="16">
-            <el-col :span="6" v-for="item in $picBed" :key="item.type">
-              <div class="pic-bed-item" @click="choosePicBed(item.type)" :class="{active: choosedPicBed.indexOf(item.type) !== -1}">
-                {{ item.name }}
-              </div>
+            <el-col :span="12">
+              <el-select
+                v-model="choosedPicBed"
+                multiple
+                collapse-tags
+                size="mini"
+                style="width: 100%"
+                placeholder="请选择显示的图床">
+                <el-option
+                  v-for="item in $picBed"
+                  :key="item.type"
+                  :label="item.name"
+                  :value="item.type">
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="12">
+              <el-select
+                v-model="pasteStyle"
+                size="mini"
+                style="width: 100%"
+                @change="handlePasteStyleChange"
+                placeholder="请选择粘贴的格式">
+                <el-option
+                  v-for="(value, key) in pasteStyleMap"
+                  :key="key"
+                  :label="key"
+                  :value="value">
+                </el-option>
+              </el-select>
             </el-col>
           </el-row>
           <el-row class="handle-bar" :gutter="16">
             <el-col :span="12">
-              <el-input placeholder="搜索" size="mini" v-model="searchText">
+              <el-input
+                placeholder="搜索"
+                size="mini"
+                v-model="searchText">
                 <i slot="suffix" class="el-input__icon el-icon-close" v-if="searchText" @click="cleanSearch" style="cursor: pointer"></i>
               </el-input>
             </el-col>
             <el-col :span="6">
-              <div class="item-base copy" :class="{ active: isMultiple(choosedList)}" @click="multiCopy">
+              <div class="item-base copy round" :class="{ active: isMultiple(choosedList)}" @click="multiCopy">
                 <i class="el-icon-document"></i> 批量复制
               </div>
             </el-col>
             <el-col :span="6">
-              <div class="item-base delete" :class="{ active: isMultiple(choosedList)}" @click="multiDelete">
+              <div class="item-base delete round" :class="{ active: isMultiple(choosedList)}" @click="multiDelete">
                 <i class="el-icon-delete"></i> 批量删除
               </div>
             </el-col>
@@ -98,7 +127,15 @@ export default {
       choosedList: {},
       choosedPicBed: [],
       searchText: '',
-      handleBarActive: false
+      handleBarActive: false,
+      pasteStyle: '',
+      pasteStyleMap: {
+        Markdown: 'markdown',
+        HTML: 'HTML',
+        URL: 'URL',
+        UBB: 'UBB',
+        Custom: 'Custom'
+      }
     }
   },
   created () {
@@ -108,6 +145,7 @@ export default {
         this.filterList = this.getGallery()
       })
     })
+    this.getPasteStyle()
   },
   computed: {
     filterList: {
@@ -282,6 +320,14 @@ export default {
     },
     toggleHandleBar () {
       this.handleBarActive = !this.handleBarActive
+    },
+    getPasteStyle () {
+      this.pasteStyle = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
+    },
+    handlePasteStyleChange (val) {
+      this.$db.read().set('settings.pasteStyle', val)
+        .write()
+      this.pasteStyle = val
     }
   },
   beforeDestroy () {
@@ -305,11 +351,12 @@ export default {
 .item-base
   background #2E2E2E
   text-align center
-  margin-bottom 10px
   padding 5px 0
   cursor pointer
   font-size 13px
   transition all .2s ease-in-out
+  height: 28px
+  box-sizing: border-box
   &.copy
     cursor not-allowed
     background #49B1F5
@@ -324,10 +371,10 @@ export default {
       cursor pointer
       background #F15140
       color #fff
-.long-list
-  width: calc(83.3333333% - 6px)
 #gallery-view
   position relative
+  .round
+    border-radius 14px
   .pull-right
     float right
   .gallery-list
@@ -341,8 +388,8 @@ export default {
     transition all .2s ease-in-out .1s
     width 100%
     &.small
-      height: 245px
-      top: 152px
+      height: 287px
+      top: 113px
     &__img
       height 150px
       position relative
@@ -382,14 +429,7 @@ export default {
             color #F15140
   .handle-bar
     color #ddd
-    .pic-bed-item
-      @extend .item-base
-      &:hover
-        background #A4D8FA
-        color #fff
-      &.active
-        background #49B1F5
-        color #fff
+    margin-bottom 10px
   .el-input__inner
-    border-radius 0
+    border-radius 14px
 </style>
