@@ -84,8 +84,9 @@ class Uploader {
   upload () {
     const win = BrowserWindow.fromWebContents(this.webContents)
     const picgo = new PicGo(CONFIG_PATH)
-    console.log(picgo.pluginLoader.getList())
     picgo.config.debug = true
+    // for picgo-core
+    picgo.config.PICGO_ENV = 'GUI'
     let input = this.img
 
     picgo.helper.beforeUploadPlugins.register('renameFn', {
