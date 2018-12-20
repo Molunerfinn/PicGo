@@ -6196,9 +6196,10 @@ performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
 
-picgo@^1.1.12:
-  version "1.1.12"
-  resolved "http://registry.npm.taobao.org/picgo/download/picgo-1.1.12.tgz#264f54f3b8d5712d912fc64c051421da8dad2390"
+picgo@^1.1.13:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/picgo/-/picgo-1.1.13.tgz#77b6c8ac74a49edc3932c9de9d441e34e31adfd1"
+  integrity sha512-gLRCGeeeTEdRN+gXMOtIsr3Y0sdOKsyU6HRLwEWAgPCAEulXTNr5mTi8eBOp3RNxfwxnmh4jz+0N2jeZ4XPeyA==
   dependencies:
     chalk "^2.4.1"
     commander "^2.17.0"

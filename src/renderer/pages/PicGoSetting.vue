@@ -27,6 +27,11 @@
             <el-button type="primary" round size="mini" @click="customLinkVisible = true">点击设置</el-button>
           </el-form-item>
           <el-form-item
+            label="设置代理"
+          >
+            <el-button type="primary" round size="mini" @click="proxyVisible = true">点击设置</el-button>
+          </el-form-item>
+          <el-form-item
             label="检查更新"
           >
             <el-button type="primary" round size="mini" @click="checkUpdate">点击设置</el-button>
@@ -164,6 +169,33 @@
       </span>
     </el-dialog>
     <el-dialog
+      title="设置代理"
+      :visible.sync="proxyVisible"
+      :modal-append-to-body="false"
+    >
+      <el-form
+        label-position="right"
+        :model="customLink"
+        ref="customLink"
+        :rules="rules"
+        label-width="80px"
+      >
+        <el-form-item
+          label="代理地址"
+        >
+          <el-input 
+            v-model="proxy"
+            :autofocus="true"
+            placeholder="例如：http://127.0.0.1:1080"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="cancelProxy" round>取消</el-button>
+        <el-button type="primary" @click="confirmProxy" round>确定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
       title="检查更新"
       :visible.sync="checkUpdateVisible"
       :modal-append-to-body="false"
@@ -178,8 +210,8 @@
         PicGo更新啦，请点击确定打开下载页面
       </div>
       <span slot="footer">
-        <el-button @click="cancelCheckVersion">取消</el-button>
-        <el-button type="primary" @click="confirmCheckVersion">确定</el-button>
+        <el-button @click="cancelCheckVersion" round>取消</el-button>
+        <el-button type="primary" @click="confirmCheckVersion" round>确定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -223,12 +255,14 @@ export default {
       keyBindingVisible: false,
       customLinkVisible: false,
       checkUpdateVisible: false,
+      proxyVisible: false,
       customLink: {
         value: this.$db.read().get('settings.customLink').value() || '$url'
       },
       shortKey: {
         upload: this.$db.read().get('settings.shortKey.upload').value()
       },
+      proxy: this.$db.read().get('picBed.proxy').value() || undefined,
       rules: {
         value: [
           { validator: customLinkRule, trigger: 'blur' }
@@ -279,6 +313,20 @@ export default {
           return false
         }
       })
+    },
+    cancelProxy () {
+      this.proxyVisible = false
+      this.proxy = this.$db.read().get('picBed.proxy').value() || undefined
+    },
+    confirmProxy () {
+      this.proxyVisible = false
+      this.$db.read().set('picBed.proxy', this.proxy).write()
+      const successNotification = new window.Notification('设置代理', {
+        body: '设置成功'
+      })
+      successNotification.onclick = () => {
+        return true
+      }
     },
     updateHelperChange (val) {
       this.$db.read().set('settings.showUpdateTip', val).write()

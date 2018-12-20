@@ -48,7 +48,7 @@
                 </template>
                 <template v-else>
                   <span v-if="item.ing" class="config-button ing">
-                    卸载中
+                    进行中
                   </span>
                   <template v-else>
                     <i
@@ -145,6 +145,16 @@ export default {
         }
       })
     })
+    this.$electron.ipcRenderer.on('updateSuccess', (evt, plugin) => {
+      this.loading = false
+      this.pluginList.forEach(item => {
+        if (item.name === plugin) {
+          item.ing = false
+          item.hasInstall = true
+        }
+      })
+      this.getPluginList()
+    })
     this.$electron.ipcRenderer.on('uninstallSuccess', (evt, plugin) => {
       this.loading = false
       this.pluginList = this.pluginList.filter(item => {
@@ -185,6 +195,11 @@ export default {
         click () {
           _this.uninstallPlugin(plugin.name)
         }
+      }, {
+        label: '更新插件',
+        click () {
+          _this.updatePlugin(plugin.name)
+        }
       }]
       for (let i in plugin.config) {
         if (plugin.config[i].config.length > 0) {
@@ -217,6 +232,14 @@ export default {
         }
       })
       this.$electron.ipcRenderer.send('uninstallPlugin', val)
+    },
+    updatePlugin (val) {
+      this.pluginList.forEach(item => {
+        if (item.name === val) {
+          item.ing = true
+        }
+      })
+      this.$electron.ipcRenderer.send('updatePlugin', val)
     },
     reloadApp () {
       this.$electron.remote.app.relaunch()
@@ -296,6 +319,7 @@ export default {
     this.$electron.ipcRenderer.removeAllListeners('pluginList')
     this.$electron.ipcRenderer.removeAllListeners('installSuccess')
     this.$electron.ipcRenderer.removeAllListeners('uninstallSuccess')
+    this.$electron.ipcRenderer.removeAllListeners('updateSuccess')
   }
 }
 </script>
