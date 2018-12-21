@@ -71,6 +71,11 @@ export default new Router({
           name: 'imgur'
         },
         {
+          path: 'others',
+          component: require('@/pages/picbeds/Others').default,
+          name: 'others'
+        },
+        {
           path: 'gallery',
           component: require('@/pages/Gallery').default,
           name: 'gallery'

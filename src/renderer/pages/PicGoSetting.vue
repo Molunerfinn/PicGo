@@ -17,7 +17,7 @@
             <el-button type="primary" round size="mini" @click="openConfigFile">点击打开</el-button>
           </el-form-item>
           <el-form-item
-            label="修改快捷键"
+            label="修改上传快捷键"
           >
             <el-button type="primary" round size="mini" @click="keyBindingVisible = true">点击设置</el-button>
           </el-form-item>
@@ -34,7 +34,7 @@
           <el-form-item
             label="检查更新"
           >
-            <el-button type="primary" round size="mini" @click="checkUpdate">点击设置</el-button>
+            <el-button type="primary" round size="mini" @click="checkUpdate">点击检查</el-button>
           </el-form-item>
           <el-form-item
             label="打开更新助手"
@@ -87,7 +87,7 @@
             ></el-switch>
           </el-form-item>
           <el-form-item
-            label="mini窗口置顶"
+            label="Mini窗口置顶"
           >
             <el-switch
               v-model="form.miniWindowOntop"
@@ -115,7 +115,7 @@
       </el-col>
     </el-row>
     <el-dialog
-      title="修改快捷键"
+      title="修改上传快捷键"
       :visible.sync="keyBindingVisible"
       :modal-append-to-body="false"
     >
@@ -134,8 +134,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button @click="cancelKeyBinding">取消</el-button>
-        <el-button type="primary" @click="confirmKeyBinding">确定</el-button>
+        <el-button @click="cancelKeyBinding" round>取消</el-button>
+        <el-button type="primary" @click="confirmKeyBinding" round>确定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -164,8 +164,8 @@
         如[]($url)
       </div>
       <span slot="footer">
-        <el-button @click="cancelCustomLink">取消</el-button>
-        <el-button type="primary" @click="confirmCustomLink">确定</el-button>
+        <el-button @click="cancelCustomLink" round>取消</el-button>
+        <el-button type="primary" @click="confirmCustomLink" round>确定</el-button>
       </span>
     </el-dialog>
     <el-dialog

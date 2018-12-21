@@ -254,6 +254,11 @@ export default {
 }
 </script>
 <style lang='stylus'>
+.view-title
+  color #eee
+  font-size 20px
+  text-align center
+  margin 10px auto
 #setting-page
   .fake-title-bar
     -webkit-app-region drag
