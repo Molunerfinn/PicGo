@@ -3,7 +3,7 @@
     <el-row :gutter="16">
       <el-col :span="20" :offset="2">
         <div class="view-title">
-          图片上传 - {{ picBed }}
+          图片上传 - {{ picBedName }}
         </div>
         <div
           id="upload-area"
@@ -65,7 +65,8 @@ export default {
       showProgress: false,
       showError: false,
       pasteStyle: '',
-      picBed: ''
+      picBed: [],
+      picBedName: ''
     }
   },
   mounted () {
@@ -81,6 +82,11 @@ export default {
     this.getPasteStyle()
     this.getDefaultPicBed()
     this.$electron.ipcRenderer.on('syncPicBed', () => {
+      this.getDefaultPicBed()
+    })
+    this.getPicBeds()
+    this.$electron.ipcRenderer.on('getPicBeds', (event, picBeds) => {
+      this.picBed = picBeds
       this.getDefaultPicBed()
     })
   },
@@ -100,6 +106,7 @@ export default {
   beforeDestroy () {
     this.$electron.ipcRenderer.removeAllListeners('uploadProgress')
     this.$electron.ipcRenderer.removeAllListeners('syncPicBed')
+    this.$electron.ipcRenderer.removeAllListeners('getPicBeds')
   },
   methods: {
     onDrop (e) {
@@ -136,11 +143,14 @@ export default {
     },
     getDefaultPicBed () {
       const current = this.$db.read().get('picBed.current').value()
-      this.$picBed.forEach(item => {
+      this.picBed.forEach(item => {
         if (item.type === current) {
-          this.picBed = item.name
+          this.picBedName = item.name
         }
       })
+    },
+    getPicBeds () {
+      this.$electron.ipcRenderer.send('getPicBeds')
     }
   }
 }

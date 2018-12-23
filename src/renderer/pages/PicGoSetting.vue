@@ -251,7 +251,7 @@ export default {
         uploadNotification: this.$db.read().get('settings.uploadNotification').value() || false,
         miniWindowOntop: this.$db.read().get('settings.miniWindowOntop').value() || false
       },
-      picBed: this.$picBed,
+      picBed: [],
       keyBindingVisible: false,
       customLinkVisible: false,
       checkUpdateVisible: false,
@@ -273,13 +273,20 @@ export default {
     }
   },
   created () {
-    this.form.showPicBedList = this.picBed.map(item => {
-      if (item.visible) {
-        return item.name
-      }
+    this.getPicBeds()
+    this.$electron.ipcRenderer.on('getPicBeds', (event, picBeds) => {
+      this.picBed = picBeds
+      this.form.showPicBedList = this.picBed.map(item => {
+        if (item.visible) {
+          return item.name
+        }
+      })
     })
   },
   methods: {
+    getPicBeds () {
+      this.$electron.ipcRenderer.send('getPicBeds')
+    },
     openConfigFile () {
       const { app, shell } = this.$electron.remote
       const STORE_PATH = app.getPath('userData')
@@ -391,6 +398,9 @@ export default {
       this.$db.read().set('settings.miniWindowOntop', val).write()
       this.$message('需要重启生效')
     }
+  },
+  beforeDestroy () {
+    this.$electron.ipcRenderer.removeAllListeners('getPicBeds')
   }
 }
 </script>

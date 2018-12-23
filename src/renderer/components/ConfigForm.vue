@@ -27,8 +27,22 @@
         >
           <el-option
             v-for="(choice, idx) in item.choices"
-            :label="choice.name || choice"
-            :key="choice"
+            :label="choice.name || choice.value || choice"
+            :key="choice.name || choice.value || choice"
+            :value="choice.value || choice"
+          ></el-option>
+        </el-select>
+        <el-select
+          v-else-if="item.type === 'checkbox'"
+          v-model="ruleForm[item.name]"
+          :placeholder="item.message || item.name"
+          multiple
+          collapse-tags
+        >
+          <el-option
+            v-for="(choice, idx) in item.choices"
+            :label="choice.name || choice.value || choice"
+            :key="choice.value || choice"
             :value="choice.value || choice"
           ></el-option>
         </el-select>
@@ -40,17 +54,21 @@
         >
         </el-switch>
       </el-form-item>
+      <slot></slot>
     </el-form>
   </div>
 </template>
 <script>
-import { cloneDeep } from 'lodash'
+import { cloneDeep, union } from 'lodash'
 export default {
   name: 'config-form',
   props: {
     config: Array,
     type: String,
-    name: String
+    id: {
+      type: String,
+      default: ''
+    }
   },
   data () {
     return {
@@ -59,23 +77,33 @@ export default {
     }
   },
   created () {
-    this.configList = cloneDeep(this.config).map(item => {
-      const defaultValue = item.default !== undefined ? item.default : null
-      this.$set(this.ruleForm, item.name, defaultValue)
-      return item
-    })
   },
   watch: {
     config: {
       deep: true,
       handler (val) {
         this.ruleForm = Object.assign({}, {})
-        this.configList = cloneDeep(val).map(item => {
-          const defaultValue = item.default !== undefined ? item.default : null
-          this.$set(this.ruleForm, item.name, defaultValue)
-          return item
-        })
-      }
+        const config = this.$db.read().get(`picBed.${this.id}`).value()
+        if (val.length > 0) {
+          this.configList = cloneDeep(val).map(item => {
+            let defaultValue = item.default !== undefined
+              ? item.default : item.type === 'checkbox'
+                ? [] : null
+            if (item.type === 'checkbox') {
+              const defaults = item.choices.filter(i => {
+                return i.checked
+              }).map(i => i.value)
+              defaultValue = union(defaultValue, defaults)
+            }
+            if (config && config[item.name] !== undefined) {
+              defaultValue = config[item.name]
+            }
+            this.$set(this.ruleForm, item.name, defaultValue)
+            return item
+          })
+        }
+      },
+      immediate: true
     }
   },
   methods: {

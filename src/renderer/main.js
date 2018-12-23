@@ -8,7 +8,6 @@ import store from './store'
 import db from '../datastore/index'
 import { webFrame } from 'electron'
 import './assets/fonts/iconfont.css'
-import picBed from '../datastore/pic-bed'
 import VueLazyLoad from 'vue-lazyload'
 
 Vue.use(ElementUI)
@@ -20,7 +19,16 @@ webFrame.setLayoutZoomLevelLimits(0, 0)
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
 Vue.prototype.$db = db
-Vue.prototype.$picBed = picBed
+Vue.prototype.$builtInPicBed = [
+  'smms',
+  'weibo',
+  'imgur',
+  'qiniu',
+  'tcyun',
+  'upyun',
+  'aliyun',
+  'github'
+]
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

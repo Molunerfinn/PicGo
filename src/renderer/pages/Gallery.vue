@@ -16,7 +16,7 @@
                 style="width: 100%"
                 placeholder="请选择显示的图床">
                 <el-option
-                  v-for="item in $picBed"
+                  v-for="item in picBed"
                   :key="item.type"
                   :label="item.name"
                   :value="item.type">
@@ -135,7 +135,8 @@ export default {
         URL: 'URL',
         UBB: 'UBB',
         Custom: 'Custom'
-      }
+      },
+      picBed: []
     }
   },
   created () {
@@ -145,7 +146,11 @@ export default {
         this.filterList = this.getGallery()
       })
     })
+    this.$electron.ipcRenderer.on('getPicBeds', (event, picBeds) => {
+      this.picBed = picBeds
+    })
     this.getPasteStyle()
+    this.getPicBeds()
   },
   computed: {
     filterList: {
@@ -158,6 +163,9 @@ export default {
     }
   },
   methods: {
+    getPicBeds () {
+      this.$electron.ipcRenderer.send('getPicBeds')
+    },
     getGallery () {
       if (this.choosedPicBed.length > 0) {
         let arr = []
@@ -335,6 +343,7 @@ export default {
   },
   beforeDestroy () {
     this.$electron.ipcRenderer.removeAllListeners('updateGallery')
+    this.$electron.ipcRenderer.removeAllListeners('getPicBeds')
   }
 }
 </script>

@@ -17,7 +17,6 @@
 </template>
 <script>
 import mixin from '@/utils/mixin'
-import picBed from '~/datastore/pic-bed.js'
 export default {
   name: 'mini-page',
   mixins: [mixin],
@@ -34,13 +33,13 @@ export default {
       screenX: '',
       screenY: '',
       menu: null,
-      os: ''
+      os: '',
+      picBed: []
     }
   },
   created () {
     this.os = process.platform
-  },
-  mounted () {
+    this.getPicBeds()
     this.$electron.ipcRenderer.on('uploadProgress', (event, progress) => {
       if (progress !== -1) {
         this.showProgress = true
@@ -50,7 +49,12 @@ export default {
         this.showError = true
       }
     })
-    this.buildMenu()
+    this.$electron.ipcRenderer.on('getPicBeds', (event, picBeds) => {
+      this.picBed = picBeds
+      this.buildMenu()
+    })
+  },
+  mounted () {
     window.addEventListener('mousedown', this.handleMouseDown, false)
     window.addEventListener('mousemove', this.handleMouseMove, false)
     window.addEventListener('mouseup', this.handleMouseUp, false)
@@ -69,6 +73,9 @@ export default {
     }
   },
   methods: {
+    getPicBeds () {
+      this.$electron.ipcRenderer.send('getPicBeds')
+    },
     onDrop (e) {
       this.dragover = false
       this.ipcSendFiles(e.dataTransfer.files)
@@ -119,7 +126,7 @@ export default {
           this.openUploadWindow()
         } else {
           let _this = this
-          const types = picBed.map(item => item.type)
+          const types = this.picBed.map(item => item.type)
           let submenuItem = this.menu.items[1].submenu.items
           submenuItem.forEach((item, index) => {
             const result = _this.$db.read().get('picBed.current').value() === types[index]
@@ -137,7 +144,7 @@ export default {
     },
     buildMenu () {
       const _this = this
-      const submenu = picBed.map(item => {
+      const submenu = this.picBed.map(item => {
         return {
           label: item.name,
           type: 'radio',
@@ -176,6 +183,7 @@ export default {
   },
   beforeDestroy () {
     this.$electron.ipcRenderer.removeAllListeners('uploadProgress')
+    this.$electron.ipcRenderer.removeAllListeners('getPicBeds')
     window.removeEventListener('mousedown', this.handleMouseDown, false)
     window.removeEventListener('mousemove', this.handleMouseMove, false)
     window.removeEventListener('mouseup', this.handleMouseUp, false)

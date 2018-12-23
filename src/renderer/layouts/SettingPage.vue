@@ -36,7 +36,7 @@
             >
               <el-menu-item
                 v-if="item.visible"
-                :index="item.type"
+                :index="`picbeds-${item.type}`"
                 :key="item.type"
               >
                 <!-- <i :class="`el-icon-ui-${item.type}`"></i> -->
@@ -168,18 +168,39 @@ export default {
       shortKey: {
         upload: db.read().get('shortKey.upload').value()
       },
-      picBed: this.$picBed
+      picBed: []
     }
   },
   created () {
     this.os = process.platform
     this.buildMenu()
+    this.getPicBeds()
+    this.$electron.ipcRenderer.on('getPicBeds', (event, picBeds) => {
+      this.picBed = picBeds
+    })
   },
   methods: {
     handleSelect (index) {
-      this.$router.push({
-        name: index
-      })
+      const type = index.match(/picbeds-/)
+      if (type === null) {
+        this.$router.push({
+          name: index
+        })
+      } else {
+        const picBed = index.replace(/picbeds-/, '')
+        if (this.$builtInPicBed.includes(picBed)) {
+          this.$router.push({
+            name: picBed
+          })
+        } else {
+          this.$router.push({
+            name: 'others',
+            query: {
+              type: picBed
+            }
+          })
+        }
+      }
     },
     minimizeWindow () {
       const window = BrowserWindow.getFocusedWindow()
@@ -244,12 +265,18 @@ export default {
     },
     openMiniWindow () {
       this.$electron.ipcRenderer.send('openMiniWindow')
+    },
+    getPicBeds () {
+      this.$electron.ipcRenderer.send('getPicBeds')
     }
   },
   beforeRouteEnter: (to, from, next) => {
     next(vm => {
       vm.defaultActive = to.name
     })
+  },
+  beforeDestroy () {
+    this.$electron.ipcRenderer.removeAllListeners('getPicBeds')
   }
 }
 </script>

@@ -75,7 +75,7 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   })
 }
 
-const handlePluginInstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
+const handlePluginInstall = (ipcMain, CONFIG_PATH) => {
   ipcMain.on('installPlugin', (event, msg) => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginHandler = new PluginHandler(picgo)
@@ -87,7 +87,7 @@ const handlePluginInstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   })
 }
 
-const handlePluginUninstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
+const handlePluginUninstall = (ipcMain, CONFIG_PATH) => {
   ipcMain.on('uninstallPlugin', (event, msg) => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginHandler = new PluginHandler(picgo)
@@ -99,7 +99,7 @@ const handlePluginUninstall = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   })
 }
 
-const handlePluginUpdate = (ipcMain, STORE_PATH, CONFIG_PATH) => {
+const handlePluginUpdate = (ipcMain, CONFIG_PATH) => {
   ipcMain.on('updatePlugin', (event, msg) => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginHandler = new PluginHandler(picgo)
@@ -111,11 +111,21 @@ const handlePluginUpdate = (ipcMain, STORE_PATH, CONFIG_PATH) => {
   })
 }
 
+const handleGetPicBedConfig = (ipcMain, CONFIG_PATH) => {
+  ipcMain.on('getPicBedConfig', (event, type) => {
+    const picgo = new PicGo(CONFIG_PATH)
+    const config = handleConfigWithFunction(picgo.helper.uploader.get(type).config(picgo))
+    const name = picgo.helper.uploader.get(type).name || type
+    event.sender.send('getPicBedConfig', config, name)
+  })
+}
+
 export default (app, ipcMain) => {
   const STORE_PATH = app.getPath('userData')
   const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
   handleGetPluginList(ipcMain, STORE_PATH, CONFIG_PATH)
-  handlePluginInstall(ipcMain, STORE_PATH, CONFIG_PATH)
-  handlePluginUninstall(ipcMain, STORE_PATH, CONFIG_PATH)
-  handlePluginUpdate(ipcMain, STORE_PATH, CONFIG_PATH)
+  handlePluginInstall(ipcMain, CONFIG_PATH)
+  handlePluginUninstall(ipcMain, CONFIG_PATH)
+  handlePluginUpdate(ipcMain, CONFIG_PATH)
+  handleGetPicBedConfig(ipcMain, CONFIG_PATH)
 }

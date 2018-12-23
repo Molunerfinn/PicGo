@@ -5,8 +5,8 @@ import { app, BrowserWindow, Tray, Menu, Notification, clipboard, ipcMain, globa
 import db from '../datastore'
 import pasteTemplate from './utils/pasteTemplate'
 import updateChecker from './utils/updateChecker'
+import { getPicBeds } from './utils/getPicBeds'
 import pkg from '../../package.json'
-import picBed from '../datastore/pic-bed'
 import picgoCoreIPC from './utils/picgoCoreIPC'
 /**
  * Set `__static` path to static files in production
@@ -38,7 +38,8 @@ const miniWinURL = process.env.NODE_ENV === 'development'
 function createTray () {
   const menubarPic = process.platform === 'darwin' ? `${__static}/menubar.png` : `${__static}/menubar-nodarwin.png`
   tray = new Tray(menubarPic)
-  const submenu = picBed.map(item => {
+  const picBeds = getPicBeds(app)
+  const submenu = picBeds.map(item => {
     return {
       label: item.name,
       type: 'radio',
@@ -354,7 +355,8 @@ const uploadClipboardFiles = async () => {
 
 const updateDefaultPicBed = () => {
   if (process.platform === 'darwin' || process.platform === 'win32') {
-    const types = picBed.map(item => item.type)
+    const picBeds = getPicBeds(app)
+    const types = picBeds.map(item => item.type)
     let submenuItem = contextMenu.items[2].submenu.items
     submenuItem.forEach((item, index) => {
       const result = db.read().get('picBed.current').value() === types[index]
@@ -482,6 +484,11 @@ ipcMain.on('syncPicBed', (evt) => {
     settingWindow.webContents.send('syncPicBed')
   }
   updateDefaultPicBed()
+})
+
+ipcMain.on('getPicBeds', (evt) => {
+  const picBeds = getPicBeds(app)
+  evt.sender.send('getPicBeds', picBeds)
 })
 
 const shortKeyHash = {
