@@ -39,7 +39,6 @@ export default {
   },
   created () {
     this.os = process.platform
-    this.getPicBeds()
     this.$electron.ipcRenderer.on('uploadProgress', (event, progress) => {
       if (progress !== -1) {
         this.showProgress = true
@@ -49,10 +48,8 @@ export default {
         this.showError = true
       }
     })
-    this.$electron.ipcRenderer.on('getPicBeds', (event, picBeds) => {
-      this.picBed = picBeds
-      this.buildMenu()
-    })
+    this.$electron.ipcRenderer.send('getPicBeds')
+    this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
   },
   mounted () {
     window.addEventListener('mousedown', this.handleMouseDown, false)
@@ -73,8 +70,9 @@ export default {
     }
   },
   methods: {
-    getPicBeds () {
-      this.$electron.ipcRenderer.send('getPicBeds')
+    getPicBeds (event, picBeds) {
+      this.picBed = picBeds
+      this.buildMenu()
     },
     onDrop (e) {
       this.dragover = false
@@ -183,7 +181,7 @@ export default {
   },
   beforeDestroy () {
     this.$electron.ipcRenderer.removeAllListeners('uploadProgress')
-    this.$electron.ipcRenderer.removeAllListeners('getPicBeds')
+    this.$electron.ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
     window.removeEventListener('mousedown', this.handleMouseDown, false)
     window.removeEventListener('mousemove', this.handleMouseMove, false)
     window.removeEventListener('mouseup', this.handleMouseUp, false)

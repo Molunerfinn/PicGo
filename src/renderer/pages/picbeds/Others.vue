@@ -6,6 +6,7 @@
           {{ picBedName }}设置
         </div>
         <config-form
+          v-if="config.length > 0"
           :config="config"
           type="uploader"
           ref="configForm"
@@ -17,7 +18,10 @@
             </el-button-group>
           </el-form-item>
         </config-form>
-
+        <div v-else class="single">
+          <div class="notice">暂无配置项</div>
+          <el-button type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type" size="mini">设为默认图床</el-button>
+        </div>
       </el-col>
     </el-row>
   </div>
@@ -38,15 +42,10 @@ export default {
       picBedName: ''
     }
   },
-  beforeRouteEnter (to, from, next) {
-    next(vm => {
-      vm.type = to.query.type
-      vm.$electron.ipcRenderer.send('getPicBedConfig', to.query.type)
-      vm.$electron.ipcRenderer.on('getPicBedConfig', (event, config, name) => {
-        vm.config = config
-        vm.picBedName = name
-      })
-    })
+  created () {
+    this.type = this.$route.params.type
+    this.$electron.ipcRenderer.send('getPicBedConfig', this.$route.params.type)
+    this.$electron.ipcRenderer.on('getPicBedConfig', this.getPicBeds)
   },
   methods: {
     async handleConfirm () {
@@ -71,10 +70,14 @@ export default {
       successNotification.onclick = () => {
         return true
       }
+    },
+    getPicBeds (event, config, name) {
+      this.config = config
+      this.picBedName = name
     }
   },
   beforeDestroy () {
-    this.$electron.ipcRenderer.removeAllListeners('getPicBedConfig')
+    this.$electron.ipcRenderer.removeListener('getPicBedConfig', this.getPicBeds)
   }
 }
 </script>
@@ -97,4 +100,10 @@ export default {
       color #eee
       &.is-active
         color #409EFF
+  .notice
+    color #eee
+    text-align center
+    margin-bottom 10px
+  .single
+    text-align center
 </style>

@@ -522,6 +522,7 @@ app.on('ready', () => {
   if (process.platform === 'darwin' || process.platform === 'win32') {
     createTray()
   }
+  db.read().set('needReload', false).write()
   updateChecker()
 
   globalShortcut.register(db.read().get('settings.shortKey.upload').value(), () => {

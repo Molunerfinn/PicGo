@@ -56,7 +56,9 @@
         <i class="el-icon-info setting-window" @click="openDialog"></i>
       </el-col>
       <el-col :span="19" :offset="5" style="height: 428px">
-        <router-view></router-view>
+        <transition name="picgo-fade" mode="out-in">
+          <router-view :key="$route.params ? $route.params.type : $route.path"></router-view>
+        </transition>
       </el-col>
     </el-row>
     <el-dialog
@@ -174,10 +176,8 @@ export default {
   created () {
     this.os = process.platform
     this.buildMenu()
-    this.getPicBeds()
-    this.$electron.ipcRenderer.on('getPicBeds', (event, picBeds) => {
-      this.picBed = picBeds
-    })
+    this.$electron.ipcRenderer.send('getPicBeds')
+    this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
   },
   methods: {
     handleSelect (index) {
@@ -195,7 +195,7 @@ export default {
         } else {
           this.$router.push({
             name: 'others',
-            query: {
+            params: {
               type: picBed
             }
           })
@@ -266,8 +266,8 @@ export default {
     openMiniWindow () {
       this.$electron.ipcRenderer.send('openMiniWindow')
     },
-    getPicBeds () {
-      this.$electron.ipcRenderer.send('getPicBeds')
+    getPicBeds (event, picBeds) {
+      this.picBed = picBeds
     }
   },
   beforeRouteEnter: (to, from, next) => {
@@ -276,11 +276,19 @@ export default {
     })
   },
   beforeDestroy () {
-    this.$electron.ipcRenderer.removeAllListeners('getPicBeds')
+    this.$electron.ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
   }
 }
 </script>
 <style lang='stylus'>
+.picgo-fade
+  &-enter,
+  &-leave,
+  &-leave-active
+    opacity 0
+  &-enter-active,
+  &-leave-active
+    transition opacity 100ms linear
 .view-title
   color #eee
   font-size 20px

@@ -273,19 +273,17 @@ export default {
     }
   },
   created () {
-    this.getPicBeds()
-    this.$electron.ipcRenderer.on('getPicBeds', (event, picBeds) => {
+    this.$electron.ipcRenderer.send('getPicBeds')
+    this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
+  },
+  methods: {
+    getPicBeds (event, picBeds) {
       this.picBed = picBeds
       this.form.showPicBedList = this.picBed.map(item => {
         if (item.visible) {
           return item.name
         }
       })
-    })
-  },
-  methods: {
-    getPicBeds () {
-      this.$electron.ipcRenderer.send('getPicBeds')
     },
     openConfigFile () {
       const { app, shell } = this.$electron.remote
@@ -348,6 +346,7 @@ export default {
         return item
       })
       this.$db.read().set('picBed.list', list).write()
+      this.$electron.ipcRenderer.send('getPicBeds')
     },
     handleAutoStartChange (val) {
       this.$db.read().set('settings.autoStart', val).write()
@@ -400,7 +399,7 @@ export default {
     }
   },
   beforeDestroy () {
-    this.$electron.ipcRenderer.removeAllListeners('getPicBeds')
+    this.$electron.ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
   }
 }
 </script>

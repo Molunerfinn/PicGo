@@ -146,9 +146,8 @@ export default {
         this.filterList = this.getGallery()
       })
     })
-    this.$electron.ipcRenderer.on('getPicBeds', (event, picBeds) => {
-      this.picBed = picBeds
-    })
+    this.$electron.ipcRenderer.send('getPicBeds')
+    this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
     this.getPasteStyle()
     this.getPicBeds()
   },
@@ -163,8 +162,8 @@ export default {
     }
   },
   methods: {
-    getPicBeds () {
-      this.$electron.ipcRenderer.send('getPicBeds')
+    getPicBeds (event, picBeds) {
+      this.picBed = picBeds
     },
     getGallery () {
       if (this.choosedPicBed.length > 0) {
@@ -343,7 +342,7 @@ export default {
   },
   beforeDestroy () {
     this.$electron.ipcRenderer.removeAllListeners('updateGallery')
-    this.$electron.ipcRenderer.removeAllListeners('getPicBeds')
+    this.$electron.ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
   }
 }
 </script>

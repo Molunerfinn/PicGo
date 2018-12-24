@@ -71,7 +71,7 @@ export default new Router({
           name: 'imgur'
         },
         {
-          path: 'others',
+          path: 'others/:type',
           component: require('@/pages/picbeds/Others').default,
           name: 'others'
         },

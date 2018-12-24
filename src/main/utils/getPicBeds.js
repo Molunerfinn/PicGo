@@ -18,6 +18,7 @@ const getPicBeds = (app) => {
       visible: visible ? visible.visible : true
     }
   })
+  picgo.cmd.program.removeAllListeners()
   return picBeds
 }
 

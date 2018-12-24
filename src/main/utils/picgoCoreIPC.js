@@ -114,9 +114,14 @@ const handlePluginUpdate = (ipcMain, CONFIG_PATH) => {
 const handleGetPicBedConfig = (ipcMain, CONFIG_PATH) => {
   ipcMain.on('getPicBedConfig', (event, type) => {
     const picgo = new PicGo(CONFIG_PATH)
-    const config = handleConfigWithFunction(picgo.helper.uploader.get(type).config(picgo))
     const name = picgo.helper.uploader.get(type).name || type
-    event.sender.send('getPicBedConfig', config, name)
+    if (picgo.helper.uploader.get(type).config) {
+      const config = handleConfigWithFunction(picgo.helper.uploader.get(type).config(picgo))
+      event.sender.send('getPicBedConfig', config, name)
+    } else {
+      event.sender.send('getPicBedConfig', [], name)
+    }
+    picgo.cmd.program.removeAllListeners()
   })
 }
 

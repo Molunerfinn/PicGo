@@ -69,6 +69,9 @@
         </div>
       </el-col>
     </el-row>
+    <el-row v-show="needReload" class="reload-mask" :class="{ 'cut-width': pluginList.length > 6 }">
+      <el-button type="primary" @click="reloadApp" size="mini" round>重启以生效</el-button>
+    </el-row>
     <el-dialog
       :visible.sync="dialogVisible"
       :modal-append-to-body="false"
@@ -107,7 +110,8 @@ export default {
       configName: '',
       dialogVisible: false,
       pluginNameList: [],
-      loading: true
+      loading: true,
+      needReload: false
     }
   },
   computed: {
@@ -152,7 +156,9 @@ export default {
           item.ing = false
           item.hasInstall = true
         }
+        this.getPicBeds()
       })
+      this.handleReload()
       this.getPluginList()
     })
     this.$electron.ipcRenderer.on('uninstallSuccess', (evt, plugin) => {
@@ -160,11 +166,12 @@ export default {
       this.pluginList = this.pluginList.filter(item => {
         if (item.name === plugin) { // restore Uploader & Transformer after uninstalling
           if (item.config.transformer.name) {
-            this.handleRestoreState('transformer')
+            this.handleRestoreState('transformer', item.config.transformer.name)
           }
           if (item.config.uploader.name) {
-            this.handleRestoreState('uploader')
+            this.handleRestoreState('uploader', item.config.uploader.name)
           }
+          this.getPicBeds()
         }
         return item.name !== plugin
       })
@@ -172,6 +179,7 @@ export default {
     })
     this.getPluginList()
     this.getSearchResult = debounce(this.getSearchResult, 50)
+    this.needReload = this.$db.read().get('needReload').value()
   },
   methods: {
     buildContextMenu (plugin) {
@@ -182,6 +190,7 @@ export default {
         click () {
           _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, true).write()
           plugin.enabled = true
+          _this.getPicBeds()
         }
       }, {
         label: '禁用插件',
@@ -189,6 +198,13 @@ export default {
         click () {
           _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, false).write()
           plugin.enabled = false
+          _this.getPicBeds()
+          if (plugin.config.transformer.name) {
+            _this.handleRestoreState('transformer', plugin.config.transformer.name)
+          }
+          if (plugin.config.uploader.name) {
+            _this.handleRestoreState('uploader', plugin.config.uploader.name)
+          }
         }
       }, {
         label: '卸载插件',
@@ -221,6 +237,9 @@ export default {
     getPluginList () {
       this.$electron.ipcRenderer.send('getPluginList')
     },
+    getPicBeds () {
+      this.$electron.ipcRenderer.send('getPicBeds')
+    },
     installPlugin (item) {
       item.ing = true
       this.$electron.ipcRenderer.send('installPlugin', item.name)
@@ -244,6 +263,16 @@ export default {
     reloadApp () {
       this.$electron.remote.app.relaunch()
       this.$electron.remote.app.exit(0)
+    },
+    handleReload () {
+      this.$db.read().set('needReload', true).write()
+      this.needReload = true
+      const successNotification = new window.Notification('更新成功', {
+        body: '请点击此通知重启应用以生效'
+      })
+      successNotification.onclick = () => {
+        this.reloadApp()
+      }
     },
     cleanSearch () {
       this.searchText = ''
@@ -301,12 +330,19 @@ export default {
       }
     },
     // restore Uploader & Transformer
-    handleRestoreState (item) {
+    handleRestoreState (item, name) {
       if (item === 'uploader') {
-        this.$db.set('picBed.current', 'smms')
+        const current = this.$db.read().get('picBed.current').value()
+        console.log(name)
+        if (current === name) {
+          this.$db.read().set('picBed.current', 'smms').write()
+        }
       }
       if (item === 'transformer') {
-        this.$db.set('picBed.transformer', 'path')
+        const current = this.$db.read().get('picBed.transformer').value()
+        if (current === name) {
+          this.$db.read().set('picBed.transformer', 'path').write()
+        }
       }
     },
     openHomepage (url) {
@@ -433,4 +469,13 @@ export default {
         &:hover
           background: #1B9EF3
           color #fff
+  .reload-mask
+    position absolute
+    width calc(100% - 40px)
+    bottom -320px
+    text-align center
+    background rgba(0,0,0,0.4)
+    padding 10px 0
+    &.cut-width
+      width calc(100% - 48px)
 </style>

@@ -84,11 +84,8 @@ export default {
     this.$electron.ipcRenderer.on('syncPicBed', () => {
       this.getDefaultPicBed()
     })
-    this.getPicBeds()
-    this.$electron.ipcRenderer.on('getPicBeds', (event, picBeds) => {
-      this.picBed = picBeds
-      this.getDefaultPicBed()
-    })
+    this.$electron.ipcRenderer.send('getPicBeds')
+    this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
   },
   watch: {
     progress (val) {
@@ -106,7 +103,7 @@ export default {
   beforeDestroy () {
     this.$electron.ipcRenderer.removeAllListeners('uploadProgress')
     this.$electron.ipcRenderer.removeAllListeners('syncPicBed')
-    this.$electron.ipcRenderer.removeAllListeners('getPicBeds')
+    this.$electron.ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
   },
   methods: {
     onDrop (e) {
@@ -149,8 +146,9 @@ export default {
         }
       })
     },
-    getPicBeds () {
-      this.$electron.ipcRenderer.send('getPicBeds')
+    getPicBeds (event, picBeds) {
+      this.picBed = picBeds
+      this.getDefaultPicBed()
     }
   }
 }
