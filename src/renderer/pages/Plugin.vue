@@ -81,7 +81,7 @@
       <config-form
         :config="config"
         :type="currentType"
-        :name="configName"
+        :id="configName"
         ref="configForm"
       >
       </config-form>
@@ -111,7 +111,8 @@ export default {
       dialogVisible: false,
       pluginNameList: [],
       loading: true,
-      needReload: false
+      needReload: false,
+      id: ''
     }
   },
   computed: {

@@ -10,6 +10,7 @@
           :config="config"
           type="uploader"
           ref="configForm"
+          :id="type"
         >
           <el-form-item>
             <el-button-group>
