@@ -48,8 +48,7 @@ export default {
         this.showError = true
       }
     })
-    this.$electron.ipcRenderer.send('getPicBeds')
-    this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
+    this.getPicBeds()
   },
   mounted () {
     window.addEventListener('mousedown', this.handleMouseDown, false)
@@ -70,8 +69,8 @@ export default {
     }
   },
   methods: {
-    getPicBeds (event, picBeds) {
-      this.picBed = picBeds
+    getPicBeds () {
+      this.picBed = this.$electron.ipcRenderer.sendSync('getPicBeds')
       this.buildMenu()
     },
     onDrop (e) {
@@ -123,16 +122,7 @@ export default {
         if (e.button === 0) { // left mouse
           this.openUploadWindow()
         } else {
-          let _this = this
-          const types = this.picBed.map(item => item.type)
-          let submenuItem = this.menu.items[1].submenu.items
-          submenuItem.forEach((item, index) => {
-            const result = _this.$db.read().get('picBed.current').value() === types[index]
-            if (result) {
-              item.click()
-              return true
-            }
-          })
+          this.getPicBeds()
           this.openContextMenu()
         }
       }

@@ -35,9 +35,7 @@ const miniWinURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080/#mini-page`
   : `file://${__dirname}/index.html#mini-page`
 
-function createTray () {
-  const menubarPic = process.platform === 'darwin' ? `${__static}/menubar.png` : `${__static}/menubar-nodarwin.png`
-  tray = new Tray(menubarPic)
+function createContextMenu () {
   const picBeds = getPicBeds(app)
   const submenu = picBeds.map(item => {
     return {
@@ -97,10 +95,16 @@ function createTray () {
       label: '退出'
     }
   ])
+}
+
+function createTray () {
+  const menubarPic = process.platform === 'darwin' ? `${__static}/menubar.png` : `${__static}/menubar-nodarwin.png`
+  tray = new Tray(menubarPic)
   tray.on('right-click', () => {
     if (window) {
       window.hide()
     }
+    createContextMenu()
     tray.popUpContextMenu(contextMenu)
   })
   tray.on('click', (event, bounds) => {
@@ -353,23 +357,6 @@ const uploadClipboardFiles = async () => {
   }
 }
 
-const updateDefaultPicBed = () => {
-  if (process.platform === 'darwin' || process.platform === 'win32') {
-    const picBeds = getPicBeds(app)
-    const types = picBeds.map(item => item.type)
-    let submenuItem = contextMenu.items[2].submenu.items
-    submenuItem.forEach((item, index) => {
-      const result = db.read().get('picBed.current').value() === types[index]
-      if (result) {
-        item.click() // It's a bug which can not set checked status
-        return true
-      }
-    })
-  } else {
-    return false
-  }
-}
-
 picgoCoreIPC(app, ipcMain)
 
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
@@ -473,22 +460,17 @@ ipcMain.on('openMiniWindow', (evt) => {
   settingWindow.hide()
 })
 
-// update
-ipcMain.on('updateDefaultPicBed', (evt) => {
-  updateDefaultPicBed()
-})
-
 //  from mini window
 ipcMain.on('syncPicBed', (evt) => {
   if (settingWindow) {
     settingWindow.webContents.send('syncPicBed')
   }
-  updateDefaultPicBed()
 })
 
 ipcMain.on('getPicBeds', (evt) => {
   const picBeds = getPicBeds(app)
   evt.sender.send('getPicBeds', picBeds)
+  evt.returnValue = picBeds
 })
 
 const shortKeyHash = {
