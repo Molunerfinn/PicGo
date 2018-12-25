@@ -477,17 +477,17 @@ const shortKeyHash = {
   upload: uploadClipboardFiles
 }
 
-const isSecondInstance = app.makeSingleInstance(() => {
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+  app.quit()
+} else {
   if (settingWindow) {
     if (settingWindow.isMinimized()) {
       settingWindow.restore()
     }
     settingWindow.focus()
   }
-})
-
-if (isSecondInstance) {
-  app.quit()
 }
 
 if (process.platform === 'win32') {

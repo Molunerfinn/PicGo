@@ -6,14 +6,14 @@ const path = require('path')
 const { dependencies } = require('../package.json')
 const webpack = require('webpack')
 
-const babelMinifyWebpackPlugin = require('babel-minify-webpack-plugin')
+const BabiliWebpackPlugin = require('babili-webpack-plugin')
 
 let mainConfig = {
   entry: {
     main: path.join(__dirname, '../src/main/index.js')
   },
   externals: [
-    // ...Object.keys(dependencies || {})
+    ...Object.keys(dependencies || {})
   ],
   module: {
     rules: [
@@ -73,7 +73,7 @@ if (process.env.NODE_ENV !== 'production') {
  */
 if (process.env.NODE_ENV === 'production') {
   mainConfig.plugins.push(
-    new babelMinifyWebpackPlugin(),
+    new BabiliWebpackPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"'
     })
