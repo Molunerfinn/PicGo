@@ -359,6 +359,7 @@ const uploadClipboardFiles = async () => {
 
 picgoCoreIPC(app, ipcMain)
 
+// from macOS tray
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
   const img = await new Uploader(file, 'imgFromClipboard', window.webContents).upload()
   if (img !== false) {

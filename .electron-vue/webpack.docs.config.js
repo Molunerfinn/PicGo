@@ -1,9 +1,11 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
+const { VueLoaderPlugin } = require('vue-loader')
 const webpack = require('webpack')
 
 module.exports = {
+  mode: 'development',
   context: path.resolve(__dirname, '../docs'),
   entry: './main.js',
   output: {
@@ -29,11 +31,19 @@ module.exports = {
         }
       },
       {
+        test: /\.styl(us)?$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          'stylus-loader'
+        ]
+      },
+      {
+        test: /\.pug$/, loader: "pug-plain-loader"
+      },
+      {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: 'css-loader'
-        })
+        use: ['vue-style-loader', 'css-loader']
       },
       {
         test: /\.html$/,
@@ -85,26 +95,22 @@ module.exports = {
     ]
   },
   plugins: [
+    new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '../docs/template.html')
     }),
-    new ExtractTextPlugin("styles.css")
+    new MiniCssExtractPlugin({filename: 'styles.css'}),
   ]
 }
 
 if (process.env.NODE_ENV === 'production') {
   // module.exports.devtool = '#source-map'
   // http://vue-loader.vuejs.org/en/workflow/production.html
+  module.exports.mode = 'production'
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
       }
     }),
     new webpack.LoaderOptionsPlugin({

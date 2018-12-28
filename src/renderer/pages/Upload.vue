@@ -160,6 +160,8 @@ export default {
   text-align center
   margin 10px auto
 #upload-view
+  .view-title
+    margin 20px auto
   #upload-area
     height 220px
     border 2px dashed #dddddd
