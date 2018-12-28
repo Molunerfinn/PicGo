@@ -13,8 +13,8 @@
       </el-input>
     </el-row>
     <el-row :gutter="10" class="plugin-list" v-loading="loading">
-      <el-col :span="12" v-for="(item, index) in pluginList" :key="item.name">
-        <div class="plugin-item">
+      <el-col :span="12" v-for="item in pluginList" :key="item.name">
+        <div class="plugin-item" :class="{ 'darwin': os === 'darwin' }">
           <img class="plugin-item__logo" :src="item.logo"
           onerror="this.src='static/logo.png'"
           >
@@ -57,7 +57,7 @@
                       @click="buildContextMenu(item)"
                     ></i>
                     <i
-                      v-else="!item.enabled"
+                      v-else
                       class="el-icon-remove-outline"
                       @click="buildContextMenu(item)"
                     ></i>
@@ -112,7 +112,8 @@ export default {
       pluginNameList: [],
       loading: true,
       needReload: false,
-      id: ''
+      id: '',
+      os: ''
     }
   },
   computed: {
@@ -136,6 +137,7 @@ export default {
     }
   },
   created () {
+    this.os = process.platform
     this.$electron.ipcRenderer.on('pluginList', (evt, list) => {
       this.pluginList = list
       this.pluginNameList = list.map(item => item.name)
@@ -361,6 +363,7 @@ export default {
 }
 </script>
 <style lang='stylus'>
+$darwinBg = #172426
 #plugin-view
   position relative
   padding 0 20px 0
@@ -399,6 +402,10 @@ export default {
     user-select text
     transition all .2s ease-in-out
     margin-bottom 10px
+    &.darwin
+      background transparentify($darwinBg, #000, 0.75)
+      &:hover
+        background transparentify($darwinBg, #000, 0.85)
     &:hover
       background #333
     &__logo

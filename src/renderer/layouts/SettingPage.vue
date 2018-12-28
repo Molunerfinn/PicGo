@@ -1,7 +1,9 @@
 <template>
   <div id="setting-page">
-    <div class="fake-title-bar">
-      PicGo - {{ version }}
+    <div class="fake-title-bar" :class="{ 'darwin': os === 'darwin' }">
+      <div class="fake-title-bar__title">
+        PicGo - {{ version }}
+      </div>
       <div class="handle-bar" v-if="os !== 'darwin'">
         <i class="el-icon-minus" @click="minimizeWindow"></i>
         <i class="el-icon-circle-plus-outline" @click="openMiniWindow"></i>
@@ -55,7 +57,12 @@
         </el-menu>
         <i class="el-icon-info setting-window" @click="openDialog"></i>
       </el-col>
-      <el-col :span="19" :offset="5" style="height: 428px">
+      <el-col
+        :span="19"
+        :offset="5"
+        style="height: 428px"
+        class="main-wrapper"
+        :class="{ 'darwin': os === 'darwin' }">
         <transition name="picgo-fade" mode="out-in">
           <router-view :key="$route.params ? $route.params.type : $route.path"></router-view>
         </transition>
@@ -281,6 +288,7 @@ export default {
 }
 </script>
 <style lang='stylus'>
+$darwinBg = transparentify(#172426, #000, 0.7)
 .picgo-fade
   &-enter,
   &-leave,
@@ -305,6 +313,17 @@ export default {
     line-height h
     position fixed
     z-index 100
+    &.darwin
+      background transparent
+      background-image linear-gradient(
+        to right,
+        transparent 0%,
+        transparent 167px,
+        $darwinBg 167px,
+        $darwinBg 100%
+      )
+    &__title
+      padding-left 167px
     .handle-bar
       position absolute
       top 2px
@@ -324,6 +343,9 @@ export default {
       .el-icon-circle-plus-outline
         &:hover
           color #69C282
+  .main-wrapper
+    &.darwin
+      background $darwinBg
   .side-bar-menu
     position fixed
     height calc(100vh - 22px)
@@ -334,7 +356,7 @@ export default {
       position fixed 
       bottom 4px
       left 4px
-      cursor pointer
+      cursor poiter
       color #878d99
       transition .2s all ease-in-out
       &:hover
