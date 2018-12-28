@@ -322,8 +322,8 @@ $darwinBg = transparentify(#172426, #000, 0.7)
         $darwinBg 167px,
         $darwinBg 100%
       )
-    &__title
-      padding-left 167px
+      .fake-title-bar__title
+        padding-left 167px
     .handle-bar
       position absolute
       top 2px
