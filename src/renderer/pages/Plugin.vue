@@ -234,6 +234,19 @@ export default {
           menu.push(obj)
         }
       }
+
+      // handle transformer
+      if (plugin.config.transformer.name) {
+        let currentTransformer = this.$db.read().get('picBed.transformer') || 'path'
+        let pluginTransformer = plugin.config.transformer.name
+        const obj = {
+          label: `${currentTransformer === pluginTransformer ? '禁用' : '启用'}transformer - ${plugin.config.transformer.name}`,
+          click () {
+            _this.toggleTransformer(plugin.config.transformer.name)
+          }
+        }
+        menu.push(obj)
+      }
       this.menu = this.$electron.remote.Menu.buildFromTemplate(menu)
       this.menu.popup(this.$electron.remote.getCurrentWindow())
     },
@@ -279,6 +292,14 @@ export default {
     },
     cleanSearch () {
       this.searchText = ''
+    },
+    toggleTransformer (transformer) {
+      let currentTransformer = this.$db.read().get('picBed.transformer') || 'path'
+      if (currentTransformer === transformer) {
+        this.$db.read().set('picBed.transformer', 'path').write()
+      } else {
+        this.$db.read().set('picBed.transformer', transformer).write()
+      }
     },
     async handleConfirmConfig () {
       const result = await this.$refs.configForm.validate()
