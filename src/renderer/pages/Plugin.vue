@@ -237,7 +237,7 @@ export default {
 
       // handle transformer
       if (plugin.config.transformer.name) {
-        let currentTransformer = this.$db.read().get('picBed.transformer') || 'path'
+        let currentTransformer = this.$db.read().get('picBed.transformer').value() || 'path'
         let pluginTransformer = plugin.config.transformer.name
         const obj = {
           label: `${currentTransformer === pluginTransformer ? '禁用' : '启用'}transformer - ${plugin.config.transformer.name}`,
@@ -294,7 +294,7 @@ export default {
       this.searchText = ''
     },
     toggleTransformer (transformer) {
-      let currentTransformer = this.$db.read().get('picBed.transformer') || 'path'
+      let currentTransformer = this.$db.read().get('picBed.transformer').value() || 'path'
       if (currentTransformer === transformer) {
         this.$db.read().set('picBed.transformer', 'path').write()
       } else {
@@ -357,7 +357,6 @@ export default {
     handleRestoreState (item, name) {
       if (item === 'uploader') {
         const current = this.$db.read().get('picBed.current').value()
-        console.log(name)
         if (current === name) {
           this.$db.read().set('picBed.current', 'smms').write()
         }
