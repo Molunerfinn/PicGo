@@ -87,6 +87,7 @@
             ></el-switch>
           </el-form-item>
           <el-form-item
+            v-if="os !== 'darwin'"
             label="Mini窗口置顶"
           >
             <el-switch
@@ -269,10 +270,12 @@ export default {
         ]
       },
       version: pkg.version,
-      latestVersion: ''
+      latestVersion: '',
+      os: ''
     }
   },
   created () {
+    this.os = process.platform
     this.$electron.ipcRenderer.send('getPicBeds')
     this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
   },
