@@ -75,9 +75,8 @@ const waitForRename = (window, id) => {
 }
 
 class Uploader {
-  constructor (img, type, webContents) {
+  constructor (img, webContents) {
     this.img = img
-    this.type = type
     this.webContents = webContents
   }
 
@@ -142,7 +141,11 @@ class Uploader {
         }
       })
       picgo.on('failed', ctx => {
-        console.log(ctx)
+        const notification = new Notification({
+          title: '上传失败',
+          body: '请检查配置和上传的文件是否符合要求'
+        })
+        notification.show()
         resolve(false)
       })
     })

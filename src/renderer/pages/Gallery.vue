@@ -79,7 +79,7 @@
             >
             </div>
             <div class="gallery-list__tool-panel">
-              <i class="el-icon-document" @click="copy(item.imgUrl)"></i>
+              <i class="el-icon-document" @click="copy(item)"></i>
               <i class="el-icon-edit-outline" @click="openDialog(item)"></i>
               <i class="el-icon-delete" @click="remove(item.id)"></i>
               <el-checkbox v-model="choosedList[item.id]" class="pull-right" @change=" handleBarActive = true"></el-checkbox>
@@ -208,7 +208,8 @@ export default {
       this.idx = null
       this.changeZIndexForGallery(false)
     },
-    copy (url) {
+    copy (item) {
+      const url = item.url || item.imgUrl
       const style = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
       const copyLink = pasteStyle(style, url)
       const obj = {
@@ -313,7 +314,9 @@ export default {
         // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
         Object.keys(this.choosedList).forEach(key => {
           if (this.choosedList[key]) {
-            copyString += pasteStyle(style, this.$db.read().get('uploaded').getById(key).value().imgUrl) + '\n'
+            const item = this.$db.read().get('uploaded').getById(key).value()
+            const url = item.url || item.imgUrl
+            copyString += pasteStyle(style, url) + '\n'
             this.choosedList[key] = false
           }
         })

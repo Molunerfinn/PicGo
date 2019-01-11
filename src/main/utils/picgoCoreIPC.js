@@ -1,4 +1,5 @@
 import path from 'path'
+import GuiApi from './guiApi'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -50,6 +51,7 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
         description: pluginPKG.description,
         logo: 'file://' + path.join(pluginPath, 'logo.png').split(path.sep).join('/'),
         version: pluginPKG.version,
+        gui: pluginPKG.gui || false,
         config: {
           plugin: {
             name: pluginList[i].replace(/picgo-plugin-/, ''),
@@ -66,6 +68,7 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
         },
         enabled: picgo.getConfig(`plugins.${pluginList[i]}`),
         homepage: pluginPKG.homepage ? pluginPKG.homepage : '',
+        guiActions: typeof plugin.guiActions === 'function',
         ing: false
       }
       list.push(obj)
@@ -125,6 +128,17 @@ const handleGetPicBedConfig = (ipcMain, CONFIG_PATH) => {
   })
 }
 
+const handlePluginActions = (ipcMain, CONFIG_PATH) => {
+  ipcMain.on('pluginActions', (event, name) => {
+    const picgo = new PicGo(CONFIG_PATH)
+    const plugin = picgo.pluginLoader.getPlugin(`picgo-plugin-${name}`)
+    const guiApi = new GuiApi(ipcMain, event.sender)
+    if (plugin.guiActions && typeof plugin.guiActions === 'function') {
+      plugin.guiActions(picgo, guiApi)
+    }
+  })
+}
+
 export default (app, ipcMain) => {
   const STORE_PATH = app.getPath('userData')
   const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
@@ -133,4 +147,5 @@ export default (app, ipcMain) => {
   handlePluginUninstall(ipcMain, CONFIG_PATH)
   handlePluginUpdate(ipcMain, CONFIG_PATH)
   handleGetPicBedConfig(ipcMain, CONFIG_PATH)
+  handlePluginActions(ipcMain, CONFIG_PATH)
 }

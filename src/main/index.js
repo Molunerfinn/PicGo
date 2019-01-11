@@ -151,10 +151,11 @@ function createTray () {
 
   tray.on('drop-files', async (event, files) => {
     const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
-    const imgs = await new Uploader(files, 'imgFromPath', window.webContents).upload()
+    const imgs = await new Uploader(files, window.webContents).upload()
     if (imgs !== false) {
       for (let i in imgs) {
-        clipboard.writeText(pasteTemplate(pasteStyle, imgs[i].imgUrl))
+        const url = imgs[i].url || imgs[i].imgUrl
+        clipboard.writeText(pasteTemplate(pasteStyle, url))
         const notification = new Notification({
           title: '上传成功',
           body: imgs[i].imgUrl,
@@ -163,10 +164,8 @@ function createTray () {
         setTimeout(() => {
           notification.show()
         }, i * 100)
+        db.read().get('uploaded').insert(imgs[i]).write()
       }
-      imgs.forEach(item => {
-        db.read().get('uploaded').insert(item).write()
-      })
       window.webContents.send('dragFiles', imgs)
     }
   })
@@ -332,16 +331,15 @@ const uploadClipboardFiles = async () => {
   if (img !== false) {
     if (img.length > 0) {
       const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
-      clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
+      const url = img[0].url || img[0].imgUrl
+      clipboard.writeText(pasteTemplate(pasteStyle, url))
       const notification = new Notification({
         title: '上传成功',
         body: img[0].imgUrl,
         icon: img[0].imgUrl
       })
       notification.show()
-      img.forEach(item => {
-        db.read().get('uploaded').insert(item).write()
-      })
+      db.read().get('uploaded').insert(img[0]).write()
       window.webContents.send('clipboardFiles', [])
       window.webContents.send('uploadFiles', img)
       if (settingWindow) {
@@ -361,10 +359,11 @@ picgoCoreIPC(app, ipcMain)
 
 // from macOS tray
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
-  const img = await new Uploader(file, 'imgFromClipboard', window.webContents).upload()
+  const img = await new Uploader(file, window.webContents).upload()
   if (img !== false) {
     const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
-    clipboard.writeText(pasteTemplate(pasteStyle, img[0].imgUrl))
+    const url = img[0].url || img[0].imgUrl
+    clipboard.writeText(pasteTemplate(pasteStyle, url))
     const notification = new Notification({
       title: '上传成功',
       body: img[0].imgUrl,
@@ -372,9 +371,7 @@ ipcMain.on('uploadClipboardFiles', async (evt, file) => {
       icon: img[0].imgUrl
     })
     notification.show()
-    img.forEach(item => {
-      db.read().get('uploaded').insert(item).write()
-    })
+    db.read().get('uploaded').insert(img[0]).write()
     window.webContents.send('clipboardFiles', [])
     window.webContents.send('uploadFiles')
     if (settingWindow) {
@@ -389,12 +386,13 @@ ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
 
 ipcMain.on('uploadChoosedFiles', async (evt, files) => {
   const input = files.map(item => item.path)
-  const imgs = await new Uploader(input, 'imgFromUploader', evt.sender).upload()
+  const imgs = await new Uploader(input, evt.sender).upload()
   if (imgs !== false) {
     const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
     let pasteText = ''
     for (let i in imgs) {
-      pasteText += pasteTemplate(pasteStyle, imgs[i].imgUrl) + '\r\n'
+      const url = imgs[i].url || imgs[i].imgUrl
+      pasteText += pasteTemplate(pasteStyle, url) + '\r\n'
       const notification = new Notification({
         title: '上传成功',
         body: imgs[i].imgUrl,
@@ -403,11 +401,9 @@ ipcMain.on('uploadChoosedFiles', async (evt, files) => {
       setTimeout(() => {
         notification.show()
       }, i * 100)
+      db.read().get('uploaded').insert(imgs[i]).write()
     }
     clipboard.writeText(pasteText)
-    imgs.forEach(item => {
-      db.read().get('uploaded').insert(item).write()
-    })
     window.webContents.send('uploadFiles', imgs)
     if (settingWindow) {
       settingWindow.webContents.send('updateGallery')

@@ -15,6 +15,7 @@
     <el-row :gutter="10" class="plugin-list" v-loading="loading">
       <el-col :span="12" v-for="item in pluginList" :key="item.name">
         <div class="plugin-item" :class="{ 'darwin': os === 'darwin' }">
+          <div class="cli-only-badge" v-if="!item.gui" title="CLI only">CLI</div>
           <img class="plugin-item__logo" :src="item.logo"
           onerror="this.src='static/logo.png'"
           >
@@ -90,6 +91,20 @@
         <el-button type="primary" @click="handleConfirmConfig" round>确定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="inputBoxOptions.title || '输入框'"
+      :visible.sync="showInputBoxVisible"
+      :modal-append-to-body="false"
+      @close="handleInputBoxClose"
+    >
+      <el-input
+        v-model="inputBoxValue"
+        :placeholder="inputBoxOptions.placeholder"></el-input>
+      <span slot="footer">
+        <el-button @click="showInputBoxVisible = false" round>取消</el-button>
+        <el-button type="primary" @click="showInputBoxVisible = false" round>确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -113,7 +128,14 @@ export default {
       loading: true,
       needReload: false,
       id: '',
-      os: ''
+      os: '',
+      // for showInputBox
+      showInputBoxVisible: false,
+      inputBoxValue: '',
+      inputBoxOptions: {
+        title: '',
+        placeholder: ''
+      }
     }
   },
   computed: {
@@ -183,6 +205,12 @@ export default {
     this.getPluginList()
     this.getSearchResult = debounce(this.getSearchResult, 50)
     this.needReload = this.$db.read().get('needReload').value()
+    this.$electron.ipcRenderer.on('showInputBox', (evt, options) => {
+      this.inputBoxValue = ''
+      this.inputBoxOptions.title = options.title || ''
+      this.inputBoxOptions.placeholder = options.placeholder || ''
+      this.showInputBoxVisible = true
+    })
   },
   methods: {
     buildContextMenu (plugin) {
@@ -247,6 +275,16 @@ export default {
         }
         menu.push(obj)
       }
+
+      if (plugin.guiActions) {
+        menu.push({
+          label: '运行Actions',
+          click () {
+            _this.$electron.ipcRenderer.send('pluginActions', plugin.name)
+          }
+        })
+      }
+
       this.menu = this.$electron.remote.Menu.buildFromTemplate(menu)
       this.menu.popup(this.$electron.remote.getCurrentWindow())
     },
@@ -257,8 +295,21 @@ export default {
       this.$electron.ipcRenderer.send('getPicBeds')
     },
     installPlugin (item) {
-      item.ing = true
-      this.$electron.ipcRenderer.send('installPlugin', item.name)
+      if (!item.gui) {
+        this.$confirm('该插件未对可视化界面进行优化, 是否继续安装?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          item.ing = true
+          this.$electron.ipcRenderer.send('installPlugin', item.name)
+        }).catch(() => {
+          console.log('Install canceled')
+        })
+      } else {
+        item.ing = true
+        this.$electron.ipcRenderer.send('installPlugin', item.name)
+      }
     },
     uninstallPlugin (val) {
       this.pluginList.forEach(item => {
@@ -350,6 +401,7 @@ export default {
         homepage: item.package.links ? item.package.links.homepage : '',
         hasInstall: this.pluginNameList.some(plugin => plugin === item.package.name.replace(/picgo-plugin-/, '')),
         version: item.package.version,
+        gui: item.package.gui || false,
         ing: false // installing or uninstalling
       }
     },
@@ -372,6 +424,9 @@ export default {
       if (url) {
         this.$electron.remote.shell.openExternal(url)
       }
+    },
+    handleInputBoxClose () {
+      this.$electron.ipcRenderer.send('showInputBox', this.inputBoxValue)
     }
   },
   beforeDestroy () {
@@ -379,6 +434,7 @@ export default {
     this.$electron.ipcRenderer.removeAllListeners('installSuccess')
     this.$electron.ipcRenderer.removeAllListeners('uninstallSuccess')
     this.$electron.ipcRenderer.removeAllListeners('updateSuccess')
+    this.$electron.ipcRenderer.removeAllListeners('showInputBox')
   }
 }
 </script>
@@ -422,6 +478,15 @@ $darwinBg = #172426
     user-select text
     transition all .2s ease-in-out
     margin-bottom 10px
+    position relative
+    .cli-only-badge
+      position absolute
+      right 0px
+      top 0
+      font-size 12px
+      padding 3px 8px
+      background #49B1F5
+      color #eee
     &.darwin
       background transparentify($darwinBg, #000, 0.75)
       &:hover
