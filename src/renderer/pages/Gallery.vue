@@ -54,7 +54,7 @@
               </div>
             </el-col>
             <el-col :span="6">
-              <div class="item-base delete round" :class="{ active: isMultiple(choosedList)}" @click="multiDelete">
+              <div class="item-base delete round" :class="{ active: isMultiple(choosedList)}" @click="multiRemove">
                 <i class="el-icon-delete"></i> 批量删除
               </div>
             </el-col>
@@ -229,7 +229,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        const file = this.$db.read().get('uploaded').getById(id).value()
         this.$db.read().get('uploaded').removeById(id).write()
+        this.$electron.ipcRenderer.send('removeFiles', [file])
         const obj = {
           title: '操作结果',
           body: '删除成功'
@@ -279,7 +281,7 @@ export default {
     isMultiple (obj) {
       return Object.values(obj).some(item => item)
     },
-    multiDelete () {
+    multiRemove () {
       // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
       if (Object.values(this.choosedList).some(item => item)) {
         this.$confirm('将删除刚才选中的图片，是否继续？', '提示', {
@@ -287,8 +289,11 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          let files = []
           Object.keys(this.choosedList).forEach(key => {
             if (this.choosedList[key]) {
+              const file = this.$db.read().get('uploaded').getById(key).value()
+              files.push(file)
               this.$db.read().get('uploaded').removeById(key).write()
             }
           })
@@ -298,6 +303,7 @@ export default {
             title: '操作结果',
             body: '删除成功'
           }
+          this.$electron.ipcRenderer.send('removeFiles', files)
           const myNotification = new window.Notification(obj.title, obj)
           myNotification.onclick = () => {
             return true

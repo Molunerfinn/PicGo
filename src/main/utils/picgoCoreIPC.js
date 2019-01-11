@@ -45,6 +45,10 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
       const pluginPKG = requireFunc(path.join(pluginPath, 'package.json'))
       const uploaderName = plugin.uploader || ''
       const transformerName = plugin.transformer || ''
+      let menu = []
+      if (plugin.guiMenu) {
+        menu = plugin.guiMenu(picgo)
+      }
       const obj = {
         name: pluginList[i].replace(/picgo-plugin-/, ''),
         author: pluginPKG.author.name || pluginPKG.author,
@@ -68,7 +72,7 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
         },
         enabled: picgo.getConfig(`plugins.${pluginList[i]}`),
         homepage: pluginPKG.homepage ? pluginPKG.homepage : '',
-        guiActions: typeof plugin.guiActions === 'function',
+        guiMenu: menu,
         ing: false
       }
       list.push(obj)
@@ -129,13 +133,25 @@ const handleGetPicBedConfig = (ipcMain, CONFIG_PATH) => {
 }
 
 const handlePluginActions = (ipcMain, CONFIG_PATH) => {
-  ipcMain.on('pluginActions', (event, name) => {
+  ipcMain.on('pluginActions', (event, name, label) => {
     const picgo = new PicGo(CONFIG_PATH)
     const plugin = picgo.pluginLoader.getPlugin(`picgo-plugin-${name}`)
     const guiApi = new GuiApi(ipcMain, event.sender)
-    if (plugin.guiActions && typeof plugin.guiActions === 'function') {
-      plugin.guiActions(picgo, guiApi)
+    if (plugin.guiMenu && plugin.guiMenu.length > 0) {
+      const menu = plugin.guiMenu(picgo)
+      menu.forEach(item => {
+        if (item.label === label) {
+          item.handle(picgo, guiApi)
+        }
+      })
     }
+  })
+}
+
+const handleRemoveFiles = (ipcMain, CONFIG_PATH) => {
+  ipcMain.on('removeFiles', (event, files) => {
+    const picgo = new PicGo(CONFIG_PATH)
+    picgo.emit('remove', files)
   })
 }
 
@@ -148,4 +164,5 @@ export default (app, ipcMain) => {
   handlePluginUpdate(ipcMain, CONFIG_PATH)
   handleGetPicBedConfig(ipcMain, CONFIG_PATH)
   handlePluginActions(ipcMain, CONFIG_PATH)
+  handleRemoveFiles(ipcMain, CONFIG_PATH)
 }

@@ -276,13 +276,16 @@ export default {
         menu.push(obj)
       }
 
-      if (plugin.guiActions) {
-        menu.push({
-          label: '运行Actions',
-          click () {
-            _this.$electron.ipcRenderer.send('pluginActions', plugin.name)
-          }
-        })
+      // plugin custom menus
+      if (plugin.guiMenu) {
+        for (let i of plugin.guiMenu) {
+          menu.push({
+            label: i.label,
+            click () {
+              _this.$electron.ipcRenderer.send('pluginActions', plugin.name, i.label)
+            }
+          })
+        }
       }
 
       this.menu = this.$electron.remote.Menu.buildFromTemplate(menu)
