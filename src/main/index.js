@@ -8,6 +8,7 @@ import updateChecker from './utils/updateChecker'
 import { getPicBeds } from './utils/getPicBeds'
 import pkg from '../../package.json'
 import picgoCoreIPC from './utils/picgoCoreIPC'
+import fixPath from 'fix-path'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -34,6 +35,9 @@ const settingWinURL = process.env.NODE_ENV === 'development'
 const miniWinURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080/#mini-page`
   : `file://${__dirname}/index.html#mini-page`
+
+// fix the $PATH in macOS
+fixPath()
 
 function createContextMenu () {
   const picBeds = getPicBeds(app)
