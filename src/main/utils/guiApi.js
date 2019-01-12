@@ -9,11 +9,13 @@ import Uploader from './uploader'
 import pasteTemplate from './pasteTemplate'
 const WEBCONTENTS = Symbol('WEBCONTENTS')
 const IPCMAIN = Symbol('IPCMAIN')
+const PICGO = Symbol('PICGO')
 
 class GuiApi {
-  constructor (ipcMain, webcontents) {
+  constructor (ipcMain, webcontents, picgo) {
     this[WEBCONTENTS] = webcontents
     this[IPCMAIN] = ipcMain
+    this[PICGO] = picgo
   }
 
   /**
@@ -56,7 +58,7 @@ class GuiApi {
    * @param {array} input
    */
   async upload (input) {
-    const imgs = await new Uploader(input, this[WEBCONTENTS]).upload()
+    const imgs = await new Uploader(input, this[WEBCONTENTS], this[PICGO]).upload()
     if (imgs !== false) {
       const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
       let pasteText = ''

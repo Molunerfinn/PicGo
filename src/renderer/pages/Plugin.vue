@@ -278,6 +278,9 @@ export default {
 
       // plugin custom menus
       if (plugin.guiMenu) {
+        menu.push({
+          type: 'separator'
+        })
         for (let i of plugin.guiMenu) {
           menu.push({
             label: i.label,

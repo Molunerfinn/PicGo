@@ -75,14 +75,15 @@ const waitForRename = (window, id) => {
 }
 
 class Uploader {
-  constructor (img, webContents) {
+  constructor (img, webContents, picgo = undefined) {
     this.img = img
     this.webContents = webContents
+    this.picgo = picgo
   }
 
   upload () {
     const win = BrowserWindow.fromWebContents(this.webContents)
-    const picgo = new PicGo(CONFIG_PATH)
+    const picgo = this.picgo || new PicGo(CONFIG_PATH)
     picgo.config.debug = true
     // for picgo-core
     picgo.config.PICGO_ENV = 'GUI'

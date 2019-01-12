@@ -136,7 +136,7 @@ const handlePluginActions = (ipcMain, CONFIG_PATH) => {
   ipcMain.on('pluginActions', (event, name, label) => {
     const picgo = new PicGo(CONFIG_PATH)
     const plugin = picgo.pluginLoader.getPlugin(`picgo-plugin-${name}`)
-    const guiApi = new GuiApi(ipcMain, event.sender)
+    const guiApi = new GuiApi(ipcMain, event.sender, picgo)
     if (plugin.guiMenu && plugin.guiMenu.length > 0) {
       const menu = plugin.guiMenu(picgo)
       menu.forEach(item => {
