@@ -327,7 +327,7 @@ const uploadClipboardFiles = async () => {
   } else {
     win = settingWindow || window
   }
-  let img = await new Uploader(undefined, 'imgFromClipboard', win.webContents).upload()
+  let img = await new Uploader(undefined, win.webContents).upload()
   if (img !== false) {
     if (img.length > 0) {
       const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
