@@ -4,6 +4,7 @@
       .mask
       img.logo(src="~icons/256x256.png", alt="PicGo")
       h1.title PicGo
+        small(v-if="version") {{ version }}
       h2.desc 图片上传+管理新体验
       button.download(@click="goLink('https://github.com/Molunerfinn/picgo/releases')") 免费下载
       button.download(@click="goLink('https://github.com/Molunerfinn/picgo')") 在github上查看
@@ -11,6 +12,8 @@
         | 基于#[a(href="https://github.com/SimulatedGREG/electron-vue" target="_blank") electron-vue]开发
       h3.desc
         | 支持macOS,Windows,Linux
+      h3.desc
+        | 支持插件系统，让PicGo更强大
     #container.container-fluid
       .row.ex-width
         img.gallery.col-xs-10.col-xs-offset-1.col-md-offset-2.col-md-8(src="https://ws1.sinaimg.cn/large/8700af19gy1fmayjwttnbj218g0p0q4e")
@@ -23,13 +26,15 @@
             .display-list__desc {{ item.desc }}
       .row.ex-width.info
         .col-xs-10.col-xs-offset-1
-          | &copy;2017 #[a(href="https://github.com/Molunerfinn" target="_blank") Molunerfinn]
+          | &copy;2017 - {{ year }} #[a(href="https://github.com/Molunerfinn" target="_blank") Molunerfinn]
 </template>
 <script>
 export default {
   name: '',
   data () {
     return {
+      version: '',
+      year: new Date().getFullYear(),
       itemList: [
         {
           url: 'https://ws1.sinaimg.cn/large/8700af19ly1fma907llb5j20m30ed46a',
@@ -49,19 +54,32 @@ export default {
         {
           url: 'https://ws1.sinaimg.cn/large/8700af19ly1fmd5ck9m0wj20lr0cxmzs',
           title: '可选图床',
-          desc: '默认支持微博图床、七牛图床、腾讯云COS、又拍云、GitHub、SM.MS、阿里云OSS、Imgur。方便不同图床的上传需求。'
+          desc: '默认支持微博图床、七牛图床、腾讯云COS、又拍云、GitHub、SM.MS、阿里云OSS、Imgur。方便不同图床的上传需求。2.0版本开始更可以自己开发插件实现其他图床的上传需求。'
         },
         {
           url: 'https://ws1.sinaimg.cn/large/8700af19gy1fmayjwttnbj218g0p0q4e',
           title: '多样链接',
-          desc: '支持4种默认剪贴板链接格式，以及一种自定义格式，让你的文本编辑游刃有余。'
+          desc: '支持5种默认剪贴板链接格式，包括一种自定义格式，让你的文本编辑游刃有余。'
+        },
+        {
+          url: 'https://i.loli.net/2019/01/12/5c39a2f60a32a.png',
+          title: '插件系统',
+          desc: '2.0版本开始支持插件系统，让PicGo发挥无限潜能，成为一个极致的效率工具。'
         }
       ]
     }
   },
+  created () {
+    this.getVersion()
+  },
   methods: {
     goLink (link) {
       window.open(link, '_blank')
+    },
+    async getVersion () {
+      const release = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
+      const res = await this.$http.get(release)
+      this.version = res.data.name
     }
   }
 }
@@ -105,6 +123,10 @@ h1
     font-size 36px
     font-weight 300
     margin 10px auto
+    text-align center
+    small
+      margin-left 10px
+      font-size 14px
   .desc
     font-weight 400
     margin 20px auto 10px
