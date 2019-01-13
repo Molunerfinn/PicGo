@@ -35,7 +35,7 @@ PicGo目前支持了
 - `阿里云OSS` v1.6.0
 - `Imgur` v1.6.0
 
-**本体不再增加默认的图床支持。你可以自行开发第三方图床插件。**
+**本体不再增加默认的图床支持。你可以自行开发第三方图床插件。详见[PicGo-Core](https://picgo.github.io/PicGo-Core-Doc/)**
 
 支持macOS、windows 64位（>= v1.3.1），linux（>= v1.6.0）。
 
