@@ -22,7 +22,7 @@ const checkVersion = async () => {
           type: 'info',
           title: '发现新版本',
           buttons: ['Yes', 'No'],
-          message: '发现新版本，更新了很多功能，是否去下载最新的版本？',
+          message: `发现新版本${latest}，更新了很多功能，是否去下载最新的版本？`,
           checkboxLabel: '以后不再提醒',
           checkboxChecked: false
         }, (res, checkboxChecked) => {
