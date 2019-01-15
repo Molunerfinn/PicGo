@@ -219,7 +219,7 @@ export default {
         label: '启用插件',
         enabled: !plugin.enabled,
         click () {
-          _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, true).write()
+          _this.$db.read().set(`picgoPlugins.picgo-plugin-${plugin.name}`, true).write()
           plugin.enabled = true
           _this.getPicBeds()
         }
@@ -227,7 +227,7 @@ export default {
         label: '禁用插件',
         enabled: plugin.enabled,
         click () {
-          _this.$db.read().set(`plugins.picgo-plugin-${plugin.name}`, false).write()
+          _this.$db.read().set(`picgoPlugins.picgo-plugin-${plugin.name}`, false).write()
           plugin.enabled = false
           _this.getPicBeds()
           if (plugin.config.transformer.name) {
@@ -398,6 +398,12 @@ export default {
     },
     handleSearchResult (item) {
       const name = item.package.name.replace(/picgo-plugin-/, '')
+      let gui = false
+      if (item.package.keywords && item.package.keywords.length > 0) {
+        if (item.package.keywords.includes('picgo-gui-plugin')) {
+          gui = true
+        }
+      }
       return {
         name: name,
         author: item.package.author.name,
@@ -407,7 +413,7 @@ export default {
         homepage: item.package.links ? item.package.links.homepage : '',
         hasInstall: this.pluginNameList.some(plugin => plugin === item.package.name.replace(/picgo-plugin-/, '')),
         version: item.package.version,
-        gui: item.package.gui || false,
+        gui,
         ing: false // installing or uninstalling
       }
     },

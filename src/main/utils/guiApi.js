@@ -82,6 +82,24 @@ class GuiApi {
     }
     return []
   }
+
+  /**
+   * For notification
+   * @param {Object} options
+   */
+  showNotification (options) {
+    if (options === undefined) {
+      options = {
+        title: '',
+        body: ''
+      }
+    }
+    const notification = new Notification({
+      title: options.title,
+      body: options.body
+    })
+    notification.show()
+  }
 }
 
 export default GuiApi

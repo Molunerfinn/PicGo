@@ -49,13 +49,19 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
       if (plugin.guiMenu) {
         menu = plugin.guiMenu(picgo)
       }
+      let gui = false
+      if (pluginPKG.keywords && pluginPKG.keywords.length > 0) {
+        if (pluginPKG.keywords.includes('picgo-gui-plugin')) {
+          gui = true
+        }
+      }
       const obj = {
         name: pluginList[i].replace(/picgo-plugin-/, ''),
         author: pluginPKG.author.name || pluginPKG.author,
         description: pluginPKG.description,
         logo: 'file://' + path.join(pluginPath, 'logo.png').split(path.sep).join('/'),
         version: pluginPKG.version,
-        gui: pluginPKG.gui || false,
+        gui,
         config: {
           plugin: {
             name: pluginList[i].replace(/picgo-plugin-/, ''),
@@ -70,7 +76,7 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
             config: handleConfigWithFunction(getConfig(uploaderName, 'transformer', picgo))
           }
         },
-        enabled: picgo.getConfig(`plugins.${pluginList[i]}`),
+        enabled: picgo.getConfig(`picgoPlugins.${pluginList[i]}`),
         homepage: pluginPKG.homepage ? pluginPKG.homepage : '',
         guiMenu: menu,
         ing: false
