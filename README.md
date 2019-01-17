@@ -3,7 +3,8 @@
 > 图片上传+管理新体验 
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/12621342/33876119-85a5148e-df5f-11e7-8843-46224e595d52.png" alt="">
+  <img src="https://raw.githubusercontent.com/Molunerfinn/test/master/picgo/New%20LOGO-150.png
+" alt="">
 </p>
 <p align="center">
   <a href="https://github.com/feross/standard">

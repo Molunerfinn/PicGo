@@ -409,12 +409,12 @@ $darwinBg = transparentify(#172426, #000, 0.7)
   .align-center
     input
       text-align center
-*::-webkit-scrollbar
-  width 8px
-  height 8px
-*::-webkit-scrollbar-thumb
-  border-radius 4px
-  background #6f6f6f
-*::-webkit-scrollbar-track
-  background-color transparent
+  *::-webkit-scrollbar
+    width 8px
+    height 8px
+  *::-webkit-scrollbar-thumb
+    border-radius 4px
+    background #6f6f6f
+  *::-webkit-scrollbar-track
+    background-color transparent
 </style>

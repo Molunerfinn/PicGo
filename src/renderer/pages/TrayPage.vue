@@ -104,7 +104,10 @@
 </script>
 
 <style lang="stylus">
+body::-webkit-scrollbar
+  width 0px
 #tray-page
+  background-color transparent
   .list-title
     text-align center
     color #858585
