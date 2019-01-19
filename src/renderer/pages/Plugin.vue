@@ -17,7 +17,7 @@
         <div class="plugin-item" :class="{ 'darwin': os === 'darwin' }">
           <div class="cli-only-badge" v-if="!item.gui" title="CLI only">CLI</div>
           <img class="plugin-item__logo" :src="item.logo"
-          onerror="this.src='static/logo.png'"
+          onerror="this.src='static/roundLogo.png'"
           >
           <div
             class="plugin-item__content"

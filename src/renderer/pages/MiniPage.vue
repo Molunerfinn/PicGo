@@ -22,7 +22,7 @@ export default {
   mixins: [mixin],
   data () {
     return {
-      logo: 'static/logo.png',
+      logo: 'static/squareLogo.png',
       dragover: false,
       progress: 0,
       showProgress: false,
