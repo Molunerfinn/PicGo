@@ -162,6 +162,17 @@ export default {
           }
         },
         {
+          label: '最小化窗口',
+          role: 'minimize'
+        },
+        {
+          label: '重启应用',
+          click () {
+            _this.$electron.remote.app.relaunch()
+            _this.$electron.remote.app.exit(0)
+          }
+        },
+        {
           role: 'quit',
           label: '退出'
         }

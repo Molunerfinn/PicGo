@@ -95,6 +95,13 @@ function createContextMenu () {
       }
     },
     {
+      label: '重启应用',
+      click () {
+        app.relaunch()
+        app.exit(0)
+      }
+    },
+    {
       role: 'quit',
       label: '退出'
     }
@@ -215,6 +222,7 @@ const createMiniWidow = () => {
     show: true,
     frame: false,
     fullscreenable: false,
+    skipTaskbar: true,
     resizable: false,
     transparent: true,
     icon: `${__static}/logo.png`,
