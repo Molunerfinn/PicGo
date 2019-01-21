@@ -231,7 +231,7 @@ const createMiniWidow = () => {
     obj.show = false
   }
 
-  if (db.read().get('miniWindowOntop').value()) {
+  if (db.read().get('settings.miniWindowOntop').value()) {
     obj.alwaysOnTop = true
   }
 
