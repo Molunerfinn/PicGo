@@ -78,7 +78,10 @@ export default new Router({
         {
           path: 'gallery',
           component: require('@/pages/Gallery').default,
-          name: 'gallery'
+          name: 'gallery',
+          meta: {
+            keepAlive: true
+          }
         },
         {
           path: 'setting',

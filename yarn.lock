@@ -31,9 +31,9 @@
   dependencies:
     "@types/babel-types" "*"
 
-"@types/node@^8.0.24":
-  version "8.10.39"
-  resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-8.10.39.tgz#e7e87ad00364dd7bc485c940926345b8ec1a26ca"
+"@types/node@^10.12.18":
+  version "10.12.18"
+  resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-10.12.18.tgz#1d3ca764718915584fcd9f6344621b7672665c67"
 
 "@vue/component-compiler-utils@^2.0.0":
   version "2.3.1"
@@ -3247,11 +3247,11 @@ electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.47:
   version "1.3.96"
   resolved "http://registry.npm.taobao.org/electron-to-chromium/download/electron-to-chromium-1.3.96.tgz#25770ec99b8b07706dedf3a5f43fa50cb54c4f9a"
 
-electron@4.0.0:
-  version "4.0.0"
-  resolved "http://registry.npm.taobao.org/electron/download/electron-4.0.0.tgz#6ccb40cc8bf2d49954dcea73b97ae7ad12ee04b3"
+electron@4.0.2:
+  version "4.0.2"
+  resolved "http://registry.npm.taobao.org/electron/download/electron-4.0.2.tgz#b5e074c149841490825d0785aa2bc4f5e29bbea4"
   dependencies:
-    "@types/node" "^8.0.24"
+    "@types/node" "^10.12.18"
     electron-download "^4.1.0"
     extract-zip "^1.0.3"
 

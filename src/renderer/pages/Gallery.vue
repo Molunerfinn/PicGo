@@ -139,8 +139,14 @@ export default {
       picBed: []
     }
   },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      vm.getGallery()
+      vm.getPasteStyle()
+      vm.getPicBeds()
+    })
+  },
   created () {
-    this.getGallery()
     this.$electron.ipcRenderer.on('updateGallery', (event) => {
       this.$nextTick(() => {
         this.filterList = this.getGallery()
@@ -148,8 +154,6 @@ export default {
     })
     this.$electron.ipcRenderer.send('getPicBeds')
     this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
-    this.getPasteStyle()
-    this.getPicBeds()
   },
   computed: {
     filterList: {
@@ -368,6 +372,8 @@ export default {
     transition all .2s ease-in-out
     &.active
       transform: rotate(180deg)
+#gallery-view
+  height 100%
 .item-base
   background #2E2E2E
   text-align center

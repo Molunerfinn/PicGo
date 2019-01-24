@@ -64,7 +64,12 @@
         class="main-wrapper"
         :class="{ 'darwin': os === 'darwin' }">
         <transition name="picgo-fade" mode="out-in">
-          <router-view :key="$route.params ? $route.params.type : $route.path"></router-view>
+          <keep-alive>
+            <router-view v-if="$route.meta.keepAlive"></router-view>
+          </keep-alive>
+        </transition>
+        <transition name="picgo-fade" mode="out-in">
+          <router-view :key="$route.path" v-if="!$route.meta.keepAlive"></router-view>
         </transition>
       </el-col>
     </el-row>
@@ -296,7 +301,7 @@ $darwinBg = transparentify(#172426, #000, 0.7)
     opacity 0
   &-enter-active,
   &-leave-active
-    transition opacity 100ms linear
+    transition all 100ms linear
 .view-title
   color #eee
   font-size 20px
