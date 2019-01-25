@@ -5,14 +5,17 @@
       <div class="wait-upload-img" v-if="clipboardFiles.length > 0">
         <div class="list-title">等待上传</div>
         <div v-for="(item, index) in clipboardFiles" :key="index" class="img-list" :style="{height: calcHeight(item.width, item.height) + 'px'}">
-          <div class="upload-img__container" @click="uploadClipboardFiles">
+          <div
+            class="upload-img__container"
+            :class="{ upload: uploadFlag }"
+            @click="uploadClipboardFiles">
             <img :src="item.imgUrl" class="upload-img">
           </div>
         </div>
       </div>
       <div class="uploaded-img">
         <div class="list-title">已上传</div>
-        <div v-for="(item, index) in files" :key="index" class="img-list" :style="{height: calcHeight(item.width, item.height) + 'px'}">
+        <div v-for="item in files" :key="item.imgUrl" class="img-list" :style="{height: calcHeight(item.width, item.height) + 'px'}">
           <div class="upload-img__container" @click="copyTheLink(item)">
             <img :src="item.imgUrl" class="upload-img">
           </div>
@@ -36,7 +39,8 @@
           body: '',
           icon: ''
         },
-        clipboardFiles: []
+        clipboardFiles: [],
+        uploadFlag: false
       }
     },
     computed: {
@@ -58,6 +62,7 @@
       })
       this.$electron.ipcRenderer.on('uploadFiles', (event) => {
         this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
+        this.uploadFlag = false
       })
       this.$electron.ipcRenderer.on('updateFiles', (event) => {
         this.getData()
@@ -97,7 +102,11 @@
         }, false)
       },
       uploadClipboardFiles () {
-        this.$electron.ipcRenderer.send('uploadClipboardFiles', this.clipboardFiles[0])
+        if (this.uploadFlag) {
+          return
+        }
+        this.uploadFlag = true
+        this.$electron.ipcRenderer.send('uploadClipboardFiles')
       }
     }
   }
@@ -156,4 +165,6 @@ body::-webkit-scrollbar
       width 100%
       padding 8px 10px
       height 100%
+      &.upload
+        cursor not-allowed
 </style>

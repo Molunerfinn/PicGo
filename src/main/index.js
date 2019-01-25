@@ -371,7 +371,7 @@ picgoCoreIPC(app, ipcMain)
 
 // from macOS tray
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
-  const img = await new Uploader(file, window.webContents).upload()
+  const img = await new Uploader(undefined, window.webContents).upload()
   if (img !== false) {
     const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
     const url = img[0].url || img[0].imgUrl
@@ -385,11 +385,11 @@ ipcMain.on('uploadClipboardFiles', async (evt, file) => {
     notification.show()
     db.read().get('uploaded').insert(img[0]).write()
     window.webContents.send('clipboardFiles', [])
-    window.webContents.send('uploadFiles')
     if (settingWindow) {
       settingWindow.webContents.send('updateGallery')
     }
   }
+  window.webContents.send('uploadFiles')
 })
 
 ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
