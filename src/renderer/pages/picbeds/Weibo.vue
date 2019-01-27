@@ -113,7 +113,7 @@ export default {
       this.$refs['weiboForm'].resetFields()
     },
     openWiki () {
-      this.$electron.remote.shell.openExternal('https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#%E5%BE%AE%E5%8D%9A%E5%9B%BE%E5%BA%8A')
+      this.$electron.remote.shell.openExternal('https://picgo.github.io/PicGo-Doc/zh/guide/config.html#微博图床')
     }
   }
 }
