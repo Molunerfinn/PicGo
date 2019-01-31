@@ -1,12 +1,12 @@
 <template>
   <div id="plugin-view">
     <div class="view-title">
-      插件设置
+      插件设置 - <i class="el-icon-goods" @click="goAwesomeList"></i>
     </div>
     <el-row class="handle-bar" :class="{ 'cut-width': pluginList.length > 6 }">
       <el-input
         v-model="searchText"
-        placeholder="搜索npm上的PicGo插件"
+        placeholder="搜索npm上的PicGo插件，或者点击上方按钮查看优秀插件列表"
         size="small"
       >
         <i slot="suffix" class="el-input__icon el-icon-close" v-if="searchText" @click="cleanSearch" style="cursor: pointer"></i>
@@ -439,6 +439,9 @@ export default {
     },
     handleInputBoxClose () {
       this.$electron.ipcRenderer.send('showInputBox', this.inputBoxValue)
+    },
+    goAwesomeList () {
+      this.$electron.remote.shell.openExternal('https://github.com/PicGo/Awesome-PicGo')
     }
   },
   beforeDestroy () {
@@ -476,6 +479,10 @@ $darwinBg = #172426
     font-size 20px
     text-align center
     margin 10px auto
+    i.el-icon-goods
+      font-size 20px
+      vertical-align middle
+      cursor pointer
   .handle-bar
     margin-bottom 20px
     &.cut-width
