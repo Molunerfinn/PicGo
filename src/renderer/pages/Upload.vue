@@ -3,7 +3,7 @@
     <el-row :gutter="16">
       <el-col :span="20" :offset="2">
         <div class="view-title">
-          图片上传 - {{ picBedName }}
+          图片上传 - {{ picBedName }} <i class="el-icon-caret-bottom" @click="handleChangePicBed"></i>
         </div>
         <div
           id="upload-area"
@@ -66,7 +66,8 @@ export default {
       showError: false,
       pasteStyle: '',
       picBed: [],
-      picBedName: ''
+      picBedName: '',
+      menu: null
     }
   },
   mounted () {
@@ -149,6 +150,25 @@ export default {
     getPicBeds (event, picBeds) {
       this.picBed = picBeds
       this.getDefaultPicBed()
+    },
+    handleChangePicBed () {
+      this.buildMenu()
+      this.menu.popup(this.$electron.remote.getCurrentWindow())
+    },
+    buildMenu () {
+      const _this = this
+      const submenu = this.picBed.map(item => {
+        return {
+          label: item.name,
+          type: 'radio',
+          checked: this.$db.read().get('picBed.current').value() === item.type,
+          click () {
+            _this.$db.read().set('picBed.current', item.type).write()
+            _this.$electron.ipcRenderer.send('syncPicBed')
+          }
+        }
+      })
+      this.menu = this.$electron.remote.Menu.buildFromTemplate(submenu)
     }
   }
 }
