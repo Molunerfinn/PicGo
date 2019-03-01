@@ -43,10 +43,39 @@ if (!db.has('settings.shortKey').value()) {
 }
 
 // init generate clipboard image files
+let clipboardFiles = getClipboardFiles()
 if (!fs.pathExistsSync(path.join(STORE_PATH, 'windows.ps1'))) {
-  fs.copySync(path.join(__static, '/linux.sh'), path.join(STORE_PATH, '/linux.sh'))
-  fs.copySync(path.join(__static, '/mac.applescript'), path.join(STORE_PATH, '/mac.applescript'))
-  fs.copySync(path.join(__static, '/windows.ps1'), path.join(STORE_PATH, '/windows.ps1'))
+  clipboardFiles.forEach(item => {
+    fs.copyFileSync(item.origin, item.dest)
+  })
+} else {
+  clipboardFiles.forEach(item => {
+    diffFilesAndUpdate(item.origin, item.dest)
+  })
+}
+
+function diffFilesAndUpdate (filePath1, filePath2) {
+  let file1 = fs.readFileSync(filePath1)
+  let file2 = fs.readFileSync(filePath2)
+
+  if (!file1.equals(file2)) {
+    fs.copyFileSync(filePath1, filePath2)
+  }
+}
+
+function getClipboardFiles () {
+  let files = [
+    '/linux.sh',
+    '/mac.applescript',
+    '/windows.ps1'
+  ]
+
+  return files.map(item => {
+    return {
+      origin: path.join(__static, item),
+      dest: path.join(STORE_PATH, item)
+    }
+  })
 }
 
 export default db

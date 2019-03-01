@@ -4,6 +4,11 @@ param($imagePath)
 # Adapted from https://github.com/octan3/img-clipboard-dump/blob/master/dump-clipboard-png.ps1
 
 Add-Type -Assembly PresentationCore
+$file = Get-Clipboard -Format FileDropList
+if ($file -ne $null) {
+    Convert-Path $file
+    Exit 1
+}
 $img = [Windows.Clipboard]::GetImage()
 
 if ($img -eq $null) {
