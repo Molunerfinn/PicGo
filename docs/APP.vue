@@ -7,7 +7,7 @@
         small(v-if="version") {{ version }}
       h2.desc 图片上传+管理新体验
       button.download(@click="goLink('https://github.com/Molunerfinn/picgo/releases')") 免费下载
-      button.download(@click="goLink('https://github.com/Molunerfinn/picgo')") 在github上查看
+      button.download(@click="goLink('https://picgo.github.io/PicGo-Doc/zh/guide/')") 查看文档
       h3.desc
         | 基于#[a(href="https://github.com/SimulatedGREG/electron-vue" target="_blank") electron-vue]开发
       h3.desc
