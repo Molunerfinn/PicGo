@@ -6765,9 +6765,9 @@ performance-now@^2.1.0:
   version "2.1.0"
   resolved "http://registry.npm.taobao.org/performance-now/download/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
 
-picgo@^1.2.6:
-  version "1.2.7"
-  resolved "http://registry.npm.taobao.org/picgo/download/picgo-1.2.7.tgz#f14a7cdad11eb30b2bfc0cb6045771015922c764"
+picgo@^1.2.8:
+  version "1.2.8"
+  resolved "http://registry.npm.taobao.org/picgo/download/picgo-1.2.8.tgz#c65a2f680820cd1d5382a37b5522e0bb1004b765"
   dependencies:
     chalk "^2.4.1"
     commander "^2.17.0"

@@ -1,6 +1,9 @@
+# Adapted from https://github.com/octan3/img-clipboard-dump/blob/master/dump-clipboard-png.ps1
 param($imagePath)
 
-# Adapted from https://github.com/octan3/img-clipboard-dump/blob/master/dump-clipboard-png.ps1
+# https://github.com/PowerShell/PowerShell/issues/7233
+# fix the output encoding bug
+[console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
 
 Add-Type -Assembly PresentationCore
 function main {
@@ -27,13 +30,15 @@ function main {
 }
 
 try {
-  $file = Get-Clipboard -Format FileDropList
-  if ($file -ne $null) {
-      Convert-Path $file
-      Exit 1
-  }
+    # For WIN10
+    $file = Get-Clipboard -Format FileDropList
+    if ($file -ne $null) {
+        Convert-Path $file
+        Exit 1
+    }
 } catch {
-  main
+    # For WIN7 WIN8 WIN10
+    main
 }
 
 main
