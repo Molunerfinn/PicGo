@@ -4,7 +4,7 @@
     <div class="content">
       <div class="wait-upload-img" v-if="clipboardFiles.length > 0">
         <div class="list-title">等待上传</div>
-        <div v-for="(item, index) in clipboardFiles" :key="index" class="img-list" :style="{height: calcHeight(item.width, item.height) + 'px'}">
+        <div v-for="(item, index) in clipboardFiles" :key="index" class="img-list">
           <div
             class="upload-img__container"
             :class="{ upload: uploadFlag }"
@@ -15,7 +15,7 @@
       </div>
       <div class="uploaded-img">
         <div class="list-title">已上传</div>
-        <div v-for="item in files" :key="item.imgUrl" class="img-list" :style="{height: calcHeight(item.width, item.height) + 'px'}">
+        <div v-for="item in files" :key="item.imgUrl" class="img-list">
           <div class="upload-img__container" @click="copyTheLink(item)">
             <img :src="item.imgUrl" class="upload-img">
           </div>
@@ -62,6 +62,7 @@
       })
       this.$electron.ipcRenderer.on('uploadFiles', (event) => {
         this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
+        console.log(this.files)
         this.uploadFlag = false
       })
       this.$electron.ipcRenderer.on('updateFiles', (event) => {
@@ -146,11 +147,11 @@ body::-webkit-scrollbar
     top 0px
     width 100%
   .img-list
-    padding 16px 8px
+    padding 8px 8px
     display flex
     justify-content space-between
     align-items center
-    height 45px
+    // height 45px
     cursor pointer
     transition all .2s ease-in-out
     &:hover
@@ -158,8 +159,8 @@ body::-webkit-scrollbar
       .upload-img__index
         color #fff
   .upload-img
-    height 100%
     width 100%
+    object-fit scale-down
     margin 0 auto
     &__container
       width 100%
