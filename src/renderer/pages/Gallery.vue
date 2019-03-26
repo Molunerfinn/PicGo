@@ -74,9 +74,9 @@
           <el-col :span="6" v-for="(item, index) in images" :key="item.id" class="gallery-list__img">
             <div 
               class="gallery-list__item"
-              v-lazy:background-image="item.imgUrl"
               @click="zoomImage(index)"
             >
+              <img v-lazy="item.imgUrl" class="gallery-list__item-img">
             </div>
             <div class="gallery-list__tool-panel">
               <i class="el-icon-document" @click="copy(item)"></i>
@@ -423,12 +423,11 @@ export default {
     &__item
       width 100%
       height 120px
-      background-size cover
-      background-position 50% 50%
-      background-repeat no-repeat
       transition all .2s ease-in-out
       cursor pointer
       margin-bottom 8px
+      overflow hidden
+      display flex
       &-fake
         position absolute
         top 0
@@ -437,8 +436,10 @@ export default {
         width 100%
         z-index -1
       &:hover
-        background-color #49B1F5
         transform scale(1.1)
+      &-img
+        width 100%
+        object-fit fill
     &__tool-panel
       color #ddd
       i
