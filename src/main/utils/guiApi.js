@@ -87,18 +87,38 @@ class GuiApi {
    * For notification
    * @param {Object} options
    */
-  showNotification (options) {
-    if (options === undefined) {
-      options = {
-        title: '',
-        body: ''
-      }
-    }
+  showNotification (options = {
+    title: '',
+    body: ''
+  }) {
     const notification = new Notification({
       title: options.title,
       body: options.body
     })
     notification.show()
+  }
+
+  /**
+   *
+   * @param {Object} options
+   */
+  showMessageBox (options = {
+    title: '',
+    message: '',
+    type: 'info',
+    buttons: ['Yes', 'No']
+  }) {
+    return new Promise((resolve, reject) => {
+      dialog.showMessageBox(
+        BrowserWindow.fromWebContents(this[WEBCONTENTS]),
+        options,
+        (result, checkboxChecked) => {
+          resolve({
+            result,
+            checkboxChecked
+          })
+        })
+    })
   }
 }
 
