@@ -1,8 +1,13 @@
-MIT License
-Copyright (c) <year> <copyright holders>
+                   The 996ICU License (996ICU)
+                     Version 0.1, March 2019
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+PACKAGE is distributed under LICENSE with the following restriction:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above license is only granted to entities that act in concordance
+with local labor laws. In addition, the following requirements must be
+observed:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* The licencee must not, explicitly or implicitly, request or schedule
+  their employees to work more than 45 hours in any single week.
+* The licencee must not, explicitly or implicitly, request or schedule
+  their employees to be at work consecutively for 10 hours.

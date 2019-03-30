@@ -157,7 +157,8 @@ const handlePluginActions = (ipcMain, CONFIG_PATH) => {
 const handleRemoveFiles = (ipcMain, CONFIG_PATH) => {
   ipcMain.on('removeFiles', (event, files) => {
     const picgo = new PicGo(CONFIG_PATH)
-    picgo.emit('remove', files)
+    const guiApi = new GuiApi(ipcMain, event.sender, picgo)
+    picgo.emit('remove', files, guiApi)
   })
 }
 
