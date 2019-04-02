@@ -1,5 +1,6 @@
 import path from 'path'
 import GuiApi from './guiApi'
+import { dialog, shell } from 'electron'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -89,38 +90,60 @@ const handleGetPluginList = (ipcMain, STORE_PATH, CONFIG_PATH) => {
 }
 
 const handlePluginInstall = (ipcMain, CONFIG_PATH) => {
-  ipcMain.on('installPlugin', (event, msg) => {
+  ipcMain.on('installPlugin', async (event, msg) => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginHandler = new PluginHandler(picgo)
     picgo.on('installSuccess', notice => {
       event.sender.send('installSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
     })
+    picgo.on('failed', () => {
+      handleNPMError()
+    })
+    await pluginHandler.uninstall([msg])
     pluginHandler.install([msg])
     picgo.cmd.program.removeAllListeners()
   })
 }
 
 const handlePluginUninstall = (ipcMain, CONFIG_PATH) => {
-  ipcMain.on('uninstallPlugin', (event, msg) => {
+  ipcMain.on('uninstallPlugin', async (event, msg) => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginHandler = new PluginHandler(picgo)
     picgo.on('uninstallSuccess', notice => {
       event.sender.send('uninstallSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
     })
-    pluginHandler.uninstall([msg])
+    picgo.on('failed', () => {
+      handleNPMError()
+    })
+    await pluginHandler.uninstall([msg])
     picgo.cmd.program.removeAllListeners()
   })
 }
 
 const handlePluginUpdate = (ipcMain, CONFIG_PATH) => {
-  ipcMain.on('updatePlugin', (event, msg) => {
+  ipcMain.on('updatePlugin', async (event, msg) => {
     const picgo = new PicGo(CONFIG_PATH)
     const pluginHandler = new PluginHandler(picgo)
     picgo.on('updateSuccess', notice => {
       event.sender.send('updateSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
     })
-    pluginHandler.update([msg])
+    picgo.on('failed', () => {
+      handleNPMError()
+    })
+    await pluginHandler.update([msg])
     picgo.cmd.program.removeAllListeners()
+  })
+}
+
+const handleNPMError = () => {
+  dialog.showMessageBox({
+    title: '发生错误',
+    message: '请安装Node.js并重启PicGo再继续操作',
+    buttons: ['Yes']
+  }, (res) => {
+    if (res === 0) {
+      shell.openExternal('https://nodejs.org/')
+    }
   })
 }
 

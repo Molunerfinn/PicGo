@@ -219,7 +219,7 @@ const createMiniWidow = () => {
   let obj = {
     height: 64,
     width: 64,
-    show: true,
+    show: false,
     frame: false,
     fullscreenable: false,
     skipTaskbar: true,
