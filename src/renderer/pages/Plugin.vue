@@ -410,9 +410,6 @@ export default {
         this.$electron.remote.shell.openExternal(url)
       }
     },
-    handleInputBoxClose () {
-      this.$electron.ipcRenderer.send('showInputBox', this.inputBoxValue)
-    },
     goAwesomeList () {
       this.$electron.remote.shell.openExternal('https://github.com/PicGo/Awesome-PicGo')
     }
