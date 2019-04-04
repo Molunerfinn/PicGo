@@ -91,20 +91,6 @@
         <el-button type="primary" @click="handleConfirmConfig" round>确定</el-button>
       </span>
     </el-dialog>
-    <el-dialog
-      :title="inputBoxOptions.title || '输入框'"
-      :visible.sync="showInputBoxVisible"
-      :modal-append-to-body="false"
-      @close="handleInputBoxClose"
-    >
-      <el-input
-        v-model="inputBoxValue"
-        :placeholder="inputBoxOptions.placeholder"></el-input>
-      <span slot="footer">
-        <el-button @click="showInputBoxVisible = false" round>取消</el-button>
-        <el-button type="primary" @click="showInputBoxVisible = false" round>确定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -128,14 +114,7 @@ export default {
       loading: true,
       needReload: false,
       id: '',
-      os: '',
-      // for showInputBox
-      showInputBoxVisible: false,
-      inputBoxValue: '',
-      inputBoxOptions: {
-        title: '',
-        placeholder: ''
-      }
+      os: ''
     }
   },
   computed: {
@@ -205,12 +184,6 @@ export default {
     this.getPluginList()
     this.getSearchResult = debounce(this.getSearchResult, 50)
     this.needReload = this.$db.read().get('needReload').value()
-    this.$electron.ipcRenderer.on('showInputBox', (evt, options) => {
-      this.inputBoxValue = ''
-      this.inputBoxOptions.title = options.title || ''
-      this.inputBoxOptions.placeholder = options.placeholder || ''
-      this.showInputBoxVisible = true
-    })
   },
   methods: {
     buildContextMenu (plugin) {
@@ -449,7 +422,6 @@ export default {
     this.$electron.ipcRenderer.removeAllListeners('installSuccess')
     this.$electron.ipcRenderer.removeAllListeners('uninstallSuccess')
     this.$electron.ipcRenderer.removeAllListeners('updateSuccess')
-    this.$electron.ipcRenderer.removeAllListeners('showInputBox')
   }
 }
 </script>

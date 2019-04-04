@@ -143,6 +143,20 @@
         <el-button type="primary" @click="confirmCustomLink">确定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="inputBoxOptions.title || '输入框'"
+      :visible.sync="showInputBoxVisible"
+      :modal-append-to-body="false"
+      @close="handleInputBoxClose"
+    >
+      <el-input
+        v-model="inputBoxValue"
+        :placeholder="inputBoxOptions.placeholder"></el-input>
+      <span slot="footer">
+        <el-button @click="showInputBoxVisible = false" round>取消</el-button>
+        <el-button type="primary" @click="showInputBoxVisible = false" round>确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -182,7 +196,14 @@ export default {
       shortKey: {
         upload: db.read().get('shortKey.upload').value()
       },
-      picBed: []
+      picBed: [],
+      // for showInputBox
+      showInputBoxVisible: false,
+      inputBoxValue: '',
+      inputBoxOptions: {
+        title: '',
+        placeholder: ''
+      }
     }
   },
   created () {
@@ -190,6 +211,12 @@ export default {
     this.buildMenu()
     this.$electron.ipcRenderer.send('getPicBeds')
     this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
+    this.$electron.ipcRenderer.on('showInputBox', (evt, options) => {
+      this.inputBoxValue = ''
+      this.inputBoxOptions.title = options.title || ''
+      this.inputBoxOptions.placeholder = options.placeholder || ''
+      this.showInputBoxVisible = true
+    })
   },
   methods: {
     handleSelect (index) {
@@ -280,6 +307,9 @@ export default {
     },
     getPicBeds (event, picBeds) {
       this.picBed = picBeds
+    },
+    handleInputBoxClose () {
+      this.$electron.ipcRenderer.send('showInputBox', this.inputBoxValue)
     }
   },
   beforeRouteEnter: (to, from, next) => {
@@ -289,6 +319,7 @@ export default {
   },
   beforeDestroy () {
     this.$electron.ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
+    this.$electron.ipcRenderer.removeAllListeners('showInputBox')
   }
 }
 </script>
