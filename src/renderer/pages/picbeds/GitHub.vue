@@ -33,7 +33,7 @@
             :rules="{
               required: true, message: 'Token不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.token" @keyup.native.enter="confirm" placeholder="token"></el-input>
+            <el-input v-model="form.token" @keyup.native.enter="confirm" placeholder="token" type="password"></el-input>
           </el-form-item>
           <el-form-item
             label="指定存储路径"
