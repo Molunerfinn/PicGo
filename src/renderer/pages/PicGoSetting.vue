@@ -14,7 +14,12 @@
           <el-form-item
             label="打开配置文件"
           >
-            <el-button type="primary" round size="mini" @click="openConfigFile">点击打开</el-button>
+            <el-button type="primary" round size="mini" @click="openFile('data.json')">点击打开</el-button>
+          </el-form-item>
+          <el-form-item
+            label="设置日志文件"
+          >
+            <el-button type="primary" round size="mini" @click="openLogSetting">点击设置</el-button>
           </el-form-item>
           <el-form-item
             label="修改上传快捷键"
@@ -215,6 +220,44 @@
         <el-button type="primary" @click="confirmCheckVersion" round>确定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="设置日志文件"
+      :visible.sync="logFileVisible"
+      :modal-append-to-body="false"
+    >
+      <el-form
+        label-position="right"
+        label-width="100px"
+      >
+        <el-form-item
+          label="日志文件"
+        >
+          <el-button type="primary" round size="mini" @click="openFile('picgo.log')">点击打开</el-button>
+        </el-form-item>
+        <el-form-item
+          label="日志记录等级"
+        >
+          <el-select
+            v-model="form.logLevel"
+            multiple
+            collapse-tags
+            @change="handleLogLevelChange"
+          >
+            <el-option
+              v-for="(value, key) of logLevel"
+              :key="key"
+              :label="value"
+              :value="key"
+              :disabled="handleLevelDisabled(key)"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="cancelLogLevelSetting" round>取消</el-button>
+        <el-button type="primary" @click="confirmLogLevelSetting" round>确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -250,9 +293,11 @@ export default {
         rename: this.$db.read().get('settings.rename').value() || false,
         autoRename: this.$db.read().get('settings.autoRename').value() || false,
         uploadNotification: this.$db.read().get('settings.uploadNotification').value() || false,
-        miniWindowOntop: this.$db.read().get('settings.miniWindowOntop').value() || false
+        miniWindowOntop: this.$db.read().get('settings.miniWindowOntop').value() || false,
+        logLevel: this.$db.read().get('settings.logLevel').value() || ['all']
       },
       picBed: [],
+      logFileVisible: false,
       keyBindingVisible: false,
       customLinkVisible: false,
       checkUpdateVisible: false,
@@ -268,6 +313,14 @@ export default {
         value: [
           { validator: customLinkRule, trigger: 'blur' }
         ]
+      },
+      logLevel: {
+        all: '全部-All',
+        success: '成功-Success',
+        error: '错误-Error',
+        info: '普通-Info',
+        warn: '提醒-Warn',
+        none: '不记录日志-None'
       },
       version: pkg.version,
       latestVersion: '',
@@ -288,11 +341,14 @@ export default {
         }
       })
     },
-    openConfigFile () {
+    openFile (file) {
       const { app, shell } = this.$electron.remote
       const STORE_PATH = app.getPath('userData')
-      const CONFIG_FILE = path.join(STORE_PATH, '/data.json')
-      shell.openItem(CONFIG_FILE)
+      const FILE = path.join(STORE_PATH, `/${file}`)
+      shell.openItem(FILE)
+    },
+    openLogSetting () {
+      this.logFileVisible = true
     },
     keyDetect (type, event) {
       this.shortKey[type] = keyDetect(event).join('+')
@@ -399,6 +455,43 @@ export default {
     handleMiniWindowOntop (val) {
       this.$db.read().set('settings.miniWindowOntop', val).write()
       this.$message('需要重启生效')
+    },
+    confirmLogLevelSetting () {
+      if (this.form.logLevel.length === 0) {
+        return this.$message.error('请选择日志记录等级')
+      }
+      this.$db.read().set('settings.logLevel', this.form.logLevel).write()
+      const successNotification = new window.Notification('设置日志', {
+        body: '设置成功'
+      })
+      successNotification.onclick = () => {
+        return true
+      }
+      this.logFileVisible = false
+    },
+    cancelLogLevelSetting () {
+      this.logFileVisible = false
+      this.form.logLevel = this.$db.read().get('settings.logLevel').value() || 'all'
+    },
+    handleLevelDisabled (val) {
+      let currentLevel = val
+      let flagLevel
+      let result = this.form.logLevel.some(item => {
+        if (item === 'all' || item === 'none') {
+          flagLevel = item
+        }
+        return (item === 'all' || item === 'none')
+      })
+      if (result) {
+        if (currentLevel !== flagLevel) {
+          return true
+        }
+      } else if (this.form.logLevel.length > 0) {
+        if (val === 'all' || val === 'none') {
+          return true
+        }
+      }
+      return false
     }
   },
   beforeDestroy () {
