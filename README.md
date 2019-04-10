@@ -18,6 +18,9 @@
   <a href="https://github.com/Molunerfinn/PicGo/releases/latest">
     <img src="https://img.shields.io/github/release/Molunerfinn/PicGo.svg?style=flat-square" alt="">
   </a>
+  <a href="https://github.com/PicGo/bump-version">
+    <img src="https://img.shields.io/badge/picgo-convention-blue.svg?style=flat-square" alt="">
+  </a>
 </p>
 
 ## 应用说明
