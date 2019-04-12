@@ -53,11 +53,13 @@ PicGo支持自定义快捷键，使用方法见[配置手册](https://picgo.gith
 
 ## 下载安装
 
-macOS用户请下载最新版本的`dmg`文件，windows用户请下载最新版本的`exe`文件，linux用户请下载`AppImage`文件。
-
 点击此处下载[应用](https://github.com/Molunerfinn/PicGo/releases)。
 
-**如果你是Arch类的Linux用户，可以直接通过`aurman -S picgo-appimage`来安装PicGo。感谢@houbaron的贡献！**
+macOS用户请下载最新版本的`dmg`文件，windows用户请下载最新版本的`exe`文件，linux用户请下载`AppImage`文件。
+
+**如果你是Arch类的Linux用户，可以直接通过`aurman -S picgo-appimage`来安装PicGo。感谢 @houbaron 的贡献！**
+
+**如果你是macOS用户，可以使用brew cask来安装PicGo: `brew cask install picgo`。感谢 @womeimingzi11 的贡献！**
 
 ## 应用截图
 
