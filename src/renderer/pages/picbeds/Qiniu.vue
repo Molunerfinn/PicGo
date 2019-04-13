@@ -45,13 +45,10 @@
           </el-form-item>
           <el-form-item
             label="确认存储区域"
-            >
-            <el-radio-group v-model="form.area" size="mini">
-              <el-radio-button label="z0">华东</el-radio-button>
-              <el-radio-button label="z1">华北</el-radio-button>
-              <el-radio-button label="z2">华南</el-radio-button>
-              <el-radio-button label="na0">北美</el-radio-button>
-            </el-radio-group>
+            :rules="{
+              required: true, message: '区域代码不能为空', trigger: 'blur'
+            }">
+            <el-input v-model="form.area" placeholder="例如z0"></el-input>
           </el-form-item>
           <el-form-item
             label="设定网址后缀"
@@ -86,7 +83,7 @@ export default {
         secretKey: '',
         bucket: '',
         url: '',
-        area: 'z0',
+        area: '',
         options: '',
         path: ''
       }
