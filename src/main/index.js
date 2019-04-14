@@ -9,6 +9,7 @@ import { getPicBeds } from './utils/getPicBeds'
 import pkg from '../../package.json'
 import picgoCoreIPC from './utils/picgoCoreIPC'
 import fixPath from 'fix-path'
+import { getUploadFiles } from './utils/handleArgv'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -210,6 +211,7 @@ const createWindow = () => {
   window.on('blur', () => {
     window.hide()
   })
+  return window
 }
 
 const createMiniWidow = () => {
@@ -250,6 +252,7 @@ const createMiniWidow = () => {
   miniWindow.on('closed', () => {
     miniWindow = null
   })
+  return miniWindow
 }
 
 const createSettingWindow = () => {
@@ -289,6 +292,7 @@ const createSettingWindow = () => {
   })
   createMenu()
   createMiniWidow()
+  return settingWindow
 }
 
 const createMenu = () => {
@@ -337,7 +341,7 @@ const uploadClipboardFiles = async () => {
   if (miniWindow.isVisible()) {
     win = miniWindow
   } else {
-    win = settingWindow || window
+    win = settingWindow || window || createSettingWindow()
   }
   let img = await new Uploader(undefined, win.webContents).upload()
   if (img !== false) {
@@ -363,6 +367,33 @@ const uploadClipboardFiles = async () => {
         body: '你剪贴板最新的一条记录不是图片哦'
       })
       notification.show()
+    }
+  }
+}
+
+const uploadChoosedFiles = async (webContents, files) => {
+  const input = files.map(item => item.path)
+  const imgs = await new Uploader(input, webContents).upload()
+  if (imgs !== false) {
+    const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
+    let pasteText = ''
+    for (let i in imgs) {
+      const url = imgs[i].url || imgs[i].imgUrl
+      pasteText += pasteTemplate(pasteStyle, url) + '\r\n'
+      const notification = new Notification({
+        title: '上传成功',
+        body: imgs[i].imgUrl,
+        icon: files[i].path
+      })
+      setTimeout(() => {
+        notification.show()
+      }, i * 100)
+      db.read().get('uploaded').insert(imgs[i]).write()
+    }
+    clipboard.writeText(pasteText)
+    window.webContents.send('uploadFiles', imgs)
+    if (settingWindow) {
+      settingWindow.webContents.send('updateGallery')
     }
   }
 }
@@ -397,30 +428,7 @@ ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
 })
 
 ipcMain.on('uploadChoosedFiles', async (evt, files) => {
-  const input = files.map(item => item.path)
-  const imgs = await new Uploader(input, evt.sender).upload()
-  if (imgs !== false) {
-    const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
-    let pasteText = ''
-    for (let i in imgs) {
-      const url = imgs[i].url || imgs[i].imgUrl
-      pasteText += pasteTemplate(pasteStyle, url) + '\r\n'
-      const notification = new Notification({
-        title: '上传成功',
-        body: imgs[i].imgUrl,
-        icon: files[i].path
-      })
-      setTimeout(() => {
-        notification.show()
-      }, i * 100)
-      db.read().get('uploaded').insert(imgs[i]).write()
-    }
-    clipboard.writeText(pasteText)
-    window.webContents.send('uploadFiles', imgs)
-    if (settingWindow) {
-      settingWindow.webContents.send('updateGallery')
-    }
-  }
+  return uploadChoosedFiles(evt, files)
 })
 
 ipcMain.on('updateShortKey', (evt, oldKey) => {
@@ -491,12 +499,25 @@ const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) {
   app.quit()
 } else {
-  if (settingWindow) {
-    if (settingWindow.isMinimized()) {
-      settingWindow.restore()
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    let files = getUploadFiles(commandLine, workingDirectory)
+    if (files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
+      let win
+      if (miniWindow && miniWindow.isVisible()) {
+        win = miniWindow
+      } else {
+        win = settingWindow || window || createSettingWindow()
+      }
+      uploadChoosedFiles(win.webContents, files)
+    } else {
+      if (settingWindow) {
+        if (settingWindow.isMinimized()) {
+          settingWindow.restore()
+        }
+        settingWindow.focus()
+      }
     }
-    settingWindow.focus()
-  }
+  })
 }
 
 if (process.platform === 'win32') {
@@ -519,6 +540,16 @@ app.on('ready', () => {
   globalShortcut.register(db.read().get('settings.shortKey.upload').value(), () => {
     uploadClipboardFiles()
   })
+  let files = getUploadFiles()
+  if (files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
+    let win
+    if (miniWindow && miniWindow.isVisible()) {
+      win = miniWindow
+    } else {
+      win = settingWindow || window || createSettingWindow()
+    }
+    uploadChoosedFiles(win.webContents, files)
+  }
 })
 
 app.on('window-all-closed', () => {
