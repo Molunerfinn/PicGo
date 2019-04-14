@@ -181,7 +181,9 @@ const handleRemoveFiles = (ipcMain, CONFIG_PATH) => {
   ipcMain.on('removeFiles', (event, files) => {
     const picgo = new PicGo(CONFIG_PATH)
     const guiApi = new GuiApi(ipcMain, event.sender, picgo)
-    picgo.emit('remove', files, guiApi)
+    setTimeout(() => {
+      picgo.emit('remove', files, guiApi)
+    }, 500)
   })
 }
 
