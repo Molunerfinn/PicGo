@@ -3,6 +3,7 @@
 import Uploader from './utils/uploader.js'
 import { app, BrowserWindow, Tray, Menu, Notification, clipboard, ipcMain, globalShortcut, dialog } from 'electron'
 import db from '../datastore'
+import beforeOpen from './utils/beforeOpen'
 import pasteTemplate from './utils/pasteTemplate'
 import updateChecker from './utils/updateChecker'
 import { getPicBeds } from './utils/getPicBeds'
@@ -10,6 +11,9 @@ import pkg from '../../package.json'
 import picgoCoreIPC from './utils/picgoCoreIPC'
 import fixPath from 'fix-path'
 import { getUploadFiles } from './utils/handleArgv'
+if (process.platform === 'darwin') {
+  beforeOpen()
+}
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
