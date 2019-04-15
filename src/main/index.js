@@ -501,14 +501,18 @@ if (!gotTheLock) {
 } else {
   app.on('second-instance', (event, commandLine, workingDirectory) => {
     let files = getUploadFiles(commandLine, workingDirectory)
-    if (files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
-      let win
-      if (miniWindow && miniWindow.isVisible()) {
-        win = miniWindow
+    if (files === null || files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
+      if (files === null) {
+        uploadClipboardFiles()
       } else {
-        win = settingWindow || window || createSettingWindow()
+        let win
+        if (miniWindow && miniWindow.isVisible()) {
+          win = miniWindow
+        } else {
+          win = settingWindow || window || createSettingWindow()
+        }
+        uploadChoosedFiles(win.webContents, files)
       }
-      uploadChoosedFiles(win.webContents, files)
     } else {
       if (settingWindow) {
         if (settingWindow.isMinimized()) {
@@ -542,14 +546,18 @@ app.on('ready', () => {
   })
   if (process.env.NODE_ENV !== 'development') {
     let files = getUploadFiles()
-    if (files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
-      let win
-      if (miniWindow && miniWindow.isVisible()) {
-        win = miniWindow
+    if (files === null || files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
+      if (files === null) {
+        uploadClipboardFiles()
       } else {
-        win = settingWindow || window || createSettingWindow()
+        let win
+        if (miniWindow && miniWindow.isVisible()) {
+          win = miniWindow
+        } else {
+          win = settingWindow || window || createSettingWindow()
+        }
+        uploadChoosedFiles(win.webContents, files)
       }
-      uploadChoosedFiles(win.webContents, files)
     }
   }
 })
