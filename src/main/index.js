@@ -432,7 +432,7 @@ ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
 })
 
 ipcMain.on('uploadChoosedFiles', async (evt, files) => {
-  return uploadChoosedFiles(evt, files)
+  return uploadChoosedFiles(evt.sender, files)
 })
 
 ipcMain.on('updateShortKey', (evt, oldKey) => {
