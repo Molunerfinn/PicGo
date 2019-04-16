@@ -1,3 +1,12 @@
+## :tada: 2.1.1 (2019-04-16)
+
+
+### :bug: Bug Fixes
+
+* upload-area can't upload images ([4000cea](https://github.com/Molunerfinn/PicGo/commit/4000cea))
+
+
+
 # :tada: 2.1.0 (2019-04-15)
 
 
