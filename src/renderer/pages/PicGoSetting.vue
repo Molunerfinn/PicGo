@@ -241,7 +241,6 @@
             v-model="form.logLevel"
             multiple
             collapse-tags
-            @change="handleLogLevelChange"
           >
             <el-option
               v-for="(value, key) of logLevel"
@@ -285,6 +284,14 @@ export default {
         return callback()
       }
     }
+    let logLevel = this.$db.read().get('settings.logLevel').value()
+    if (!Array.isArray(logLevel)) {
+      if (logLevel.length > 0) {
+        logLevel = [logLevel]
+      } else {
+        logLevel = ['all']
+      }
+    }
     return {
       form: {
         updateHelper: this.$db.read().get('settings.showUpdateTip').value(),
@@ -294,7 +301,7 @@ export default {
         autoRename: this.$db.read().get('settings.autoRename').value() || false,
         uploadNotification: this.$db.read().get('settings.uploadNotification').value() || false,
         miniWindowOntop: this.$db.read().get('settings.miniWindowOntop').value() || false,
-        logLevel: this.$db.read().get('settings.logLevel').value() || ['all']
+        logLevel
       },
       picBed: [],
       logFileVisible: false,
