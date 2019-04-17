@@ -225,24 +225,16 @@ const createMiniWidow = () => {
   let obj = {
     height: 64,
     width: 64,
-    show: false,
+    show: process.platform === 'linux',
     frame: false,
     fullscreenable: false,
     skipTaskbar: true,
     resizable: false,
-    transparent: true,
+    transparent: process.platform !== 'linux',
     icon: `${__static}/logo.png`,
     webPreferences: {
       backgroundThrottling: false
     }
-  }
-
-  if (process.platform === 'linux') {
-    obj.transparent = false
-  }
-
-  if (process.platform === 'darwin') {
-    obj.show = false
   }
 
   if (db.read().get('settings.miniWindowOntop').value()) {
