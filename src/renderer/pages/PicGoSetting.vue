@@ -286,7 +286,7 @@ export default {
     }
     let logLevel = this.$db.read().get('settings.logLevel').value()
     if (!Array.isArray(logLevel)) {
-      if (logLevel.length > 0) {
+      if (logLevel && logLevel.length > 0) {
         logLevel = [logLevel]
       } else {
         logLevel = ['all']
@@ -478,7 +478,15 @@ export default {
     },
     cancelLogLevelSetting () {
       this.logFileVisible = false
-      this.form.logLevel = this.$db.read().get('settings.logLevel').value() || 'all'
+      let logLevel = this.$db.read().get('settings.logLevel').value()
+      if (!Array.isArray(logLevel)) {
+        if (logLevel && logLevel.length > 0) {
+          logLevel = [logLevel]
+        } else {
+          logLevel = ['all']
+        }
+      }
+      this.form.logLevel = logLevel
     },
     handleLevelDisabled (val) {
       let currentLevel = val
