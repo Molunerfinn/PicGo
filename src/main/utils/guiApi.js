@@ -63,8 +63,7 @@ class GuiApi {
       const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
       let pasteText = ''
       for (let i in imgs) {
-        const url = imgs[i].url || imgs[i].imgUrl
-        pasteText += pasteTemplate(pasteStyle, url) + '\r\n'
+        pasteText += pasteTemplate(pasteStyle, imgs[i]) + '\r\n'
         const notification = new Notification({
           title: '上传成功',
           body: imgs[i].imgUrl,

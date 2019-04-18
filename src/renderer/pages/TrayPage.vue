@@ -84,7 +84,7 @@
         this.notification.icon = item.imgUrl
         const myNotification = new window.Notification(this.notification.title, this.notification)
         const pasteStyle = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
-        this.$electron.clipboard.writeText(pasteTemplate(pasteStyle, item.imgUrl))
+        this.$electron.clipboard.writeText(pasteTemplate(pasteStyle, item))
         myNotification.onclick = () => {
           return true
         }

@@ -170,8 +170,7 @@ function createTray () {
     const imgs = await new Uploader(files, window.webContents).upload()
     if (imgs !== false) {
       for (let i in imgs) {
-        const url = imgs[i].url || imgs[i].imgUrl
-        clipboard.writeText(pasteTemplate(pasteStyle, url))
+        clipboard.writeText(pasteTemplate(pasteStyle, imgs[i]))
         const notification = new Notification({
           title: '上传成功',
           body: imgs[i].imgUrl,
@@ -343,8 +342,7 @@ const uploadClipboardFiles = async () => {
   if (img !== false) {
     if (img.length > 0) {
       const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
-      const url = img[0].url || img[0].imgUrl
-      clipboard.writeText(pasteTemplate(pasteStyle, url))
+      clipboard.writeText(pasteTemplate(pasteStyle, img[0]))
       const notification = new Notification({
         title: '上传成功',
         body: img[0].imgUrl,
@@ -374,8 +372,7 @@ const uploadChoosedFiles = async (webContents, files) => {
     const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
     let pasteText = ''
     for (let i in imgs) {
-      const url = imgs[i].url || imgs[i].imgUrl
-      pasteText += pasteTemplate(pasteStyle, url) + '\r\n'
+      pasteText += pasteTemplate(pasteStyle, imgs[i]) + '\r\n'
       const notification = new Notification({
         title: '上传成功',
         body: imgs[i].imgUrl,
@@ -401,8 +398,7 @@ ipcMain.on('uploadClipboardFiles', async (evt, file) => {
   const img = await new Uploader(undefined, window.webContents).upload()
   if (img !== false) {
     const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
-    const url = img[0].url || img[0].imgUrl
-    clipboard.writeText(pasteTemplate(pasteStyle, url))
+    clipboard.writeText(pasteTemplate(pasteStyle, img[0]))
     const notification = new Notification({
       title: '上传成功',
       body: img[0].imgUrl,

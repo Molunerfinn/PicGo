@@ -213,13 +213,12 @@ export default {
       this.changeZIndexForGallery(false)
     },
     copy (item) {
-      const url = item.url || item.imgUrl
       const style = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
-      const copyLink = pasteStyle(style, url)
+      const copyLink = pasteStyle(style, item)
       const obj = {
         title: '复制链接成功',
         body: copyLink,
-        icon: url
+        icon: item.url || item.imgUrl
       }
       const myNotification = new window.Notification(obj.title, obj)
       this.$electron.clipboard.writeText(copyLink)
@@ -325,8 +324,7 @@ export default {
         Object.keys(this.choosedList).forEach(key => {
           if (this.choosedList[key]) {
             const item = this.$db.read().get('uploaded').getById(key).value()
-            const url = item.url || item.imgUrl
-            copyString += pasteStyle(style, url) + '\n'
+            copyString += pasteStyle(style, item) + '\n'
             this.choosedList[key] = false
           }
         })
