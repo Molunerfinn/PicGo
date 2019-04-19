@@ -452,6 +452,9 @@ $darwinBg = #172426
       font-size 20px
       vertical-align middle
       cursor pointer
+      transition color .2s ease-in-out
+      &:hover
+        color #49B1F5
   .handle-bar
     margin-bottom 20px
     &.cut-width

@@ -1,7 +1,7 @@
 <template>
   <div id="picgo-setting">
     <div class="view-title">
-      PicGo设置
+      PicGo设置 - <i class="el-icon-document" @click="goConfigPage"></i>
     </div>
     <el-row class="setting-list">
       <el-col :span="15" :offset="4">
@@ -154,11 +154,17 @@
         :model="customLink"
         ref="customLink"
         :rules="rules"
+        size="small"
       >
         <el-form-item
-          label="用占位符$url来表示url的位置"
           prop="value"
         >
+          <div class="custom-title">
+            用占位符 <b>$url</b> 来表示url的位置
+          </div>
+          <div class="custom-title">
+            用占位符 <b>$fileName</b> 来表示文件名的位置
+          </div>
           <el-input 
             class="align-center"
             v-model="customLink.value"
@@ -167,7 +173,7 @@
         </el-form-item>
       </el-form>
       <div>
-        如[]($url)
+        如[$fileName]($url)
       </div>
       <span slot="footer">
         <el-button @click="cancelCustomLink" round>取消</el-button>
@@ -507,6 +513,9 @@ export default {
         }
       }
       return false
+    },
+    goConfigPage () {
+      this.$electron.remote.shell.openExternal('https://picgo.github.io/PicGo-Doc/zh/guide/config.html#picgo设置')
     }
   },
   beforeDestroy () {
@@ -517,6 +526,12 @@ export default {
 <style lang='stylus'>
 .el-message
   left 60%
+.view-title
+  .el-icon-document
+    cursor pointer
+    transition color .2s ease-in-out
+    &:hover
+      color #49B1F5
 #picgo-setting
   .sub-title
     font-size 14px
