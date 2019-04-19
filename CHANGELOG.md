@@ -1,3 +1,19 @@
+## :tada: 2.1.2 (2019-04-19)
+
+
+### :sparkles: Features
+
+* add file-name for customurl ([c59e2bc](https://github.com/Molunerfinn/PicGo/commit/c59e2bc)), closes [#173](https://github.com/Molunerfinn/PicGo/issues/173)
+
+
+### :bug: Bug Fixes
+
+* log-level filter bug ([4e02244](https://github.com/Molunerfinn/PicGo/commit/4e02244)), closes [#237](https://github.com/Molunerfinn/PicGo/issues/237)
+* log-level's reset value from 'all' -> ['all'] ([3c6b329](https://github.com/Molunerfinn/PicGo/commit/3c6b329)), closes [#240](https://github.com/Molunerfinn/PicGo/issues/240) [#237](https://github.com/Molunerfinn/PicGo/issues/237)
+* mini window hidden bug in linux ([466dbec](https://github.com/Molunerfinn/PicGo/commit/466dbec)), closes [#239](https://github.com/Molunerfinn/PicGo/issues/239)
+
+
+
 ## :tada: 2.1.1 (2019-04-16)
 
 
