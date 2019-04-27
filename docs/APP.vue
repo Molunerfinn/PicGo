@@ -37,7 +37,7 @@ export default {
       year: new Date().getFullYear(),
       itemList: [
         {
-          url: 'https://ws1.sinaimg.cn/large/8700af19ly1fma907llb5j20m30ed46a',
+          url: 'https://i.loli.net/2019/04/27/5cc4092e6c0da.png',
           title: '精致设计',
           desc: 'macOS系统下，支持拖拽至menubar图标实现上传。menubar app 窗口显示最新上传的5张图片以及剪贴板里的图片。点击图片自动将上传的链接复制到剪贴板。（Windows平台不支持）'
         },
@@ -47,17 +47,17 @@ export default {
           desc: 'Windows以及Linux系统下提供一个mini悬浮窗用于用户拖拽上传，节约你宝贵的桌面空间。'
         },
         {
-          url: 'https://ws1.sinaimg.cn/large/8700af19ly1fmd56zm2nej218g0p0teb',
+          url: 'https://i.loli.net/2019/04/27/5cc409538fee3.png',
           title: '便捷管理',
           desc: '查看你的上传记录，重复使用更方便。支持点击图片大图查看。支持删除图片（仅本地记录），让界面更加干净。'
         },
         {
-          url: 'https://ws1.sinaimg.cn/large/8700af19ly1fmd5ck9m0wj20lr0cxmzs',
+          url: 'https://i.loli.net/2019/04/27/5cc40980d51dd.png',
           title: '可选图床',
           desc: '默认支持微博图床、七牛图床、腾讯云COS、又拍云、GitHub、SM.MS、阿里云OSS、Imgur。方便不同图床的上传需求。2.0版本开始更可以自己开发插件实现其他图床的上传需求。'
         },
         {
-          url: 'https://ws1.sinaimg.cn/large/8700af19gy1fmayjwttnbj218g0p0q4e',
+          url: 'https://i.loli.net/2019/04/27/5cc409ab6d3cc.png',
           title: '多样链接',
           desc: '支持5种默认剪贴板链接格式，包括一种自定义格式，让你的文本编辑游刃有余。'
         },
