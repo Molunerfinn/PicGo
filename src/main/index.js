@@ -201,6 +201,8 @@ const createWindow = () => {
     transparent: true,
     vibrancy: 'ultra-dark',
     webPreferences: {
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
       backgroundThrottling: false
     }
   })
@@ -232,7 +234,9 @@ const createMiniWidow = () => {
     transparent: process.platform !== 'linux',
     icon: `${__static}/logo.png`,
     webPreferences: {
-      backgroundThrottling: false
+      backgroundThrottling: false,
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true
     }
   }
 
@@ -265,6 +269,8 @@ const createSettingWindow = () => {
     titleBarStyle: 'hidden',
     webPreferences: {
       backgroundThrottling: false,
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
       webSecurity: false
     }
   }

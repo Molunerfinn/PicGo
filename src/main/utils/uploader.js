@@ -23,6 +23,8 @@ const createRenameWindow = (win) => {
     resizable: false,
     vibrancy: 'ultra-dark',
     webPreferences: {
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
       backgroundThrottling: false
     }
   }

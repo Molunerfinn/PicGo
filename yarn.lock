@@ -3750,9 +3750,10 @@ electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.47:
   version "1.3.115"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.115.tgz#fdaa56c19b9f7386dbf29abc1cc632ff5468ff3b"
 
-electron@4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-4.0.2.tgz#b5e074c149841490825d0785aa2bc4f5e29bbea4"
+electron@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.npm.taobao.org/electron/download/electron-5.0.1.tgz#6bd7bf4d25e9bfce4cccd629d587fba5281f95cc"
+  integrity sha1-a9e/TSXpv85MzNYp1Yf7pSgflcw=
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
