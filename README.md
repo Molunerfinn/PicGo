@@ -97,6 +97,7 @@ npm run dev # 重新进入开发模式
 
 ```bash
 export ELECTRON_MIRROR="https://npm.taobao.org/mirrors/electron/"
+# 在 Windows 上，则可以使用 set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/ （无需引号）
 npm run build
 ```
 
