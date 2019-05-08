@@ -16,7 +16,7 @@
         | 支持插件系统，让PicGo更强大
     #container.container-fluid
       .row.ex-width
-        img.gallery.col-xs-10.col-xs-offset-1.col-md-offset-2.col-md-8(src="https://ws1.sinaimg.cn/large/8700af19gy1fmayjwttnbj218g0p0q4e")
+        img.gallery.col-xs-10.col-xs-offset-1.col-md-offset-2.col-md-8(src="https://i.loli.net/2019/05/08/5cd2dc258f927.png")
       .row.ex-width.display-list
         .display-list__item(v-for="(item, index) in itemList" :key="index" :class="{ 'o-item': index % 2 !== 0 }")
           .col-xs-10.col-xs-offset-1.col-md-7.col-md-offset-0
