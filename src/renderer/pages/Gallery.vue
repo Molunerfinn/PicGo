@@ -437,7 +437,7 @@ export default {
         transform scale(1.1)
       &-img
         width 100%
-        object-fit fill
+        object-fit cover
     &__tool-panel
       color #ddd
       i
