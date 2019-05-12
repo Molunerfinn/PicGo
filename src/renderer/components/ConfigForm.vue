@@ -9,7 +9,7 @@
     >
       <el-form-item
         v-for="(item, index) in configList"
-        :label="item.name"
+        :label="item.alias || item.name"
         :required="item.required"
         :prop="item.name"
         :key="item.name + index"
@@ -26,7 +26,7 @@
           :placeholder="item.message || item.name"
         >
           <el-option
-            v-for="(choice, idx) in item.choices"
+            v-for="choice in item.choices"
             :label="choice.name || choice.value || choice"
             :key="choice.name || choice.value || choice"
             :value="choice.value || choice"
@@ -40,7 +40,7 @@
           collapse-tags
         >
           <el-option
-            v-for="(choice, idx) in item.choices"
+            v-for="choice in item.choices"
             :label="choice.name || choice.value || choice"
             :key="choice.value || choice"
             :value="choice.value || choice"
