@@ -1,7 +1,18 @@
 'use strict'
 
 import Uploader from './utils/uploader.js'
-import { app, BrowserWindow, Tray, Menu, Notification, clipboard, ipcMain, globalShortcut, dialog } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  Tray,
+  Menu,
+  Notification,
+  clipboard,
+  ipcMain,
+  globalShortcut,
+  dialog,
+  systemPreferences
+} from 'electron'
 import db from '../datastore'
 import beforeOpen from './utils/beforeOpen'
 import pasteTemplate from './utils/pasteTemplate'
@@ -158,7 +169,11 @@ function createTray () {
   })
 
   tray.on('drag-enter', () => {
-    tray.setImage(`${__static}/upload.png`)
+    if (systemPreferences.isDarkMode()) {
+      tray.setImage(`${__static}/upload-dark.png`)
+    } else {
+      tray.setImage(`${__static}/upload.png`)
+    }
   })
 
   tray.on('drag-end', () => {
