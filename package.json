@@ -109,7 +109,8 @@
     "vue-gallery": "^1.2.4",
     "vue-lazyload": "^1.2.6",
     "vue-router": "^2.5.3",
-    "vuex": "^2.3.1"
+    "vuex": "^2.3.1",
+    "ws": "3.3.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.5.2",
