@@ -61,6 +61,8 @@ macOS用户请下载最新版本的`dmg`文件，windows用户请下载最新版
 
 **如果你是macOS用户，可以使用brew cask来安装PicGo: `brew cask install picgo`。感谢 @womeimingzi11 的贡献！**
 
+**如果你是Windows用户，还可以使用 [Scoop](https://scoop.sh/) 来安装PicGo: `scoop bucket add helbing https://github.com/helbing/scoop-bucket` & `scoop install picgo`。 感谢 @helbing 的贡献！**
+
 ## 应用截图
 
 ![](https://raw.githubusercontent.com/Molunerfinn/test/master/picgo/picgo-2.0.gif)
