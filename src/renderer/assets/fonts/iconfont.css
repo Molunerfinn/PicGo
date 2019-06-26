@@ -15,6 +15,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.el-icon-ui-gitee:before { content: "\e7ab"; }
+
 .el-icon-ui-github:before { content: "\e7ab"; }
 
 .el-icon-ui-weibo:before { content: "\e61c"; }

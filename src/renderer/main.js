@@ -27,7 +27,8 @@ Vue.prototype.$builtInPicBed = [
   'tcyun',
   'upyun',
   'aliyun',
-  'github'
+  'github',
+  'gitee'
 ]
 Vue.config.productionTip = false
 

@@ -56,6 +56,11 @@ export default new Router({
           name: 'github'
         },
         {
+          path: 'gitee',
+          component: require('@/pages/picbeds/Gitee').default,
+          name: 'gitee'
+        },
+        {
           path: 'smms',
           component: require('@/pages/picbeds/SMMS').default,
           name: 'smms'

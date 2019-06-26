@@ -27,6 +27,11 @@ let picBed = [
     visible: true
   },
   {
+    type: 'gitee',
+    name: '码云图床',
+    visible: true
+  },
+  {
     type: 'smms',
     name: 'SM.MS图床',
     visible: true
