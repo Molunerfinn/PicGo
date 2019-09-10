@@ -30,8 +30,7 @@
           <el-form-item
             label="指定存储路径"
             >
-            <el-select v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/" filterable
-                       allow-create default-first-option>
+            <el-select v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/" filterable>
               <el-option v-for="pathOption in presetPathData"
                          :key="pathOption.path"
                          :label="pathOption.name+'————'+pathOption.path"
