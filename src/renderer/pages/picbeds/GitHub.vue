@@ -32,7 +32,10 @@
             >
             <el-select v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/" filterable
                        allow-create default-first-option>
-              <el-option v-for="pathOption in pathOptions" :label="pathOption.label" :value="pathOption.value"></el-option>
+              <el-option v-for="pathOption in presetPathData"
+                         :key="pathOption.path"
+                         :label="pathOption.name+'————'+pathOption.path"
+                         :value="pathOption.path"></el-option>
             </el-select>
             <el-button round type="primary" @click="setPresetPath">配置路径</el-button>
           </el-form-item>
@@ -50,7 +53,8 @@
         </el-form>
       </el-col>
     </el-row>
-    <el-dialog title="配置预选存储路径" :visible.sync="presetPathVisible" :modal-append-to-body="false" width="60%">
+    <el-dialog title="配置预选存储路径" :visible.sync="presetPathVisible"
+               :modal-append-to-body="false" width="60%" :close-on-click-modal="false">
       <el-table style="width: 100%" :data="presetPathData" height="220px">
         <el-table-column
             label="备注名"
@@ -77,14 +81,14 @@
             label="操作"
             align="center">
           <template slot="header" slot-scope="scope">
-            <el-button size="mini" placeholder="输入关键字搜索"/>
+            <el-button type="success" size="mini" @click="addPath">添加</el-button>
           </template>
           <template slot-scope="scope">
             <div class="action">
               <a @click="handleConfirm(scope)" v-if="scope.row.edit">确定</a>
-              <span v-if="scope.row.edit" style="margin: 0 2px;color: gray;line-height: 20px">|</span>
-              <a @click="handleEdit(scope)">{{scope.row.edit? '取消': '编辑'}}</a>
-              <span style="margin: 0 2px;color: gray;line-height: 20px">|</span>
+              <span v-if="scope.row.edit" class="divider">|</span>
+              <a @click="handleEdit(scope)" v-if="!scope.row.add">{{scope.row.edit? '取消': '编辑'}}</a>
+              <span v-if="!isAdd" class="divider">|</span>
               <a @click="handleDelete(scope.row)">删除</a>
             </div>
           </template>
@@ -112,26 +116,21 @@ export default {
         customUrl: '',
         branch: ''
       },
-      pathOptions: [
-        {label: '测试', value: 'test'}
-      ],
+      pathOptions: [],
       presetPathVisible: false,
-      presetPathData: [
-        {name: '测试', path: '/test/test', edit: false},
-        {name: '测试', path: '/test/test', edit: false},
-        {name: '测试', path: '/test/test', edit: false}
-      ],
+      presetPathData: [],
       rule: {
         repo: [formRules.required('仓库名不能为空')],
         branch: [formRules.required('分支名不能为空')],
         token: [formRules.required('Token不能为空')]
       },
-      rowEditing: {}
+      rowEditing: {},
+      isAdd: false
     }
   },
   created () {
     const config = this.$db.get('picBed.github').value()
-    this.presetPathData = this.$db.get('picBed.presetPath').value()
+    this.presetPathData = this.$db.get('picBed.github_presetPath').value() || []
     if (config) {
       for (let i in config) {
         this.form[i] = config[i]
@@ -139,6 +138,9 @@ export default {
     }
   },
   methods: {
+    addPath () {
+      this.presetPathData.unshift({name: '', path: '/', edit: true, add: true})
+    },
     setPresetPath () {
       this.presetPathVisible = true
     },
@@ -161,6 +163,9 @@ export default {
       this.presetPathVisible = false
     },
     handleEdit (scope) {
+      this.presetPathData.map(v => {
+        v.edit = false
+      })
       scope.row.edit = !scope.row.edit
       this.rowEditing = JSON.parse(JSON.stringify(scope.row))
     },
@@ -169,17 +174,22 @@ export default {
     },
     handleConfirm (scope) {
       scope.row.edit = false
+      if (scope.row.add) {
+        delete scope.row.add
+      }
       scope.row.name = this.rowEditing.name
       scope.row.path = this.rowEditing.path
+      this.rowEditing = {}
     },
     confirmPresetPath () {
-      this.$db.set('picBed.presetPath', this.presetPathData).write()
+      this.$db.set('picBed.github_presetPath', this.presetPathData).write()
       const successNotification = new window.Notification('设置结果', {
         body: '设置成功'
       })
       successNotification.onclick = () => {
         return true
       }
+      this.close()
     }
   }
 }
@@ -195,6 +205,10 @@ export default {
       color: #409EFF
       cursor pointer
     }
+    .divider
+      margin 0 2px
+      color gray
+      line-height 20px
   .el-form
     label
       line-height 22px
