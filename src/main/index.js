@@ -22,6 +22,13 @@ import pkg from '../../package.json'
 import picgoCoreIPC from './utils/picgoCoreIPC'
 import fixPath from 'fix-path'
 import { getUploadFiles } from './utils/handleArgv'
+import bus from './utils/eventBus'
+import {
+  updateShortKeyFromVersion212
+} from './migrate/shortKeyUpdateHelper'
+import {
+  initShortKeyRegister
+} from './utils/shortKeyRegister'
 if (process.platform === 'darwin') {
   beforeOpen()
 }
@@ -553,10 +560,13 @@ app.on('ready', () => {
   }
   db.read().set('needReload', false).write()
   updateChecker()
-
-  globalShortcut.register(db.read().get('settings.shortKey.upload').value(), () => {
-    uploadClipboardFiles()
+  initEventCenter()
+  // 不需要阻塞
+  process.nextTick(() => {
+    updateShortKeyFromVersion212(db, db.read().get('settings.shortKey').value())
+    initShortKeyRegister(globalShortcut, db.read().get('settings.shortKey').value())
   })
+
   if (process.env.NODE_ENV !== 'development') {
     let files = getUploadFiles()
     if (files === null || files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
@@ -592,11 +602,21 @@ app.on('activate', () => {
 
 app.on('will-quit', () => {
   globalShortcut.unregisterAll()
+  bus.removeAllListeners()
 })
 
 app.setLoginItemSettings({
   openAtLogin: db.read().get('settings.autoStart').value() || false
 })
+
+function initEventCenter () {
+  const eventList = {
+    'picgo:upload': uploadClipboardFiles
+  }
+  for (let i in eventList) {
+    bus.on(i, eventList[i])
+  }
+}
 
 /**
  * Auto Updater

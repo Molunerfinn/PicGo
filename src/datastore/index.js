@@ -44,7 +44,7 @@ if (!db.has('settings.shortKey').value()) {
 
 // init generate clipboard image files
 let clipboardFiles = getClipboardFiles()
-if (!fs.pathExistsSync(path.join(STORE_PATH, 'windows.ps1'))) {
+if (!fs.pathExistsSync(path.join(STORE_PATH, 'windows10.ps1'))) {
   clipboardFiles.forEach(item => {
     fs.copyFileSync(item.origin, item.dest)
   })
@@ -67,7 +67,8 @@ function getClipboardFiles () {
   let files = [
     '/linux.sh',
     '/mac.applescript',
-    '/windows.ps1'
+    '/windows.ps1',
+    '/windows10.ps1'
   ]
 
   return files.map(item => {
