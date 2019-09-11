@@ -21,7 +21,7 @@ export default {
     }
   },
   created () {
-    if (this.type === this.$db.get('picBed.current').value()) {
+    if (this.type === this.$db.get('picBed.current')) {
       this.value = true
     }
   },

@@ -136,9 +136,9 @@ export default {
         return {
           label: item.name,
           type: 'radio',
-          checked: this.$db.read().get('picBed.current').value() === item.type,
+          checked: this.$db.get('picBed.current') === item.type,
           click () {
-            _this.$db.read().set('picBed.current', item.type).write()
+            _this.$db.set('picBed.current', item.type)
             _this.$electron.ipcRenderer.send('syncPicBed')
           }
         }

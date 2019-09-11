@@ -81,7 +81,7 @@ export default {
     }
   },
   created () {
-    const config = this.$db.get('picBed.upyun').value()
+    const config = this.$db.get('picBed.upyun')
     if (config) {
       for (let i in config) {
         this.form[i] = config[i]

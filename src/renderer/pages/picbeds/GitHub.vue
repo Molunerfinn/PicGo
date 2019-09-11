@@ -73,7 +73,7 @@ export default {
     }
   },
   created () {
-    const config = this.$db.get('picBed.github').value()
+    const config = this.$db.get('picBed.github')
     if (config) {
       for (let i in config) {
         this.form[i] = config[i]

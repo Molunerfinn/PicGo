@@ -78,7 +78,7 @@ export default {
     }
   },
   created () {
-    const config = this.$db.read().get('picBed.weibo').value()
+    const config = this.$db.get('picBed.weibo')
     if (config) {
       this.form.username = config.username
       this.form.password = config.password
@@ -91,13 +91,13 @@ export default {
     confirm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$db.read().set('picBed.weibo', {
+          this.$db.set('picBed.weibo', {
             username: this.form.username,
             password: this.form.password,
             quality: this.quality,
             cookie: this.form.cookie,
             chooseCookie: this.chooseCookie
-          }).write()
+          })
           const successNotification = new window.Notification('设置结果', {
             body: '设置成功'
           })

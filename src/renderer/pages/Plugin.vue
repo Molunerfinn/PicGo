@@ -183,7 +183,7 @@ export default {
     })
     this.getPluginList()
     this.getSearchResult = debounce(this.getSearchResult, 50)
-    this.needReload = this.$db.read().get('needReload').value()
+    this.needReload = this.$db.get('needReload')
   },
   methods: {
     buildContextMenu (plugin) {
@@ -192,7 +192,7 @@ export default {
         label: '启用插件',
         enabled: !plugin.enabled,
         click () {
-          _this.$db.read().set(`picgoPlugins.picgo-plugin-${plugin.name}`, true).write()
+          _this.$db.set(`picgoPlugins.picgo-plugin-${plugin.name}`, true)
           plugin.enabled = true
           _this.getPicBeds()
         }
@@ -200,7 +200,7 @@ export default {
         label: '禁用插件',
         enabled: plugin.enabled,
         click () {
-          _this.$db.read().set(`picgoPlugins.picgo-plugin-${plugin.name}`, false).write()
+          _this.$db.set(`picgoPlugins.picgo-plugin-${plugin.name}`, false)
           plugin.enabled = false
           _this.getPicBeds()
           if (plugin.config.transformer.name) {
@@ -238,7 +238,7 @@ export default {
 
       // handle transformer
       if (plugin.config.transformer.name) {
-        let currentTransformer = this.$db.read().get('picBed.transformer').value() || 'path'
+        let currentTransformer = this.$db.get('picBed.transformer') || 'path'
         let pluginTransformer = plugin.config.transformer.name
         const obj = {
           label: `${currentTransformer === pluginTransformer ? '禁用' : '启用'}transformer - ${plugin.config.transformer.name}`,
@@ -311,7 +311,7 @@ export default {
       this.$electron.remote.app.exit(0)
     },
     handleReload () {
-      this.$db.read().set('needReload', true).write()
+      this.$db.set('needReload', true)
       this.needReload = true
       const successNotification = new window.Notification('更新成功', {
         body: '请点击此通知重启应用以生效'
@@ -324,11 +324,11 @@ export default {
       this.searchText = ''
     },
     toggleTransformer (transformer) {
-      let currentTransformer = this.$db.read().get('picBed.transformer').value() || 'path'
+      let currentTransformer = this.$db.get('picBed.transformer') || 'path'
       if (currentTransformer === transformer) {
-        this.$db.read().set('picBed.transformer', 'path').write()
+        this.$db.set('picBed.transformer', 'path')
       } else {
-        this.$db.read().set('picBed.transformer', transformer).write()
+        this.$db.set('picBed.transformer', transformer)
       }
     },
     async handleConfirmConfig () {
@@ -336,13 +336,13 @@ export default {
       if (result !== false) {
         switch (this.currentType) {
           case 'plugin':
-            this.$db.read().set(`picgo-plugin-${this.configName}`, result).write()
+            this.$db.set(`picgo-plugin-${this.configName}`, result)
             break
           case 'uploader':
-            this.$db.read().set(`picBed.${this.configName}`, result).write()
+            this.$db.set(`picBed.${this.configName}`, result)
             break
           case 'transformer':
-            this.$db.read().set(`transformer.${this.configName}`, result).write()
+            this.$db.set(`transformer.${this.configName}`, result)
             break
         }
         const successNotification = new window.Notification('设置结果', {
@@ -393,15 +393,15 @@ export default {
     // restore Uploader & Transformer
     handleRestoreState (item, name) {
       if (item === 'uploader') {
-        const current = this.$db.read().get('picBed.current').value()
+        const current = this.$db.get('picBed.current')
         if (current === name) {
-          this.$db.read().set('picBed.current', 'smms').write()
+          this.$db.set('picBed.current', 'smms')
         }
       }
       if (item === 'transformer') {
-        const current = this.$db.read().get('picBed.transformer').value()
+        const current = this.$db.get('picBed.transformer')
         if (current === name) {
-          this.$db.read().set('picBed.transformer', 'path').write()
+          this.$db.set('picBed.transformer', 'path')
         }
       }
     },

@@ -19,7 +19,7 @@ const formatCustomLink = (customLink, item) => {
 
 export default (style, item) => {
   let url = item.url || item.imgUrl
-  const customLink = db.read().get('settings.customLink').value() || '$url'
+  const customLink = db.get('settings.customLink') || '$url'
   const tpl = {
     'markdown': `![](${url})`,
     'HTML': `<img src="${url}"/>`,

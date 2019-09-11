@@ -7,9 +7,9 @@ const release = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
 const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
 
 const checkVersion = async () => {
-  let showTip = db.read().get('settings.showUpdateTip').value()
+  let showTip = db.get('settings.showUpdateTip')
   if (showTip === undefined) {
-    db.read().set('settings.showUpdateTip', true).write()
+    db.set('settings.showUpdateTip', true)
     showTip = true
   }
   if (showTip) {
@@ -29,7 +29,7 @@ const checkVersion = async () => {
           if (res === 0) { // if selected yes
             shell.openExternal(downloadUrl)
           }
-          db.read().set('settings.showUpdateTip', !checkboxChecked).write()
+          db.set('settings.showUpdateTip', !checkboxChecked)
         })
       }
     } else {

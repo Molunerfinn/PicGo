@@ -290,7 +290,7 @@ export default {
         return callback()
       }
     }
-    let logLevel = this.$db.read().get('settings.logLevel').value()
+    let logLevel = this.$db.get('settings.logLevel')
     if (!Array.isArray(logLevel)) {
       if (logLevel && logLevel.length > 0) {
         logLevel = [logLevel]
@@ -300,13 +300,13 @@ export default {
     }
     return {
       form: {
-        updateHelper: this.$db.read().get('settings.showUpdateTip').value(),
+        updateHelper: this.$db.get('settings.showUpdateTip'),
         showPicBedList: [],
-        autoStart: this.$db.read().get('settings.autoStart').value() || false,
-        rename: this.$db.read().get('settings.rename').value() || false,
-        autoRename: this.$db.read().get('settings.autoRename').value() || false,
-        uploadNotification: this.$db.read().get('settings.uploadNotification').value() || false,
-        miniWindowOntop: this.$db.read().get('settings.miniWindowOntop').value() || false,
+        autoStart: this.$db.get('settings.autoStart') || false,
+        rename: this.$db.get('settings.rename') || false,
+        autoRename: this.$db.get('settings.autoRename') || false,
+        uploadNotification: this.$db.get('settings.uploadNotification') || false,
+        miniWindowOntop: this.$db.get('settings.miniWindowOntop') || false,
         logLevel
       },
       picBed: [],
@@ -316,12 +316,12 @@ export default {
       checkUpdateVisible: false,
       proxyVisible: false,
       customLink: {
-        value: this.$db.read().get('settings.customLink').value() || '$url'
+        value: this.$db.get('settings.customLink') || '$url'
       },
       shortKey: {
-        upload: this.$db.read().get('settings.shortKey.upload').value()
+        upload: this.$db.get('settings.shortKey.upload')
       },
-      proxy: this.$db.read().get('picBed.proxy').value() || undefined,
+      proxy: this.$db.get('picBed.proxy') || undefined,
       rules: {
         value: [
           { validator: customLinkRule, trigger: 'blur' }
@@ -368,22 +368,22 @@ export default {
     },
     cancelKeyBinding () {
       this.keyBindingVisible = false
-      this.shortKey = this.$db.read().get('settings.shortKey').value()
+      this.shortKey = this.$db.get('settings.shortKey')
     },
     confirmKeyBinding () {
-      const oldKey = this.$db.read().get('settings.shortKey').value()
-      this.$db.read().set('settings.shortKey', this.shortKey).write()
+      const oldKey = this.$db.get('settings.shortKey')
+      this.$db.set('settings.shortKey', this.shortKey)
       this.keyBindingVisible = false
       this.$electron.ipcRenderer.send('updateShortKey', oldKey)
     },
     cancelCustomLink () {
       this.customLinkVisible = false
-      this.customLink.value = this.$db.read().get('settings.customLink').value() || '$url'
+      this.customLink.value = this.$db.get('settings.customLink') || '$url'
     },
     confirmCustomLink () {
       this.$refs.customLink.validate((valid) => {
         if (valid) {
-          this.$db.read().set('settings.customLink', this.customLink.value).write()
+          this.$db.set('settings.customLink', this.customLink.value)
           this.customLinkVisible = false
           this.$electron.ipcRenderer.send('updateCustomLink')
         } else {
@@ -393,11 +393,11 @@ export default {
     },
     cancelProxy () {
       this.proxyVisible = false
-      this.proxy = this.$db.read().get('picBed.proxy').value() || undefined
+      this.proxy = this.$db.get('picBed.proxy') || undefined
     },
     confirmProxy () {
       this.proxyVisible = false
-      this.$db.read().set('picBed.proxy', this.proxy).write()
+      this.$db.set('picBed.proxy', this.proxy)
       const successNotification = new window.Notification('设置代理', {
         body: '设置成功'
       })
@@ -406,7 +406,7 @@ export default {
       }
     },
     updateHelperChange (val) {
-      this.$db.read().set('settings.showUpdateTip', val).write()
+      this.$db.set('settings.showUpdateTip', val)
     },
     handleShowPicBedListChange (val) {
       const list = this.picBed.map(item => {
@@ -417,18 +417,18 @@ export default {
         }
         return item
       })
-      this.$db.read().set('picBed.list', list).write()
+      this.$db.set('picBed.list', list)
       this.$electron.ipcRenderer.send('getPicBeds')
     },
     handleAutoStartChange (val) {
-      this.$db.read().set('settings.autoStart', val).write()
+      this.$db.set('settings.autoStart', val)
       this.$electron.ipcRenderer.send('autoStart', val)
     },
     handleRename (val) {
-      this.$db.read().set('settings.rename', val).write()
+      this.$db.set('settings.rename', val)
     },
     handleAutoRename (val) {
-      this.$db.read().set('settings.autoRename', val).write()
+      this.$db.set('settings.autoRename', val)
     },
     compareVersion2Update (current, latest) {
       const currentVersion = current.split('.').map(item => parseInt(item))
@@ -463,17 +463,17 @@ export default {
       this.checkUpdateVisible = false
     },
     handleUploadNotification (val) {
-      this.$db.read().set('settings.uploadNotification', val).write()
+      this.$db.set('settings.uploadNotification', val)
     },
     handleMiniWindowOntop (val) {
-      this.$db.read().set('settings.miniWindowOntop', val).write()
+      this.$db.set('settings.miniWindowOntop', val)
       this.$message('需要重启生效')
     },
     confirmLogLevelSetting () {
       if (this.form.logLevel.length === 0) {
         return this.$message.error('请选择日志记录等级')
       }
-      this.$db.read().set('settings.logLevel', this.form.logLevel).write()
+      this.$db.set('settings.logLevel', this.form.logLevel)
       const successNotification = new window.Notification('设置日志', {
         body: '设置成功'
       })
@@ -484,7 +484,7 @@ export default {
     },
     cancelLogLevelSetting () {
       this.logFileVisible = false
-      let logLevel = this.$db.read().get('settings.logLevel').value()
+      let logLevel = this.$db.get('settings.logLevel')
       if (!Array.isArray(logLevel)) {
         if (logLevel && logLevel.length > 0) {
           logLevel = [logLevel]

@@ -52,7 +52,7 @@ export default {
     async handleConfirm () {
       const result = await this.$refs.configForm.validate()
       if (result !== false) {
-        this.$db.read().set(`picBed.${this.type}`, result).write()
+        this.$db.set(`picBed.${this.type}`, result)
         const successNotification = new window.Notification('设置结果', {
           body: '设置成功'
         })
@@ -62,7 +62,7 @@ export default {
       }
     },
     setDefaultPicBed (type) {
-      this.$db.read().set('picBed.current', type).write()
+      this.$db.set('picBed.current', type)
       this.defaultPicBed = type
       const successNotification = new window.Notification('设置默认图床', {
         body: '设置成功'

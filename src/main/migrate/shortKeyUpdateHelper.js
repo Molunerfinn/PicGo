@@ -12,7 +12,7 @@ const updateShortKeyFromVersion212 = (db, shortKeyConfig) => {
     delete shortKeyConfig.upload
   }
   if (needUpgrade) {
-    db.read().set('settings.shortKey', shortKeyConfig).write()
+    db.set('settings.shortKey', shortKeyConfig)
     return shortKeyConfig
   } else {
     return false

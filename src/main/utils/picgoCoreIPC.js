@@ -1,6 +1,7 @@
 import path from 'path'
 import GuiApi from './guiApi'
 import { dialog, shell } from 'electron'
+import db from '../../datastore'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -187,6 +188,17 @@ const handleRemoveFiles = (ipcMain, CONFIG_PATH) => {
   })
 }
 
+const handlePluginShortKeyRegister = (plugin) => {
+  if (plugin.shortKeys && plugin.shortKeys.length > 0) {
+    let shortKeyConfig = db.get('settings.shortKey')
+    plugin.shortKeys.forEach(item => {
+      if (!shortKeyConfig[item.name]) {
+        shortKeyConfig[item.name] = item
+      }
+    })
+  }
+}
+
 export default (app, ipcMain) => {
   const STORE_PATH = app.getPath('userData')
   const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
@@ -197,4 +209,5 @@ export default (app, ipcMain) => {
   handleGetPicBedConfig(ipcMain, CONFIG_PATH)
   handlePluginActions(ipcMain, CONFIG_PATH)
   handleRemoveFiles(ipcMain, CONFIG_PATH)
+  handlePluginShortKeyRegister({})
 }

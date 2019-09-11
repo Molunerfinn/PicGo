@@ -185,7 +185,7 @@ export default {
       keyBindingVisible: false,
       customLinkVisible: false,
       customLink: {
-        value: db.read().get('customLink').value() || '$url'
+        value: db.get('customLink') || '$url'
       },
       rules: {
         value: [
@@ -194,7 +194,7 @@ export default {
       },
       os: '',
       shortKey: {
-        upload: db.read().get('shortKey.upload').value()
+        upload: db.get('shortKey.upload')
       },
       picBed: [],
       // for showInputBox
@@ -279,22 +279,22 @@ export default {
     },
     cancelKeyBinding () {
       this.keyBindingVisible = false
-      this.shortKey = db.read().get('shortKey').value()
+      this.shortKey = db.get('shortKey')
     },
     confirmKeyBinding () {
-      const oldKey = db.read().get('shortKey').value()
-      db.read().set('shortKey', this.shortKey).write()
+      const oldKey = db.get('shortKey')
+      db.set('shortKey', this.shortKey)
       this.keyBindingVisible = false
       this.$electron.ipcRenderer.send('updateShortKey', oldKey)
     },
     cancelCustomLink () {
       this.customLinkVisible = false
-      this.customLink.value = db.read().get('customLink').value() || '$url'
+      this.customLink.value = db.get('customLink') || '$url'
     },
     confirmCustomLink () {
       this.$refs.customLink.validate((valid) => {
         if (valid) {
-          db.read().set('customLink', this.customLink.value).write()
+          db.set('customLink', this.customLink.value)
           this.customLinkVisible = false
           this.$electron.ipcRenderer.send('updateCustomLink')
         } else {

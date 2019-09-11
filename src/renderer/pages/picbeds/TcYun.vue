@@ -105,7 +105,7 @@ export default {
     }
   },
   created () {
-    const config = this.$db.get('picBed.tcyun').value()
+    const config = this.$db.get('picBed.tcyun')
     if (config) {
       for (let i in config) {
         this.form[i] = config[i]

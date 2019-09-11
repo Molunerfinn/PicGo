@@ -90,7 +90,7 @@ export default {
     }
   },
   created () {
-    const config = this.$db.get('picBed.qiniu').value()
+    const config = this.$db.get('picBed.qiniu')
     if (config) {
       for (let i in config) {
         this.form[i] = config[i]

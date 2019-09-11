@@ -69,9 +69,9 @@ function createContextMenu () {
     return {
       label: item.name,
       type: 'radio',
-      checked: db.read().get('picBed.current').value() === item.type,
+      checked: db.get('picBed.current') === item.type,
       click () {
-        db.read().set('picBed.current', item.type).write()
+        db.set('picBed.current', item.type)
         if (settingWindow) {
           settingWindow.webContents.send('syncPicBed')
         }
@@ -112,10 +112,10 @@ function createContextMenu () {
     {
       label: '打开更新助手',
       type: 'checkbox',
-      checked: db.get('settings.showUpdateTip').value(),
+      checked: db.get('settings.showUpdateTip'),
       click () {
-        const value = db.read().get('settings.showUpdateTip').value()
-        db.read().set('settings.showUpdateTip', !value).write()
+        const value = db.get('settings.showUpdateTip')
+        db.set('settings.showUpdateTip', !value)
       }
     },
     {
@@ -189,7 +189,7 @@ function createTray () {
   })
 
   tray.on('drop-files', async (event, files) => {
-    const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
+    const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
     const imgs = await new Uploader(files, window.webContents).upload()
     if (imgs !== false) {
       for (let i in imgs) {
@@ -202,7 +202,7 @@ function createTray () {
         setTimeout(() => {
           notification.show()
         }, i * 100)
-        db.read().get('uploaded').insert(imgs[i]).write()
+        db.insert('uploaded', imgs[i])
       }
       window.webContents.send('dragFiles', imgs)
     }
@@ -263,7 +263,7 @@ const createMiniWidow = () => {
     }
   }
 
-  if (db.read().get('settings.miniWindowOntop').value()) {
+  if (db.get('settings.miniWindowOntop')) {
     obj.alwaysOnTop = true
   }
 
@@ -370,7 +370,7 @@ const uploadClipboardFiles = async () => {
   let img = await new Uploader(undefined, win.webContents).upload()
   if (img !== false) {
     if (img.length > 0) {
-      const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
+      const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       clipboard.writeText(pasteTemplate(pasteStyle, img[0]))
       const notification = new Notification({
         title: '上传成功',
@@ -378,7 +378,7 @@ const uploadClipboardFiles = async () => {
         icon: img[0].imgUrl
       })
       notification.show()
-      db.read().get('uploaded').insert(img[0]).write()
+      db.insert('uploaded', img[0])
       window.webContents.send('clipboardFiles', [])
       window.webContents.send('uploadFiles', img)
       if (settingWindow) {
@@ -398,7 +398,7 @@ const uploadChoosedFiles = async (webContents, files) => {
   const input = files.map(item => item.path)
   const imgs = await new Uploader(input, webContents).upload()
   if (imgs !== false) {
-    const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
+    const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
     let pasteText = ''
     for (let i in imgs) {
       pasteText += pasteTemplate(pasteStyle, imgs[i]) + '\r\n'
@@ -410,7 +410,7 @@ const uploadChoosedFiles = async (webContents, files) => {
       setTimeout(() => {
         notification.show()
       }, i * 100)
-      db.read().get('uploaded').insert(imgs[i]).write()
+      db.insert('uploaded', imgs[i])
     }
     clipboard.writeText(pasteText)
     window.webContents.send('uploadFiles', imgs)
@@ -426,7 +426,7 @@ picgoCoreIPC(app, ipcMain)
 ipcMain.on('uploadClipboardFiles', async (evt, file) => {
   const img = await new Uploader(undefined, window.webContents).upload()
   if (img !== false) {
-    const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
+    const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
     clipboard.writeText(pasteTemplate(pasteStyle, img[0]))
     const notification = new Notification({
       title: '上传成功',
@@ -435,7 +435,7 @@ ipcMain.on('uploadClipboardFiles', async (evt, file) => {
       icon: img[0].imgUrl
     })
     notification.show()
-    db.read().get('uploaded').insert(img[0]).write()
+    db.insert('uploaded', img[0])
     window.webContents.send('clipboardFiles', [])
     if (settingWindow) {
       settingWindow.webContents.send('updateGallery')
@@ -558,13 +558,13 @@ app.on('ready', () => {
   if (process.platform === 'darwin' || process.platform === 'win32') {
     createTray()
   }
-  db.read().set('needReload', false).write()
+  db.set('needReload', false)
   updateChecker()
   initEventCenter()
   // 不需要阻塞
   process.nextTick(() => {
-    updateShortKeyFromVersion212(db, db.read().get('settings.shortKey').value())
-    initShortKeyRegister(globalShortcut, db.read().get('settings.shortKey').value())
+    updateShortKeyFromVersion212(db, db.get('settings.shortKey'))
+    initShortKeyRegister(globalShortcut, db.get('settings.shortKey'))
   })
 
   if (process.env.NODE_ENV !== 'development') {
@@ -606,7 +606,7 @@ app.on('will-quit', () => {
 })
 
 app.setLoginItemSettings({
-  openAtLogin: db.read().get('settings.autoStart').value() || false
+  openAtLogin: db.get('settings.autoStart') || false
 })
 
 function initEventCenter () {

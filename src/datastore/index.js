@@ -21,62 +21,47 @@ if (process.type !== 'renderer') {
   }
 }
 
-const adapter = new FileSync(path.join(STORE_PATH, '/data.json'))
+class DB {
+  constructor () {
+    const adapter = new FileSync(path.join(STORE_PATH, '/data.json'))
 
-const db = Datastore(adapter)
-db._.mixin(LodashId)
+    this.db = Datastore(adapter)
+    this.db._.mixin(LodashId)
 
-if (!db.has('uploaded').value()) {
-  db.set('uploaded', []).write()
-}
+    if (!this.db.has('uploaded').value()) {
+      this.db.set('uploaded', []).write()
+    }
 
-if (!db.has('picBed').value()) {
-  db.set('picBed', {
-    current: 'weibo'
-  }).write()
-}
+    if (!this.db.has('picBed').value()) {
+      this.db.set('picBed', {
+        current: 'weibo'
+      }).write()
+    }
 
-if (!db.has('settings.shortKey').value()) {
-  db.set('settings.shortKey', {
-    upload: 'CommandOrControl+Shift+P'
-  }).write()
-}
-
-// init generate clipboard image files
-let clipboardFiles = getClipboardFiles()
-if (!fs.pathExistsSync(path.join(STORE_PATH, 'windows10.ps1'))) {
-  clipboardFiles.forEach(item => {
-    fs.copyFileSync(item.origin, item.dest)
-  })
-} else {
-  clipboardFiles.forEach(item => {
-    diffFilesAndUpdate(item.origin, item.dest)
-  })
-}
-
-function diffFilesAndUpdate (filePath1, filePath2) {
-  let file1 = fs.readFileSync(filePath1)
-  let file2 = fs.readFileSync(filePath2)
-
-  if (!file1.equals(file2)) {
-    fs.copyFileSync(filePath1, filePath2)
+    if (!this.db.has('settings.shortKey').value()) {
+      this.db.set('settings.shortKey[picgo:upload]', {
+        enable: true,
+        key: 'CommandOrControl+Shift+P',
+        name: 'picgo:upload',
+        label: '快捷上传'
+      }).write()
+    }
+  }
+  read () {
+    return this.db.read()
+  }
+  get (key = '') {
+    return this.read().get(key).value()
+  }
+  set (key, value) {
+    return this.read().set(key, value).write()
+  }
+  has (key) {
+    return this.read().has(key).value()
+  }
+  insert (key, value) {
+    return this.read().get(key).insert(value).write()
   }
 }
 
-function getClipboardFiles () {
-  let files = [
-    '/linux.sh',
-    '/mac.applescript',
-    '/windows.ps1',
-    '/windows10.ps1'
-  ]
-
-  return files.map(item => {
-    return {
-      origin: path.join(__static, item),
-      dest: path.join(STORE_PATH, item)
-    }
-  })
-}
-
-export default db
+export default new DB()

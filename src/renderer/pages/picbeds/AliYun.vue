@@ -82,7 +82,7 @@ export default {
     }
   },
   created () {
-    const config = this.$db.get('picBed.aliyun').value()
+    const config = this.$db.get('picBed.aliyun')
     if (config) {
       for (let i in config) {
         this.form[i] = config[i]

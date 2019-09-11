@@ -53,7 +53,7 @@
       this.getData()
       this.$electron.ipcRenderer.on('dragFiles', (event, files) => {
         files.forEach(item => {
-          this.$db.read().get('uploaded').insert(item).write()
+          this.$db.insert('uploaded', item)
         })
         this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
       })
@@ -83,7 +83,7 @@
         this.notification.body = item.imgUrl
         this.notification.icon = item.imgUrl
         const myNotification = new window.Notification(this.notification.title, this.notification)
-        const pasteStyle = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
+        const pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
         this.$electron.clipboard.writeText(pasteTemplate(pasteStyle, item))
         myNotification.onclick = () => {
           return true

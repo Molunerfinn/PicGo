@@ -60,7 +60,7 @@ class GuiApi {
   async upload (input) {
     const imgs = await new Uploader(input, this[WEBCONTENTS], this[PICGO]).upload()
     if (imgs !== false) {
-      const pasteStyle = db.read().get('settings.pasteStyle').value() || 'markdown'
+      const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       let pasteText = ''
       for (let i in imgs) {
         pasteText += pasteTemplate(pasteStyle, imgs[i]) + '\r\n'
@@ -72,7 +72,7 @@ class GuiApi {
         setTimeout(() => {
           notification.show()
         }, i * 100)
-        db.read().get('uploaded').insert(imgs[i]).write()
+        db.insert('uploaded', imgs[i])
       }
       clipboard.writeText(pasteText)
       this[WEBCONTENTS].send('uploadFiles', imgs)

@@ -43,7 +43,7 @@ let picBed = [
   }
 ]
 
-let picBedFromDB = db.read().get('picBed.list').value() || []
+let picBedFromDB = db.get('picBed.list') || []
 let oldLength = picBedFromDB.length
 let newLength = picBed.length
 

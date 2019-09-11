@@ -71,7 +71,7 @@ export default {
     }
   },
   created () {
-    const shortKeyConfig = this.$db.read().get('settings.shortKey').value()
+    const shortKeyConfig = this.$db.get('settings.shortKey')
     this.list = Object.keys(shortKeyConfig).map(item => shortKeyConfig[item])
   },
   methods: {
@@ -82,8 +82,8 @@ export default {
     toggleEnable (item) {
       const status = !item.enable
       item.enable = status
-      this.$db.set(`settings.shortKey.${item.name}.enable`, status).write()
-      this.$electron.ipcRenderer.send('updateShortKeyConfig', item)
+      this.$db.set(`settings.shortKey.${item.name}.enable`, status)
+      this.$electron.ipcRenderer.send('updateShortKey', item)
     }
   }
 }

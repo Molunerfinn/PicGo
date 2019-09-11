@@ -130,17 +130,16 @@ export default {
       this.$electron.ipcRenderer.send('uploadChoosedFiles', sendFiles)
     },
     getPasteStyle () {
-      this.pasteStyle = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
+      this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
     },
     handlePasteStyleChange (val) {
-      this.$db.read().set('settings.pasteStyle', val)
-        .write()
+      this.$db.set('settings.pasteStyle', val)
     },
     uploadClipboardFiles () {
       this.$electron.ipcRenderer.send('uploadClipboardFilesFromUploadPage')
     },
     getDefaultPicBed () {
-      const current = this.$db.read().get('picBed.current').value()
+      const current = this.$db.get('picBed.current')
       this.picBed.forEach(item => {
         if (item.type === current) {
           this.picBedName = item.name
@@ -161,9 +160,9 @@ export default {
         return {
           label: item.name,
           type: 'radio',
-          checked: this.$db.read().get('picBed.current').value() === item.type,
+          checked: this.$db.get('picBed.current') === item.type,
           click () {
-            _this.$db.read().set('picBed.current', item.type).write()
+            _this.$db.set('picBed.current', item.type)
             _this.$electron.ipcRenderer.send('syncPicBed')
           }
         }

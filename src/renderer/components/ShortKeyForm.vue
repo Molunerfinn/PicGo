@@ -18,7 +18,7 @@ export default {
     }
   },
   created () {
-    this.$db.read().get('settings.shortKey')
+    this.$db.get('settings.shortKey')
   },
   data () {
     return {

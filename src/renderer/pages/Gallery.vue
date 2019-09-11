@@ -213,7 +213,7 @@ export default {
       this.changeZIndexForGallery(false)
     },
     copy (item) {
-      const style = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
+      const style = this.$db.get('settings.pasteStyle') || 'markdown'
       const copyLink = pasteStyle(style, item)
       const obj = {
         title: '复制链接成功',
@@ -232,7 +232,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        const file = this.$db.read().get('uploaded').getById(id).value()
+        const file = this.$db.get('uploaded').getById(id)
         this.$db.read().get('uploaded').removeById(id).write()
         this.$electron.ipcRenderer.send('removeFiles', [file])
         const obj = {
@@ -319,7 +319,7 @@ export default {
     multiCopy () {
       if (Object.values(this.choosedList).some(item => item)) {
         let copyString = ''
-        const style = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
+        const style = this.$db.get('settings.pasteStyle') || 'markdown'
         // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
         Object.keys(this.choosedList).forEach(key => {
           if (this.choosedList[key]) {
@@ -343,11 +343,10 @@ export default {
       this.handleBarActive = !this.handleBarActive
     },
     getPasteStyle () {
-      this.pasteStyle = this.$db.read().get('settings.pasteStyle').value() || 'markdown'
+      this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
     },
     handlePasteStyleChange (val) {
-      this.$db.read().set('settings.pasteStyle', val)
-        .write()
+      this.$db.set('settings.pasteStyle', val)
       this.pasteStyle = val
     }
   },

@@ -83,7 +83,7 @@ export default {
       deep: true,
       handler (val) {
         this.ruleForm = Object.assign({}, {})
-        const config = this.$db.read().get(`picBed.${this.id}`).value()
+        const config = this.$db.get(`picBed.${this.id}`)
         if (val.length > 0) {
           this.configList = cloneDeep(val).map(item => {
             let defaultValue = item.default !== undefined

@@ -9,7 +9,7 @@ const getPicBeds = (app) => {
   const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
   const picgo = new PicGo(CONFIG_PATH)
   const picBedTypes = picgo.helper.uploader.getIdList()
-  const picBedFromDB = db.read().get('picBed.list').value() || []
+  const picBedFromDB = db.get('picBed.list') || []
   const picBeds = picBedTypes.map(item => {
     const visible = picBedFromDB.find(i => i.type === item) // object or undefined
     return {
