@@ -92,6 +92,11 @@ export default new Router({
           path: 'plugin',
           component: require('@/pages/Plugin').default,
           name: 'plugin'
+        },
+        {
+          path: 'shortcut-page',
+          component: require('@/pages/ShortCutPage').default,
+          name: 'shortcut-page'
         }
       ]
     },

@@ -11,6 +11,16 @@ const shortKeyHandler = (name) => {
   }
 }
 
+const shortKeyUpdater = (globalShortcut, item) => {
+  if (item.enable === false) {
+    globalShortcut.unregister(item.key)
+  } else {
+    globalShortcut.register(item.key, () => {
+      shortKeyHandler(item.name)
+    })
+  }
+}
+
 // 初始化阶段的注册
 const initShortKeyRegister = (globalShortcut, shortKeys) => {
   let errorList = []
@@ -28,5 +38,6 @@ const initShortKeyRegister = (globalShortcut, shortKeys) => {
 }
 
 export {
+  shortKeyUpdater,
   initShortKeyRegister
 }

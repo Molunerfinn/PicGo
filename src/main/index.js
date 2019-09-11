@@ -27,6 +27,7 @@ import {
   updateShortKeyFromVersion212
 } from './migrate/shortKeyUpdateHelper'
 import {
+  shortKeyUpdater,
   initShortKeyRegister
 } from './utils/shortKeyRegister'
 if (process.platform === 'darwin') {
@@ -451,13 +452,8 @@ ipcMain.on('uploadChoosedFiles', async (evt, files) => {
   return uploadChoosedFiles(evt.sender, files)
 })
 
-ipcMain.on('updateShortKey', (evt, oldKey) => {
-  globalShortcut.unregisterAll()
-  for (let key in oldKey) {
-    globalShortcut.register(db.read().get('settings.shortKey').value()[key], () => {
-      return shortKeyHash[key]()
-    })
-  }
+ipcMain.on('updateShortKey', (evt, item) => {
+  shortKeyUpdater(globalShortcut, item)
   const notification = new Notification({
     title: '操作成功',
     body: '你的快捷键已经修改成功'
@@ -510,9 +506,13 @@ ipcMain.on('getPicBeds', (evt) => {
   evt.returnValue = picBeds
 })
 
-const shortKeyHash = {
-  upload: uploadClipboardFiles
-}
+ipcMain.on('updateShortKey', (evt, val) => {
+  // console.log(val)
+})
+
+// const shortKeyHash = {
+//   upload: uploadClipboardFiles
+// }
 
 const gotTheLock = app.requestSingleInstanceLock()
 

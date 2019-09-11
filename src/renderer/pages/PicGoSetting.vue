@@ -22,9 +22,9 @@
             <el-button type="primary" round size="mini" @click="openLogSetting">点击设置</el-button>
           </el-form-item>
           <el-form-item
-            label="修改上传快捷键"
+            label="修改快捷键"
           >
-            <el-button type="primary" round size="mini" @click="keyBindingVisible = true">点击设置</el-button>
+            <el-button type="primary" round size="mini" @click="goShortCutPage">点击设置</el-button>
           </el-form-item>
           <el-form-item
             label="自定义链接格式"
@@ -516,6 +516,9 @@ export default {
     },
     goConfigPage () {
       this.$electron.remote.shell.openExternal('https://picgo.github.io/PicGo-Doc/zh/guide/config.html#picgo设置')
+    },
+    goShortCutPage () {
+      this.$router.push('shortcut-page')
     }
   },
   beforeDestroy () {
