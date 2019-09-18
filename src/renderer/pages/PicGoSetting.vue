@@ -370,12 +370,6 @@ export default {
       this.keyBindingVisible = false
       this.shortKey = this.$db.get('settings.shortKey')
     },
-    confirmKeyBinding () {
-      const oldKey = this.$db.get('settings.shortKey')
-      this.$db.set('settings.shortKey', this.shortKey)
-      this.keyBindingVisible = false
-      this.$electron.ipcRenderer.send('updateShortKey', oldKey)
-    },
     cancelCustomLink () {
       this.customLinkVisible = false
       this.customLink.value = this.$db.get('settings.customLink') || '$url'

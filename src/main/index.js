@@ -452,8 +452,8 @@ ipcMain.on('uploadChoosedFiles', async (evt, files) => {
   return uploadChoosedFiles(evt.sender, files)
 })
 
-ipcMain.on('updateShortKey', (evt, item) => {
-  shortKeyUpdater(globalShortcut, item)
+ipcMain.on('updateShortKey', (evt, item, oldKey) => {
+  shortKeyUpdater(globalShortcut, item, oldKey)
   const notification = new Notification({
     title: '操作成功',
     body: '你的快捷键已经修改成功'

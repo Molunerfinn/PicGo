@@ -11,7 +11,17 @@ const shortKeyHandler = (name) => {
   }
 }
 
-const shortKeyUpdater = (globalShortcut, item) => {
+/**
+ * 用于更新快捷键绑定
+ * @param {globalShortcut} globalShortcut
+ * @param {keyObject} item
+ * @param {string} oldKey
+ */
+const shortKeyUpdater = (globalShortcut, item, oldKey) => {
+  // 如果提供了旧key，则解绑
+  if (oldKey) {
+    globalShortcut.unregister(oldKey)
+  }
   if (item.enable === false) {
     globalShortcut.unregister(item.key)
   } else {

@@ -17,6 +17,7 @@
             </template>
           </el-table-column>
           <el-table-column
+            width="180px"
             label="快捷键绑定"
             prop="key"
           >
@@ -47,11 +48,16 @@
               <el-button
                 @click="toggleEnable(scope.row)"
                 size="mini"
+                :class="{
+                  disabled: scope.row.enable
+                }"
                 type="text">
                 {{ scope.row.enable ? '禁用' : '启用' }}
               </el-button>
               <el-button
+                class="edit"
                 size="mini"
+                @click="openKeyBindingDialog(scope.row.name)"
                 type="text">
                 编辑
               </el-button>
@@ -60,14 +66,43 @@
         </el-table>
       </el-col>
     </el-row>
+    <el-dialog
+      title="修改上传快捷键"
+      :visible.sync="keyBindingVisible"
+      :modal-append-to-body="false"
+    >
+      <el-form
+        label-position="top"
+        label-width="80px"
+      >
+        <el-form-item
+          label="快捷上传"
+        >
+          <el-input 
+            class="align-center"
+            @keydown.native.prevent="keyDetect($event)"
+            v-model="shortKey"
+            :autofocus="true"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="cancelKeyBinding" round>取消</el-button>
+        <el-button type="primary" @click="confirmKeyBinding" round>确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
+import keyDetect from 'utils/key-binding'
 export default {
   name: 'shortcut-page',
   data () {
     return {
-      list: []
+      list: [],
+      keyBindingVisible: false,
+      shortKeyName: '',
+      shortKey: ''
     }
   },
   created () {
@@ -84,12 +119,40 @@ export default {
       item.enable = status
       this.$db.set(`settings.shortKey.${item.name}.enable`, status)
       this.$electron.ipcRenderer.send('updateShortKey', item)
+    },
+    keyDetect (event) {
+      this.shortKey = keyDetect(event).join('+')
+    },
+    openKeyBindingDialog (name) {
+      this.shortKeyName = name
+      this.shortKey = this.$db.get(`settings.shortKey.${name}.key`)
+      this.keyBindingVisible = true
+    },
+    cancelKeyBinding () {
+      this.keyBindingVisible = false
+      this.shortKey = this.$db.get(`settings.shortKey.${this.shortKeyName}.key`)
+    },
+    confirmKeyBinding () {
+      const oldKey = this.$db.get(`settings.shortKey.${this.shortKeyName}.key`)
+      this.$db.set(`settings.shortKey.${this.shortKeyName}.key`, this.shortKey)
+      const newKey = this.$db.get(`settings.shortKey.${this.shortKeyName}`)
+      this.$electron.ipcRenderer.send('updateShortKey', newKey, oldKey)
+      this.keyBindingVisible = false
     }
   }
 }
 </script>
 <style lang='stylus'>
 #shortcut-page
+  .el-dialog__body
+    padding 10px 20px
+    .el-form-item
+      margin-bottom 0
+  .el-button
+    &.disabled
+      color: #F56C6C
+    &.edit
+      color: #67C23A
   .el-table
     background-color: transparent
     color #ddd
