@@ -57,7 +57,7 @@
               <el-button
                 class="edit"
                 size="mini"
-                @click="openKeyBindingDialog(scope.row.name)"
+                @click="openKeyBindingDialog(scope.row.name, scope.$index)"
                 type="text">
                 编辑
               </el-button>
@@ -102,12 +102,18 @@ export default {
       list: [],
       keyBindingVisible: false,
       shortKeyName: '',
-      shortKey: ''
+      shortKey: '',
+      currentIndex: 0
     }
   },
   created () {
     const shortKeyConfig = this.$db.get('settings.shortKey')
     this.list = Object.keys(shortKeyConfig).map(item => shortKeyConfig[item])
+  },
+  watch: {
+    keyBindingVisible (val) {
+      this.$electron.ipcRenderer.send('toggleShortKeyModifiedMode', val)
+    }
   },
   methods: {
     calcOrigin (item) {
@@ -123,9 +129,10 @@ export default {
     keyDetect (event) {
       this.shortKey = keyDetect(event).join('+')
     },
-    openKeyBindingDialog (name) {
+    openKeyBindingDialog (name, index) {
       this.shortKeyName = name
       this.shortKey = this.$db.get(`settings.shortKey.${name}.key`)
+      this.currentIndex = index
       this.keyBindingVisible = true
     },
     cancelKeyBinding () {
@@ -137,8 +144,12 @@ export default {
       this.$db.set(`settings.shortKey.${this.shortKeyName}.key`, this.shortKey)
       const newKey = this.$db.get(`settings.shortKey.${this.shortKeyName}`)
       this.$electron.ipcRenderer.send('updateShortKey', newKey, oldKey)
+      this.list[this.currentIndex].key = this.shortKey
       this.keyBindingVisible = false
     }
+  },
+  beforeDestroy () {
+    this.$electron.ipcRenderer.send('toggleShortKeyModifiedMode', false)
   }
 }
 </script>

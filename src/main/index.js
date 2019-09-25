@@ -29,7 +29,7 @@ import {
 import {
   shortKeyUpdater,
   initShortKeyRegister
-} from './utils/shortKeyRegister'
+} from './utils/shortKeyHandler'
 if (process.platform === 'darwin') {
   beforeOpen()
 }
@@ -309,9 +309,12 @@ const createSettingWindow = () => {
   settingWindow.loadURL(settingWinURL)
 
   settingWindow.on('closed', () => {
+    bus.emit('toggleShortKeyModifiedMode', false)
     settingWindow = null
     if (process.platform === 'linux') {
-      app.quit()
+      process.nextTick(() => {
+        app.quit()
+      })
     }
   })
   createMenu()
@@ -506,8 +509,8 @@ ipcMain.on('getPicBeds', (evt) => {
   evt.returnValue = picBeds
 })
 
-ipcMain.on('updateShortKey', (evt, val) => {
-  // console.log(val)
+ipcMain.on('toggleShortKeyModifiedMode', (evt, val) => {
+  bus.emit('toggleShortKeyModifiedMode', val)
 })
 
 // const shortKeyHash = {

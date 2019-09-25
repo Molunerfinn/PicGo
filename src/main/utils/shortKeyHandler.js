@@ -1,9 +1,16 @@
-import bus from '../utils/eventBus'
+import bus from './eventBus'
+let isInModifiedMode = false // 修改快捷键模式
+bus.on('toggleShortKeyModifiedMode', flag => {
+  isInModifiedMode = flag
+})
 /**
  *
  * @param {string} name
  */
 const shortKeyHandler = (name) => {
+  if (isInModifiedMode) {
+    return
+  }
   if (name.includes('picgo:')) {
     bus.emit(name)
   } else if (name.includes('picgo-plugin-')) {

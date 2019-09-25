@@ -92,29 +92,6 @@
       </el-row>
     </el-dialog>
     <el-dialog
-      title="修改快捷键"
-      :visible.sync="keyBindingVisible"
-    >
-      <el-form
-        label-width="80px"
-      >
-        <el-form-item
-          label="快捷上传"
-        >
-          <el-input 
-            class="align-center"
-            @keydown.native.prevent="keyDetect('upload', $event)"
-            v-model="shortKey.upload"
-            :autofocus="true"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer">
-        <el-button @click="cancelKeyBinding">取消</el-button>
-        <el-button type="primary" @click="confirmKeyBinding">确定</el-button>
-      </span>
-    </el-dialog>
-    <el-dialog
       title="自定义链接格式"
       :visible.sync="customLinkVisible"
     >
