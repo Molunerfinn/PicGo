@@ -141,7 +141,7 @@
           <div class="custom-title">
             用占位符 <b>$fileName</b> 来表示文件名的位置
           </div>
-          <el-input 
+          <el-input
             class="align-center"
             v-model="customLink.value"
             :autofocus="true"
@@ -171,7 +171,7 @@
         <el-form-item
           label="代理地址"
         >
-          <el-input 
+          <el-input
             v-model="proxy"
             :autofocus="true"
             placeholder="例如：http://127.0.0.1:1080"
@@ -241,32 +241,224 @@
     </el-dialog>
   </div>
 </template>
-<script>
-import keyDetect from 'utils/key-binding'
+<script lang="ts">
+import keyDetect from '@/utils/key-binding'
 import pkg from 'root/package.json'
 import path from 'path'
+import {
+  ipcRenderer,
+  remote
+} from 'electron'
+import { Component, Vue } from 'vue-property-decorator'
+import db from '#/datastore'
 const release = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
 const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
-export default {
-  name: 'picgo-setting',
-  computed: {
-    needUpdate () {
-      if (this.latestVersion) {
-        return this.compareVersion2Update(this.version, this.latestVersion)
+const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
+  if (!/\$url/.test(value)) {
+    return callback(new Error('必须含有$url'))
+  } else {
+    return callback()
+  }
+}
+let logLevel = db.get('settings.logLevel')
+if (!Array.isArray(logLevel)) {
+  if (logLevel && logLevel.length > 0) {
+    logLevel = [logLevel]
+  } else {
+    logLevel = ['all']
+  }
+}
+
+@Component({
+  name: 'picgo-setting'
+})
+export default class extends Vue {
+  form: ISettingForm = {
+    updateHelper: db.get('settings.showUpdateTip'),
+    showPicBedList: [],
+    autoStart: db.get('settings.autoStart') || false,
+    rename: db.get('settings.rename') || false,
+    autoRename: db.get('settings.autoRename') || false,
+    uploadNotification: db.get('settings.uploadNotification') || false,
+    miniWindowOntop: db.get('settings.miniWindowOntop') || false,
+    logLevel
+  }
+  picBed: PicBedType[] = []
+  logFileVisible = false
+  keyBindingVisible = false
+  customLinkVisible = false
+  checkUpdateVisible = false
+  proxyVisible = false
+  customLink = {
+    value: db.get('settings.customLink') || '$url'
+  }
+  shortKey: ShortKeyMap = {
+    upload: db.get('settings.shortKey.upload')
+  }
+  proxy = db.get('picBed.proxy') || ''
+  rules = {
+    value: [
+      { validator: customLinkRule, trigger: 'blur' }
+    ]
+  }
+  logLevel = {
+    all: '全部-All',
+    success: '成功-Success',
+    error: '错误-Error',
+    info: '普通-Info',
+    warn: '提醒-Warn',
+    none: '不记录日志-None'
+  }
+  version = pkg.version
+  latestVersion = ''
+  os = ''
+
+  get needUpdate () {
+    if (this.latestVersion) {
+      return this.compareVersion2Update(this.version, this.latestVersion)
+    } else {
+      return false
+    }
+  }
+  created () {
+    this.os = process.platform
+    ipcRenderer.send('getPicBeds')
+    ipcRenderer.on('getPicBeds', this.getPicBeds)
+  }
+  getPicBeds (event: Event, picBeds: PicBedType[]) {
+    this.picBed = picBeds
+    this.form.showPicBedList = this.picBed.map(item => {
+      if (item.visible) {
+        return item.name
+      }
+    }) as string[]
+  }
+  openFile (file: string) {
+    const { app, shell } = remote
+    const STORE_PATH = app.getPath('userData')
+    const FILE = path.join(STORE_PATH, `/${file}`)
+    shell.openItem(FILE)
+  }
+  openLogSetting () {
+    this.logFileVisible = true
+  }
+  keyDetect (type: string, event: KeyboardEvent) {
+    this.shortKey[type] = keyDetect(event).join('+')
+  }
+  cancelKeyBinding () {
+    this.keyBindingVisible = false
+    this.shortKey = db.get('settings.shortKey')
+  }
+  cancelCustomLink () {
+    this.customLinkVisible = false
+    this.customLink.value = db.get('settings.customLink') || '$url'
+  }
+  confirmCustomLink () {
+    // @ts-ignore
+    this.$refs.customLink.validate((valid: boolean) => {
+      if (valid) {
+        db.set('settings.customLink', this.customLink.value)
+        this.customLinkVisible = false
+        ipcRenderer.send('updateCustomLink')
       } else {
         return false
       }
+    })
+  }
+  cancelProxy () {
+    this.proxyVisible = false
+    this.proxy = db.get('picBed.proxy') || undefined
+  }
+  confirmProxy () {
+    this.proxyVisible = false
+    db.set('picBed.proxy', this.proxy)
+    const successNotification = new Notification('设置代理', {
+      body: '设置成功'
+    })
+    successNotification.onclick = () => {
+      return true
     }
-  },
-  data () {
-    const customLinkRule = (rule, value, callback) => {
-      if (!/\$url/.test(value)) {
-        return callback(new Error('必须含有$url'))
+  }
+  updateHelperChange (val: boolean) {
+    db.set('settings.showUpdateTip', val)
+  }
+  handleShowPicBedListChange (val: string[]) {
+    const list = this.picBed.map(item => {
+      if (!val.includes(item.name)) {
+        item.visible = false
       } else {
-        return callback()
+        item.visible = true
+      }
+      return item
+    })
+    db.set('picBed.list', list)
+    ipcRenderer.send('getPicBeds')
+  }
+  handleAutoStartChange (val: boolean) {
+    db.set('settings.autoStart', val)
+    ipcRenderer.send('autoStart', val)
+  }
+  handleRename (val: boolean) {
+    db.set('settings.rename', val)
+  }
+  handleAutoRename (val: boolean) {
+    db.set('settings.autoRename', val)
+  }
+  compareVersion2Update (current: string, latest: string) {
+    const currentVersion = current.split('.').map(item => parseInt(item))
+    const latestVersion = latest.split('.').map(item => parseInt(item))
+
+    for (let i = 0; i < 3; i++) {
+      if (currentVersion[i] < latestVersion[i]) {
+        return true
+      }
+      if (currentVersion[i] > latestVersion[i]) {
+        return false
       }
     }
-    let logLevel = this.$db.get('settings.logLevel')
+    return false
+  }
+  checkUpdate () {
+    this.checkUpdateVisible = true
+    this.$http.get(release)
+      .then(res => {
+        this.latestVersion = res.data.name
+      }).catch(err => {
+        console.log(err)
+      })
+  }
+  confirmCheckVersion () {
+    if (this.needUpdate) {
+      remote.shell.openExternal(downloadUrl)
+    }
+    this.checkUpdateVisible = false
+  }
+  cancelCheckVersion () {
+    this.checkUpdateVisible = false
+  }
+  handleUploadNotification (val: boolean) {
+    db.set('settings.uploadNotification', val)
+  }
+  handleMiniWindowOntop (val: boolean) {
+    db.set('settings.miniWindowOntop', val)
+    this.$message.info('需要重启生效')
+  }
+  confirmLogLevelSetting () {
+    if (this.form.logLevel.length === 0) {
+      return this.$message.error('请选择日志记录等级')
+    }
+    db.set('settings.logLevel', this.form.logLevel)
+    const successNotification = new Notification('设置日志', {
+      body: '设置成功'
+    })
+    successNotification.onclick = () => {
+      return true
+    }
+    this.logFileVisible = false
+  }
+  cancelLogLevelSetting () {
+    this.logFileVisible = false
+    let logLevel = db.get('settings.logLevel')
     if (!Array.isArray(logLevel)) {
       if (logLevel && logLevel.length > 0) {
         logLevel = [logLevel]
@@ -274,225 +466,36 @@ export default {
         logLevel = ['all']
       }
     }
-    return {
-      form: {
-        updateHelper: this.$db.get('settings.showUpdateTip'),
-        showPicBedList: [],
-        autoStart: this.$db.get('settings.autoStart') || false,
-        rename: this.$db.get('settings.rename') || false,
-        autoRename: this.$db.get('settings.autoRename') || false,
-        uploadNotification: this.$db.get('settings.uploadNotification') || false,
-        miniWindowOntop: this.$db.get('settings.miniWindowOntop') || false,
-        logLevel
-      },
-      picBed: [],
-      logFileVisible: false,
-      keyBindingVisible: false,
-      customLinkVisible: false,
-      checkUpdateVisible: false,
-      proxyVisible: false,
-      customLink: {
-        value: this.$db.get('settings.customLink') || '$url'
-      },
-      shortKey: {
-        upload: this.$db.get('settings.shortKey.upload')
-      },
-      proxy: this.$db.get('picBed.proxy') || undefined,
-      rules: {
-        value: [
-          { validator: customLinkRule, trigger: 'blur' }
-        ]
-      },
-      logLevel: {
-        all: '全部-All',
-        success: '成功-Success',
-        error: '错误-Error',
-        info: '普通-Info',
-        warn: '提醒-Warn',
-        none: '不记录日志-None'
-      },
-      version: pkg.version,
-      latestVersion: '',
-      os: ''
-    }
-  },
-  created () {
-    this.os = process.platform
-    this.$electron.ipcRenderer.send('getPicBeds')
-    this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
-  },
-  methods: {
-    getPicBeds (event, picBeds) {
-      this.picBed = picBeds
-      this.form.showPicBedList = this.picBed.map(item => {
-        if (item.visible) {
-          return item.name
-        }
-      })
-    },
-    openFile (file) {
-      const { app, shell } = this.$electron.remote
-      const STORE_PATH = app.getPath('userData')
-      const FILE = path.join(STORE_PATH, `/${file}`)
-      shell.openItem(FILE)
-    },
-    openLogSetting () {
-      this.logFileVisible = true
-    },
-    keyDetect (type, event) {
-      this.shortKey[type] = keyDetect(event).join('+')
-    },
-    cancelKeyBinding () {
-      this.keyBindingVisible = false
-      this.shortKey = this.$db.get('settings.shortKey')
-    },
-    cancelCustomLink () {
-      this.customLinkVisible = false
-      this.customLink.value = this.$db.get('settings.customLink') || '$url'
-    },
-    confirmCustomLink () {
-      this.$refs.customLink.validate((valid) => {
-        if (valid) {
-          this.$db.set('settings.customLink', this.customLink.value)
-          this.customLinkVisible = false
-          this.$electron.ipcRenderer.send('updateCustomLink')
-        } else {
-          return false
-        }
-      })
-    },
-    cancelProxy () {
-      this.proxyVisible = false
-      this.proxy = this.$db.get('picBed.proxy') || undefined
-    },
-    confirmProxy () {
-      this.proxyVisible = false
-      this.$db.set('picBed.proxy', this.proxy)
-      const successNotification = new window.Notification('设置代理', {
-        body: '设置成功'
-      })
-      successNotification.onclick = () => {
+    this.form.logLevel = logLevel
+  }
+  handleLevelDisabled (val: string) {
+    let currentLevel = val
+    let flagLevel
+    let result = this.form.logLevel.some(item => {
+      if (item === 'all' || item === 'none') {
+        flagLevel = item
+      }
+      return (item === 'all' || item === 'none')
+    })
+    if (result) {
+      if (currentLevel !== flagLevel) {
         return true
       }
-    },
-    updateHelperChange (val) {
-      this.$db.set('settings.showUpdateTip', val)
-    },
-    handleShowPicBedListChange (val) {
-      const list = this.picBed.map(item => {
-        if (!val.includes(item.name)) {
-          item.visible = false
-        } else {
-          item.visible = true
-        }
-        return item
-      })
-      this.$db.set('picBed.list', list)
-      this.$electron.ipcRenderer.send('getPicBeds')
-    },
-    handleAutoStartChange (val) {
-      this.$db.set('settings.autoStart', val)
-      this.$electron.ipcRenderer.send('autoStart', val)
-    },
-    handleRename (val) {
-      this.$db.set('settings.rename', val)
-    },
-    handleAutoRename (val) {
-      this.$db.set('settings.autoRename', val)
-    },
-    compareVersion2Update (current, latest) {
-      const currentVersion = current.split('.').map(item => parseInt(item))
-      const latestVersion = latest.split('.').map(item => parseInt(item))
-
-      for (let i = 0; i < 3; i++) {
-        if (currentVersion[i] < latestVersion[i]) {
-          return true
-        }
-        if (currentVersion[i] > latestVersion[i]) {
-          return false
-        }
-      }
-      return false
-    },
-    checkUpdate () {
-      this.checkUpdateVisible = true
-      this.$http.get(release)
-        .then(res => {
-          this.latestVersion = res.data.name
-        }).catch(err => {
-          console.log(err)
-        })
-    },
-    confirmCheckVersion () {
-      if (this.needUpdate) {
-        this.$electron.remote.shell.openExternal(downloadUrl)
-      }
-      this.checkUpdateVisible = false
-    },
-    cancelCheckVersion () {
-      this.checkUpdateVisible = false
-    },
-    handleUploadNotification (val) {
-      this.$db.set('settings.uploadNotification', val)
-    },
-    handleMiniWindowOntop (val) {
-      this.$db.set('settings.miniWindowOntop', val)
-      this.$message('需要重启生效')
-    },
-    confirmLogLevelSetting () {
-      if (this.form.logLevel.length === 0) {
-        return this.$message.error('请选择日志记录等级')
-      }
-      this.$db.set('settings.logLevel', this.form.logLevel)
-      const successNotification = new window.Notification('设置日志', {
-        body: '设置成功'
-      })
-      successNotification.onclick = () => {
+    } else if (this.form.logLevel.length > 0) {
+      if (val === 'all' || val === 'none') {
         return true
       }
-      this.logFileVisible = false
-    },
-    cancelLogLevelSetting () {
-      this.logFileVisible = false
-      let logLevel = this.$db.get('settings.logLevel')
-      if (!Array.isArray(logLevel)) {
-        if (logLevel && logLevel.length > 0) {
-          logLevel = [logLevel]
-        } else {
-          logLevel = ['all']
-        }
-      }
-      this.form.logLevel = logLevel
-    },
-    handleLevelDisabled (val) {
-      let currentLevel = val
-      let flagLevel
-      let result = this.form.logLevel.some(item => {
-        if (item === 'all' || item === 'none') {
-          flagLevel = item
-        }
-        return (item === 'all' || item === 'none')
-      })
-      if (result) {
-        if (currentLevel !== flagLevel) {
-          return true
-        }
-      } else if (this.form.logLevel.length > 0) {
-        if (val === 'all' || val === 'none') {
-          return true
-        }
-      }
-      return false
-    },
-    goConfigPage () {
-      this.$electron.remote.shell.openExternal('https://picgo.github.io/PicGo-Doc/zh/guide/config.html#picgo设置')
-    },
-    goShortCutPage () {
-      this.$router.push('shortcut-page')
     }
-  },
+    return false
+  }
+  goConfigPage () {
+    remote.shell.openExternal('https://picgo.github.io/PicGo-Doc/zh/guide/config.html#picgo设置')
+  }
+  goShortCutPage () {
+    this.$router.push('shortcut')
+  }
   beforeDestroy () {
-    this.$electron.ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
+    ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
   }
 }
 </script>
@@ -515,7 +518,7 @@ export default {
     overflow-x hidden
   .setting-list
     .el-form
-      label  
+      label
         line-height 32px
         padding-bottom 0
         color #eee

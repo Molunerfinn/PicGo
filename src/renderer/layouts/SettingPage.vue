@@ -105,7 +105,7 @@
           label="用占位符$url来表示url的位置"
           prop="value"
         >
-          <el-input 
+          <el-input
             class="align-center"
             v-model="customLink.value"
             :autofocus="true"
@@ -136,161 +136,160 @@
     </el-dialog>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 import pkg from 'root/package.json'
-import keyDetect from 'utils/key-binding'
-import { remote } from 'electron'
-import db from '~/datastore'
+import keyDetect from '@/utils/key-binding'
+import { remote, ipcRenderer, IpcRendererEvent } from 'electron'
+import db from '#/datastore'
 import mixin from '@/utils/mixin'
 const { Menu, dialog, BrowserWindow } = remote
-export default {
+const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
+  if (!/\$url/.test(value)) {
+    return callback(new Error('必须含有$url'))
+  } else {
+    return callback()
+  }
+}
+@Component({
   name: 'setting-page',
-  mixins: [mixin],
-  data () {
-    const customLinkRule = (rule, value, callback) => {
-      if (!/\$url/.test(value)) {
-        return callback(new Error('必须含有$url'))
-      } else {
-        return callback()
-      }
-    }
-    return {
-      version: process.env.NODE_ENV === 'production' ? pkg.version : 'Dev',
-      defaultActive: 'upload',
-      menu: null,
-      visible: false,
-      keyBindingVisible: false,
-      customLinkVisible: false,
-      customLink: {
-        value: db.get('customLink') || '$url'
-      },
-      rules: {
-        value: [
-          { validator: customLinkRule, trigger: 'blur' }
-        ]
-      },
-      os: '',
-      shortKey: {
-        upload: db.get('shortKey.upload')
-      },
-      picBed: [],
-      // for showInputBox
-      showInputBoxVisible: false,
-      inputBoxValue: '',
-      inputBoxOptions: {
-        title: '',
-        placeholder: ''
-      }
-    }
-  },
+  mixins: [mixin]
+})
+export default class extends Vue {
+  version = process.env.NODE_ENV === 'production' ? pkg.version : 'Dev'
+  defaultActive = 'upload'
+  menu: Electron.Menu | null = null
+  visible = false
+  keyBindingVisible = false
+  customLinkVisible = false
+  customLink = {
+    value: db.get('customLink') || '$url'
+  }
+  rules = {
+    value: [
+      { validator: customLinkRule, trigger: 'blur' }
+    ]
+  }
+  os = ''
+  shortKey: ShortKeyMap = {
+    upload: db.get('shortKey.upload')
+  }
+  picBed: PicBedType[] = []
+  // for showInputBox
+  showInputBoxVisible = false
+  inputBoxValue = ''
+  inputBoxOptions = {
+    title: '',
+    placeholder: ''
+  }
   created () {
     this.os = process.platform
     this.buildMenu()
-    this.$electron.ipcRenderer.send('getPicBeds')
-    this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
-    this.$electron.ipcRenderer.on('showInputBox', (evt, options) => {
+    ipcRenderer.send('getPicBeds')
+    ipcRenderer.on('getPicBeds', this.getPicBeds)
+    ipcRenderer.on('showInputBox', (evt: IpcRendererEvent, options: IShowInputBoxOption) => {
       this.inputBoxValue = ''
       this.inputBoxOptions.title = options.title || ''
       this.inputBoxOptions.placeholder = options.placeholder || ''
       this.showInputBoxVisible = true
     })
-  },
-  methods: {
-    handleSelect (index) {
-      const type = index.match(/picbeds-/)
-      if (type === null) {
+  }
+  handleSelect (index: string) {
+    const type = index.match(/picbeds-/)
+    if (type === null) {
+      this.$router.push({
+        name: index
+      })
+    } else {
+      const picBed = index.replace(/picbeds-/, '')
+      if (this.$builtInPicBed.includes(picBed)) {
         this.$router.push({
-          name: index
+          name: picBed
         })
       } else {
-        const picBed = index.replace(/picbeds-/, '')
-        if (this.$builtInPicBed.includes(picBed)) {
-          this.$router.push({
-            name: picBed
+        this.$router.push({
+          name: 'others',
+          params: {
+            type: picBed
+          }
+        })
+      }
+    }
+  }
+  minimizeWindow () {
+    const window = BrowserWindow.getFocusedWindow()
+    window!.minimize()
+  }
+  closeWindow () {
+    const window = BrowserWindow.getFocusedWindow()
+    window!.close()
+  }
+  buildMenu () {
+    const _this = this
+    const template = [
+      {
+        label: '关于',
+        click () {
+          dialog.showMessageBox({
+            title: 'PicGo',
+            message: 'PicGo',
+            detail: `Version: ${pkg.version}\nAuthor: Molunerfinn\nGithub: https://github.com/Molunerfinn/PicGo`
           })
-        } else {
-          this.$router.push({
-            name: 'others',
-            params: {
-              type: picBed
-            }
-          })
+        }
+      },
+      {
+        label: '赞助PicGo',
+        click () {
+          _this.visible = true
         }
       }
-    },
-    minimizeWindow () {
-      const window = BrowserWindow.getFocusedWindow()
-      window.minimize()
-    },
-    closeWindow () {
-      const window = BrowserWindow.getFocusedWindow()
-      window.close()
-    },
-    buildMenu () {
-      const _this = this
-      const template = [
-        {
-          label: '关于',
-          click () {
-            dialog.showMessageBox({
-              title: 'PicGo',
-              message: 'PicGo',
-              detail: `Version: ${pkg.version}\nAuthor: Molunerfinn\nGithub: https://github.com/Molunerfinn/PicGo`
-            })
-          }
-        },
-        {
-          label: '赞助PicGo',
-          click () {
-            _this.visible = true
-          }
-        }
-      ]
-      this.menu = Menu.buildFromTemplate(template)
-    },
-    openDialog () {
-      this.menu.popup(remote.getCurrentWindow())
-    },
-    keyDetect (type, event) {
-      this.shortKey[type] = keyDetect(event).join('+')
-    },
-    cancelKeyBinding () {
-      this.keyBindingVisible = false
-      this.shortKey = db.get('shortKey')
-    },
-    cancelCustomLink () {
-      this.customLinkVisible = false
-      this.customLink.value = db.get('customLink') || '$url'
-    },
-    confirmCustomLink () {
-      this.$refs.customLink.validate((valid) => {
-        if (valid) {
-          db.set('customLink', this.customLink.value)
-          this.customLinkVisible = false
-          this.$electron.ipcRenderer.send('updateCustomLink')
-        } else {
-          return false
-        }
-      })
-    },
-    openMiniWindow () {
-      this.$electron.ipcRenderer.send('openMiniWindow')
-    },
-    getPicBeds (event, picBeds) {
-      this.picBed = picBeds
-    },
-    handleInputBoxClose () {
-      this.$electron.ipcRenderer.send('showInputBox', this.inputBoxValue)
-    }
-  },
-  beforeRouteEnter: (to, from, next) => {
-    next(vm => {
+    ]
+    this.menu = Menu.buildFromTemplate(template)
+  }
+  openDialog () {
+    // this.menu!.popup(remote.getCurrentWindow())
+    this.menu!.popup()
+  }
+  keyDetect (type: string, event: KeyboardEvent) {
+    this.shortKey[type] = keyDetect(event).join('+')
+  }
+  cancelKeyBinding () {
+    this.keyBindingVisible = false
+    this.shortKey = db.get('shortKey')
+  }
+  cancelCustomLink () {
+    this.customLinkVisible = false
+    this.customLink.value = db.get('customLink') || '$url'
+  }
+  confirmCustomLink () {
+    // @ts-ignore
+    this.$refs.customLink.validate((valid: boolean) => {
+      if (valid) {
+        db.set('customLink', this.customLink.value)
+        this.customLinkVisible = false
+        ipcRenderer.send('updateCustomLink')
+      } else {
+        return false
+      }
+    })
+  }
+  openMiniWindow () {
+    ipcRenderer.send('openMiniWindow')
+  }
+  getPicBeds (event: IpcRendererEvent, picBeds: PicBedType[]) {
+    this.picBed = picBeds
+  }
+  handleInputBoxClose () {
+    ipcRenderer.send('showInputBox', this.inputBoxValue)
+  }
+  beforeRouteEnter (to: any, from: any, next: any) {
+    next((vm: this) => {
       vm.defaultActive = to.name
     })
-  },
+  }
   beforeDestroy () {
-    this.$electron.ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
-    this.$electron.ipcRenderer.removeAllListeners('showInputBox')
+    ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
+    ipcRenderer.removeAllListeners('showInputBox')
   }
 }
 </script>
@@ -360,7 +359,7 @@ $darwinBg = transparentify(#172426, #000, 0.7)
     overflow-y auto
     width 170px
     .el-icon-info.setting-window
-      position fixed 
+      position fixed
       bottom 4px
       left 4px
       cursor poiter
@@ -384,7 +383,7 @@ $darwinBg = transparentify(#172426, #000, 0.7)
         &:before
           content ''
           position absolute
-          width 3px 
+          width 3px
           height 20px
           right 0
           top 18px
@@ -406,7 +405,7 @@ $darwinBg = transparentify(#172426, #000, 0.7)
     padding-top 22px
     position relative
     z-index 10
-  .el-dialog__body 
+  .el-dialog__body
     padding 20px
   .support
     text-align center

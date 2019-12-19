@@ -5,9 +5,9 @@
 </template>
 
 <script>
-  export default {
-    name: 'picgo'
-  }
+export default {
+  name: 'picgo'
+}
 </script>
 
 <style lang="stylus">

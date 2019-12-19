@@ -25,92 +25,91 @@
   </div>
 </template>
 
-<script>
-  import mixin from '@/utils/mixin'
-  import pasteTemplate from '~/main/utils/pasteTemplate'
-  export default {
-    name: 'tray-page',
-    mixins: [mixin],
-    data () {
-      return {
-        files: [],
-        notification: {
-          title: '复制链接成功',
-          body: '',
-          icon: ''
-        },
-        clipboardFiles: [],
-        uploadFlag: false
-      }
-    },
-    computed: {
-      reverseList () {
-        return this.files.slice().reverse()
-      }
-    },
-    mounted () {
-      this.disableDragFile()
-      this.getData()
-      this.$electron.ipcRenderer.on('dragFiles', (event, files) => {
-        files.forEach(item => {
-          this.$db.insert('uploaded', item)
-        })
-        this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
-      })
-      this.$electron.ipcRenderer.on('clipboardFiles', (event, files) => {
-        this.clipboardFiles = files
-      })
-      this.$electron.ipcRenderer.on('uploadFiles', (event) => {
-        this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
-        console.log(this.files)
-        this.uploadFlag = false
-      })
-      this.$electron.ipcRenderer.on('updateFiles', (event) => {
-        this.getData()
-      })
-    },
-    beforeDestroy () {
-      this.$electron.ipcRenderer.removeAllListeners('dragFiles')
-      this.$electron.ipcRenderer.removeAllListeners('clipboardFiles')
-      this.$electron.ipcRenderer.removeAllListeners('uploadClipboardFiles')
-      this.$electron.ipcRenderer.removeAllListeners('updateFiles')
-    },
-    methods: {
-      getData () {
-        this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
-      },
-      copyTheLink (item) {
-        this.notification.body = item.imgUrl
-        this.notification.icon = item.imgUrl
-        const myNotification = new window.Notification(this.notification.title, this.notification)
-        const pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
-        this.$electron.clipboard.writeText(pasteTemplate(pasteStyle, item))
-        myNotification.onclick = () => {
-          return true
-        }
-      },
-      calcHeight (width, height) {
-        return height * 160 / width
-      },
-      disableDragFile () {
-        window.addEventListener('dragover', (e) => {
-          e = e || event
-          e.preventDefault()
-        }, false)
-        window.addEventListener('drop', (e) => {
-          e = e || event
-          e.preventDefault()
-        }, false)
-      },
-      uploadClipboardFiles () {
-        if (this.uploadFlag) {
-          return
-        }
-        this.uploadFlag = true
-        this.$electron.ipcRenderer.send('uploadClipboardFiles')
-      }
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+import mixin from '@/utils/mixin'
+import pasteTemplate from '#/utils/pasteTemplate'
+import { ipcRenderer, clipboard } from 'electron'
+@Component({
+  name: 'tray-page',
+  mixins: [mixin]
+})
+export default class extends Vue {
+  files = []
+  notification = {
+    title: '复制链接成功',
+    body: '',
+    icon: ''
+  }
+  clipboardFiles: ImgInfo[] = []
+  uploadFlag = false
+  get reverseList () {
+    return this.files.slice().reverse()
+  }
+  getData () {
+    // @ts-ignore
+    this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
+  }
+  copyTheLink (item: ImgInfo) {
+    this.notification.body = item.imgUrl!
+    this.notification.icon = item.imgUrl!
+    const myNotification = new Notification(this.notification.title, this.notification)
+    const pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
+    clipboard.writeText(pasteTemplate(pasteStyle, item))
+    myNotification.onclick = () => {
+      return true
     }
   }
+  calcHeight (width: number, height: number): number {
+    return height * 160 / width
+  }
+  disableDragFile () {
+    window.addEventListener('dragover', (e) => {
+      e = e || event
+      e.preventDefault()
+    }, false)
+    window.addEventListener('drop', (e) => {
+      e = e || event
+      e.preventDefault()
+    }, false)
+  }
+  uploadClipboardFiles () {
+    if (this.uploadFlag) {
+      return
+    }
+    this.uploadFlag = true
+    ipcRenderer.send('uploadClipboardFiles')
+  }
+  mounted () {
+    this.disableDragFile()
+    this.getData()
+    ipcRenderer.on('dragFiles', (event: Event, files: string[]) => {
+      files.forEach(item => {
+        this.$db.insert('uploaded', item)
+      })
+      // @ts-ignore
+      this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
+    })
+    ipcRenderer.on('clipboardFiles', (event: Event, files: ImgInfo[]) => {
+      this.clipboardFiles = files
+    })
+    ipcRenderer.on('uploadFiles', (event: Event) => {
+      // @ts-ignore
+      this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
+      console.log(this.files)
+      this.uploadFlag = false
+    })
+    ipcRenderer.on('updateFiles', (event: Event) => {
+      this.getData()
+    })
+  }
+  beforeDestroy () {
+    ipcRenderer.removeAllListeners('dragFiles')
+    ipcRenderer.removeAllListeners('clipboardFiles')
+    ipcRenderer.removeAllListeners('uploadClipboardFiles')
+    ipcRenderer.removeAllListeners('updateFiles')
+  }
+}
 </script>
 
 <style lang="stylus">

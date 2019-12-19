@@ -15,31 +15,35 @@
   </div>
   </div>
 </template>
-<script>
+<script lang="ts">
 import mixin from '@/utils/mixin'
-export default {
+import { Component, Vue, Watch } from 'vue-property-decorator'
+import {
+  ipcRenderer,
+  IpcRendererEvent,
+  remote
+} from 'electron'
+@Component({
   name: 'mini-page',
-  mixins: [mixin],
-  data () {
-    return {
-      logo: 'static/squareLogo.png',
-      dragover: false,
-      progress: 0,
-      showProgress: false,
-      showError: false,
-      dragging: false,
-      wX: '',
-      wY: '',
-      screenX: '',
-      screenY: '',
-      menu: null,
-      os: '',
-      picBed: []
-    }
-  },
+  mixins: [mixin]
+})
+export default class extends Vue {
+  logo = 'static/squareLogo.png'
+  dragover = false
+  progress = 0
+  showProgress = false
+  showError = false
+  dragging = false
+  wX: number = -1
+  wY: number = -1
+  screenX: number = -1
+  screenY: number = -1
+  menu: Electron.Menu | null = null
+  os = ''
+  picBed: PicBedType[] = []
   created () {
     this.os = process.platform
-    this.$electron.ipcRenderer.on('uploadProgress', (event, progress) => {
+    ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, progress: number) => {
       if (progress !== -1) {
         this.showProgress = true
         this.progress = progress
@@ -49,140 +53,141 @@ export default {
       }
     })
     this.getPicBeds()
-  },
+  }
   mounted () {
     window.addEventListener('mousedown', this.handleMouseDown, false)
     window.addEventListener('mousemove', this.handleMouseMove, false)
     window.addEventListener('mouseup', this.handleMouseUp, false)
-  },
-  watch: {
-    progress (val) {
-      if (val === 100) {
-        setTimeout(() => {
-          this.showProgress = false
-          this.showError = false
-        }, 1000)
-        setTimeout(() => {
-          this.progress = 0
-        }, 1200)
+  }
+
+  @Watch('progress')
+  onProgressChange (val: number) {
+    if (val === 100) {
+      setTimeout(() => {
+        this.showProgress = false
+        this.showError = false
+      }, 1000)
+      setTimeout(() => {
+        this.progress = 0
+      }, 1200)
+    }
+  }
+  getPicBeds () {
+    this.picBed = ipcRenderer.sendSync('getPicBeds')
+    this.buildMenu()
+  }
+  onDrop (e: DragEvent) {
+    this.dragover = false
+    this.ipcSendFiles(e.dataTransfer!.files)
+  }
+  openUploadWindow () {
+    // @ts-ignore
+    document.getElementById('file-uploader').click()
+  }
+  onChange (e: any) {
+    this.ipcSendFiles(e.target.files)
+    // @ts-ignore
+    document.getElementById('file-uploader').value = ''
+  }
+  ipcSendFiles (files: FileList) {
+    let sendFiles: FileWithPath[] = []
+    Array.from(files).forEach((item, index) => {
+      let obj = {
+        name: item.name,
+        path: item.path
+      }
+      sendFiles.push(obj)
+    })
+    ipcRenderer.send('uploadChoosedFiles', sendFiles)
+  }
+  handleMouseDown (e: MouseEvent) {
+    this.dragging = true
+    this.wX = e.pageX
+    this.wY = e.pageY
+    this.screenX = e.screenX
+    this.screenY = e.screenY
+  }
+  handleMouseMove (e: MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    if (this.dragging) {
+      const xLoc = e.screenX - this.wX
+      const yLoc = e.screenY - this.wY
+      remote.BrowserWindow.getFocusedWindow()!.setBounds({
+        x: xLoc,
+        y: yLoc,
+        width: 64,
+        height: 64
+      })
+    }
+  }
+  handleMouseUp (e: MouseEvent) {
+    this.dragging = false
+    if (this.screenX === e.screenX && this.screenY === e.screenY) {
+      if (e.button === 0) { // left mouse
+        this.openUploadWindow()
+      } else {
+        this.getPicBeds()
+        this.openContextMenu()
       }
     }
-  },
-  methods: {
-    getPicBeds () {
-      this.picBed = this.$electron.ipcRenderer.sendSync('getPicBeds')
-      this.buildMenu()
-    },
-    onDrop (e) {
-      this.dragover = false
-      this.ipcSendFiles(e.dataTransfer.files)
-    },
-    openUploadWindow () {
-      document.getElementById('file-uploader').click()
-    },
-    onChange (e) {
-      this.ipcSendFiles(e.target.files)
-      document.getElementById('file-uploader').value = ''
-    },
-    ipcSendFiles (files) {
-      let sendFiles = []
-      Array.from(files).forEach((item, index) => {
-        let obj = {
-          name: item.name,
-          path: item.path
-        }
-        sendFiles.push(obj)
-      })
-      this.$electron.ipcRenderer.send('uploadChoosedFiles', sendFiles)
-    },
-    handleMouseDown (e) {
-      this.dragging = true
-      this.wX = e.pageX
-      this.wY = e.pageY
-      this.screenX = e.screenX
-      this.screenY = e.screenY
-    },
-    handleMouseMove (e) {
-      e.preventDefault()
-      e.stopPropagation()
-      if (this.dragging) {
-        const xLoc = e.screenX - this.wX
-        const yLoc = e.screenY - this.wY
-        this.$electron.remote.BrowserWindow.getFocusedWindow().setBounds({
-          x: xLoc,
-          y: yLoc,
-          width: 64,
-          height: 64
-        })
-      }
-    },
-    handleMouseUp (e) {
-      this.dragging = false
-      if (this.screenX === e.screenX && this.screenY === e.screenY) {
-        if (e.button === 0) { // left mouse
-          this.openUploadWindow()
-        } else {
-          this.getPicBeds()
-          this.openContextMenu()
+  }
+  openContextMenu () {
+    this.menu!.popup()
+  }
+  buildMenu () {
+    const _this = this
+    const submenu = this.picBed.map(item => {
+      return {
+        label: item.name,
+        type: 'radio',
+        checked: this.$db.get('picBed.current') === item.type,
+        click () {
+          _this.$db.set('picBed.current', item.type)
+          ipcRenderer.send('syncPicBed')
         }
       }
-    },
-    openContextMenu () {
-      this.menu.popup(this.$electron.remote.getCurrentWindow())
-    },
-    buildMenu () {
-      const _this = this
-      const submenu = this.picBed.map(item => {
-        return {
-          label: item.name,
-          type: 'radio',
-          checked: this.$db.get('picBed.current') === item.type,
-          click () {
-            _this.$db.set('picBed.current', item.type)
-            _this.$electron.ipcRenderer.send('syncPicBed')
-          }
+    })
+    const template = [
+      {
+        label: '打开详细窗口',
+        click () {
+          ipcRenderer.send('openSettingWindow')
         }
-      })
-      const template = [
-        {
-          label: '打开详细窗口',
-          click () {
-            _this.$electron.ipcRenderer.send('openSettingWindow')
-          }
-        },
-        {
-          label: '选择默认图床',
-          type: 'submenu',
-          submenu
-        },
-        {
-          label: '剪贴板图片上传',
-          click () {
-            _this.$electron.ipcRenderer.send('uploadClipboardFilesFromUploadPage')
-          }
-        },
-        {
-          label: '最小化窗口',
-          role: 'minimize'
-        },
-        {
-          label: '重启应用',
-          click () {
-            _this.$electron.remote.app.relaunch()
-            _this.$electron.remote.app.exit(0)
-          }
-        },
-        {
-          role: 'quit',
-          label: '退出'
+      },
+      {
+        label: '选择默认图床',
+        type: 'submenu',
+        submenu
+      },
+      {
+        label: '剪贴板图片上传',
+        click () {
+          ipcRenderer.send('uploadClipboardFilesFromUploadPage')
         }
-      ]
-      this.menu = this.$electron.remote.Menu.buildFromTemplate(template)
-    }
-  },
+      },
+      {
+        label: '最小化窗口',
+        role: 'minimize'
+      },
+      {
+        label: '重启应用',
+        click () {
+          remote.app.relaunch()
+          remote.app.exit(0)
+        }
+      },
+      {
+        role: 'quit',
+        label: '退出'
+      }
+    ]
+    // @ts-ignore
+    this.menu = remote.Menu.buildFromTemplate(template)
+  }
   beforeDestroy () {
-    this.$electron.ipcRenderer.removeAllListeners('uploadProgress')
-    this.$electron.ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
+    ipcRenderer.removeAllListeners('uploadProgress')
+    ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
     window.removeEventListener('mousedown', this.handleMouseDown, false)
     window.removeEventListener('mousemove', this.handleMouseMove, false)
     window.removeEventListener('mouseup', this.handleMouseUp, false)

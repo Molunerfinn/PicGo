@@ -84,7 +84,7 @@ export default {
 <style lang='stylus'>
 #others-view
   .el-form
-    label  
+    label
       line-height 22px
       padding-bottom 0
       color #eee

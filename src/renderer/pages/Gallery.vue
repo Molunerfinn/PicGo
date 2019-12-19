@@ -72,7 +72,7 @@
             :options="options"
           ></gallerys>
           <el-col :span="6" v-for="(item, index) in images" :key="item.id" class="gallery-list__img">
-            <div 
+            <div
               class="gallery-list__item"
               @click="zoomImage(index)"
             >
@@ -83,7 +83,7 @@
               <i class="el-icon-edit-outline" @click="openDialog(item)"></i>
               <i class="el-icon-delete" @click="remove(item.id)"></i>
               <el-checkbox v-model="choosedList[item.id]" class="pull-right" @change=" handleBarActive = true"></el-checkbox>
-            </div> 
+            </div>
           </el-col>
         </el-row>
       </el-col>
@@ -102,257 +102,266 @@
     </el-dialog>
   </div>
 </template>
-<script>
+<script lang="ts">
+// @ts-ignore
 import gallerys from 'vue-gallery'
-import pasteStyle from '~/main/utils/pasteTemplate'
-export default {
+import pasteStyle from '#/utils/pasteTemplate'
+import { Component, Vue } from 'vue-property-decorator'
+import {
+  ipcRenderer,
+  clipboard,
+  IpcRendererEvent
+} from 'electron'
+@Component({
   name: 'gallery',
   components: {
     gallerys
-  },
-  data () {
-    return {
-      images: [],
-      idx: null,
-      options: {
-        titleProperty: 'fileName',
-        urlProperty: 'imgUrl',
-        closeOnSlideClick: true
-      },
-      dialogVisible: false,
-      imgInfo: {
-        id: null,
-        imgUrl: ''
-      },
-      choosedList: {},
-      choosedPicBed: [],
-      searchText: '',
-      handleBarActive: false,
-      pasteStyle: '',
-      pasteStyleMap: {
-        Markdown: 'markdown',
-        HTML: 'HTML',
-        URL: 'URL',
-        UBB: 'UBB',
-        Custom: 'Custom'
-      },
-      picBed: []
-    }
-  },
-  beforeRouteEnter (to, from, next) {
-    next(vm => {
+  }
+})
+export default class extends Vue {
+  images: ImgInfo[] = []
+  idx: null | number = null
+  options = {
+    titleProperty: 'fileName',
+    urlProperty: 'imgUrl',
+    closeOnSlideClick: true
+  }
+  dialogVisible = false
+  imgInfo = {
+    id: null,
+    imgUrl: ''
+  }
+  choosedList: ObjT<boolean> = {}
+  choosedPicBed: string[] = []
+  searchText = ''
+  handleBarActive = false
+  pasteStyle = ''
+  pasteStyleMap = {
+    Markdown: 'markdown',
+    HTML: 'HTML',
+    URL: 'URL',
+    UBB: 'UBB',
+    Custom: 'Custom'
+  }
+  picBed: PicBedType[] = []
+  beforeRouteEnter (to: any, from: any, next: any) {
+    next((vm: any) => {
       vm.getGallery()
       vm.getPasteStyle()
       vm.getPicBeds()
     })
-  },
+  }
   created () {
-    this.$electron.ipcRenderer.on('updateGallery', (event) => {
+    ipcRenderer.on('updateGallery', (event: IpcRendererEvent) => {
       this.$nextTick(() => {
         this.filterList = this.getGallery()
       })
     })
-    this.$electron.ipcRenderer.send('getPicBeds')
-    this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
-  },
-  computed: {
-    filterList: {
-      get () {
-        return this.getGallery()
-      },
-      set (val) {
-        return this.val
+    ipcRenderer.send('getPicBeds')
+    ipcRenderer.on('getPicBeds', this.getPicBeds)
+  }
+  get filterList () {
+    return this.getGallery()
+  }
+  set filterList (val) {
+    this.images = val
+  }
+  getPicBeds (event: IpcRendererEvent, picBeds: PicBedType[]) {
+    this.picBed = picBeds
+  }
+  getGallery () {
+    if (this.choosedPicBed.length > 0) {
+      let arr: ImgInfo[] = []
+      this.choosedPicBed.forEach(item => {
+        let obj: Obj = {
+          type: item
+        }
+        if (this.searchText) {
+          obj.fileName = this.searchText
+        }
+        // @ts-ignore
+        arr = arr.concat(this.$db.read().get('uploaded').filter(obj => {
+          return obj.fileName.indexOf(this.searchText) !== -1 && obj.type === item
+        }).reverse().value())
+      })
+      this.images = arr
+    } else {
+      if (this.searchText) {
+        let data = this.$db.read().get('uploaded')
+        // @ts-ignore
+          .filter(item => {
+            return item.fileName.indexOf(this.searchText) !== -1
+          }).reverse().value()
+        this.images = data
+      } else {
+        // @ts-ignore
+        this.images = this.$db.read().get('uploaded').slice().reverse().value()
       }
     }
-  },
-  methods: {
-    getPicBeds (event, picBeds) {
-      this.picBed = picBeds
-    },
-    getGallery () {
-      if (this.choosedPicBed.length > 0) {
-        let arr = []
-        this.choosedPicBed.forEach(item => {
-          let obj = {
-            type: item
-          }
-          if (this.searchText) {
-            obj.fileName = this.searchText
-          }
-          arr = arr.concat(this.$db.read().get('uploaded').filter(obj => {
-            return obj.fileName.indexOf(this.searchText) !== -1 && obj.type === item
-          }).reverse().value())
-        })
-        this.images = arr
-      } else {
-        if (this.searchText) {
-          let data = this.$db.read().get('uploaded')
-            .filter(item => {
-              return item.fileName.indexOf(this.searchText) !== -1
-            }).reverse().value()
-          this.images = data
-        } else {
-          this.images = this.$db.read().get('uploaded').slice().reverse().value()
-        }
-      }
-      return this.images
-    },
-    zoomImage (index) {
-      this.idx = index
-      this.changeZIndexForGallery(true)
-    },
-    changeZIndexForGallery (isOpen) {
-      if (isOpen) {
-        document.querySelector('.main-content.el-row').style.zIndex = 101
-      } else {
-        document.querySelector('.main-content.el-row').style.zIndex = 10
-      }
-    },
-    handleClose () {
-      this.idx = null
-      this.changeZIndexForGallery(false)
-    },
-    copy (item) {
-      const style = this.$db.get('settings.pasteStyle') || 'markdown'
-      const copyLink = pasteStyle(style, item)
+    return this.images
+  }
+  zoomImage (index: number) {
+    this.idx = index
+    this.changeZIndexForGallery(true)
+  }
+  changeZIndexForGallery (isOpen: boolean) {
+    if (isOpen) {
+      // @ts-ignore
+      document.querySelector('.main-content.el-row').style.zIndex = 101
+    } else {
+      // @ts-ignore
+      document.querySelector('.main-content.el-row').style.zIndex = 10
+    }
+  }
+  handleClose () {
+    this.idx = null
+    this.changeZIndexForGallery(false)
+  }
+  copy (item: ImgInfo) {
+    const style = this.$db.get('settings.pasteStyle') || 'markdown'
+    const copyLink = pasteStyle(style, item)
+    const obj = {
+      title: '复制链接成功',
+      body: copyLink,
+      icon: item.url || item.imgUrl
+    }
+    const myNotification = new Notification(obj.title, obj)
+    clipboard.writeText(copyLink)
+    myNotification.onclick = () => {
+      return true
+    }
+  }
+  remove (id: string) {
+    this.$confirm('此操作将把该图片移出相册, 是否继续?', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      const file = this.$db.get('uploaded').getById(id)
+      // @ts-ignore
+      this.$db.read().get('uploaded').removeById(id).write()
+      ipcRenderer.send('removeFiles', [file])
       const obj = {
-        title: '复制链接成功',
-        body: copyLink,
-        icon: item.url || item.imgUrl
+        title: '操作结果',
+        body: '删除成功'
       }
-      const myNotification = new window.Notification(obj.title, obj)
-      this.$electron.clipboard.writeText(copyLink)
+      const myNotification = new Notification(obj.title, obj)
       myNotification.onclick = () => {
         return true
       }
-    },
-    remove (id) {
-      this.$confirm('此操作将把该图片移出相册, 是否继续?', '提示', {
+      this.getGallery()
+    }).catch(() => {
+      return true
+    })
+  }
+  openDialog (item: ImgInfo) {
+    this.imgInfo.id = item.id
+    this.imgInfo.imgUrl = item.imgUrl as string
+    this.dialogVisible = true
+  }
+  confirmModify () {
+    this.$db.read().get('uploaded')
+      // @ts-ignore
+      .getById(this.imgInfo.id)
+      .assign({ imgUrl: this.imgInfo.imgUrl })
+      .write()
+    const obj = {
+      title: '修改图片URL成功',
+      body: this.imgInfo.imgUrl,
+      icon: this.imgInfo.imgUrl
+    }
+    const myNotification = new Notification(obj.title, obj)
+    myNotification.onclick = () => {
+      return true
+    }
+    this.dialogVisible = false
+    this.getGallery()
+  }
+  choosePicBed (type: string) {
+    let idx = this.choosedPicBed.indexOf(type)
+    if (idx !== -1) {
+      this.choosedPicBed.splice(idx, 1)
+    } else {
+      this.choosedPicBed.push(type)
+    }
+  }
+  cleanSearch () {
+    this.searchText = ''
+  }
+  isMultiple (obj: Obj) {
+    return Object.values(obj).some(item => item)
+  }
+  multiRemove () {
+    // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
+    if (Object.values(this.choosedList).some(item => item)) {
+      this.$confirm('将删除刚才选中的图片，是否继续？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        const file = this.$db.get('uploaded').getById(id)
-        this.$db.read().get('uploaded').removeById(id).write()
-        this.$electron.ipcRenderer.send('removeFiles', [file])
+        let files: ImgInfo[] = []
+        Object.keys(this.choosedList).forEach(key => {
+          if (this.choosedList[key]) {
+            // @ts-ignore
+            const file = this.$db.read().get('uploaded').getById(key).value()
+            files.push(file)
+            // @ts-ignore
+            this.$db.read().get('uploaded').removeById(key).write()
+          }
+        })
+        this.choosedList = {}
+        this.getGallery()
         const obj = {
           title: '操作结果',
           body: '删除成功'
         }
-        const myNotification = new window.Notification(obj.title, obj)
+        ipcRenderer.send('removeFiles', files)
+        const myNotification = new Notification(obj.title, obj)
         myNotification.onclick = () => {
           return true
         }
-        this.getGallery()
       }).catch(() => {
         return true
       })
-    },
-    openDialog (item) {
-      this.imgInfo.id = item.id
-      this.imgInfo.imgUrl = item.imgUrl
-      this.dialogVisible = true
-    },
-    confirmModify () {
-      this.$db.read().get('uploaded')
-        .getById(this.imgInfo.id)
-        .assign({imgUrl: this.imgInfo.imgUrl})
-        .write()
+    }
+  }
+  multiCopy () {
+    if (Object.values(this.choosedList).some(item => item)) {
+      let copyString = ''
+      const style = this.$db.get('settings.pasteStyle') || 'markdown'
+      // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
+      Object.keys(this.choosedList).forEach(key => {
+        if (this.choosedList[key]) {
+          // @ts-ignore
+          const item = this.$db.read().get('uploaded').getById(key).value()
+          copyString += pasteStyle(style, item) + '\n'
+          this.choosedList[key] = false
+        }
+      })
       const obj = {
-        title: '修改图片URL成功',
-        body: this.imgInfo.imgUrl,
-        icon: this.imgInfo.imgUrl
+        title: '批量复制链接成功',
+        body: copyString
       }
-      const myNotification = new window.Notification(obj.title, obj)
+      const myNotification = new Notification(obj.title, obj)
+      clipboard.writeText(copyString)
       myNotification.onclick = () => {
         return true
       }
-      this.dialogVisible = false
-      this.getGallery()
-    },
-    choosePicBed (type) {
-      let idx = this.choosedPicBed.indexOf(type)
-      if (idx !== -1) {
-        this.choosedPicBed.splice(idx, 1)
-      } else {
-        this.choosedPicBed.push(type)
-      }
-    },
-    cleanSearch () {
-      this.searchText = ''
-    },
-    isMultiple (obj) {
-      return Object.values(obj).some(item => item)
-    },
-    multiRemove () {
-      // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
-      if (Object.values(this.choosedList).some(item => item)) {
-        this.$confirm('将删除刚才选中的图片，是否继续？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          let files = []
-          Object.keys(this.choosedList).forEach(key => {
-            if (this.choosedList[key]) {
-              const file = this.$db.read().get('uploaded').getById(key).value()
-              files.push(file)
-              this.$db.read().get('uploaded').removeById(key).write()
-            }
-          })
-          this.choosedList = {}
-          this.getGallery()
-          const obj = {
-            title: '操作结果',
-            body: '删除成功'
-          }
-          this.$electron.ipcRenderer.send('removeFiles', files)
-          const myNotification = new window.Notification(obj.title, obj)
-          myNotification.onclick = () => {
-            return true
-          }
-        }).catch(() => {
-          return true
-        })
-      }
-    },
-    multiCopy () {
-      if (Object.values(this.choosedList).some(item => item)) {
-        let copyString = ''
-        const style = this.$db.get('settings.pasteStyle') || 'markdown'
-        // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
-        Object.keys(this.choosedList).forEach(key => {
-          if (this.choosedList[key]) {
-            const item = this.$db.read().get('uploaded').getById(key).value()
-            copyString += pasteStyle(style, item) + '\n'
-            this.choosedList[key] = false
-          }
-        })
-        const obj = {
-          title: '批量复制链接成功',
-          body: copyString
-        }
-        const myNotification = new window.Notification(obj.title, obj)
-        this.$electron.clipboard.writeText(copyString)
-        myNotification.onclick = () => {
-          return true
-        }
-      }
-    },
-    toggleHandleBar () {
-      this.handleBarActive = !this.handleBarActive
-    },
-    getPasteStyle () {
-      this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
-    },
-    handlePasteStyleChange (val) {
-      this.$db.set('settings.pasteStyle', val)
-      this.pasteStyle = val
     }
-  },
+  }
+  toggleHandleBar () {
+    this.handleBarActive = !this.handleBarActive
+  }
+  getPasteStyle () {
+    this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
+  }
+  handlePasteStyleChange (val: string) {
+    this.$db.set('settings.pasteStyle', val)
+    this.pasteStyle = val
+  }
   beforeDestroy () {
-    this.$electron.ipcRenderer.removeAllListeners('updateGallery')
-    this.$electron.ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
+    ipcRenderer.removeAllListeners('updateGallery')
+    ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
   }
 }
 </script>
@@ -428,7 +437,7 @@ export default {
       &-fake
         position absolute
         top 0
-        left 0 
+        left 0
         opacity 0
         width 100%
         z-index -1

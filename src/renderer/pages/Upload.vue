@@ -20,12 +20,12 @@
             <input type="file" id="file-uploader" @change="onChange" multiple>
           </div>
         </div>
-        <el-progress 
-          :percentage="progress" 
-          :show-text="false" 
+        <el-progress
+          :percentage="progress"
+          :show-text="false"
           class="upload-progress"
           :class="{ 'show': showProgress }"
-          :status="showError ? 'exception' : 'text'" 
+          :status="showError ? 'exception' : undefined"
         ></el-progress>
         <div class="paste-style">
           <div class="el-col-16">
@@ -55,23 +55,28 @@
     </el-row>
   </div>
 </template>
-<script>
-export default {
-  name: 'upload',
-  data () {
-    return {
-      dragover: false,
-      progress: 0,
-      showProgress: false,
-      showError: false,
-      pasteStyle: '',
-      picBed: [],
-      picBedName: '',
-      menu: null
-    }
-  },
+<script lang="ts">
+import { Component, Vue, Watch } from 'vue-property-decorator'
+import {
+  ipcRenderer,
+  IpcRendererEvent,
+  remote
+} from 'electron'
+const { Menu } = remote
+@Component({
+  name: 'upload'
+})
+export default class extends Vue {
+  dragover = false
+  progress = 0
+  showProgress = false
+  showError = false
+  pasteStyle = ''
+  picBed: PicBedType[] = []
+  picBedName = ''
+  menu: Electron.Menu | null= null
   mounted () {
-    this.$electron.ipcRenderer.on('uploadProgress', (event, progress) => {
+    ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, progress: number) => {
       if (progress !== -1) {
         this.showProgress = true
         this.progress = progress
@@ -82,93 +87,92 @@ export default {
     })
     this.getPasteStyle()
     this.getDefaultPicBed()
-    this.$electron.ipcRenderer.on('syncPicBed', () => {
+    ipcRenderer.on('syncPicBed', () => {
       this.getDefaultPicBed()
     })
-    this.$electron.ipcRenderer.send('getPicBeds')
-    this.$electron.ipcRenderer.on('getPicBeds', this.getPicBeds)
-  },
-  watch: {
-    progress (val) {
-      if (val === 100) {
-        setTimeout(() => {
-          this.showProgress = false
-          this.showError = false
-        }, 1000)
-        setTimeout(() => {
-          this.progress = 0
-        }, 1200)
-      }
+    ipcRenderer.send('getPicBeds')
+    ipcRenderer.on('getPicBeds', this.getPicBeds)
+  }
+  @Watch('progress')
+  onProgressChange (val: number) {
+    if (val === 100) {
+      setTimeout(() => {
+        this.showProgress = false
+        this.showError = false
+      }, 1000)
+      setTimeout(() => {
+        this.progress = 0
+      }, 1200)
     }
-  },
+  }
   beforeDestroy () {
-    this.$electron.ipcRenderer.removeAllListeners('uploadProgress')
-    this.$electron.ipcRenderer.removeAllListeners('syncPicBed')
-    this.$electron.ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
-  },
-  methods: {
-    onDrop (e) {
-      this.dragover = false
-      this.ipcSendFiles(e.dataTransfer.files)
-    },
-    openUplodWindow () {
-      document.getElementById('file-uploader').click()
-    },
-    onChange (e) {
-      this.ipcSendFiles(e.target.files)
-      document.getElementById('file-uploader').value = ''
-    },
-    ipcSendFiles (files) {
-      let sendFiles = []
-      Array.from(files).forEach((item, index) => {
-        let obj = {
-          name: item.name,
-          path: item.path
+    ipcRenderer.removeAllListeners('uploadProgress')
+    ipcRenderer.removeAllListeners('syncPicBed')
+    ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
+  }
+  onDrop (e: DragEvent) {
+    this.dragover = false
+    this.ipcSendFiles(e.dataTransfer!.files)
+  }
+  openUplodWindow () {
+    document.getElementById('file-uploader')!.click()
+  }
+  onChange (e: any) {
+    this.ipcSendFiles(e.target.files);
+    (document.getElementById('file-uploader') as HTMLInputElement).value = ''
+  }
+  ipcSendFiles (files: FileList) {
+    let sendFiles: FileWithPath[] = []
+    Array.from(files).forEach((item, index) => {
+      let obj = {
+        name: item.name,
+        path: item.path
+      }
+      sendFiles.push(obj)
+    })
+    ipcRenderer.send('uploadChoosedFiles', sendFiles)
+  }
+  getPasteStyle () {
+    this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
+  }
+  handlePasteStyleChange (val: string) {
+    this.$db.set('settings.pasteStyle', val)
+  }
+  uploadClipboardFiles () {
+    ipcRenderer.send('uploadClipboardFilesFromUploadPage')
+  }
+  getDefaultPicBed () {
+    const current: string = this.$db.get('picBed.current')
+    this.picBed.forEach(item => {
+      if (item.type === current) {
+        this.picBedName = item.name
+      }
+    })
+  }
+  getPicBeds (event: Event, picBeds: PicBedType[]) {
+    this.picBed = picBeds
+    this.getDefaultPicBed()
+  }
+  handleChangePicBed () {
+    this.buildMenu()
+    // this.menu.popup(remote.getCurrentWindow())
+    this.menu!.popup()
+  }
+  buildMenu () {
+    const _this = this
+    const submenu = this.picBed.map(item => {
+      return {
+        label: item.name,
+        type: 'radio',
+        checked: this.$db.get('picBed.current') === item.type,
+        click () {
+          _this.$db.set('picBed.current', item.type)
+          ipcRenderer.send('syncPicBed')
         }
-        sendFiles.push(obj)
-      })
-      this.$electron.ipcRenderer.send('uploadChoosedFiles', sendFiles)
-    },
-    getPasteStyle () {
-      this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
-    },
-    handlePasteStyleChange (val) {
-      this.$db.set('settings.pasteStyle', val)
-    },
-    uploadClipboardFiles () {
-      this.$electron.ipcRenderer.send('uploadClipboardFilesFromUploadPage')
-    },
-    getDefaultPicBed () {
-      const current = this.$db.get('picBed.current')
-      this.picBed.forEach(item => {
-        if (item.type === current) {
-          this.picBedName = item.name
-        }
-      })
-    },
-    getPicBeds (event, picBeds) {
-      this.picBed = picBeds
-      this.getDefaultPicBed()
-    },
-    handleChangePicBed () {
-      this.buildMenu()
-      this.menu.popup(this.$electron.remote.getCurrentWindow())
-    },
-    buildMenu () {
-      const _this = this
-      const submenu = this.picBed.map(item => {
-        return {
-          label: item.name,
-          type: 'radio',
-          checked: this.$db.get('picBed.current') === item.type,
-          click () {
-            _this.$db.set('picBed.current', item.type)
-            _this.$electron.ipcRenderer.send('syncPicBed')
-          }
-        }
-      })
-      this.menu = this.$electron.remote.Menu.buildFromTemplate(submenu)
-    }
+      }
+    })
+    // @ts-ignore
+    this.menu = Menu.buildFromTemplate(submenu)
   }
 }
 </script>
@@ -235,4 +239,6 @@ export default {
       border-radius 0 14px 14px 0
   .paste-upload
     width 100%
+  .el-icon-caret-bottom
+    cursor pointer
 </style>

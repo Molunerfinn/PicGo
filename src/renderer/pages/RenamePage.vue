@@ -6,7 +6,7 @@
       <el-form-item
         label="文件改名"
       >
-        <el-input 
+        <el-input
           v-model="fileName"
           size="small"
           @keyup.enter.native="confirmName"
@@ -21,33 +21,34 @@
     </el-row>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/mixin'
-export default {
+import {
+  ipcRenderer,
+  IpcRendererEvent
+} from 'electron'
+@Component({
   name: 'rename-page',
-  mixins: [mixin],
-  data () {
-    return {
-      fileName: '',
-      id: null
-    }
-  },
+  mixins: [mixin]
+})
+export default class extends Vue {
+  fileName: string = ''
+  id: string | null = null
   created () {
-    this.$electron.ipcRenderer.on('rename', (event, name, id) => {
+    ipcRenderer.on('rename', (event: IpcRendererEvent, name: string, id: string) => {
       this.fileName = name
       this.id = id
     })
-  },
-  methods: {
-    confirmName () {
-      this.$electron.ipcRenderer.send(`rename${this.id}`, this.fileName)
-    },
-    cancel () {
-      this.$electron.ipcRenderer.send(`rename${this.id}`, null)
-    }
-  },
+  }
+  confirmName () {
+    ipcRenderer.send(`rename${this.id}`, this.fileName)
+  }
+  cancel () {
+    ipcRenderer.send(`rename${this.id}`, null)
+  }
   beforeDestroy () {
-    this.$electron.ipcRenderer.removeAllListeners('rename')
+    ipcRenderer.removeAllListeners('rename')
   }
 }
 </script>

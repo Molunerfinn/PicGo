@@ -5,7 +5,7 @@
         <div class="view-title">
           微博图床设置
         </div>
-        <el-form 
+        <el-form
           ref="weiboForm"
           label-position="right"
           label-width="120px"
@@ -123,7 +123,7 @@ export default {
   left 60%
 #weibo-view
   .el-form
-    label  
+    label
       line-height 22px
       padding-bottom 0
       color #eee

@@ -5,7 +5,7 @@
         <div class="view-title">
           又拍云设置
         </div>
-        <el-form 
+        <el-form
           ref="tcyun"
           label-position="right"
           label-width="120px"
@@ -110,7 +110,7 @@ export default {
 <style lang='stylus'>
 #tcyun-view
   .el-form
-    label  
+    label
       line-height 22px
       padding-bottom 0
       color #eee
@@ -119,7 +119,7 @@ export default {
   .el-radio-group
     width 100%
     label
-      width 25%  
+      width 25%
     .el-radio-button__inner
       width 100%
   .el-radio-button:first-child
