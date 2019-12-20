@@ -29,7 +29,9 @@
     }
   },
   "commitlint": {
-    "extends": ["./node_modules/@picgo/bump-version/commitlint-picgo"]
+    "extends": [
+      "./node_modules/@picgo/bump-version/commitlint-picgo"
+    ]
   },
   "dependencies": {
     "axios": "^0.19.0",
@@ -70,12 +72,12 @@
     "husky": "^3.1.0",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
-    "typescript": "~3.5.3",
+    "typescript": "~3.7.3",
     "vue-cli-plugin-electron-builder": "^1.4.2",
     "vue-property-decorator": "^8.3.0",
     "vue-template-compiler": "^2.6.10"
   },
   "resolutions": {
-    "**/@types/node": "10.17.6"
+    "@types/node": "12.0.2"
   }
 }

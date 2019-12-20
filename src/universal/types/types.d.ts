@@ -88,12 +88,6 @@ declare enum PasteStyle {
 // global value
 declare var __static: string
 
-// third-party
-declare module 'fix-path' {
-  function fixPath(): void
-  export default fixPath
-}
-
 // PicGo Types
 declare enum PicGoHelperType {
   afterUploadPlugins = 'afterUploadPlugins',

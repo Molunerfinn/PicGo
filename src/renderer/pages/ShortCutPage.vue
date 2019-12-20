@@ -78,7 +78,7 @@
         <el-form-item
           label="快捷上传"
         >
-          <el-input 
+          <el-input
             class="align-center"
             @keydown.native.prevent="keyDetect($event)"
             v-model="shortKey"
