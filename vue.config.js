@@ -12,6 +12,8 @@ module.exports = {
   },
   pluginOptions: {
     electronBuilder: {
+      customFileProtocol: 'picgo://./',
+      externals: ['picgo'],
       chainWebpackMainProcess: config => {
         config.resolve.alias
           .set('@', resolve('src/renderer'))
