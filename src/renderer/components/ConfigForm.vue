@@ -71,9 +71,9 @@ import { cloneDeep, union } from 'lodash'
   name: 'config-form'
 })
 export default class extends Vue {
-  @Prop(Array) readonly config: Array<any> = []
-  @Prop(String) readonly type: string = ''
-  @Prop(String) readonly id: string = ''
+  @Prop() private config!: any[]
+  @Prop() readonly type!: string
+  @Prop() readonly id!: string
   configList = []
   ruleForm = {}
   @Watch('config', {

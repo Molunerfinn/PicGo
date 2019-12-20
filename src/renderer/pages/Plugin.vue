@@ -17,7 +17,7 @@
         <div class="plugin-item" :class="{ 'darwin': os === 'darwin' }">
           <div class="cli-only-badge" v-if="!item.gui" title="CLI only">CLI</div>
           <img class="plugin-item__logo" :src="item.logo"
-          onerror="this.src='static/roundLogo.png'"
+            :onerror="defaultLogo"
           >
           <div
             class="plugin-item__content"
@@ -127,6 +127,7 @@ export default class extends Vue {
   needReload = false
   id = ''
   os = ''
+  defaultLogo: string = 'this.src="https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@dev/public/roundLogo.png"'
   get npmSearchText () {
     return this.searchText.match('picgo-plugin-')
       ? this.searchText
