@@ -14,7 +14,9 @@ const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_re
 const PicGo = requireFunc('picgo') as typeof PicGoCore
 const STORE_PATH = app.getPath('userData')
 const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
-const renameURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080/#rename-page` : `file://${__dirname}/index.html#rename-page`
+const renameURL = process.env.NODE_ENV === 'development'
+  ? `${(process.env.WEBPACK_DEV_SERVER_URL as string)}#rename-page`
+  : `picgo://./index.html#rename-page`
 
 // type BrowserWindowOptions = {
 //   height: number,
@@ -76,7 +78,7 @@ const createRenameWindow = (win: BrowserWindow) => {
 
 const waitForShow = (webcontent: WebContents) => {
   return new Promise((resolve, reject) => {
-    webcontent.on('dom-ready', () => {
+    webcontent.on('did-finish-load', () => {
       resolve()
     })
   })
