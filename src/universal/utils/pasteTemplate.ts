@@ -1,4 +1,5 @@
 import db from '#/datastore'
+import { IPasteStyle } from '#/types/enum'
 
 const formatCustomLink = (customLink: string, item: ImgInfo) => {
   let fileName = item.fileName!.replace(new RegExp(`\\${item.extname}$`), '')
@@ -17,7 +18,7 @@ const formatCustomLink = (customLink: string, item: ImgInfo) => {
   return customLink
 }
 
-export default (style: PasteStyle, item: ImgInfo) => {
+export default (style: IPasteStyle, item: ImgInfo) => {
   let url = item.url || item.imgUrl
   const customLink = db.get('settings.customLink') || '$url'
   const tpl = {

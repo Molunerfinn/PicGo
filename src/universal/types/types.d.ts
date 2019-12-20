@@ -77,25 +77,12 @@ interface Bounds {
   y: number
 }
 
-declare enum PasteStyle {
-  MARKDOWN = 'markdown',
-  HTML = 'HTML',
-  URL = 'URL',
-  UBB = 'UBB',
-  CUSTOM = 'Custom'
-}
+declare type ILogType = 'success' | 'info' | 'warn' | 'error'
 
 // global value
 declare var __static: string
 
 // PicGo Types
-declare enum PicGoHelperType {
-  afterUploadPlugins = 'afterUploadPlugins',
-  beforeTransformPlugins = 'beforeTransformPlugins',
-  beforeUploadPlugins = 'beforeUploadPlugins',
-  uploader = 'uploader',
-  transformer = 'transformer'
-}
 
 interface IPicGoPlugin {
   name: string

@@ -3,6 +3,7 @@ import GuiApi from './guiApi'
 import { dialog, shell, IpcMain, IpcMainEvent, App } from 'electron'
 import db from '#/datastore'
 import PicGoCore from '~/universal/types/picgo'
+import { IPicGoHelperType } from '#/types/enum'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -20,7 +21,7 @@ interface GuiMenuItem {
 }
 
 // get uploader or transformer config
-const getConfig = (name: string, type: PicGoHelperType, ctx: PicGoCore) => {
+const getConfig = (name: string, type: IPicGoHelperType, ctx: PicGoCore) => {
   let config: any[] = []
   if (name === '') {
     return config
@@ -82,11 +83,11 @@ const handleGetPluginList = (ipcMain: IpcMain, STORE_PATH: string, CONFIG_PATH: 
           },
           uploader: {
             name: uploaderName,
-            config: handleConfigWithFunction(getConfig(uploaderName, PicGoHelperType.uploader, picgo))
+            config: handleConfigWithFunction(getConfig(uploaderName, IPicGoHelperType.uploader, picgo))
           },
           transformer: {
             name: transformerName,
-            config: handleConfigWithFunction(getConfig(uploaderName, PicGoHelperType.transformer, picgo))
+            config: handleConfigWithFunction(getConfig(uploaderName, IPicGoHelperType.transformer, picgo))
           }
         },
         enabled: picgo.getConfig(`picgoPlugins.${pluginList[i]}`),
