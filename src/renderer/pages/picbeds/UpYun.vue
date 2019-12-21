@@ -64,46 +64,42 @@
     </el-row>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
-export default {
+@Component({
   name: 'upyun',
-  mixins: [mixin],
-  data () {
-    return {
-      form: {
-        bucket: '',
-        operator: '',
-        password: '',
-        options: '',
-        path: ''
-      }
-    }
-  },
+  mixins: [mixin]
+})
+export default class extends Vue {
+  form: IUpYunConfig = {
+    bucket: '',
+    operator: '',
+    password: '',
+    options: '',
+    path: ''
+  }
   created () {
-    const config = this.$db.get('picBed.upyun')
+    const config = this.$db.get('picBed.upyun') as IUpYunConfig
     if (config) {
-      for (let i in config) {
-        this.form[i] = config[i]
-      }
+      this.form = Object.assign({}, config)
     }
-  },
-  methods: {
-    confirm () {
-      this.$refs.tcyun.validate((valid) => {
-        if (valid) {
-          this.$db.set('picBed.upyun', this.form).write()
-          const successNotification = new window.Notification('设置结果', {
-            body: '设置成功'
-          })
-          successNotification.onclick = () => {
-            return true
-          }
-        } else {
-          return false
+  }
+  confirm () {
+    // @ts-ignore
+    this.$refs.tcyun.validate((valid) => {
+      if (valid) {
+        this.$db.set('picBed.upyun', this.form)
+        const successNotification = new Notification('设置结果', {
+          body: '设置成功'
+        })
+        successNotification.onclick = () => {
+          return true
         }
-      })
-    }
+      } else {
+        return false
+      }
+    })
   }
 }
 </script>

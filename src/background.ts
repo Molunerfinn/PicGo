@@ -252,7 +252,7 @@ const createMiniWidow = () => {
   if (miniWindow) {
     return false
   }
-  let obj: BrowserWindowOptions = {
+  let obj: IBrowserWindowOptions = {
     height: 64,
     width: 64,
     show: process.platform === 'linux',
@@ -284,7 +284,7 @@ const createMiniWidow = () => {
 }
 
 const createSettingWindow = () => {
-  const options: BrowserWindowOptions = {
+  const options: IBrowserWindowOptions = {
     height: 450,
     width: 800,
     show: false,
@@ -355,7 +355,7 @@ const createMenu = () => {
   }
 }
 
-const toggleWindow = (bounds: Bounds) => {
+const toggleWindow = (bounds: IBounds) => {
   if (window!.isVisible()) {
     window!.hide()
   } else {
@@ -363,7 +363,7 @@ const toggleWindow = (bounds: Bounds) => {
   }
 }
 
-const showWindow = (bounds: Bounds) => {
+const showWindow = (bounds: IBounds) => {
   window!.setPosition(bounds.x - 98 + 11, bounds.y, false)
   window!.webContents.send('updateFiles')
   window!.show()
@@ -404,7 +404,7 @@ const uploadClipboardFiles = async () => {
   }
 }
 
-const uploadChoosedFiles = async (webContents: WebContents, files: FileWithPath[]) => {
+const uploadChoosedFiles = async (webContents: WebContents, files: IFileWithPath[]) => {
   const input = files.map(item => item.path)
   const imgs = await new Uploader(input, webContents).upload()
   if (imgs !== false) {
@@ -458,11 +458,11 @@ ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
   uploadClipboardFiles()
 })
 
-ipcMain.on('uploadChoosedFiles', async (evt: IpcMainEvent, files: FileWithPath[]) => {
+ipcMain.on('uploadChoosedFiles', async (evt: IpcMainEvent, files: IFileWithPath[]) => {
   return uploadChoosedFiles(evt.sender, files)
 })
 
-ipcMain.on('updateShortKey', (evt: IpcMainEvent, item: ShortKeyConfig, oldKey: string) => {
+ipcMain.on('updateShortKey', (evt: IpcMainEvent, item: IShortKeyConfig, oldKey: string) => {
   shortKeyUpdater(globalShortcut, item, oldKey)
   const notification = new Notification({
     title: '操作成功',

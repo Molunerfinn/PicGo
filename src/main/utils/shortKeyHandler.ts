@@ -24,7 +24,7 @@ const shortKeyHandler = (name: string) => {
 /**
  * 用于更新快捷键绑定
  */
-const shortKeyUpdater = (globalShortcut: GlobalShortcut, item: ShortKeyConfig, oldKey: string) => {
+const shortKeyUpdater = (globalShortcut: GlobalShortcut, item: IShortKeyConfig, oldKey: string) => {
   // 如果提供了旧key，则解绑
   if (oldKey) {
     globalShortcut.unregister(oldKey)
@@ -39,7 +39,7 @@ const shortKeyUpdater = (globalShortcut: GlobalShortcut, item: ShortKeyConfig, o
 }
 
 // 初始化阶段的注册
-const initShortKeyRegister = (globalShortcut: GlobalShortcut, shortKeys: ShortKeyConfig[]) => {
+const initShortKeyRegister = (globalShortcut: GlobalShortcut, shortKeys: IShortKeyConfig[]) => {
   let errorList = []
   for (let i in shortKeys) {
     try {

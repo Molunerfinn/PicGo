@@ -174,7 +174,7 @@ export default class extends Vue {
   shortKey: ShortKeyMap = {
     upload: db.get('shortKey.upload')
   }
-  picBed: PicBedType[] = []
+  picBed: IPicBedType[] = []
   // for showInputBox
   showInputBoxVisible = false
   inputBoxValue = ''
@@ -276,7 +276,7 @@ export default class extends Vue {
   openMiniWindow () {
     ipcRenderer.send('openMiniWindow')
   }
-  getPicBeds (event: IpcRendererEvent, picBeds: PicBedType[]) {
+  getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
   }
   handleInputBoxClose () {

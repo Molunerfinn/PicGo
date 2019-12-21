@@ -85,52 +85,49 @@
     </el-row>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
-export default {
-  mixins: [mixin],
+import { remote } from 'electron'
+@Component({
   name: 'tcyun',
-  data () {
-    return {
-      form: {
-        secretId: '',
-        secretKey: '',
-        bucket: '',
-        appId: '',
-        area: '',
-        path: '',
-        customUrl: '',
-        version: 'v4'
-      }
-    }
-  },
+  mixins: [mixin]
+})
+export default class extends Vue {
+  form: ITcYunConfig = {
+    secretId: '',
+    secretKey: '',
+    bucket: '',
+    appId: '',
+    area: '',
+    path: '',
+    customUrl: '',
+    version: 'v4'
+  }
   created () {
-    const config = this.$db.get('picBed.tcyun')
+    const config = this.$db.get('picBed.tcyun') as ITcYunConfig
     if (config) {
-      for (let i in config) {
-        this.form[i] = config[i]
-      }
+      this.form = Object.assign({}, config)
     }
-  },
-  methods: {
-    confirm () {
-      this.$refs.tcyun.validate((valid) => {
-        if (valid) {
-          this.$db.set('picBed.tcyun', this.form).write()
-          const successNotification = new window.Notification('设置结果', {
-            body: '设置成功'
-          })
-          successNotification.onclick = () => {
-            return true
-          }
-        } else {
-          return false
+  }
+  confirm () {
+    // @ts-ignore
+    this.$refs.tcyun.validate((valid) => {
+      if (valid) {
+        this.$db.set('picBed.tcyun', this.form)
+        const successNotification = new window.Notification('设置结果', {
+          body: '设置成功'
+        })
+        successNotification.onclick = () => {
+          return true
         }
-      })
-    },
-    openWiki () {
-      this.$electron.remote.shell.openExternal('https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#腾讯云cos')
-    }
+      } else {
+        return false
+      }
+    })
+  }
+  openWiki () {
+    remote.shell.openExternal('https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#腾讯云cos')
   }
 }
 </script>

@@ -36,43 +36,39 @@
     </el-row>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
-export default {
+@Component({
   name: 'imgur',
-  mixins: [mixin],
-  data () {
-    return {
-      form: {
-        clientId: '',
-        proxy: ''
-      }
-    }
-  },
+  mixins: [mixin]
+})
+export default class extends Vue {
+  form: IImgurConfig = {
+    clientId: '',
+    proxy: ''
+  }
   created () {
-    const config = this.$db.get('picBed.imgur')
+    const config = this.$db.get('picBed.imgur') as IImgurConfig
     if (config) {
-      for (let i in config) {
-        this.form[i] = config[i]
-      }
+      this.form = Object.assign({}, config)
     }
-  },
-  methods: {
-    confirm () {
-      this.$refs.imgur.validate((valid) => {
-        if (valid) {
-          this.$db.set('picBed.imgur', this.form).write()
-          const successNotification = new window.Notification('设置结果', {
-            body: '设置成功'
-          })
-          successNotification.onclick = () => {
-            return true
-          }
-        } else {
-          return false
+  }
+  confirm () {
+    // @ts-ignore
+    this.$refs.imgur.validate((valid) => {
+      if (valid) {
+        this.$db.set('picBed.imgur', this.form)
+        const successNotification = new Notification('设置结果', {
+          body: '设置成功'
+        })
+        successNotification.onclick = () => {
+          return true
         }
-      })
-    }
+      } else {
+        return false
+      }
+    })
   }
 }
 </script>

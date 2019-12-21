@@ -71,48 +71,44 @@
     </el-row>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
-export default {
-  mixins: [mixin],
+@Component({
   name: 'qiniu',
-  data () {
-    return {
-      form: {
-        accessKey: '',
-        secretKey: '',
-        bucket: '',
-        url: '',
-        area: '',
-        options: '',
-        path: ''
-      }
-    }
-  },
+  mixins: [mixin]
+})
+export default class extends Vue {
+  form: IQiniuConfig = {
+    accessKey: '',
+    secretKey: '',
+    bucket: '',
+    url: '',
+    area: '',
+    options: '',
+    path: ''
+  }
   created () {
-    const config = this.$db.get('picBed.qiniu')
+    const config = this.$db.get('picBed.qiniu') as IQiniuConfig
     if (config) {
-      for (let i in config) {
-        this.form[i] = config[i]
-      }
+      this.form = Object.assign({}, config)
     }
-  },
-  methods: {
-    confirm () {
-      this.$refs.qiniu.validate((valid) => {
-        if (valid) {
-          this.$db.set('picBed.qiniu', this.form).write()
-          const successNotification = new window.Notification('设置结果', {
-            body: '设置成功'
-          })
-          successNotification.onclick = () => {
-            return true
-          }
-        } else {
-          return false
+  }
+  confirm () {
+    // @ts-ignore
+    this.$refs.qiniu.validate((valid) => {
+      if (valid) {
+        this.$db.set('picBed.qiniu', this.form)
+        const successNotification = new Notification('设置结果', {
+          body: '设置成功'
+        })
+        successNotification.onclick = () => {
+          return true
         }
-      })
-    }
+      } else {
+        return false
+      }
+    })
   }
 }
 </script>

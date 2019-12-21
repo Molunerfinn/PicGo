@@ -102,13 +102,13 @@ import { ipcRenderer } from 'electron'
   name: 'shortcut-page'
 })
 export default class extends Vue {
-  list: ShortKeyConfig[] = []
+  list: IShortKeyConfig[] = []
   keyBindingVisible = false
   shortKeyName = ''
   shortKey = ''
   currentIndex = 0
   created () {
-    const shortKeyConfig = this.$db.get('settings.shortKey') as ShortKeyConfigs
+    const shortKeyConfig = this.$db.get('settings.shortKey') as IShortKeyConfigs
     this.list = Object.keys(shortKeyConfig).map(item => shortKeyConfig[item])
   }
   @Watch('keyBindingVisible')
@@ -119,7 +119,7 @@ export default class extends Vue {
     const [origin] = item.split(':')
     return origin
   }
-  toggleEnable (item: ShortKeyConfig) {
+  toggleEnable (item: IShortKeyConfig) {
     const status = !item.enable
     item.enable = status
     this.$db.set(`settings.shortKey.${item.name}.enable`, status)

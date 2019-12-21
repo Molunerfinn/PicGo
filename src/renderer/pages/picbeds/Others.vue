@@ -27,57 +27,61 @@
     </el-row>
   </div>
 </template>
-<script>
-import ConfigForm from '@/components/ConfigForm'
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+import ConfigForm from '@/components/ConfigForm.vue'
 import mixin from '@/utils/ConfirmButtonMixin'
-export default {
+import {
+  ipcRenderer,
+  IpcRendererEvent
+} from 'electron'
+
+@Component({
   name: 'OtherPicBed',
   mixins: [mixin],
   components: {
     ConfigForm
-  },
-  data () {
-    return {
-      type: '',
-      config: [],
-      picBedName: ''
-    }
-  },
+  }
+})
+export default class extends Vue {
+  type: string = ''
+  config: any[] = []
+  picBedName: string = ''
   created () {
     this.type = this.$route.params.type
-    this.$electron.ipcRenderer.send('getPicBedConfig', this.$route.params.type)
-    this.$electron.ipcRenderer.on('getPicBedConfig', this.getPicBeds)
-  },
-  methods: {
-    async handleConfirm () {
-      const result = await this.$refs.configForm.validate()
-      if (result !== false) {
-        this.$db.set(`picBed.${this.type}`, result)
-        const successNotification = new window.Notification('设置结果', {
-          body: '设置成功'
-        })
-        successNotification.onclick = () => {
-          return true
-        }
-      }
-    },
-    setDefaultPicBed (type) {
-      this.$db.set('picBed.current', type)
-      this.defaultPicBed = type
-      const successNotification = new window.Notification('设置默认图床', {
+    ipcRenderer.send('getPicBedConfig', this.$route.params.type)
+    ipcRenderer.on('getPicBedConfig', this.getPicBeds)
+  }
+  async handleConfirm () {
+    // @ts-ignore
+    const result = await this.$refs.configForm.validate()
+    if (result !== false) {
+      this.$db.set(`picBed.${this.type}`, result)
+      const successNotification = new Notification('设置结果', {
         body: '设置成功'
       })
       successNotification.onclick = () => {
         return true
       }
-    },
-    getPicBeds (event, config, name) {
-      this.config = config
-      this.picBedName = name
     }
-  },
+  }
+  setDefaultPicBed (type: string) {
+    this.$db.set('picBed.current', type)
+    // @ts-ignore 来自mixin的数据
+    this.defaultPicBed = type
+    const successNotification = new Notification('设置默认图床', {
+      body: '设置成功'
+    })
+    successNotification.onclick = () => {
+      return true
+    }
+  }
+  getPicBeds (event: IpcRendererEvent, config: any[], name: string) {
+    this.config = config
+    this.picBedName = name
+  }
   beforeDestroy () {
-    this.$electron.ipcRenderer.removeListener('getPicBedConfig', this.getPicBeds)
+    ipcRenderer.removeListener('getPicBedConfig', this.getPicBeds)
   }
 }
 </script>

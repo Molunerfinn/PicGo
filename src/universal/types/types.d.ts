@@ -19,30 +19,30 @@ interface ImgInfo {
   [propName: string]: any
 }
 
-interface PicBedType {
+interface IPicBedType {
   type: string
   name: string
   visible: boolean
 }
 
 // Config Settings
-interface ShortKeyConfig {
+interface IShortKeyConfig {
   enable: boolean
   key: string // 按键
   name: string
   label: string
 }
 
-interface ShortKeyConfigs {
-  [propName: string]: ShortKeyConfig
+interface IShortKeyConfigs {
+  [propName: string]: IShortKeyConfig
 }
 
-interface OldShortKeyConfigs {
+interface IOldShortKeyConfigs {
   upload: string
 }
 
 // Main process
-interface BrowserWindowOptions {
+interface IBrowserWindowOptions {
   height: number,
   width: number,
   show: boolean,
@@ -67,12 +67,12 @@ interface BrowserWindowOptions {
   alwaysOnTop?: boolean
 }
 
-interface FileWithPath {
+interface IFileWithPath {
   path: string
   name?: string
 }
 
-interface Bounds {
+interface IBounds {
   x: number
   y: number
 }
@@ -139,4 +139,57 @@ interface INPMSearchResultObject {
 interface IShowInputBoxOption {
   title: string
   placeholder: string
+}
+
+// PicBeds
+
+interface IAliYunConfig {
+  accessKeyId: string
+  accessKeySecret: string,
+  bucket: string,
+  area: string,
+  path: string,
+  customUrl: string
+}
+
+interface IGitHubConfig {
+  repo: string,
+  token: string,
+  path: string,
+  customUrl: string,
+  branch: string
+}
+
+interface IImgurConfig {
+  clientId: string,
+  proxy: string
+}
+
+interface IQiniuConfig {
+  accessKey: string,
+  secretKey: string,
+  bucket: string,
+  url: string,
+  area: string,
+  options: string,
+  path: string
+}
+
+interface ITcYunConfig {
+  secretId: string,
+  secretKey: string,
+  bucket: string,
+  appId: string,
+  area: string,
+  path: string,
+  customUrl: string,
+  version: 'v4' | 'v5'
+}
+
+interface IUpYunConfig {
+  bucket: string,
+  operator: string,
+  password: string,
+  options: string,
+  path: string
 }

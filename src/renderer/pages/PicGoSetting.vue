@@ -283,7 +283,7 @@ export default class extends Vue {
     miniWindowOntop: db.get('settings.miniWindowOntop') || false,
     logLevel
   }
-  picBed: PicBedType[] = []
+  picBed: IPicBedType[] = []
   logFileVisible = false
   keyBindingVisible = false
   customLinkVisible = false
@@ -325,7 +325,7 @@ export default class extends Vue {
     ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
   }
-  getPicBeds (event: Event, picBeds: PicBedType[]) {
+  getPicBeds (event: Event, picBeds: IPicBedType[]) {
     this.picBed = picBeds
     this.form.showPicBedList = this.picBed.map(item => {
       if (item.visible) {

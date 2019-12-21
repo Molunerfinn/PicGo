@@ -1,6 +1,6 @@
 import DB from '#/datastore'
 // from v2.1.2
-const updateShortKeyFromVersion212 = (db: typeof DB, shortKeyConfig: ShortKeyConfigs | OldShortKeyConfigs) => {
+const updateShortKeyFromVersion212 = (db: typeof DB, shortKeyConfig: IShortKeyConfigs | IOldShortKeyConfigs) => {
   let needUpgrade = false
   if (shortKeyConfig.upload) {
     needUpgrade = true

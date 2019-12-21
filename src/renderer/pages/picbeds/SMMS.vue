@@ -15,24 +15,23 @@
     </el-row>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
-export default {
-  mixins: [mixin],
-  name: 'upyun',
-  data () {
-    return {}
-  },
-  methods: {
-    confirm () {
-      this.$db.set('picBed.smms', true).write()
-      this.setDefaultPicBed('smms')
-      const successNotification = new window.Notification('设置结果', {
-        body: '设置成功'
-      })
-      successNotification.onclick = () => {
-        return true
-      }
+@Component({
+  name: 'smms',
+  mixins: [mixin]
+})
+export default class extends Vue {
+  confirm () {
+    this.$db.set('picBed.smms', true)
+    // @ts-ignore 来自mixin
+    this.setDefaultPicBed('smms')
+    const successNotification = new window.Notification('设置结果', {
+      body: '设置成功'
+    })
+    successNotification.onclick = () => {
+      return true
     }
   }
 }

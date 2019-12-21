@@ -3,7 +3,7 @@
     <el-row :gutter="16">
       <el-col :span="16" :offset="4">
         <div class="view-title">
-          微博图床设置
+          微博图床设置[已停止支持]
         </div>
         <el-form
           ref="weiboForm"

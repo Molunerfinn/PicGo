@@ -40,7 +40,7 @@ export default class extends Vue {
   screenY: number = -1
   menu: Electron.Menu | null = null
   os = ''
-  picBed: PicBedType[] = []
+  picBed: IPicBedType[] = []
   created () {
     this.os = process.platform
     ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, progress: number) => {
@@ -90,7 +90,7 @@ export default class extends Vue {
     document.getElementById('file-uploader').value = ''
   }
   ipcSendFiles (files: FileList) {
-    let sendFiles: FileWithPath[] = []
+    let sendFiles: IFileWithPath[] = []
     Array.from(files).forEach((item, index) => {
       let obj = {
         name: item.name,

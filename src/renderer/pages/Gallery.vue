@@ -143,7 +143,7 @@ export default class extends Vue {
     UBB: 'UBB',
     Custom: 'Custom'
   }
-  picBed: PicBedType[] = []
+  picBed: IPicBedType[] = []
   beforeRouteEnter (to: any, from: any, next: any) {
     next((vm: any) => {
       vm.getGallery()
@@ -166,7 +166,7 @@ export default class extends Vue {
   set filterList (val) {
     this.images = val
   }
-  getPicBeds (event: IpcRendererEvent, picBeds: PicBedType[]) {
+  getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
   }
   getGallery () {

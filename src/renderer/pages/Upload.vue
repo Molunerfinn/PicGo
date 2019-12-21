@@ -72,7 +72,7 @@ export default class extends Vue {
   showProgress = false
   showError = false
   pasteStyle = ''
-  picBed: PicBedType[] = []
+  picBed: IPicBedType[] = []
   picBedName = ''
   menu: Electron.Menu | null= null
   mounted () {
@@ -122,7 +122,7 @@ export default class extends Vue {
     (document.getElementById('file-uploader') as HTMLInputElement).value = ''
   }
   ipcSendFiles (files: FileList) {
-    let sendFiles: FileWithPath[] = []
+    let sendFiles: IFileWithPath[] = []
     Array.from(files).forEach((item, index) => {
       let obj = {
         name: item.name,
@@ -149,7 +149,7 @@ export default class extends Vue {
       }
     })
   }
-  getPicBeds (event: Event, picBeds: PicBedType[]) {
+  getPicBeds (event: Event, picBeds: IPicBedType[]) {
     this.picBed = picBeds
     this.getDefaultPicBed()
   }

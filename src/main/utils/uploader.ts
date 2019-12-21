@@ -36,7 +36,7 @@ const renameURL = process.env.NODE_ENV === 'development'
 // }
 
 const createRenameWindow = (win: BrowserWindow) => {
-  let options: BrowserWindowOptions = {
+  let options: IBrowserWindowOptions = {
     height: 175,
     width: 300,
     show: true,
