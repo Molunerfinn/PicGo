@@ -8,7 +8,7 @@ const updateShortKeyFromVersion212 = (db: typeof DB, shortKeyConfig: IShortKeyCo
     shortKeyConfig['picgo:upload'] = {
       enable: true,
       key: shortKeyConfig.upload,
-      name: 'picgo:upload',
+      name: 'upload',
       label: '快捷上传'
     }
     delete shortKeyConfig.upload

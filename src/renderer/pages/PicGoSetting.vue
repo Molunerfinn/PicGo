@@ -292,7 +292,7 @@ export default class extends Vue {
   customLink = {
     value: db.get('settings.customLink') || '$url'
   }
-  shortKey: ShortKeyMap = {
+  shortKey: IShortKeyMap = {
     upload: db.get('settings.shortKey.upload')
   }
   proxy = db.get('picBed.proxy') || ''
@@ -492,7 +492,7 @@ export default class extends Vue {
     remote.shell.openExternal('https://picgo.github.io/PicGo-Doc/zh/guide/config.html#picgo设置')
   }
   goShortCutPage () {
-    this.$router.push('shortcut')
+    this.$router.push('shortKey')
   }
   beforeDestroy () {
     ipcRenderer.removeListener('getPicBeds', this.getPicBeds)

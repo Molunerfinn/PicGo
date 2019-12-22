@@ -3,68 +3,56 @@ import {
   BrowserWindow,
   clipboard,
   Notification,
-  IpcMain,
-  WebContents
+  WebContents,
+  ipcMain
 } from 'electron'
 import db from '#/datastore'
 import Uploader from './uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
-import PicGoCore from '~/universal/types/picgo'
 const WEBCONTENTS = Symbol('WEBCONTENTS')
-const IPCMAIN = Symbol('IPCMAIN')
-const PICGO = Symbol('PICGO')
 
-class GuiApi {
+class GuiApi implements IGuiApi {
   private [WEBCONTENTS]: WebContents
-  private [IPCMAIN]: IpcMain
-  private [PICGO]: PicGoCore
-  constructor (ipcMain: IpcMain, webcontents: WebContents, picgo: PicGoCore) {
+  constructor (webcontents: WebContents) {
     this[WEBCONTENTS] = webcontents
-    this[IPCMAIN] = ipcMain
-    this[PICGO] = picgo
   }
 
-  /**
-   * for plugin showInputBox
-   * @param {object} options
-   * return type is string or ''
-   */
-  showInputBox (options: IShowInputBoxOption) {
-    if (options === undefined) {
-      options = {
-        title: '',
-        placeholder: ''
-      }
+  private async showSettingWindow () {
+    const settingWindow = BrowserWindow.fromWebContents(this[WEBCONTENTS])
+    if (settingWindow.isVisible()) {
+      return true
     }
-    this[WEBCONTENTS].send('showInputBox', options)
+    settingWindow.show()
     return new Promise((resolve, reject) => {
-      this[IPCMAIN].once('showInputBox', (event: Event, value: string) => {
+      setTimeout(() => {
+        resolve()
+      }, 1000) // TODO: a better way to wait page loaded.
+    })
+  }
+
+  async showInputBox (options: IShowInputBoxOption = {
+    title: '',
+    placeholder: ''
+  }) {
+    await this.showSettingWindow()
+    this[WEBCONTENTS].send('showInputBox', options)
+    return new Promise<string>((resolve, reject) => {
+      ipcMain.once('showInputBox', (event: Event, value: string) => {
         resolve(value)
       })
     })
   }
 
-  /**
-   * for plugin show file explorer
-   * @param {object} options
-   */
-  showFileExplorer (options: {}) {
-    if (options === undefined) {
-      options = {}
-    }
-    return new Promise((resolve, reject) => {
+  showFileExplorer (options: IShowFileExplorerOption = {}) {
+    return new Promise<string>((resolve, reject) => {
       dialog.showOpenDialog(BrowserWindow.fromWebContents(this[WEBCONTENTS]), options, (filename: string) => {
         resolve(filename)
       })
     })
   }
 
-  /**
-   * for plugin to upload file
-   * @param {array} input
-   */
-  async upload (input: []) {
-    const imgs = await new Uploader(input, this[WEBCONTENTS], this[PICGO]).upload()
+  async upload (input: IUploadOption) {
+    const imgs = await new Uploader(input, this[WEBCONTENTS]).upload()
     if (imgs !== false) {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       let pasteText = ''
@@ -88,11 +76,7 @@ class GuiApi {
     return []
   }
 
-  /**
-   * For notification
-   * @param {Object} options
-   */
-  showNotification (options = {
+  showNotification (options: IShowNotificationOption = {
     title: '',
     body: ''
   }) {
@@ -103,17 +87,13 @@ class GuiApi {
     notification.show()
   }
 
-  /**
-   *
-   * @param {Object} options
-   */
-  showMessageBox (options = {
+  showMessageBox (options: IShowMessageBoxOption = {
     title: '',
     message: '',
     type: 'info',
     buttons: ['Yes', 'No']
   }) {
-    return new Promise((resolve, reject) => {
+    return new Promise<IShowMessageBoxResult>((resolve, reject) => {
       dialog.showMessageBox(
         BrowserWindow.fromWebContents(this[WEBCONTENTS]),
         options

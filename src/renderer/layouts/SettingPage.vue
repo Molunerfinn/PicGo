@@ -171,7 +171,7 @@ export default class extends Vue {
     ]
   }
   os = ''
-  shortKey: ShortKeyMap = {
+  shortKey: IShortKeyMap = {
     upload: db.get('shortKey.upload')
   }
   picBed: IPicBedType[] = []

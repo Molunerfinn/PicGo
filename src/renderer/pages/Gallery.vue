@@ -131,7 +131,7 @@ export default class extends Vue {
     id: null,
     imgUrl: ''
   }
-  choosedList: ObjT<boolean> = {}
+  choosedList: IObjT<boolean> = {}
   choosedPicBed: string[] = []
   searchText = ''
   handleBarActive = false
@@ -173,7 +173,7 @@ export default class extends Vue {
     if (this.choosedPicBed.length > 0) {
       let arr: ImgInfo[] = []
       this.choosedPicBed.forEach(item => {
-        let obj: Obj = {
+        let obj: IObj = {
           type: item
         }
         if (this.searchText) {
@@ -288,7 +288,7 @@ export default class extends Vue {
   cleanSearch () {
     this.searchText = ''
   }
-  isMultiple (obj: Obj) {
+  isMultiple (obj: IObj) {
     return Object.values(obj).some(item => item)
   }
   multiRemove () {

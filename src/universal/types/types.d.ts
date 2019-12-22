@@ -1,9 +1,9 @@
 // global
-interface Obj {
+interface IObj {
   [propName: string]: any
 }
 
-interface ObjT<T> {
+interface IObjT<T> {
   [propName: string]: T
 }
 
@@ -31,6 +31,14 @@ interface IShortKeyConfig {
   key: string // 按键
   name: string
   label: string
+  from?: string
+}
+
+interface IPluginShortKeyConfig {
+  key: string
+  name: string
+  label: string
+  handle: IShortKeyHandler
 }
 
 interface IShortKeyConfigs {
@@ -39,6 +47,11 @@ interface IShortKeyConfigs {
 
 interface IOldShortKeyConfigs {
   upload: string
+}
+
+interface IKeyCommandType {
+  key: string,
+  command: string
 }
 
 // Main process
@@ -83,7 +96,7 @@ declare type ILogType = 'success' | 'info' | 'warn' | 'error'
 declare var __static: string
 
 // PicGo Types
-
+type ICtx = import('picgo')
 interface IPicGoPlugin {
   name: string
   author: string
@@ -135,14 +148,53 @@ interface INPMSearchResultObject {
 }
 
 // GuiApi
-
+interface IGuiApi {
+  showInputBox: (options: IShowInputBoxOption) => Promise<string>
+  showFileExplorer: (options: IShowFileExplorerOption) => Promise<string>
+  upload: (input: IUploadOption) => Promise<ImgInfo[]>
+  showNotification: (options?: IShowNotificationOption) => void
+  showMessageBox: (options?: IShowMessageBoxOption) => Promise<IShowMessageBoxResult>
+}
 interface IShowInputBoxOption {
   title: string
   placeholder: string
 }
 
-// PicBeds
+type IShowFileExplorerOption = IObj
 
+type IUploadOption = undefined | string[]
+
+interface IShowNotificationOption {
+  title: string
+  body: string
+}
+
+interface IShowMessageBoxOption {
+  title: string
+  message: string
+  type: string
+  buttons: string[]
+}
+
+interface IShowMessageBoxResult {
+  result: number
+  checkboxChecked: boolean
+}
+
+interface IShortKeyHandlerObj {
+  handle: IShortKeyHandler
+  key: string
+  label: string
+}
+
+type IShortKeyHandler = (ctx: ICtx, guiApi?: IGuiApi) => Promise<void | ICtx>
+
+interface shortKeyHandlerMap {
+  from: string
+  handle: IShortKeyHandler
+}
+
+// PicBeds
 interface IAliYunConfig {
   accessKeyId: string
   accessKeySecret: string,
@@ -193,3 +245,5 @@ interface IUpYunConfig {
   options: string,
   path: string
 }
+
+type ILoggerType = string | Error | boolean | number | undefined

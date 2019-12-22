@@ -38,7 +38,7 @@
             label="来源"
           >
             <template slot-scope="scope">
-              {{ calcOrigin(scope.row.name) }}
+              {{ calcOriginShowName(scope.row.from) }}
             </template>
           </el-table-column>
           <el-table-column
@@ -57,7 +57,7 @@
               <el-button
                 class="edit"
                 size="mini"
-                @click="openKeyBindingDialog(scope.row.name, scope.$index)"
+                @click="openKeyBindingDialog(scope.row, scope.$index)"
                 type="text">
                 编辑
               </el-button>
@@ -96,20 +96,25 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import keyDetect from '@/utils/key-binding'
-import { ipcRenderer } from 'electron'
+import { ipcRenderer, IpcRendererEvent } from 'electron'
 
 @Component({
-  name: 'shortcut-page'
+  name: 'shortkey-page'
 })
 export default class extends Vue {
   list: IShortKeyConfig[] = []
   keyBindingVisible = false
-  shortKeyName = ''
+  command = ''
   shortKey = ''
   currentIndex = 0
   created () {
     const shortKeyConfig = this.$db.get('settings.shortKey') as IShortKeyConfigs
-    this.list = Object.keys(shortKeyConfig).map(item => shortKeyConfig[item])
+    this.list = Object.keys(shortKeyConfig).map(item => {
+      return {
+        ...shortKeyConfig[item],
+        from: this.calcOrigin(item)
+      }
+    })
   }
   @Watch('keyBindingVisible')
   onKeyBindingVisibleChange (val: boolean) {
@@ -119,32 +124,41 @@ export default class extends Vue {
     const [origin] = item.split(':')
     return origin
   }
+  calcOriginShowName (item: string) {
+    return item.replace('picgo-plugin-', '')
+  }
   toggleEnable (item: IShortKeyConfig) {
     const status = !item.enable
     item.enable = status
-    this.$db.set(`settings.shortKey.${item.name}.enable`, status)
-    ipcRenderer.send('updateShortKey', item)
+    // this.$db.set(`settings.shortKey.${item.name}.enable`, status)
+    ipcRenderer.send('bindOrUnbindShortKey', item, item.from)
   }
   keyDetect (event: KeyboardEvent) {
     this.shortKey = keyDetect(event).join('+')
   }
-  openKeyBindingDialog (name: string, index: number) {
-    this.shortKeyName = name
-    this.shortKey = this.$db.get(`settings.shortKey.${name}.key`)
+  openKeyBindingDialog (config: IShortKeyConfig, index: number) {
+    this.command = `${config.from}:${config.name}`
+    this.shortKey = this.$db.get(`settings.shortKey.${this.command}.key`)
     this.currentIndex = index
     this.keyBindingVisible = true
   }
   cancelKeyBinding () {
     this.keyBindingVisible = false
-    this.shortKey = this.$db.get(`settings.shortKey.${this.shortKeyName}.key`)
+    this.shortKey = this.$db.get(`settings.shortKey.${this.command}.key`)
   }
   confirmKeyBinding () {
-    const oldKey = this.$db.get(`settings.shortKey.${this.shortKeyName}.key`)
-    this.$db.set(`settings.shortKey.${this.shortKeyName}.key`, this.shortKey)
-    const newKey = this.$db.get(`settings.shortKey.${this.shortKeyName}`)
-    ipcRenderer.send('updateShortKey', newKey, oldKey)
-    this.list[this.currentIndex].key = this.shortKey
-    this.keyBindingVisible = false
+    const oldKey = this.$db.get(`settings.shortKey.${this.command}.key`)
+    // this.$db.set(`settings.shortKey.${this.command}.key`, this.shortKey)
+    // const newKey = this.$db.get(`settings.shortKey.${this.command}`)
+    const config = Object.assign({}, this.list[this.currentIndex])
+    config.key = this.shortKey
+    ipcRenderer.send('updateShortKey', config, oldKey, config.from)
+    ipcRenderer.once('updateShortKeyResponse', (evt: IpcRendererEvent, result) => {
+      if (result) {
+        this.keyBindingVisible = false
+        this.list[this.currentIndex].key = this.shortKey
+      }
+    })
   }
   beforeDestroy () {
     ipcRenderer.send('toggleShortKeyModifiedMode', false)

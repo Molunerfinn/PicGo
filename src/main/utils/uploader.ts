@@ -88,7 +88,7 @@ const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> 
   return new Promise((resolve, reject) => {
     ipcMain.once(`rename${id}`, (evt: Event, newName: string) => {
       resolve(newName)
-      window.hide()
+      window.close()
     })
     window.on('close', () => {
       resolve(null)
@@ -101,7 +101,7 @@ class Uploader {
   private picgo: PicGoCore
   private webContents: WebContents
   private img: undefined | string[]
-  constructor (img: undefined | string[], webContents: WebContents, picgo: PicGoCore | undefined = undefined) {
+  constructor (img: IUploadOption, webContents: WebContents, picgo: PicGoCore | undefined = undefined) {
     this.img = img
     this.webContents = webContents
     this.picgo = picgo || new PicGo(CONFIG_PATH)

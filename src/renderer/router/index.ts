@@ -95,9 +95,9 @@ export default new Router({
           name: 'plugin'
         },
         {
-          path: 'shortcut',
-          component: () => import(/* webpackChunkName: "ShortkeyPage" */ '@/pages/ShortCut.vue'),
-          name: 'shortcut'
+          path: 'shortKey',
+          component: () => import(/* webpackChunkName: "ShortkeyPage" */ '@/pages/ShortKey.vue'),
+          name: 'shortKey'
         }
       ]
     },

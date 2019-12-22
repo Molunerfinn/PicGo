@@ -9,6 +9,6 @@ interface ISettingForm {
   logLevel: string[]
 }
 
-interface ShortKeyMap {
+interface IShortKeyMap {
   [propName: string]: string
 }

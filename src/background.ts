@@ -33,10 +33,7 @@ import bus from '~/main/utils/eventBus'
 import {
   updateShortKeyFromVersion212
 } from '~/main/migrate/shortKeyUpdateHelper'
-import {
-  shortKeyUpdater,
-  initShortKeyRegister
-} from '~/main/utils/shortKeyHandler'
+import shortKeyHandler from '~/main/utils/shortKeyHandler'
 import logger from '~/main/utils/logger'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -462,13 +459,39 @@ ipcMain.on('uploadChoosedFiles', async (evt: IpcMainEvent, files: IFileWithPath[
   return uploadChoosedFiles(evt.sender, files)
 })
 
-ipcMain.on('updateShortKey', (evt: IpcMainEvent, item: IShortKeyConfig, oldKey: string) => {
-  shortKeyUpdater(globalShortcut, item, oldKey)
-  const notification = new Notification({
-    title: '操作成功',
-    body: '你的快捷键已经修改成功'
-  })
-  notification.show()
+ipcMain.on('updateShortKey', (evt: IpcMainEvent, item: IShortKeyConfig, oldKey: string, from: string) => {
+  const result = shortKeyHandler.updateShortKey(item, oldKey, from)
+  evt.sender.send('updateShortKeyResponse', result)
+  if (result) {
+    const notification = new Notification({
+      title: '操作成功',
+      body: '你的快捷键已经修改成功'
+    })
+    notification.show()
+  } else {
+    const notification = new Notification({
+      title: '操作失败',
+      body: '快捷键冲突，请重新设置'
+    })
+    notification.show()
+  }
+})
+
+ipcMain.on('bindOrUnbindShortKey', (evt: IpcMainEvent, item: IShortKeyConfig, from: string) => {
+  const result = shortKeyHandler.bindOrUnbindShortKey(item, from)
+  if (result) {
+    const notification = new Notification({
+      title: '操作成功',
+      body: '你的快捷键已经修改成功'
+    })
+    notification.show()
+  } else {
+    const notification = new Notification({
+      title: '操作失败',
+      body: '快捷键冲突，请重新设置'
+    })
+    notification.show()
+  }
 })
 
 ipcMain.on('updateCustomLink', () => {
@@ -585,7 +608,7 @@ app.on('ready', async () => {
   // 不需要阻塞
   process.nextTick(() => {
     updateShortKeyFromVersion212(db, db.get('settings.shortKey'))
-    initShortKeyRegister(globalShortcut, db.get('settings.shortKey'))
+    shortKeyHandler.init()
   })
 
   if (process.env.NODE_ENV !== 'development') {
@@ -638,10 +661,23 @@ app.setLoginItemSettings({
 
 function initEventCenter () {
   const eventList: any = {
-    'picgo:upload': uploadClipboardFiles
+    'picgo:upload': uploadClipboardFiles,
+    'createSettingWindow': shortKeyRequestSettingWindow,
+    hideMiniWindow
   }
   for (let i in eventList) {
     bus.on(i, eventList[i])
+  }
+}
+
+function shortKeyRequestSettingWindow (command: string) {
+  if (!settingWindow) createSettingWindow()
+  bus.emit('createSettingWindowDone', command, settingWindow!.id)
+}
+
+function hideMiniWindow () {
+  if (miniWindow && miniWindow.isVisible()) {
+    miniWindow.hide()
   }
 }
 

@@ -15,7 +15,7 @@ class Logger {
     warn: IChalkType.warn,
     error: IChalkType.error
   }
-  protected handleLog (type: ILogType, msg: string | Error): string | Error | undefined {
+  protected handleLog (type: ILogType, msg: ILoggerType): ILoggerType {
     // if configPath is invalid then this.ctx.config === undefined
     // if not then check config.silent
     const log = chalk[this.level[type]](`[PicGo ${type.toUpperCase()}]:`)
@@ -26,7 +26,7 @@ class Logger {
     return msg
   }
 
-  protected handleWriteLog (type: string, msg: string | Error): void {
+  protected handleWriteLog (type: string, msg: ILoggerType): void {
     try {
       const logLevel = db.get('settings.logLevel')
       const logPath = db.get('settings.logPath') || path.join(baseDir, './picgo.log')
@@ -56,19 +56,19 @@ class Logger {
     }
   }
 
-  success (msg: string | Error): string | Error | undefined {
+  success (msg: ILoggerType): ILoggerType {
     return this.handleLog('success', msg)
   }
 
-  info (msg: string | Error): string | Error | undefined {
+  info (msg: ILoggerType): ILoggerType {
     return this.handleLog('info', msg)
   }
 
-  error (msg: string | Error): string | Error | undefined {
+  error (msg: ILoggerType): ILoggerType {
     return this.handleLog('error', msg)
   }
 
-  warn (msg: string | Error): string | Error | undefined {
+  warn (msg: ILoggerType): ILoggerType {
     return this.handleLog('warn', msg)
   }
 }

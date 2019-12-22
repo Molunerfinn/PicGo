@@ -37,7 +37,7 @@ class DB {
       this.db.set('settings.shortKey[picgo:upload]', {
         enable: true,
         key: 'CommandOrControl+Shift+P',
-        name: 'picgo:upload',
+        name: 'upload',
         label: '快捷上传'
       }).write()
     }
@@ -57,6 +57,9 @@ class DB {
   insert (key: string, value: any): void {
     // @ts-ignore
     return this.read().get(key).insert(value).write()
+  }
+  unset (key: string, value: any): boolean {
+    return this.read().get(key).unset(value).write()
   }
 }
 
