@@ -5,37 +5,15 @@ import {
   ipcMain,
   WebContents
 } from 'electron'
-import path from 'path'
 import dayjs from 'dayjs'
-import PicGoCore from '~/universal/types/picgo'
+import picgo from '~/main/utils/picgo'
+import db from '#/datastore'
 
-// eslint-disable-next-line
-const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
-const PicGo = requireFunc('picgo') as typeof PicGoCore
-const STORE_PATH = app.getPath('userData')
-const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
 const renameURL = process.env.NODE_ENV === 'development'
   ? `${(process.env.WEBPACK_DEV_SERVER_URL as string)}#rename-page`
   : `picgo://./index.html#rename-page`
 
-// type BrowserWindowOptions = {
-//   height: number,
-//   width: number,
-//   show: boolean,
-//   fullscreenable: boolean,
-//   resizable: boolean,
-//   vibrancy: string | any,
-//   webPreferences: {
-//     nodeIntegration: boolean,
-//     nodeIntegrationInWorker: boolean,
-//     backgroundThrottling: boolean
-//   },
-//   backgroundColor?: string
-//   autoHideMenuBar?: boolean
-//   transparent?: boolean
-// }
-
-const createRenameWindow = (win: BrowserWindow) => {
+const createRenameWindow = (currentWindow: BrowserWindow) => {
   let options: IBrowserWindowOptions = {
     height: 175,
     width: 300,
@@ -60,9 +38,9 @@ const createRenameWindow = (win: BrowserWindow) => {
   const window = new BrowserWindow(options)
   window.loadURL(renameURL)
   // check if this window is visible
-  if (win.isVisible()) {
+  if (currentWindow && currentWindow.isVisible()) {
     // bounds: { x: 821, y: 75, width: 800, height: 450 }
-    const bounds = win.getBounds()
+    const bounds = currentWindow.getBounds()
     const positionX = bounds.x + bounds.width / 2 - 150
     let positionY
     // if is the settingWindow
@@ -98,27 +76,34 @@ const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> 
 }
 
 class Uploader {
-  private picgo: PicGoCore
-  private webContents: WebContents
-  private img: undefined | string[]
-  constructor (img: IUploadOption, webContents: WebContents, picgo: PicGoCore | undefined = undefined) {
-    this.img = img
-    this.webContents = webContents
-    this.picgo = picgo || new PicGo(CONFIG_PATH)
+  private webContents: WebContents | null = null
+  private currentWindow: BrowserWindow | null = null
+  constructor () {
+    this.init()
   }
 
-  upload (): Promise<ImgInfo[]|false> {
-    const win = BrowserWindow.fromWebContents(this.webContents)
-    const picgo = this.picgo
-    picgo.config.debug = true
-    // for picgo-core
-    picgo.config.PICGO_ENV = 'GUI'
-    let input = this.img
+  init () {
+    picgo.on('notification', message => {
+      const notification = new Notification(message)
+      notification.show()
+    })
 
+    picgo.on('uploadProgress', progress => {
+      this.webContents!.send('uploadProgress', progress)
+    })
+    picgo.on('beforeTransform', ctx => {
+      if (db.get('settings.uploadNotification')) {
+        const notification = new Notification({
+          title: '上传进度',
+          body: '正在上传'
+        })
+        notification.show()
+      }
+    })
     picgo.helper.beforeUploadPlugins.register('renameFn', {
       handle: async ctx => {
-        const rename = picgo.getConfig('settings.rename')
-        const autoRename = picgo.getConfig('settings.autoRename')
+        const rename = db.get('settings.rename')
+        const autoRename = db.get('settings.autoRename')
         await Promise.all(ctx.output.map(async (item, index) => {
           let name: undefined | string | null
           let fileName: string | undefined
@@ -128,7 +113,7 @@ class Uploader {
             fileName = item.fileName
           }
           if (rename) {
-            const window = createRenameWindow(win)
+            const window = createRenameWindow(this.currentWindow!)
             await waitForShow(window.webContents)
             window.webContents.send('rename', fileName, window.webContents.id)
             name = await waitForRename(window, window.webContents.id)
@@ -137,46 +122,40 @@ class Uploader {
         }))
       }
     })
+  }
 
-    picgo.on('beforeTransform', ctx => {
-      if (ctx.getConfig('settings.uploadNotification')) {
-        const notification = new Notification({
-          title: '上传进度',
-          body: '正在上传'
-        })
-        notification.show()
-      }
-    })
+  setWebContents (webContents: WebContents) {
+    this.webContents = webContents
+    return this
+  }
 
-    picgo.upload(input)
+  upload (img?: IUploadOption): Promise<ImgInfo[]|false> {
+    this.currentWindow = BrowserWindow.fromWebContents(this.webContents!)
 
-    picgo.on('notification', message => {
-      const notification = new Notification(message)
-      notification.show()
-    })
-
-    picgo.on('uploadProgress', progress => {
-      this.webContents.send('uploadProgress', progress)
-    })
+    picgo.upload(img)
 
     return new Promise((resolve) => {
-      picgo.on('finished', ctx => {
+      picgo.once('finished', ctx => {
         if (ctx.output.every((item: ImgInfo) => item.imgUrl)) {
           resolve(ctx.output)
         } else {
           resolve(false)
         }
+        picgo.removeAllListeners('failed')
       })
-      picgo.on('failed', ctx => {
-        const notification = new Notification({
-          title: '上传失败',
-          body: '请检查配置和上传的文件是否符合要求'
-        })
-        notification.show()
+      picgo.once('failed', ctx => {
+        setTimeout(() => {
+          const notification = new Notification({
+            title: '上传失败',
+            body: '请检查配置和上传的文件是否符合要求'
+          })
+          notification.show()
+        }, 500)
+        picgo.removeAllListeners('finished')
         resolve(false)
       })
     })
   }
 }
 
-export default Uploader
+export default new Uploader()

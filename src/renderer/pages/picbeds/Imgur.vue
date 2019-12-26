@@ -58,7 +58,9 @@ export default class extends Vue {
     // @ts-ignore
     this.$refs.imgur.validate((valid) => {
       if (valid) {
-        this.$db.set('picBed.imgur', this.form)
+        this.letPicGoSaveData({
+          'picBed.imgur': this.form
+        })
         const successNotification = new Notification('设置结果', {
           body: '设置成功'
         })

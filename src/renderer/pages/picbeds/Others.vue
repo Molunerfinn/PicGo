@@ -56,7 +56,9 @@ export default class extends Vue {
     // @ts-ignore
     const result = await this.$refs.configForm.validate()
     if (result !== false) {
-      this.$db.set(`picBed.${this.type}`, result)
+      this.letPicGoSaveData({
+        [`picBed.${this.type}`]: result
+      })
       const successNotification = new Notification('设置结果', {
         body: '设置成功'
       })
@@ -66,7 +68,9 @@ export default class extends Vue {
     }
   }
   setDefaultPicBed (type: string) {
-    this.$db.set('picBed.current', type)
+    this.letPicGoSaveData({
+      'picBed.current': type
+    })
     // @ts-ignore 来自mixin的数据
     this.defaultPicBed = type
     const successNotification = new Notification('设置默认图床', {

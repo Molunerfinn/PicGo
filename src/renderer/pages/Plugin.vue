@@ -199,7 +199,9 @@ export default class extends Vue {
       label: '启用插件',
       enabled: !plugin.enabled,
       click () {
-        _this.$db.set(`picgoPlugins.picgo-plugin-${plugin.name}`, true)
+        _this.letPicGoSaveData({
+          [`picgoPlugins.picgo-plugin-${plugin.name}`]: true
+        })
         plugin.enabled = true
         _this.getPicBeds()
       }
@@ -207,7 +209,9 @@ export default class extends Vue {
       label: '禁用插件',
       enabled: plugin.enabled,
       click () {
-        _this.$db.set(`picgoPlugins.picgo-plugin-${plugin.name}`, false)
+        _this.letPicGoSaveData({
+          [`picgoPlugins.picgo-plugin-${plugin.name}`]: false
+        })
         plugin.enabled = false
         _this.getPicBeds()
         if (plugin.config.transformer.name) {
@@ -334,9 +338,13 @@ export default class extends Vue {
   toggleTransformer (transformer: string) {
     let currentTransformer = this.$db.get('picBed.transformer') || 'path'
     if (currentTransformer === transformer) {
-      this.$db.set('picBed.transformer', 'path')
+      this.letPicGoSaveData({
+        'picBed.transformer': 'path'
+      })
     } else {
-      this.$db.set('picBed.transformer', transformer)
+      this.letPicGoSaveData({
+        'picBed.transformer': transformer
+      })
     }
   }
   async handleConfirmConfig () {
@@ -345,13 +353,19 @@ export default class extends Vue {
     if (result !== false) {
       switch (this.currentType) {
         case 'plugin':
-          this.$db.set(`picgo-plugin-${this.configName}`, result)
+          this.letPicGoSaveData({
+            [`picgo-plugin-${this.configName}`]: result
+          })
           break
         case 'uploader':
-          this.$db.set(`picBed.${this.configName}`, result)
+          this.letPicGoSaveData({
+            [`picBed.${this.configName}`]: result
+          })
           break
         case 'transformer':
-          this.$db.set(`transformer.${this.configName}`, result)
+          this.letPicGoSaveData({
+            [`transformer.${this.configName}`]: result
+          })
           break
       }
       const successNotification = new Notification('设置结果', {
@@ -368,9 +382,13 @@ export default class extends Vue {
     // this.$http.get(`https://api.npms.io/v2/search?q=${val}`)
     this.$http.get(`https://registry.npmjs.com/-/v1/search?text=${val}`)
       .then((res: INPMSearchResult) => {
-        this.pluginList = res.data.objects.map((item: INPMSearchResultObject) => {
-          return this.handleSearchResult(item)
-        })
+        this.pluginList = res.data.objects
+          .filter((item:INPMSearchResultObject) => {
+            return item.package.name.includes('picgo-plugin-')
+          })
+          .map((item: INPMSearchResultObject) => {
+            return this.handleSearchResult(item)
+          })
         this.loading = false
       })
       .catch(err => {
@@ -404,13 +422,17 @@ export default class extends Vue {
     if (item === 'uploader') {
       const current = this.$db.get('picBed.current')
       if (current === name) {
-        this.$db.set('picBed.current', 'smms')
+        this.letPicGoSaveData({
+          'picBed.current': 'smms'
+        })
       }
     }
     if (item === 'transformer') {
       const current = this.$db.get('picBed.transformer')
       if (current === name) {
-        this.$db.set('picBed.transformer', 'path')
+        this.letPicGoSaveData({
+          'picBed.transformer': 'path'
+        })
       }
     }
   }
@@ -421,6 +443,9 @@ export default class extends Vue {
   }
   goAwesomeList () {
     remote.shell.openExternal('https://github.com/PicGo/Awesome-PicGo')
+  }
+  letPicGoSaveData (data: IObj) {
+    ipcRenderer.send('picgoSaveData', data)
   }
   beforeDestroy () {
     ipcRenderer.removeAllListeners('pluginList')

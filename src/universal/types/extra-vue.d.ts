@@ -8,5 +8,6 @@ declare module 'vue/types/vue' {
     $db: typeof db
     $http: typeof axios
     $builtInPicBed: string[]
+    letPicGoSaveData(data: IObj): void
   }
 }

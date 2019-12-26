@@ -10,12 +10,7 @@ import logger from './logger'
 import GuiApi from './guiApi'
 import db from '#/datastore'
 import shortKeyService from './shortKeyService'
-// eslint-disable-next-line
-const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
-
-const PicGo = requireFunc('picgo') as typeof PicGoCore
-const STORE_PATH = app.getPath('userData')
-const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
+import picgo from './picgo'
 
 class ShortKeyHandler {
   private isInModifiedMode: boolean = false
@@ -40,7 +35,6 @@ class ShortKeyHandler {
       })
   }
   private initPluginsShortKey () {
-    const picgo = new PicGo(CONFIG_PATH)
     const pluginList = picgo.pluginLoader.getList()
     for (let item of pluginList) {
       const plugin = picgo.pluginLoader.getPlugin(item)
@@ -75,12 +69,14 @@ class ShortKeyHandler {
       logger.warn(`${command} do not provide a key to bind`)
     }
     if (writeFlag) {
-      db.set(`settings.shortKey.${command}`, {
-        enable: true,
-        name: config.name,
-        label: config.label,
-        key: config.key
-      } as IShortKeyConfig)
+      picgo.saveConfig({
+        [`settings.shortKey.${command}`]: {
+          enable: true,
+          name: config.name,
+          label: config.label,
+          key: config.key
+        }
+      })
     }
   }
   // enable or disable shortKey
@@ -88,13 +84,17 @@ class ShortKeyHandler {
     const command = `${from}:${item.name}`
     if (item.enable === false) {
       globalShortcut.unregister(item.key)
-      db.set(`settings.shortKey.${command}.enable`, false)
+      picgo.saveConfig({
+        [`settings.shortKey.${command}.enable`]: false
+      })
       return true
     } else {
       if (globalShortcut.isRegistered(item.key)) {
         return false
       } else {
-        db.set(`settings.shortKey.${command}.enable`, true)
+        picgo.saveConfig({
+          [`settings.shortKey.${command}.enable`]: true
+        })
         globalShortcut.register(item.key, () => {
           this.handler(command)
         })
@@ -107,7 +107,9 @@ class ShortKeyHandler {
     const command = `${from}:${item.name}`
     if (globalShortcut.isRegistered(item.key)) return false
     globalShortcut.unregister(oldKey)
-    db.set(`settings.shortKey.${command}.key`, item.key)
+    picgo.saveConfig({
+      [`settings.shortKey.${command}.key`]: item.key
+    })
     globalShortcut.register(item.key, () => {
       this.handler(`${from}:${item.name}`)
     })
@@ -122,7 +124,6 @@ class ShortKeyHandler {
     } else if (command.includes('picgo-plugin-')) {
       const handler = shortKeyService.getShortKeyHandler(command)
       if (handler) {
-        const picgo = new PicGo(CONFIG_PATH)
         // make sure settingWindow is created
         bus.once('createSettingWindowDone', (cmd: string, settingWindowId: number) => {
           if (cmd === command) {
@@ -138,7 +139,6 @@ class ShortKeyHandler {
     }
   }
   registerPluginShortKey (pluginName: string) {
-    const picgo = new PicGo(CONFIG_PATH)
     const plugin = picgo.pluginLoader.getPlugin(pluginName)
     if (plugin && plugin.commands) {
       if (typeof plugin.commands !== 'function') {
@@ -170,7 +170,7 @@ class ShortKeyHandler {
     keyList.forEach(item => {
       globalShortcut.unregister(item.key)
       shortKeyService.unregisterCommand(item.command)
-      db.unset('settings.shortKey', item.command)
+      picgo.unsetConfig('settings.shortKey', item.command)
     })
   }
 }

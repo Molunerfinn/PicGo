@@ -1,14 +1,24 @@
 import path from 'path'
 import GuiApi from './guiApi'
-import { dialog, shell, IpcMain, IpcMainEvent, App } from 'electron'
-import db from '#/datastore'
+import {
+  dialog,
+  shell,
+  IpcMain,
+  IpcMainEvent,
+  App,
+  ipcMain,
+  app
+} from 'electron'
 import PicGoCore from '~/universal/types/picgo'
 import { IPicGoHelperType } from '#/types/enum'
+import shortKeyHandler from './shortKeyHandler'
+import picgo from '~/main/utils/picgo'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
-const PicGo = requireFunc('picgo') as typeof PicGoCore
-const PluginHandler = requireFunc('picgo/dist/lib/PluginHandler').default
+// const PluginHandler = requireFunc('picgo/dist/lib/PluginHandler').default
+const STORE_PATH = app.getPath('userData')
+// const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
 
 type PicGoNotice = {
   title: string,
@@ -48,9 +58,8 @@ const handleConfigWithFunction = (config: any[]) => {
   return config
 }
 
-const handleGetPluginList = (ipcMain: IpcMain, STORE_PATH: string, CONFIG_PATH: string) => {
+const handleGetPluginList = () => {
   ipcMain.on('getPluginList', (event: IpcMainEvent) => {
-    const picgo = new PicGo(CONFIG_PATH)
     const pluginList = picgo.pluginLoader.getList()
     const list = []
     for (let i in pluginList) {
@@ -102,48 +111,49 @@ const handleGetPluginList = (ipcMain: IpcMain, STORE_PATH: string, CONFIG_PATH: 
   })
 }
 
-const handlePluginInstall = (ipcMain: IpcMain, CONFIG_PATH: string) => {
+const handlePluginInstall = () => {
   ipcMain.on('installPlugin', async (event: IpcMainEvent, msg: string) => {
-    const picgo = new PicGo(CONFIG_PATH)
-    const pluginHandler = new PluginHandler(picgo)
-    picgo.on('installSuccess', (notice: PicGoNotice) => {
+    picgo.once('installSuccess', (notice: PicGoNotice) => {
       event.sender.send('installSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
+      shortKeyHandler.registerPluginShortKey(notice.body[0])
+      picgo.removeAllListeners('installFailed')
     })
-    picgo.on('failed', () => {
+    picgo.once('installFailed', () => {
       handleNPMError()
+      picgo.removeAllListeners('installSuccess')
     })
-    await pluginHandler.uninstall([msg])
-    pluginHandler.install([msg])
+    await picgo.pluginHandler.install([msg])
     picgo.cmd.program.removeAllListeners()
   })
 }
 
-const handlePluginUninstall = (ipcMain: IpcMain, CONFIG_PATH: string) => {
+const handlePluginUninstall = () => {
   ipcMain.on('uninstallPlugin', async (event: IpcMainEvent, msg: string) => {
-    const picgo = new PicGo(CONFIG_PATH)
-    const pluginHandler = new PluginHandler(picgo)
-    picgo.on('uninstallSuccess', (notice: PicGoNotice) => {
+    picgo.once('uninstallSuccess', (notice: PicGoNotice) => {
       event.sender.send('uninstallSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
+      shortKeyHandler.unregisterPluginShortKey(notice.body[0])
+      picgo.removeAllListeners('uninstallFailed')
     })
-    picgo.on('failed', () => {
+    picgo.once('uninstallFailed', () => {
       handleNPMError()
+      picgo.removeAllListeners('uninstallSuccess')
     })
-    await pluginHandler.uninstall([msg])
+    await picgo.pluginHandler.uninstall([msg])
     picgo.cmd.program.removeAllListeners()
   })
 }
 
-const handlePluginUpdate = (ipcMain: IpcMain, CONFIG_PATH: string) => {
+const handlePluginUpdate = () => {
   ipcMain.on('updatePlugin', async (event: IpcMainEvent, msg: string) => {
-    const picgo = new PicGo(CONFIG_PATH)
-    const pluginHandler = new PluginHandler(picgo)
-    picgo.on('updateSuccess', notice => {
+    picgo.once('updateSuccess', (notice: { body: string[], title: string }) => {
       event.sender.send('updateSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
+      picgo.removeAllListeners('updateFailed')
     })
-    picgo.on('failed', () => {
+    picgo.once('updateFailed', () => {
       handleNPMError()
+      picgo.removeAllListeners('updateSuccess')
     })
-    await pluginHandler.update([msg])
+    await picgo.pluginHandler.update([msg])
     picgo.cmd.program.removeAllListeners()
   })
 }
@@ -160,9 +170,8 @@ const handleNPMError = () => {
   })
 }
 
-const handleGetPicBedConfig = (ipcMain: IpcMain, CONFIG_PATH: string) => {
+const handleGetPicBedConfig = () => {
   ipcMain.on('getPicBedConfig', (event: IpcMainEvent, type: string) => {
-    const picgo = new PicGo(CONFIG_PATH)
     const name = picgo.helper.uploader.get(type).name || type
     if (picgo.helper.uploader.get(type).config) {
       const config = handleConfigWithFunction(picgo.helper.uploader.get(type).config(picgo))
@@ -174,9 +183,8 @@ const handleGetPicBedConfig = (ipcMain: IpcMain, CONFIG_PATH: string) => {
   })
 }
 
-const handlePluginActions = (ipcMain: IpcMain, CONFIG_PATH: string) => {
+const handlePluginActions = () => {
   ipcMain.on('pluginActions', (event: IpcMainEvent, name: string, label: string) => {
-    const picgo = new PicGo(CONFIG_PATH)
     const plugin = picgo.pluginLoader.getPlugin(`picgo-plugin-${name}`)
     const guiApi = new GuiApi(event.sender)
     if (plugin.guiMenu && plugin.guiMenu(picgo).length > 0) {
@@ -190,9 +198,8 @@ const handlePluginActions = (ipcMain: IpcMain, CONFIG_PATH: string) => {
   })
 }
 
-const handleRemoveFiles = (ipcMain: IpcMain, CONFIG_PATH: string) => {
+const handleRemoveFiles = () => {
   ipcMain.on('removeFiles', (event: IpcMainEvent, files: ImgInfo[]) => {
-    const picgo = new PicGo(CONFIG_PATH)
     const guiApi = new GuiApi(event.sender)
     setTimeout(() => {
       picgo.emit('remove', files, guiApi)
@@ -200,26 +207,19 @@ const handleRemoveFiles = (ipcMain: IpcMain, CONFIG_PATH: string) => {
   })
 }
 
-// const handlePluginShortKeyRegister = (plugin) => {
-//   if (plugin.shortKeys && plugin.shortKeys.length > 0) {
-//     let shortKeyConfig = db.get('settings.shortKey')
-//     plugin.shortKeys.forEach(item => {
-//       if (!shortKeyConfig[item.name]) {
-//         shortKeyConfig[item.name] = item
-//       }
-//     })
-//   }
-// }
+const handlePicGoSaveData = () => {
+  ipcMain.on('picgoSaveData', (event: IpcMainEvent, data: IObj) => {
+    picgo.saveConfig(data)
+  })
+}
 
-export default (app: App, ipcMain: IpcMain) => {
-  const STORE_PATH = app.getPath('userData')
-  const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
-  handleGetPluginList(ipcMain, STORE_PATH, CONFIG_PATH)
-  handlePluginInstall(ipcMain, CONFIG_PATH)
-  handlePluginUninstall(ipcMain, CONFIG_PATH)
-  handlePluginUpdate(ipcMain, CONFIG_PATH)
-  handleGetPicBedConfig(ipcMain, CONFIG_PATH)
-  handlePluginActions(ipcMain, CONFIG_PATH)
-  handleRemoveFiles(ipcMain, CONFIG_PATH)
-  // handlePluginShortKeyRegister({})
+export default () => {
+  handleGetPluginList()
+  handlePluginInstall()
+  handlePluginUninstall()
+  handlePluginUpdate()
+  handleGetPicBedConfig()
+  handlePluginActions()
+  handleRemoveFiles()
+  handlePicGoSaveData()
 }

@@ -6,6 +6,8 @@ import ElementUI from 'element-ui'
 import { webFrame } from 'electron'
 import 'element-ui/lib/theme-chalk/index.css'
 import VueLazyLoad from 'vue-lazyload'
+import axios from 'axios'
+import mainMixin from './renderer/utils/mainMixin'
 
 webFrame.setVisualZoomLevelLimits(1, 1)
 webFrame.setLayoutZoomLevelLimits(0, 0)
@@ -22,9 +24,11 @@ Vue.prototype.$builtInPicBed = [
   'github'
 ]
 Vue.prototype.$db = db
+Vue.prototype.$http = axios
 
 Vue.use(ElementUI)
 Vue.use(VueLazyLoad)
+Vue.mixin(mainMixin)
 
 new Vue({
   router,

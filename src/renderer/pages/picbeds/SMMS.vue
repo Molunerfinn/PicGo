@@ -24,7 +24,9 @@ import mixin from '@/utils/ConfirmButtonMixin'
 })
 export default class extends Vue {
   confirm () {
-    this.$db.set('picBed.smms', true)
+    this.letPicGoSaveData({
+      'picBed.smms': true
+    })
     // @ts-ignore 来自mixin
     this.setDefaultPicBed('smms')
     const successNotification = new window.Notification('设置结果', {

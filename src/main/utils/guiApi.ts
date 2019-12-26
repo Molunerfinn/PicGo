@@ -7,7 +7,7 @@ import {
   ipcMain
 } from 'electron'
 import db from '#/datastore'
-import Uploader from './uploader'
+import uploader from './uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
 const WEBCONTENTS = Symbol('WEBCONTENTS')
 
@@ -52,7 +52,7 @@ class GuiApi implements IGuiApi {
   }
 
   async upload (input: IUploadOption) {
-    const imgs = await new Uploader(input, this[WEBCONTENTS]).upload()
+    const imgs = await uploader.setWebContents(this[WEBCONTENTS]).upload(input)
     if (imgs !== false) {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       let pasteText = ''

@@ -162,7 +162,7 @@ interface IShowInputBoxOption {
 
 type IShowFileExplorerOption = IObj
 
-type IUploadOption = undefined | string[]
+type IUploadOption = string[]
 
 interface IShowNotificationOption {
   title: string

@@ -143,7 +143,9 @@ export default class extends Vue {
         type: 'radio',
         checked: this.$db.get('picBed.current') === item.type,
         click () {
-          _this.$db.set('picBed.current', item.type)
+          _this.letPicGoSaveData({
+            'picBed.current': item.type
+          })
           ipcRenderer.send('syncPicBed')
         }
       }

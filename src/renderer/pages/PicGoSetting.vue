@@ -371,7 +371,9 @@ export default class extends Vue {
   }
   confirmProxy () {
     this.proxyVisible = false
-    db.set('picBed.proxy', this.proxy)
+    this.letPicGoSaveData({
+      'picBed.proxy': this.proxy
+    })
     const successNotification = new Notification('设置代理', {
       body: '设置成功'
     })
@@ -391,7 +393,9 @@ export default class extends Vue {
       }
       return item
     })
-    db.set('picBed.list', list)
+    this.letPicGoSaveData({
+      'picBed.list': list
+    })
     ipcRenderer.send('getPicBeds')
   }
   handleAutoStartChange (val: boolean) {
@@ -399,10 +403,14 @@ export default class extends Vue {
     ipcRenderer.send('autoStart', val)
   }
   handleRename (val: boolean) {
-    db.set('settings.rename', val)
+    this.letPicGoSaveData({
+      'settings.rename': val
+    })
   }
   handleAutoRename (val: boolean) {
-    db.set('settings.autoRename', val)
+    this.letPicGoSaveData({
+      'settings.autoRename': val
+    })
   }
   compareVersion2Update (current: string, latest: string) {
     const currentVersion = current.split('.').map(item => parseInt(item))
@@ -447,7 +455,9 @@ export default class extends Vue {
     if (this.form.logLevel.length === 0) {
       return this.$message.error('请选择日志记录等级')
     }
-    db.set('settings.logLevel', this.form.logLevel)
+    this.letPicGoSaveData({
+      'settings.logLevel': this.form.logLevel
+    })
     const successNotification = new Notification('设置日志', {
       body: '设置成功'
     })

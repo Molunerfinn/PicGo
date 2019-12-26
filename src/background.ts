@@ -1,6 +1,5 @@
 'use strict'
 
-import Uploader from '~/main/utils/uploader'
 import {
   app,
   BrowserWindow,
@@ -21,6 +20,8 @@ import {
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
 import db from '#/datastore'
+import picgo from '~/main/utils/picgo'
+import uploader from '~/main/utils/uploader'
 import beforeOpen from '~/main/utils/beforeOpen'
 import pasteTemplate from '#/utils/pasteTemplate'
 import updateChecker from '~/main/utils/updateChecker'
@@ -63,14 +64,16 @@ const miniWinURL = isDevelopment
 fixPath()
 
 function createContextMenu () {
-  const picBeds = getPicBeds(app)
+  const picBeds = getPicBeds()
   const submenu = picBeds.map(item => {
     return {
       label: item.name,
       type: 'radio',
       checked: db.get('picBed.current') === item.type,
       click () {
-        db.set('picBed.current', item.type)
+        picgo.saveConfig({
+          'picBed.current': item.type
+        })
         if (settingWindow) {
           settingWindow.webContents.send('syncPicBed')
         }
@@ -193,7 +196,7 @@ function createTray () {
 
   tray.on('drop-files', async (event: Event, files: string[]) => {
     const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
-    const imgs = await new Uploader(files, window!.webContents).upload()
+    const imgs = await uploader.setWebContents(window!.webContents).upload(files)
     if (imgs !== false) {
       for (let i = 0; i < imgs.length; i++) {
         clipboard.writeText(pasteTemplate(pasteStyle, imgs[i]))
@@ -374,7 +377,7 @@ const uploadClipboardFiles = async () => {
   } else {
     win = settingWindow || window || createSettingWindow()
   }
-  let img = await new Uploader(undefined, win!.webContents).upload()
+  let img = await uploader.setWebContents(win!.webContents).upload()
   if (img !== false) {
     if (img.length > 0) {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
@@ -403,7 +406,7 @@ const uploadClipboardFiles = async () => {
 
 const uploadChoosedFiles = async (webContents: WebContents, files: IFileWithPath[]) => {
   const input = files.map(item => item.path)
-  const imgs = await new Uploader(input, webContents).upload()
+  const imgs = await uploader.setWebContents(webContents).upload(input)
   if (imgs !== false) {
     const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
     let pasteText = ''
@@ -427,11 +430,11 @@ const uploadChoosedFiles = async (webContents: WebContents, files: IFileWithPath
   }
 }
 
-picgoCoreIPC(app, ipcMain)
+picgoCoreIPC()
 
 // from macOS tray
 ipcMain.on('uploadClipboardFiles', async () => {
-  const img = await new Uploader(undefined, window!.webContents).upload()
+  const img = await uploader.setWebContents(window!.webContents).upload()
   if (img !== false) {
     const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
     clipboard.writeText(pasteTemplate(pasteStyle, img[0]))
@@ -536,7 +539,7 @@ ipcMain.on('syncPicBed', () => {
 })
 
 ipcMain.on('getPicBeds', (evt: IpcMainEvent) => {
-  const picBeds = getPicBeds(app)
+  const picBeds = getPicBeds()
   evt.sender.send('getPicBeds', picBeds)
   evt.returnValue = picBeds
 })

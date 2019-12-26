@@ -59,7 +59,7 @@ class DB {
     return this.read().get(key).insert(value).write()
   }
   unset (key: string, value: any): boolean {
-    return this.read().get(key).unset(value).write()
+    return this.read().get(key).unset(value).value()
   }
 }
 

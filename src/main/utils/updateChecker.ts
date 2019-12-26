@@ -3,13 +3,8 @@ import db from '#/datastore'
 import axios from 'axios'
 import pkg from 'root/package.json'
 const version = pkg.version
-let release = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
+let release = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo/package.json'
 const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
-const isDevelopment = process.env.NODE_ENV !== 'production'
-
-if (isDevelopment) {
-  release = `${release}?access_token=${process.env.GITHUB_TOKEN}`
-}
 
 const checkVersion = async () => {
   let showTip = db.get('settings.showUpdateTip')
@@ -25,7 +20,7 @@ const checkVersion = async () => {
       console.log(err)
     }
     if (res.status === 200) {
-      const latest = res.data.name
+      const latest = res.data.version
       const result = compareVersion2Update(version, latest)
       if (result) {
         dialog.showMessageBox({

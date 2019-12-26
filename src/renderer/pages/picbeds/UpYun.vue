@@ -89,7 +89,9 @@ export default class extends Vue {
     // @ts-ignore
     this.$refs.tcyun.validate((valid) => {
       if (valid) {
-        this.$db.set('picBed.upyun', this.form)
+        this.letPicGoSaveData({
+          'picBed.upyun': this.form
+        })
         const successNotification = new Notification('设置结果', {
           body: '设置成功'
         })

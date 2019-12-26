@@ -98,7 +98,9 @@ export default class extends Vue {
     // @ts-ignore
     this.$refs.qiniu.validate((valid) => {
       if (valid) {
-        this.$db.set('picBed.qiniu', this.form)
+        this.letPicGoSaveData({
+          'picBed.qiniu': this.form
+        })
         const successNotification = new Notification('设置结果', {
           body: '设置成功'
         })

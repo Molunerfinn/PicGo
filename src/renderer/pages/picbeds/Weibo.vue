@@ -91,12 +91,14 @@ export default {
     confirm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$db.set('picBed.weibo', {
-            username: this.form.username,
-            password: this.form.password,
-            quality: this.quality,
-            cookie: this.form.cookie,
-            chooseCookie: this.chooseCookie
+          this.letPicGoSaveData({
+            'picBed.weibo': {
+              username: this.form.username,
+              password: this.form.password,
+              quality: this.quality,
+              cookie: this.form.cookie,
+              chooseCookie: this.chooseCookie
+            }
           })
           const successNotification = new window.Notification('设置结果', {
             body: '设置成功'
