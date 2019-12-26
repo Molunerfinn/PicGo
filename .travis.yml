@@ -38,15 +38,15 @@ script:
 #- xvfb-maybe node_modules/.bin/karma start test/unit/karma.conf.js
 #- yarn run pack && xvfb-maybe node_modules/.bin/mocha test/e2e
 - npm run release
-- yarn run build:docs
+# - yarn run build:docs
 branches:
   only:
   - master
-after_script:
-  - cd docs/dist
-  - git init
-  - git config user.name "Molunerfinn"
-  - git config user.email "marksz@teamsz.xyz"
-  - git add .
-  - git commit -m "Travis build docs"
-  - git push  --force --quiet "https://${GH_TOKEN}@github.com/Molunerfinn/PicGo.git" master:gh-pages
+# after_script:
+#   - cd docs/dist
+#   - git init
+#   - git config user.name "Molunerfinn"
+#   - git config user.email "marksz@teamsz.xyz"
+#   - git add .
+#   - git commit -m "Travis build docs"
+#   - git push  --force --quiet "https://${GH_TOKEN}@github.com/Molunerfinn/PicGo.git" master:gh-pages
