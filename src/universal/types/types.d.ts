@@ -202,6 +202,7 @@ interface IAliYunConfig {
   area: string,
   path: string,
   customUrl: string
+  options: string
 }
 
 interface IGitHubConfig {

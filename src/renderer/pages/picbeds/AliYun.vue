@@ -49,6 +49,11 @@
             <el-input v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/"></el-input>
           </el-form-item>
           <el-form-item
+            label="设定网址后缀"
+            >
+            <el-input v-model="form.options" @keyup.native.enter="confirm" placeholder="例如?x-oss-process=xxx"></el-input>
+          </el-form-item>
+          <el-form-item
             label="设定自定义域名"
             >
             <el-input v-model="form.customUrl" @keyup.native.enter="confirm" placeholder="例如https://xxxx.com"></el-input>
@@ -78,7 +83,8 @@ export default class extends Vue {
     bucket: '',
     area: '',
     path: '',
-    customUrl: ''
+    customUrl: '',
+    options: ''
   }
   created () {
     const config = this.$db.get('picBed.aliyun') as IAliYunConfig
