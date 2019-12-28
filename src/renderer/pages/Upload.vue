@@ -160,7 +160,7 @@ export default class extends Vue {
   }
   buildMenu () {
     const _this = this
-    const submenu = this.picBed.map(item => {
+    const submenu = this.picBed.filter(item => item.visible).map(item => {
       return {
         label: item.name,
         type: 'radio',

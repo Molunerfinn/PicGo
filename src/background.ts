@@ -63,7 +63,7 @@ fixPath()
 
 function createContextMenu () {
   const picBeds = getPicBeds()
-  const submenu = picBeds.map(item => {
+  const submenu = picBeds.filter(item => item.visible).map(item => {
     return {
       label: item.name,
       type: 'radio',
@@ -147,20 +147,20 @@ function createTray () {
   })
   tray.on('click', (event, bounds) => {
     if (process.platform === 'darwin') {
-      let img = clipboard.readImage()
-      let obj: ImgInfo[] = []
-      if (!img.isEmpty()) {
-        // 从剪贴板来的图片默认转为png
-        // @ts-ignore
-        const imgUrl = 'data:image/png;base64,' + Buffer.from(img.toPNG(), 'binary').toString('base64')
-        obj.push({
-          width: img.getSize().width,
-          height: img.getSize().height,
-          imgUrl
-        })
-      }
       toggleWindow(bounds)
       setTimeout(() => {
+        let img = clipboard.readImage()
+        let obj: ImgInfo[] = []
+        if (!img.isEmpty()) {
+          // 从剪贴板来的图片默认转为png
+          // @ts-ignore
+          const imgUrl = 'data:image/png;base64,' + Buffer.from(img.toPNG(), 'binary').toString('base64')
+          obj.push({
+            width: img.getSize().width,
+            height: img.getSize().height,
+            imgUrl
+          })
+        }
         window!.webContents.send('clipboardFiles', obj)
       }, 0)
     } else {

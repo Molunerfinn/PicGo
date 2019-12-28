@@ -1,9 +1,8 @@
-import db from '#/datastore'
 import picgo from './picgo'
 
 const getPicBeds = () => {
   const picBedTypes = picgo.helper.uploader.getIdList()
-  const picBedFromDB = db.get('picBed.list') || []
+  const picBedFromDB = picgo.getConfig('picBed.list') || []
   const picBeds = picBedTypes.map((item: string) => {
     const visible = picBedFromDB.find((i: IPicBedType) => i.type === item) // object or undefined
     return {
@@ -12,7 +11,6 @@ const getPicBeds = () => {
       visible: visible ? visible.visible : true
     }
   }) as IPicBedType[]
-  picgo.cmd.program.removeAllListeners()
   return picBeds
 }
 
