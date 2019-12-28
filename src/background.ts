@@ -40,9 +40,7 @@ import logger from '~/main/utils/logger'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 protocol.registerSchemesAsPrivileged([{ scheme: 'picgo', privileges: { secure: true, standard: true } }])
 
-if (process.platform === 'darwin') {
-  beforeOpen()
-}
+beforeOpen()
 
 let window: BrowserWindow | null
 let settingWindow: BrowserWindow | null
