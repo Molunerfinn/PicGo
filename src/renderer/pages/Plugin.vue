@@ -145,6 +145,16 @@ export default class extends Vue {
       this.getPluginList()
     }
   }
+  @Watch('dialogVisible')
+  onDialogVisible (val: boolean) {
+    if (val) {
+      // @ts-ignore
+      document.querySelector('.main-content.el-row').style.zIndex = 101
+    } else {
+      // @ts-ignore
+      document.querySelector('.main-content.el-row').style.zIndex = 10
+    }
+  }
   created () {
     this.os = process.platform
     ipcRenderer.on('pluginList', (evt: IpcRendererEvent, list: IPicGoPlugin[]) => {
