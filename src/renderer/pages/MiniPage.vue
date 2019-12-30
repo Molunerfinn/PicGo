@@ -23,12 +23,13 @@ import {
   IpcRendererEvent,
   remote
 } from 'electron'
+import path from 'path'
 @Component({
   name: 'mini-page',
   mixins: [mixin]
 })
 export default class extends Vue {
-  logo = 'static/squareLogo.png'
+  logo = path.join(process.env.BASE_URL as string, 'squareLogo.png')
   dragover = false
   progress = 0
   showProgress = false

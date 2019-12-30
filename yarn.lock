@@ -2872,8 +2872,8 @@ commander@~2.8.1:
 
 comment-json@^2.3.1:
   version "2.3.1"
-  resolved "https://registry.npm.taobao.org/comment-json/download/comment-json-2.3.1.tgz#40f24f573ffece9b9a87806244c330d614a32604"
-  integrity sha1-QPJPVz/+zpuah4BiRMMw1hSjJgQ=
+  resolved "https://registry.yarnpkg.com/comment-json/-/comment-json-2.3.1.tgz#40f24f573ffece9b9a87806244c330d614a32604"
+  integrity sha512-JC3n3NngL0g8mhblclcLdGHaTaowrfWb4YMzJQ2HINtWTtQCmuheNzJ2POXUL0AHbmI9Omli9VPNMBsrdQSZeA==
   dependencies:
     core-util-is "^1.0.2"
     esprima "^4.0.1"
@@ -5628,8 +5628,8 @@ has-flag@^4.0.0:
 
 has-own-prop@^2.0.0:
   version "2.0.0"
-  resolved "https://registry.npm.taobao.org/has-own-prop/download/has-own-prop-2.0.0.tgz#f0f95d58f65804f5d218db32563bb85b8e0417af"
-  integrity sha1-8PldWPZYBPXSGNsyVju4W44EF68=
+  resolved "https://registry.yarnpkg.com/has-own-prop/-/has-own-prop-2.0.0.tgz#f0f95d58f65804f5d218db32563bb85b8e0417af"
+  integrity sha512-Pq0h+hvsVm6dDEa8x82GnLSYHOzNDt7f0ddFa3FqcQlgzEiptPqL+XrOJNavjOzSYiYWIrgeVYYgGlLmnxwilQ==
 
 has-symbol-support-x@^1.4.1:
   version "1.4.2"
@@ -8278,8 +8278,8 @@ performance-now@^2.1.0:
 
 picgo@^1.4.3:
   version "1.4.3"
-  resolved "https://registry.npm.taobao.org/picgo/download/picgo-1.4.3.tgz#6c3140d21415d96489a784c155d8d45b6a91adb5"
-  integrity sha1-bDFA0hQV2WSJp4TBVdjUW2qRrbU=
+  resolved "https://registry.yarnpkg.com/picgo/-/picgo-1.4.3.tgz#6c3140d21415d96489a784c155d8d45b6a91adb5"
+  integrity sha512-MqzMu5tNBXI//K0XQ/hyk533Lk2hcjPsvhW3W/i4+TyrZ/ajxNX9of27uwYUk3JWiNQ/LYqzZAAsMV7CwBx2ow==
   dependencies:
     chalk "^2.4.1"
     commander "^2.17.0"

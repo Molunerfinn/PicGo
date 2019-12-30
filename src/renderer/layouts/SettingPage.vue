@@ -334,12 +334,12 @@ $darwinBg = transparentify(#172426, #000, 0.7)
       position absolute
       top 2px
       right 4px
-      width 60px
       z-index 10000
       -webkit-app-region no-drag
       i
         cursor pointer
         font-size 16px
+        margin-left 5px
       .el-icon-minus
         &:hover
           color #409EFF
