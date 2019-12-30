@@ -11,7 +11,7 @@ const STORE_PATH = app.getPath('userData')
 const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
 
 const picgo = new PicGo(CONFIG_PATH)
-picgo.setConfig({
+picgo.saveConfig({
   debug: true,
   PICGO_ENV: 'GUI'
 })
