@@ -40,7 +40,11 @@ import {
   UPLOAD_WITH_FILES,
   UPLOAD_WITH_FILES_RESPONSE,
   UPLOAD_WITH_CLIPBOARD_FILES,
-  UPLOAD_WITH_CLIPBOARD_FILES_RESPONSE
+  UPLOAD_WITH_CLIPBOARD_FILES_RESPONSE,
+  GET_WINDOW_ID,
+  GET_WINDOW_ID_REPONSE,
+  GET_SETTING_WINDOW_ID,
+  GET_SETTING_WINDOW_ID_RESPONSE
 } from '~/main/utils/busApi/constants'
 import server from '~/main/server/index'
 
@@ -376,12 +380,7 @@ const showWindow = (bounds: IBounds) => {
 }
 
 const uploadClipboardFiles = async (): Promise<string> => {
-  let win
-  if (miniWindow && miniWindow!.isVisible()) {
-    win = miniWindow
-  } else {
-    win = settingWindow || window || createSettingWindow()
-  }
+  const win = getAvailableWindow()
   let img = await uploader.setWebContents(win!.webContents).upload()
   if (img !== false) {
     if (img.length > 0) {
@@ -577,12 +576,7 @@ if (!gotTheLock) {
       if (files === null) {
         uploadClipboardFiles()
       } else {
-        let win
-        if (miniWindow && miniWindow.isVisible()) {
-          win = miniWindow
-        } else {
-          win = settingWindow || window || createSettingWindow()
-        }
+        const win = getAvailableWindow()
         uploadChoosedFiles(win.webContents, files)
       }
     } else {
@@ -639,12 +633,7 @@ app.on('ready', async () => {
       if (files === null) {
         uploadClipboardFiles()
       } else {
-        let win
-        if (miniWindow && miniWindow.isVisible()) {
-          win = miniWindow
-        } else {
-          win = settingWindow || window || createSettingWindow()
-        }
+        const win = getAvailableWindow()
         uploadChoosedFiles(win.webContents, files)
       }
     }
@@ -680,25 +669,24 @@ app.setLoginItemSettings({
 function initEventCenter () {
   const eventList: any = {
     'picgo:upload': uploadClipboardFiles,
-    'createSettingWindow': shortKeyRequestSettingWindow,
-    hideMiniWindow,
     [UPLOAD_WITH_CLIPBOARD_FILES]: busCallUploadClipboardFiles,
-    [UPLOAD_WITH_FILES]: busCallUploadFiles
+    [UPLOAD_WITH_FILES]: busCallUploadFiles,
+    [GET_WINDOW_ID]: busCallGetWindowId,
+    [GET_SETTING_WINDOW_ID]: busCallGetSettingWindowId
   }
   for (let i in eventList) {
     bus.on(i, eventList[i])
   }
 }
 
-function shortKeyRequestSettingWindow (command: string) {
-  if (!settingWindow) createSettingWindow()
-  bus.emit('createSettingWindowDone', command, settingWindow!.id)
-}
-
-function hideMiniWindow () {
+function getAvailableWindow () {
+  let win
   if (miniWindow && miniWindow.isVisible()) {
-    miniWindow.hide()
+    win = miniWindow
+  } else {
+    win = settingWindow || window || createSettingWindow()
   }
+  return win
 }
 
 async function busCallUploadClipboardFiles () {
@@ -707,14 +695,19 @@ async function busCallUploadClipboardFiles () {
 }
 
 async function busCallUploadFiles (pathList: IFileWithPath[]) {
-  let win
-  if (miniWindow && miniWindow.isVisible()) {
-    win = miniWindow
-  } else {
-    win = settingWindow || window || createSettingWindow()
-  }
+  const win = getAvailableWindow()
   const urls = await uploadChoosedFiles(win.webContents, pathList)
   bus.emit(UPLOAD_WITH_FILES_RESPONSE, urls)
+}
+
+function busCallGetWindowId () {
+  const win = getAvailableWindow()
+  bus.emit(GET_WINDOW_ID_REPONSE, win.id)
+}
+
+function busCallGetSettingWindowId () {
+  if (!settingWindow) createSettingWindow()
+  bus.emit(GET_SETTING_WINDOW_ID_RESPONSE, settingWindow!.id)
 }
 
 // Exit cleanly on request from parent process in development mode.

@@ -4,21 +4,23 @@ import {
   clipboard,
   Notification,
   WebContents,
-  ipcMain
+  ipcMain,
+  webContents
 } from 'electron'
 import db from '#/datastore'
 import uploader from './uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
-const WEBCONTENTS = Symbol('WEBCONTENTS')
+import {
+  getWindowId,
+  getSettingWindowId
+} from '~/main/utils/busApi'
 
 class GuiApi implements IGuiApi {
-  private [WEBCONTENTS]: WebContents
-  constructor (webcontents: WebContents) {
-    this[WEBCONTENTS] = webcontents
-  }
-
+  private windowId: number = -1
+  private settingWindowId: number = -1
   private async showSettingWindow () {
-    const settingWindow = BrowserWindow.fromWebContents(this[WEBCONTENTS])
+    this.settingWindowId = await getSettingWindowId()
+    const settingWindow = BrowserWindow.fromId(this.settingWindowId)
     if (settingWindow.isVisible()) {
       return true
     }
@@ -30,12 +32,17 @@ class GuiApi implements IGuiApi {
     })
   }
 
+  private getWebcontentsByWindowId (id: number) {
+    return BrowserWindow.fromId(id).webContents
+  }
+
   async showInputBox (options: IShowInputBoxOption = {
     title: '',
     placeholder: ''
   }) {
     await this.showSettingWindow()
-    this[WEBCONTENTS].send('showInputBox', options)
+    this.getWebcontentsByWindowId(this.settingWindowId)
+      .send('showInputBox', options)
     return new Promise<string>((resolve, reject) => {
       ipcMain.once('showInputBox', (event: Event, value: string) => {
         resolve(value)
@@ -44,15 +51,18 @@ class GuiApi implements IGuiApi {
   }
 
   showFileExplorer (options: IShowFileExplorerOption = {}) {
-    return new Promise<string>((resolve, reject) => {
-      dialog.showOpenDialog(BrowserWindow.fromWebContents(this[WEBCONTENTS]), options, (filename: string) => {
+    return new Promise<string>(async (resolve, reject) => {
+      this.windowId = await getWindowId()
+      dialog.showOpenDialog(BrowserWindow.fromId(this.windowId), options, (filename: string) => {
         resolve(filename)
       })
     })
   }
 
   async upload (input: IUploadOption) {
-    const imgs = await uploader.setWebContents(this[WEBCONTENTS]).upload(input)
+    this.windowId = await getWindowId()
+    const webContents = this.getWebcontentsByWindowId(this.windowId)
+    const imgs = await uploader.setWebContents(webContents).upload(input)
     if (imgs !== false) {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       let pasteText = ''
@@ -69,8 +79,8 @@ class GuiApi implements IGuiApi {
         db.insert('uploaded', imgs[i])
       }
       clipboard.writeText(pasteText)
-      this[WEBCONTENTS].send('uploadFiles', imgs)
-      this[WEBCONTENTS].send('updateGallery')
+      webContents.send('uploadFiles', imgs)
+      webContents.send('updateGallery')
       return imgs
     }
     return []
@@ -93,9 +103,10 @@ class GuiApi implements IGuiApi {
     type: 'info',
     buttons: ['Yes', 'No']
   }) {
-    return new Promise<IShowMessageBoxResult>((resolve, reject) => {
+    return new Promise<IShowMessageBoxResult>(async (resolve, reject) => {
+      this.windowId = await getWindowId()
       dialog.showMessageBox(
-        BrowserWindow.fromWebContents(this[WEBCONTENTS]),
+        BrowserWindow.fromId(this.windowId),
         options
       ).then((res) => {
         resolve({

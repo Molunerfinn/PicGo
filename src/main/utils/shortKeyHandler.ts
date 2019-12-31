@@ -124,15 +124,8 @@ class ShortKeyHandler {
     } else if (command.includes('picgo-plugin-')) {
       const handler = shortKeyService.getShortKeyHandler(command)
       if (handler) {
-        // make sure settingWindow is created
-        bus.once('createSettingWindowDone', (cmd: string, settingWindowId: number) => {
-          if (cmd === command) {
-            const webContents = BrowserWindow.fromId(settingWindowId).webContents
-            const guiApi = new GuiApi(webContents)
-            return handler(picgo, guiApi)
-          }
-        })
-        bus.emit('createSettingWindow', command)
+        const guiApi = new GuiApi()
+        return handler(picgo, guiApi)
       }
     } else {
       logger.warn(`can not find command: ${command}`)

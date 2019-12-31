@@ -186,7 +186,7 @@ const handleGetPicBedConfig = () => {
 const handlePluginActions = () => {
   ipcMain.on('pluginActions', (event: IpcMainEvent, name: string, label: string) => {
     const plugin = picgo.pluginLoader.getPlugin(`picgo-plugin-${name}`)
-    const guiApi = new GuiApi(event.sender)
+    const guiApi = new GuiApi()
     if (plugin.guiMenu && plugin.guiMenu(picgo).length > 0) {
       const menu: GuiMenuItem[] = plugin.guiMenu(picgo)
       menu.forEach(item => {
@@ -200,7 +200,7 @@ const handlePluginActions = () => {
 
 const handleRemoveFiles = () => {
   ipcMain.on('removeFiles', (event: IpcMainEvent, files: ImgInfo[]) => {
-    const guiApi = new GuiApi(event.sender)
+    const guiApi = new GuiApi()
     setTimeout(() => {
       picgo.emit('remove', files, guiApi)
     }, 500)

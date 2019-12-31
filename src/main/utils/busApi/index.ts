@@ -3,7 +3,11 @@ import {
   UPLOAD_WITH_FILES,
   UPLOAD_WITH_FILES_RESPONSE,
   UPLOAD_WITH_CLIPBOARD_FILES,
-  UPLOAD_WITH_CLIPBOARD_FILES_RESPONSE
+  UPLOAD_WITH_CLIPBOARD_FILES_RESPONSE,
+  GET_WINDOW_ID,
+  GET_WINDOW_ID_REPONSE,
+  GET_SETTING_WINDOW_ID,
+  GET_SETTING_WINDOW_ID_RESPONSE
 } from './constants'
 
 export const uploadWithClipboardFiles = (): Promise<{
@@ -44,6 +48,27 @@ export const uploadWithFiles = (pathList: IFileWithPath[]): Promise<{
           success: false
         })
       }
+    })
+  })
+}
+
+// get available window id:
+// miniWindow or settingWindow or trayWindow
+export const getWindowId = (): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    bus.emit(GET_WINDOW_ID)
+    bus.once(GET_WINDOW_ID_REPONSE, (id: number) => {
+      resolve(id)
+    })
+  })
+}
+
+// get settingWindow id:
+export const getSettingWindowId = (): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    bus.emit(GET_SETTING_WINDOW_ID)
+    bus.once(GET_SETTING_WINDOW_ID_RESPONSE, (id: number) => {
+      resolve(id)
     })
   })
 }
