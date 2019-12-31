@@ -36,6 +36,13 @@ import {
 } from '~/main/migrate/shortKeyUpdateHelper'
 import shortKeyHandler from '~/main/utils/shortKeyHandler'
 import logger from '~/main/utils/logger'
+import {
+  UPLOAD_WITH_FILES,
+  UPLOAD_WITH_FILES_RESPONSE,
+  UPLOAD_WITH_CLIPBOARD_FILES,
+  UPLOAD_WITH_CLIPBOARD_FILES_RESPONSE
+} from '~/main/utils/busApi/constants'
+import server from '~/main/server/index'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 protocol.registerSchemesAsPrivileged([{ scheme: 'picgo', privileges: { secure: true, standard: true } }])
@@ -246,8 +253,8 @@ const createWindow = () => {
   return window
 }
 
-const createMiniWidow = () => {
-  if (miniWindow) {
+const createMiniWindow = () => {
+  if (miniWindow || process.platform === 'darwin') {
     return false
   }
   let obj: IBrowserWindowOptions = {
@@ -322,7 +329,7 @@ const createSettingWindow = () => {
     }
   })
   createMenu()
-  createMiniWidow()
+  createMiniWindow()
   return settingWindow
 }
 
@@ -368,9 +375,9 @@ const showWindow = (bounds: IBounds) => {
   window!.focus()
 }
 
-const uploadClipboardFiles = async () => {
+const uploadClipboardFiles = async (): Promise<string> => {
   let win
-  if (miniWindow!.isVisible()) {
+  if (miniWindow && miniWindow!.isVisible()) {
     win = miniWindow
   } else {
     win = settingWindow || window || createSettingWindow()
@@ -392,19 +399,24 @@ const uploadClipboardFiles = async () => {
       if (settingWindow) {
         settingWindow.webContents.send('updateGallery')
       }
+      return img[0].imgUrl as string
     } else {
       const notification = new Notification({
         title: '上传不成功',
         body: '你剪贴板最新的一条记录不是图片哦'
       })
       notification.show()
+      return ''
     }
+  } else {
+    return ''
   }
 }
 
-const uploadChoosedFiles = async (webContents: WebContents, files: IFileWithPath[]) => {
+const uploadChoosedFiles = async (webContents: WebContents, files: IFileWithPath[]): Promise<string[]> => {
   const input = files.map(item => item.path)
   const imgs = await uploader.setWebContents(webContents).upload(input)
+  const result = []
   if (imgs !== false) {
     const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
     let pasteText = ''
@@ -419,12 +431,16 @@ const uploadChoosedFiles = async (webContents: WebContents, files: IFileWithPath
         notification.show()
       }, i * 100)
       db.insert('uploaded', imgs[i])
+      result.push(imgs[i].imgUrl!)
     }
     clipboard.writeText(pasteText)
     window!.webContents.send('uploadFiles', imgs)
     if (settingWindow) {
       settingWindow.webContents.send('updateGallery')
     }
+    return result
+  } else {
+    return []
   }
 }
 
@@ -522,7 +538,7 @@ ipcMain.on('openSettingWindow', () => {
 
 ipcMain.on('openMiniWindow', () => {
   if (!miniWindow) {
-    createMiniWidow()
+    createMiniWindow()
   }
   miniWindow!.show()
   miniWindow!.focus()
@@ -611,7 +627,7 @@ app.on('ready', async () => {
     updateShortKeyFromVersion212(db, db.get('settings.shortKey'))
     shortKeyHandler.init()
   })
-
+  server.startup()
   if (process.env.NODE_ENV !== 'development') {
     let files = getUploadFiles()
     if (files === null) {
@@ -654,6 +670,7 @@ app.on('activate', () => {
 app.on('will-quit', () => {
   globalShortcut.unregisterAll()
   bus.removeAllListeners()
+  server.shutdown()
 })
 
 app.setLoginItemSettings({
@@ -664,7 +681,9 @@ function initEventCenter () {
   const eventList: any = {
     'picgo:upload': uploadClipboardFiles,
     'createSettingWindow': shortKeyRequestSettingWindow,
-    hideMiniWindow
+    hideMiniWindow,
+    [UPLOAD_WITH_CLIPBOARD_FILES]: busCallUploadClipboardFiles,
+    [UPLOAD_WITH_FILES]: busCallUploadFiles
   }
   for (let i in eventList) {
     bus.on(i, eventList[i])
@@ -682,17 +701,35 @@ function hideMiniWindow () {
   }
 }
 
+async function busCallUploadClipboardFiles () {
+  const imgUrl = await uploadClipboardFiles()
+  bus.emit(UPLOAD_WITH_CLIPBOARD_FILES_RESPONSE, imgUrl)
+}
+
+async function busCallUploadFiles (pathList: IFileWithPath[]) {
+  let win
+  if (miniWindow && miniWindow.isVisible()) {
+    win = miniWindow
+  } else {
+    win = settingWindow || window || createSettingWindow()
+  }
+  const urls = await uploadChoosedFiles(win.webContents, pathList)
+  bus.emit(UPLOAD_WITH_FILES_RESPONSE, urls)
+}
+
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === 'win32') {
     process.on('message', data => {
       if (data === 'graceful-exit') {
         app.quit()
+        server.shutdown()
       }
     })
   } else {
     process.on('SIGTERM', () => {
       app.quit()
+      server.shutdown()
     })
   }
 }

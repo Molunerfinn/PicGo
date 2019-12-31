@@ -29,7 +29,7 @@ import path from 'path'
   mixins: [mixin]
 })
 export default class extends Vue {
-  logo = path.join(process.env.BASE_URL as string, 'squareLogo.png')
+  logo = require('../assets/squareLogo.png')
   dragover = false
   progress = 0
   showProgress = false

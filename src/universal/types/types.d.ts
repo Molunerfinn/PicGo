@@ -7,6 +7,23 @@ interface IObjT<T> {
   [propName: string]: T
 }
 
+interface ErrnoException extends Error {
+  errno?: number | string;
+  code?: string;
+  path?: string;
+  syscall?: string;
+  stack?: string;
+}
+
+type routeHandler = (ctx: IServerCTX) => Promise<void>
+
+type IHttpResponse = import('http').ServerResponse
+
+interface IServerCTX {
+  response: IHttpResponse
+  [propName: string]: any
+}
+
 // Image && PicBed
 interface ImgInfo {
   buffer?: Buffer
