@@ -29,7 +29,7 @@ class Server {
         })
         request.on('end', () => {
           try {
-            postObj = JSON.parse(body)
+            postObj = (body === '') ? {} : JSON.parse(body)
           } catch (err) {
             return handleResponse({
               response,
@@ -53,7 +53,7 @@ class Server {
   }
   private listen = (port: number) => {
     console.log(`server listen at ${port}`)
-    this.httpServer.listen(port).on('error', (err: ErrnoException) => {
+    this.httpServer.listen(port, '0.0.0.0').on('error', (err: ErrnoException) => {
       if (err.errno === 'EADDRINUSE') {
         console.log(`----- Port ${port} is busy, trying with port ${port + 1} -----`)
         this.port += 1
