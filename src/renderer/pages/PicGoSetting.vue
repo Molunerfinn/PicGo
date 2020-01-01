@@ -37,6 +37,11 @@
             <el-button type="primary" round size="mini" @click="proxyVisible = true">点击设置</el-button>
           </el-form-item>
           <el-form-item
+            label="设置Server"
+          >
+            <el-button type="primary" round size="mini" @click="serverVisible = true">点击设置</el-button>
+          </el-form-item>
+          <el-form-item
             label="检查更新"
           >
             <el-button type="primary" round size="mini" @click="checkUpdate">点击检查</el-button>
@@ -239,6 +244,55 @@
         <el-button type="primary" @click="confirmLogLevelSetting" round>确定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      class="server-dialog"
+      width="60%"
+      title="设置PicGo-Server"
+      :visible.sync="serverVisible"
+      :modal-append-to-body="false"
+    >
+      <div class="notice-text">
+        如果你不知道Server的作用，请阅读文档，或者不用修改配置。
+      </div>
+      <el-form
+        label-position="right"
+        label-width="120px"
+      >
+        <el-form-item
+          label="是否开启Server"
+        >
+          <el-switch
+            v-model="server.enable"
+            active-text="开"
+            inactive-text="关"
+          ></el-switch>
+        </el-form-item>
+        <template v-if="server.enable">
+          <el-form-item
+            label="设置监听地址"
+          >
+            <el-input
+              type="input"
+              v-model="server.host"
+              placeholder="推荐默认地址:127.0.0.1"
+            ></el-input>
+          </el-form-item>
+          <el-form-item
+            label="设置监听端口"
+          >
+            <el-input
+              type="number"
+              v-model="server.port"
+              placeholder="推荐默认端口:36677"
+            ></el-input>
+          </el-form-item>
+        </template>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="cancelServerSetting" round>取消</el-button>
+        <el-button type="primary" @click="confirmServerSetting" round>确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -288,6 +342,7 @@ export default class extends Vue {
   keyBindingVisible = false
   customLinkVisible = false
   checkUpdateVisible = false
+  serverVisible = false
   proxyVisible = false
   customLink = {
     value: db.get('settings.customLink') || '$url'
@@ -308,6 +363,11 @@ export default class extends Vue {
     info: '普通-Info',
     warn: '提醒-Warn',
     none: '不记录日志-None'
+  }
+  server = db.get('settings.server') || {
+    port: 36677,
+    host: '127.0.0.1',
+    enable: true
   }
   version = pkg.version
   latestVersion = ''
@@ -344,10 +404,6 @@ export default class extends Vue {
   }
   keyDetect (type: string, event: KeyboardEvent) {
     this.shortKey[type] = keyDetect(event).join('+')
-  }
-  cancelKeyBinding () {
-    this.keyBindingVisible = false
-    this.shortKey = db.get('settings.shortKey')
   }
   cancelCustomLink () {
     this.customLinkVisible = false
@@ -478,6 +534,27 @@ export default class extends Vue {
     }
     this.form.logLevel = logLevel
   }
+  confirmServerSetting () {
+    this.letPicGoSaveData({
+      'settings.server': this.server
+    })
+    const successNotification = new Notification('设置PicGo-Server', {
+      body: '设置成功'
+    })
+    successNotification.onclick = () => {
+      return true
+    }
+    this.serverVisible = false
+    ipcRenderer.send('updateServer')
+  }
+  cancelServerSetting () {
+    this.serverVisible = false
+    this.server = db.get('settings.server') || {
+      port: 36677,
+      host: '127.0.0.1',
+      enable: true
+    }
+  }
   handleLevelDisabled (val: string) {
     let currentLevel = val
     let flagLevel
@@ -562,4 +639,11 @@ export default class extends Vue {
         margin-left 0
       .confirm-button
         width 100%
+  .server-dialog
+    .notice-text
+      color: #49B1F5
+    .el-dialog__body
+      padding-top: 0
+    .el-form-item
+      margin-bottom: 10px
 </style>

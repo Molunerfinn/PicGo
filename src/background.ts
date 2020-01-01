@@ -561,9 +561,9 @@ ipcMain.on('toggleShortKeyModifiedMode', (evt: IpcMainEvent, val: boolean) => {
   bus.emit('toggleShortKeyModifiedMode', val)
 })
 
-// const shortKeyHash = {
-//   upload: uploadClipboardFiles
-// }
+ipcMain.on('updateServer', () => {
+  server.restart()
+})
 
 const gotTheLock = app.requestSingleInstanceLock()
 

@@ -15,6 +15,7 @@ interface ErrnoException extends Error {
   stack?: string;
 }
 
+// Server
 type routeHandler = (ctx: IServerCTX) => Promise<void>
 
 type IHttpResponse = import('http').ServerResponse
@@ -22,6 +23,12 @@ type IHttpResponse = import('http').ServerResponse
 interface IServerCTX {
   response: IHttpResponse
   [propName: string]: any
+}
+
+interface IServerConfig {
+  port: number
+  host: string,
+  enable: boolean
 }
 
 // Image && PicBed

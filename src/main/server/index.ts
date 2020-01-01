@@ -3,11 +3,18 @@ import routers from './routerManager'
 import {
   handleResponse
 } from './utils'
+import picgo from '~/main/utils/picgo'
+import logger from '~/main/utils/logger'
 
 class Server {
   private httpServer: http.Server
-  private port: number = 36677
+  private config: IServerConfig
   constructor () {
+    this.config = picgo.getConfig('settings.server') || {
+      port: 36677,
+      host: '127.0.0.1',
+      enable: true
+    }
     this.httpServer = http.createServer(this.handleRequest)
   }
   private handleRequest = (request: http.IncomingMessage, response: http.ServerResponse) => {
@@ -52,20 +59,31 @@ class Server {
     }
   }
   private listen = (port: number) => {
-    console.log(`server listen at ${port}`)
-    this.httpServer.listen(port, '0.0.0.0').on('error', (err: ErrnoException) => {
+    logger.info(`[PicGo Server] is listening at ${port}`)
+    this.httpServer.listen(port, this.config.host).on('error', (err: ErrnoException) => {
       if (err.errno === 'EADDRINUSE') {
-        console.log(`----- Port ${port} is busy, trying with port ${port + 1} -----`)
-        this.port += 1
-        this.listen(this.port)
+        logger.warn(`[PicGo Server] ${port} is busy, trying with port ${port + 1}`)
+        this.config.port += 1
+        picgo.saveConfig({
+          'settings.server.port': this.config.port
+        })
+        this.listen(this.config.port)
       }
     })
   }
   startup () {
-    this.listen(this.port)
+    if (this.config.enable) {
+      this.listen(this.config.port)
+    }
   }
   shutdown () {
     this.httpServer.close()
+    logger.info('[PicGo Server] shutdown')
+  }
+  restart () {
+    this.config = picgo.getConfig('settings.server')
+    this.shutdown()
+    this.startup()
   }
 }
 
