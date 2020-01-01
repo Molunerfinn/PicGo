@@ -624,11 +624,6 @@ app.on('ready', async () => {
   server.startup()
   if (process.env.NODE_ENV !== 'development') {
     let files = getUploadFiles()
-    if (files === null) {
-      logger.info('get clipboardFile, null')
-    } else {
-      logger.info(`get clipboardFile, ${files.toString()}`)
-    }
     if (files === null || files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
       if (files === null) {
         uploadClipboardFiles()

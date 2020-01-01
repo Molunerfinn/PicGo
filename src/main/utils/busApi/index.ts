@@ -15,7 +15,6 @@ export const uploadWithClipboardFiles = (): Promise<{
   result?: string[]
 }> => {
   return new Promise((resolve, reject) => {
-    bus.emit(UPLOAD_WITH_CLIPBOARD_FILES)
     bus.once(UPLOAD_WITH_CLIPBOARD_FILES_RESPONSE, (result: string) => {
       if (result) {
         return resolve({
@@ -28,6 +27,7 @@ export const uploadWithClipboardFiles = (): Promise<{
         })
       }
     })
+    bus.emit(UPLOAD_WITH_CLIPBOARD_FILES)
   })
 }
 
@@ -36,7 +36,6 @@ export const uploadWithFiles = (pathList: IFileWithPath[]): Promise<{
   result?: string[]
 }> => {
   return new Promise((resolve, reject) => {
-    bus.emit(UPLOAD_WITH_FILES, pathList)
     bus.once(UPLOAD_WITH_FILES_RESPONSE, (result: string[]) => {
       if (result.length) {
         return resolve({
@@ -49,6 +48,7 @@ export const uploadWithFiles = (pathList: IFileWithPath[]): Promise<{
         })
       }
     })
+    bus.emit(UPLOAD_WITH_FILES, pathList)
   })
 }
 
@@ -56,19 +56,19 @@ export const uploadWithFiles = (pathList: IFileWithPath[]): Promise<{
 // miniWindow or settingWindow or trayWindow
 export const getWindowId = (): Promise<number> => {
   return new Promise((resolve, reject) => {
-    bus.emit(GET_WINDOW_ID)
     bus.once(GET_WINDOW_ID_REPONSE, (id: number) => {
       resolve(id)
     })
+    bus.emit(GET_WINDOW_ID)
   })
 }
 
 // get settingWindow id:
 export const getSettingWindowId = (): Promise<number> => {
   return new Promise((resolve, reject) => {
-    bus.emit(GET_SETTING_WINDOW_ID)
     bus.once(GET_SETTING_WINDOW_ID_RESPONSE, (id: number) => {
       resolve(id)
     })
+    bus.emit(GET_SETTING_WINDOW_ID)
   })
 }
