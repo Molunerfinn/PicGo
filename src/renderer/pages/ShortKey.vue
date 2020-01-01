@@ -17,7 +17,7 @@
             </template>
           </el-table-column>
           <el-table-column
-            width="180px"
+            width="160px"
             label="快捷键绑定"
             prop="key"
           >
@@ -36,6 +36,7 @@
           </el-table-column>
           <el-table-column
             label="来源"
+            width="100px"
           >
             <template slot-scope="scope">
               {{ calcOriginShowName(scope.row.from) }}
