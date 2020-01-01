@@ -1,6 +1,6 @@
 {
   "name": "picgo",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -12,7 +12,7 @@
     "postuninstall": "electron-builder install-app-deps",
     "cz": "git-cz",
     "bump": "bump-version",
-    "release": "npm run electron:build"
+    "release": "vue-cli-service electron:build --publish always"
   },
   "main": "background.js",
   "husky": {

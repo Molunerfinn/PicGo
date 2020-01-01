@@ -24,6 +24,14 @@ module.exports = {
       builderOptions: {
         productName: 'PicGo',
         appId: 'com.molunerfinn.picgo',
+        publish: [
+          {
+            provider: 'github',
+            owner: 'Molunerfinn',
+            repo: 'PicGo',
+            releaseType: 'draft'
+          }
+        ],
         dmg: {
           contents: [
             {
@@ -56,6 +64,9 @@ module.exports = {
         },
         linux: {
           icon: 'build/icons/'
+        },
+        snap: {
+          publish: ['github']
         }
       }
     }
