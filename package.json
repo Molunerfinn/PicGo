@@ -12,7 +12,7 @@
     "postuninstall": "electron-builder install-app-deps",
     "cz": "git-cz",
     "bump": "bump-version",
-    "release": "electron:build"
+    "release": "npm run electron:build"
   },
   "main": "background.js",
   "husky": {
