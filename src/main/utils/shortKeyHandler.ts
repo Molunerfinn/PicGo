@@ -9,7 +9,7 @@ import {
 import logger from './logger'
 import GuiApi from './guiApi'
 import db from '#/datastore'
-import shortKeyService from './shortkeyService'
+import shortKeyService from './shortKeyService'
 import picgo from './picgo'
 
 class ShortKeyHandler {
