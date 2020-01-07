@@ -170,8 +170,10 @@ export default class extends Vue {
         }
       },
       {
-        label: '最小化窗口',
-        role: 'minimize'
+        label: '隐藏窗口',
+        click () {
+          remote.BrowserWindow.getFocusedWindow()!.hide()
+        }
       },
       {
         label: '重启应用',
