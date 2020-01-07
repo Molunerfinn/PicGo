@@ -44,18 +44,18 @@ import {
   GET_WINDOW_ID,
   GET_WINDOW_ID_REPONSE,
   GET_SETTING_WINDOW_ID,
-  GET_SETTING_WINDOW_ID_RESPONSE
+  GET_SETTING_WINDOW_ID_RESPONSE,
+  CREATE_APP_MENU
 } from '~/main/utils/busApi/constants'
 import server from '~/main/server/index'
+import { IWindowList } from '~/main/apis/window/constants'
+import windowManager from '~/main/apis/window/windowManager'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 protocol.registerSchemesAsPrivileged([{ scheme: 'picgo', privileges: { secure: true, standard: true } }])
 
 beforeOpen()
 
-let window: BrowserWindow | null
-let settingWindow: BrowserWindow | null
-let miniWindow: BrowserWindow | null
 let tray: Tray | null
 let menu: Menu | null
 let contextMenu: Menu | null
@@ -83,8 +83,8 @@ function createContextMenu () {
         picgo.saveConfig({
           'picBed.current': item.type
         })
-        if (settingWindow) {
-          settingWindow.webContents.send('syncPicBed')
+        if (windowManager.has(IWindowList.SETTING_WINDOW)) {
+          windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('syncPicBed')
         }
       }
     }
@@ -103,15 +103,11 @@ function createContextMenu () {
     {
       label: '打开详细窗口',
       click () {
-        if (settingWindow === null) {
-          createSettingWindow()
-          settingWindow!.show()
-        } else {
-          settingWindow.show()
-          settingWindow.focus()
-        }
-        if (miniWindow) {
-          miniWindow.hide()
+        const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)
+        settingWindow!.show()
+        settingWindow!.focus()
+        if (windowManager.has(IWindowList.MINI_WINDOW)) {
+          windowManager.get(IWindowList.MINI_WINDOW)!.hide()
         }
       }
     },
@@ -150,8 +146,8 @@ function createTray () {
   const menubarPic = process.platform === 'darwin' ? `${__static}/menubar.png` : `${__static}/menubar-nodarwin.png`
   tray = new Tray(menubarPic)
   tray.on('right-click', () => {
-    if (window) {
-      window.hide()
+    if (windowManager.has(IWindowList.TRAY_WINDOW)) {
+      windowManager.get(IWindowList.TRAY_WINDOW)!.hide()
     }
     createContextMenu()
     tray!.popUpContextMenu(contextMenu!)
@@ -172,21 +168,17 @@ function createTray () {
             imgUrl
           })
         }
-        window!.webContents.send('clipboardFiles', obj)
+        windowManager.get(IWindowList.TRAY_WINDOW)!.webContents.send('clipboardFiles', obj)
       }, 0)
     } else {
-      if (window) {
-        window.hide()
+      if (windowManager.has(IWindowList.TRAY_WINDOW)) {
+        windowManager.get(IWindowList.TRAY_WINDOW)!.hide()
       }
-      if (settingWindow === null) {
-        createSettingWindow()
-        settingWindow!.show()
-      } else {
-        settingWindow.show()
-        settingWindow.focus()
-      }
-      if (miniWindow) {
-        miniWindow.hide()
+      const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)
+      settingWindow!.show()
+      settingWindow!.focus()
+      if (windowManager.has(IWindowList.MINI_WINDOW)) {
+        windowManager.get(IWindowList.MINI_WINDOW)!.hide()
       }
     }
   })
@@ -205,7 +197,10 @@ function createTray () {
 
   tray.on('drop-files', async (event: Event, files: string[]) => {
     const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
-    const imgs = await uploader.setWebContents(window!.webContents).upload(files)
+    const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
+    const imgs = await uploader
+      .setWebContents(trayWindow.webContents)
+      .upload(files)
     if (imgs !== false) {
       for (let i = 0; i < imgs.length; i++) {
         clipboard.writeText(pasteTemplate(pasteStyle, imgs[i]))
@@ -219,122 +214,10 @@ function createTray () {
         }, i * 100)
         db.insert('uploaded', imgs[i])
       }
-      window!.webContents.send('dragFiles', imgs)
+      trayWindow.webContents.send('dragFiles', imgs)
     }
   })
   // toggleWindow()
-}
-
-const createWindow = () => {
-  if (process.platform !== 'darwin' && process.platform !== 'win32') {
-    return
-  }
-  window = new BrowserWindow({
-    height: 350,
-    width: 196, // 196
-    show: false,
-    frame: false,
-    fullscreenable: false,
-    resizable: false,
-    transparent: true,
-    vibrancy: 'ultra-dark',
-    webPreferences: {
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
-      backgroundThrottling: false
-    }
-  })
-
-  window.loadURL(winURL)
-
-  window.on('closed', () => {
-    window = null
-  })
-
-  window.on('blur', () => {
-    window!.hide()
-  })
-  return window
-}
-
-const createMiniWindow = () => {
-  if (miniWindow || process.platform === 'darwin') {
-    return false
-  }
-  let obj: IBrowserWindowOptions = {
-    height: 64,
-    width: 64,
-    show: process.platform === 'linux',
-    frame: false,
-    fullscreenable: false,
-    skipTaskbar: true,
-    resizable: false,
-    transparent: process.platform !== 'linux',
-    icon: `${__static}/logo.png`,
-    webPreferences: {
-      backgroundThrottling: false,
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true
-    }
-  }
-
-  if (db.get('settings.miniWindowOntop')) {
-    obj.alwaysOnTop = true
-  }
-
-  miniWindow = new BrowserWindow(obj)
-
-  miniWindow.loadURL(miniWinURL)
-
-  miniWindow.on('closed', () => {
-    miniWindow = null
-  })
-  return miniWindow
-}
-
-const createSettingWindow = () => {
-  const options: IBrowserWindowOptions = {
-    height: 450,
-    width: 800,
-    show: false,
-    frame: true,
-    center: true,
-    fullscreenable: false,
-    resizable: false,
-    title: 'PicGo',
-    vibrancy: 'ultra-dark',
-    transparent: true,
-    titleBarStyle: 'hidden',
-    webPreferences: {
-      backgroundThrottling: false,
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
-      webSecurity: false
-    }
-  }
-  if (process.platform !== 'darwin') {
-    options.show = false
-    options.frame = false
-    options.backgroundColor = '#3f3c37'
-    options.transparent = false
-    options.icon = `${__static}/logo.png`
-  }
-  settingWindow = new BrowserWindow(options)
-
-  settingWindow!.loadURL(settingWinURL)
-
-  settingWindow!.on('closed', () => {
-    bus.emit('toggleShortKeyModifiedMode', false)
-    settingWindow = null
-    if (process.platform === 'linux') {
-      process.nextTick(() => {
-        app.quit()
-      })
-    }
-  })
-  createMenu()
-  createMiniWindow()
-  return settingWindow
 }
 
 const createMenu = () => {
@@ -365,25 +248,23 @@ const createMenu = () => {
 }
 
 const toggleWindow = (bounds: IBounds) => {
-  if (window!.isVisible()) {
-    window!.hide()
+  const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
+  if (trayWindow.isVisible()) {
+    trayWindow.hide()
   } else {
-    showWindow(bounds)
+    trayWindow.setPosition(bounds.x - 98 + 11, bounds.y, false)
+    trayWindow.webContents.send('updateFiles')
+    trayWindow.show()
+    trayWindow.focus()
   }
 }
 
-const showWindow = (bounds: IBounds) => {
-  window!.setPosition(bounds.x - 98 + 11, bounds.y, false)
-  window!.webContents.send('updateFiles')
-  window!.show()
-  window!.focus()
-}
-
 const uploadClipboardFiles = async (): Promise<string> => {
-  const win = getAvailableWindow()
+  const win = windowManager.getAvailableWindow()
   let img = await uploader.setWebContents(win!.webContents).upload()
   if (img !== false) {
     if (img.length > 0) {
+      const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       clipboard.writeText(pasteTemplate(pasteStyle, img[0]))
       const notification = new Notification({
@@ -393,10 +274,10 @@ const uploadClipboardFiles = async (): Promise<string> => {
       })
       notification.show()
       db.insert('uploaded', img[0])
-      window!.webContents.send('clipboardFiles', [])
-      window!.webContents.send('uploadFiles', img)
-      if (settingWindow) {
-        settingWindow.webContents.send('updateGallery')
+      trayWindow.webContents.send('clipboardFiles', [])
+      trayWindow.webContents.send('uploadFiles', img)
+      if (windowManager.has(IWindowList.SETTING_WINDOW)) {
+        windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('updateGallery')
       }
       return img[0].imgUrl as string
     } else {
@@ -433,9 +314,9 @@ const uploadChoosedFiles = async (webContents: WebContents, files: IFileWithPath
       result.push(imgs[i].imgUrl!)
     }
     clipboard.writeText(pasteText)
-    window!.webContents.send('uploadFiles', imgs)
-    if (settingWindow) {
-      settingWindow.webContents.send('updateGallery')
+    windowManager.get(IWindowList.TRAY_WINDOW)!.webContents.send('uploadFiles', imgs)
+    if (windowManager.has(IWindowList.SETTING_WINDOW)) {
+      windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('updateGallery')
     }
     return result
   } else {
@@ -447,7 +328,8 @@ picgoCoreIPC()
 
 // from macOS tray
 ipcMain.on('uploadClipboardFiles', async () => {
-  const img = await uploader.setWebContents(window!.webContents).upload()
+  const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
+  const img = await uploader.setWebContents(trayWindow.webContents).upload()
   if (img !== false) {
     const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
     clipboard.writeText(pasteTemplate(pasteStyle, img[0]))
@@ -459,12 +341,12 @@ ipcMain.on('uploadClipboardFiles', async () => {
     })
     notification.show()
     db.insert('uploaded', img[0])
-    window!.webContents.send('clipboardFiles', [])
-    if (settingWindow) {
-      settingWindow.webContents.send('updateGallery')
+    trayWindow.webContents.send('clipboardFiles', [])
+    if (windowManager.has(IWindowList.SETTING_WINDOW)) {
+      windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('updateGallery')
     }
   }
-  window!.webContents.send('uploadFiles')
+  trayWindow.webContents.send('uploadFiles')
 })
 
 ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
@@ -525,29 +407,24 @@ ipcMain.on('autoStart', (evt: IpcMainEvent, val: boolean) => {
 })
 
 ipcMain.on('openSettingWindow', () => {
-  if (!settingWindow) {
-    createSettingWindow()
-  } else {
-    settingWindow.show()
-  }
-  if (miniWindow) {
-    miniWindow.hide()
+  windowManager.get(IWindowList.SETTING_WINDOW)!.show()
+  if (windowManager.has(IWindowList.MINI_WINDOW)) {
+    windowManager.get(IWindowList.MINI_WINDOW)!.hide()
   }
 })
 
 ipcMain.on('openMiniWindow', () => {
-  if (!miniWindow) {
-    createMiniWindow()
-  }
-  miniWindow!.show()
-  miniWindow!.focus()
-  settingWindow!.hide()
+  const miniWindow = windowManager.get(IWindowList.MINI_WINDOW)!
+  const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)!
+  miniWindow.show()
+  miniWindow.focus()
+  settingWindow.hide()
 })
 
 //  from mini window
 ipcMain.on('syncPicBed', () => {
-  if (settingWindow) {
-    settingWindow.webContents.send('syncPicBed')
+  if (windowManager.has(IWindowList.SETTING_WINDOW)) {
+    windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('syncPicBed')
   }
 })
 
@@ -576,11 +453,12 @@ if (!gotTheLock) {
       if (files === null) {
         uploadClipboardFiles()
       } else {
-        const win = getAvailableWindow()
+        const win = windowManager.getAvailableWindow()
         uploadChoosedFiles(win.webContents, files)
       }
     } else {
-      if (settingWindow) {
+      if (windowManager.has(IWindowList.SETTING_WINDOW)) {
+        const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)!
         if (settingWindow.isMinimized()) {
           settingWindow.restore()
         }
@@ -608,8 +486,8 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-  createWindow()
-  createSettingWindow()
+  windowManager.create(IWindowList.TRAY_WINDOW)
+  windowManager.create(IWindowList.SETTING_WINDOW)
   if (process.platform === 'darwin' || process.platform === 'win32') {
     createTray()
   }
@@ -628,7 +506,7 @@ app.on('ready', async () => {
       if (files === null) {
         uploadClipboardFiles()
       } else {
-        const win = getAvailableWindow()
+        const win = windowManager.getAvailableWindow()
         uploadChoosedFiles(win.webContents, files)
       }
     }
@@ -643,11 +521,11 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   createProtocol('picgo')
-  if (window === null) {
-    createWindow()
+  if (!windowManager.has(IWindowList.TRAY_WINDOW)) {
+    windowManager.create(IWindowList.TRAY_WINDOW)
   }
-  if (settingWindow === null) {
-    createSettingWindow()
+  if (!windowManager.has(IWindowList.SETTING_WINDOW)) {
+    windowManager.create(IWindowList.SETTING_WINDOW)
   }
 })
 
@@ -667,21 +545,12 @@ function initEventCenter () {
     [UPLOAD_WITH_CLIPBOARD_FILES]: busCallUploadClipboardFiles,
     [UPLOAD_WITH_FILES]: busCallUploadFiles,
     [GET_WINDOW_ID]: busCallGetWindowId,
-    [GET_SETTING_WINDOW_ID]: busCallGetSettingWindowId
+    [GET_SETTING_WINDOW_ID]: busCallGetSettingWindowId,
+    [CREATE_APP_MENU]: createMenu
   }
   for (let i in eventList) {
     bus.on(i, eventList[i])
   }
-}
-
-function getAvailableWindow () {
-  let win
-  if (miniWindow && miniWindow.isVisible()) {
-    win = miniWindow
-  } else {
-    win = settingWindow || window || createSettingWindow()
-  }
-  return win
 }
 
 async function busCallUploadClipboardFiles () {
@@ -690,19 +559,19 @@ async function busCallUploadClipboardFiles () {
 }
 
 async function busCallUploadFiles (pathList: IFileWithPath[]) {
-  const win = getAvailableWindow()
+  const win = windowManager.getAvailableWindow()
   const urls = await uploadChoosedFiles(win.webContents, pathList)
   bus.emit(UPLOAD_WITH_FILES_RESPONSE, urls)
 }
 
 function busCallGetWindowId () {
-  const win = getAvailableWindow()
+  const win = windowManager.getAvailableWindow()
   bus.emit(GET_WINDOW_ID_REPONSE, win.id)
 }
 
 function busCallGetSettingWindowId () {
-  if (!settingWindow) createSettingWindow()
-  bus.emit(GET_SETTING_WINDOW_ID_RESPONSE, settingWindow!.id)
+  const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)!
+  bus.emit(GET_SETTING_WINDOW_ID_RESPONSE, settingWindow.id)
 }
 
 // Exit cleanly on request from parent process in development mode.

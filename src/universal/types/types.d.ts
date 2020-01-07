@@ -7,13 +7,17 @@ interface IObjT<T> {
   [propName: string]: T
 }
 
-interface ErrnoException extends Error {
+declare interface ErrnoException extends Error {
   errno?: number | string;
   code?: string;
   path?: string;
   syscall?: string;
   stack?: string;
 }
+
+declare var __static: string
+
+declare type ILogType = 'success' | 'info' | 'warn' | 'error'
 
 // Server
 type routeHandler = (ctx: IServerCTX) => Promise<void>
@@ -113,11 +117,6 @@ interface IBounds {
   x: number
   y: number
 }
-
-declare type ILogType = 'success' | 'info' | 'warn' | 'error'
-
-// global value
-declare var __static: string
 
 // PicGo Types
 type ICtx = import('picgo')

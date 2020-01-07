@@ -8,51 +8,8 @@ import {
 import dayjs from 'dayjs'
 import picgo from '~/main/utils/picgo'
 import db from '#/datastore'
-
-const renameURL = process.env.NODE_ENV === 'development'
-  ? `${(process.env.WEBPACK_DEV_SERVER_URL as string)}#rename-page`
-  : `picgo://./index.html#rename-page`
-
-const createRenameWindow = (currentWindow: BrowserWindow) => {
-  let options: IBrowserWindowOptions = {
-    height: 175,
-    width: 300,
-    show: true,
-    fullscreenable: false,
-    resizable: false,
-    vibrancy: 'ultra-dark',
-    webPreferences: {
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
-      backgroundThrottling: false
-    }
-  }
-
-  if (process.platform !== 'darwin') {
-    options.show = true
-    options.backgroundColor = '#3f3c37'
-    options.autoHideMenuBar = true
-    options.transparent = false
-  }
-
-  const window = new BrowserWindow(options)
-  window.loadURL(renameURL)
-  // check if this window is visible
-  if (currentWindow && currentWindow.isVisible()) {
-    // bounds: { x: 821, y: 75, width: 800, height: 450 }
-    const bounds = currentWindow.getBounds()
-    const positionX = bounds.x + bounds.width / 2 - 150
-    let positionY
-    // if is the settingWindow
-    if (bounds.height > 400) {
-      positionY = bounds.y + bounds.height / 2 - 88
-    } else { // if is the miniWindow
-      positionY = bounds.y + bounds.height / 2
-    }
-    window.setPosition(positionX, positionY, false)
-  }
-  return window
-}
+import windowManager from '~/main/apis/window/windowManager'
+import { IWindowList } from '~/main/apis/window/constants'
 
 const waitForShow = (webcontent: WebContents) => {
   return new Promise((resolve, reject) => {
@@ -64,6 +21,7 @@ const waitForShow = (webcontent: WebContents) => {
 
 const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> => {
   return new Promise((resolve, reject) => {
+    const windowId = window.id
     ipcMain.once(`rename${id}`, (evt: Event, newName: string) => {
       resolve(newName)
       window.close()
@@ -71,13 +29,13 @@ const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> 
     window.on('close', () => {
       resolve(null)
       ipcMain.removeAllListeners(`rename${id}`)
+      windowManager.deleteById(windowId)
     })
   })
 }
 
 class Uploader {
   private webContents: WebContents | null = null
-  private currentWindow: BrowserWindow | null = null
   constructor () {
     this.init()
   }
@@ -113,7 +71,7 @@ class Uploader {
             fileName = item.fileName
           }
           if (rename) {
-            const window = createRenameWindow(this.currentWindow!)
+            const window = windowManager.create(IWindowList.RENAME_WINDOW)!
             await waitForShow(window.webContents)
             window.webContents.send('rename', fileName, window.webContents.id)
             name = await waitForRename(window, window.webContents.id)
@@ -130,8 +88,6 @@ class Uploader {
   }
 
   upload (img?: IUploadOption): Promise<ImgInfo[]|false> {
-    this.currentWindow = BrowserWindow.fromWebContents(this.webContents!)
-
     picgo.upload(img)
 
     return new Promise((resolve) => {
