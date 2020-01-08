@@ -8,12 +8,12 @@ import {
   webContents
 } from 'electron'
 import db from '#/datastore'
-import uploader from './uploader'
+import uploader from '../uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
 import {
   getWindowId,
   getSettingWindowId
-} from '~/main/utils/busApi'
+} from '~/main/apis/bus'
 
 class GuiApi implements IGuiApi {
   private windowId: number = -1

@@ -10,9 +10,9 @@ import {
 import { IWindowListItem } from '#/types/electron'
 import bus from '~/main/utils/eventBus'
 import db from '#/datastore'
-import { getWindowId } from '~/main/utils/busApi'
+import { getWindowId } from '~/main/apis/bus'
 import { BrowserWindow, app } from 'electron'
-import { CREATE_APP_MENU } from '~/main/utils/busApi/constants'
+import { CREATE_APP_MENU } from '~/main/apis/bus/constants'
 
 const windowList = new Map<IWindowList, IWindowListItem>()
 

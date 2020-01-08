@@ -20,12 +20,12 @@ import {
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
 import db from '#/datastore'
-import picgo from '~/main/utils/picgo'
-import uploader from '~/main/utils/uploader'
+import picgo from '~/main/apis/picgo'
+import uploader from '~/main/apis/uploader'
 import beforeOpen from '~/main/utils/beforeOpen'
 import pasteTemplate from '#/utils/pasteTemplate'
 import updateChecker from '~/main/utils/updateChecker'
-import { getPicBeds } from '~/main/utils/getPicBeds'
+import getPicBeds from '~/main/utils/getPicBeds'
 import pkg from 'root/package.json'
 import picgoCoreIPC from '~/main/utils/picgoCoreIPC'
 import fixPath from 'fix-path'
@@ -33,8 +33,8 @@ import { getUploadFiles } from '~/main/utils/handleArgv'
 import bus from '~/main/utils/eventBus'
 import {
   updateShortKeyFromVersion212
-} from '~/main/migrate/shortKeyUpdateHelper'
-import shortKeyHandler from '~/main/utils/shortKeyHandler'
+} from '~/main/migrate'
+import shortKeyHandler from '~/main/apis/shortKey/shortKeyHandler'
 import logger from '~/main/utils/logger'
 import {
   UPLOAD_WITH_FILES,
@@ -46,7 +46,7 @@ import {
   GET_SETTING_WINDOW_ID,
   GET_SETTING_WINDOW_ID_RESPONSE,
   CREATE_APP_MENU
-} from '~/main/utils/busApi/constants'
+} from '~/main/apis/bus/constants'
 import server from '~/main/server/index'
 import { IWindowList } from '~/main/apis/window/constants'
 import windowManager from '~/main/apis/window/windowManager'

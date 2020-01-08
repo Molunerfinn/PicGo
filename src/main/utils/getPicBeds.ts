@@ -1,4 +1,4 @@
-import picgo from './picgo'
+import picgo from '../apis/picgo'
 
 const getPicBeds = () => {
   const picBedTypes = picgo.helper.uploader.getIdList()
@@ -14,6 +14,4 @@ const getPicBeds = () => {
   return picBeds
 }
 
-export {
-  getPicBeds
-}
+export default getPicBeds

@@ -1,4 +1,4 @@
-import logger from './logger'
+import logger from '../../utils/logger'
 class ShortKeyService {
   private commandList: Map<string, IShortKeyHandler> = new Map()
   registerCommand (command: string, handler: IShortKeyHandler) {

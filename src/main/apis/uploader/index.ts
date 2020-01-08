@@ -6,7 +6,7 @@ import {
   WebContents
 } from 'electron'
 import dayjs from 'dayjs'
-import picgo from '~/main/utils/picgo'
+import picgo from '~/main/apis/picgo'
 import db from '#/datastore'
 import windowManager from '~/main/apis/window/windowManager'
 import { IWindowList } from '~/main/apis/window/constants'

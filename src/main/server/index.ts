@@ -3,7 +3,7 @@ import routers from './routerManager'
 import {
   handleResponse
 } from './utils'
-import picgo from '~/main/utils/picgo'
+import picgo from '~/main/apis/picgo'
 import logger from '~/main/utils/logger'
 
 class Server {

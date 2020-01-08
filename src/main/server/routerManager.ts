@@ -2,7 +2,7 @@ import router from './router'
 import {
   uploadWithClipboardFiles,
   uploadWithFiles
-} from '~/main/utils/busApi/index'
+} from '~/main/apis/bus/index'
 import {
   handleResponse
 } from './utils'
