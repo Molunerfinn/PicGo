@@ -10,12 +10,29 @@ class Server {
   private httpServer: http.Server
   private config: IServerConfig
   constructor () {
-    this.config = picgo.getConfig('settings.server') || {
-      port: 36677,
-      host: '127.0.0.1',
-      enable: true
+    let config = picgo.getConfig('settings.server')
+    const result = this.checkIfConfigIsValid(config)
+    if (result) {
+      this.config = config
+    } else {
+      config = {
+        port: 36677,
+        host: '127.0.0.1',
+        enable: true
+      }
+      this.config = config
+      picgo.saveConfig({
+        'settings.server': config
+      })
     }
     this.httpServer = http.createServer(this.handleRequest)
+  }
+  private checkIfConfigIsValid (config: IObj | undefined) {
+    if (config && config.port && config.host && (config.enable !== undefined)) {
+      return true
+    } else {
+      return false
+    }
   }
   private handleRequest = (request: http.IncomingMessage, response: http.ServerResponse) => {
     if (request.method === 'POST') {
@@ -65,7 +82,7 @@ class Server {
         logger.warn(`[PicGo Server] ${port} is busy, trying with port ${port + 1}`)
         this.config.port += 1
         picgo.saveConfig({
-          'settings.server.port': this.config.port
+          'settings.server': this.config
         })
         this.listen(this.config.port)
       }

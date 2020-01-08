@@ -47,7 +47,7 @@ class Uploader {
     })
 
     picgo.on('uploadProgress', progress => {
-      this.webContents!.send('uploadProgress', progress)
+      this.webContents?.send('uploadProgress', progress)
     })
     picgo.on('beforeTransform', ctx => {
       if (db.get('settings.uploadNotification')) {
