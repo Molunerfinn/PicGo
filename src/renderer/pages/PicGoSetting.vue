@@ -305,7 +305,8 @@ import {
 } from 'electron'
 import { Component, Vue } from 'vue-property-decorator'
 import db from '#/datastore'
-const release = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
+const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
+const releaseUrlBackup = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'
 const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
 const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
   if (!/\$url/.test(value)) {
@@ -484,11 +485,16 @@ export default class extends Vue {
   }
   checkUpdate () {
     this.checkUpdateVisible = true
-    this.$http.get(release)
+    this.$http.get(releaseUrl)
       .then(res => {
         this.latestVersion = res.data.name
-      }).catch(err => {
-        console.log(err)
+      }).catch(async () => {
+        this.$http.get(releaseUrlBackup)
+          .then(res => {
+            this.latestVersion = res.data.version
+          }).catch(() => {
+            this.latestVersion = '网络错误暂时无法获取'
+          })
       })
   }
   confirmCheckVersion () {

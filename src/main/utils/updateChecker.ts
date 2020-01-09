@@ -3,7 +3,8 @@ import db from '#/datastore'
 import axios from 'axios'
 import pkg from 'root/package.json'
 const version = pkg.version
-let release = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo/package.json'
+const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
+const releaseUrlBackup = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'
 const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
 
 const checkVersion = async () => {
@@ -15,12 +16,15 @@ const checkVersion = async () => {
   if (showTip) {
     let res: any
     try {
-      res = await axios.get(release)
+      res = await axios.get(releaseUrl).catch(async () => {
+        const result = await axios.get(releaseUrlBackup)
+        return result
+      })
     } catch (err) {
       console.log(err)
     }
     if (res.status === 200) {
-      const latest = res.data.version
+      const latest = res.data.version || res.data.name
       const result = compareVersion2Update(version, latest)
       if (result) {
         dialog.showMessageBox({
