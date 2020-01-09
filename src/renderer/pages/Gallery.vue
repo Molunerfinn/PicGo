@@ -237,9 +237,8 @@ export default class extends Vue {
       cancelButtonText: '取消',
       type: 'warning'
     }).then(() => {
-      const file = this.$db.get('uploaded').getById(id)
-      // @ts-ignore
-      this.$db.read().get('uploaded').removeById(id).write()
+      const file = this.$db.getById('uploaded', id)
+      this.$db.removeById('uploaded', id)
       ipcRenderer.send('removeFiles', [file])
       const obj = {
         title: '操作结果',
@@ -250,7 +249,8 @@ export default class extends Vue {
         return true
       }
       this.getGallery()
-    }).catch(() => {
+    }).catch((e) => {
+      console.log(e)
       return true
     })
   }
@@ -302,11 +302,9 @@ export default class extends Vue {
         let files: ImgInfo[] = []
         Object.keys(this.choosedList).forEach(key => {
           if (this.choosedList[key]) {
-            // @ts-ignore
-            const file = this.$db.read().get('uploaded').getById(key).value()
+            const file = this.$db.getById('uploaded', key)
             files.push(file)
-            // @ts-ignore
-            this.$db.read().get('uploaded').removeById(key).write()
+            this.$db.removeById('uploaded', key)
           }
         })
         this.choosedList = {}
@@ -332,8 +330,7 @@ export default class extends Vue {
       // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
       Object.keys(this.choosedList).forEach(key => {
         if (this.choosedList[key]) {
-          // @ts-ignore
-          const item = this.$db.read().get('uploaded').getById(key).value()
+          const item = this.$db.getById('uploaded', key)
           copyString += pasteStyle(style, item) + '\n'
           this.choosedList[key] = false
         }

@@ -61,6 +61,14 @@ class DB {
   unset (key: string, value: any): boolean {
     return this.read().get(key).unset(value).value()
   }
+  getById (key: string, id: string) {
+    // @ts-ignore
+    return this.read().get(key).getById(id).value()
+  }
+  removeById (key: string, id: string) {
+    // @ts-ignore
+    return this.read().get(key).removeById(id).write()
+  }
 }
 
 export default new DB()
