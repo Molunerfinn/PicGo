@@ -1,17 +1,15 @@
 import path from 'path'
-import GuiApi from '../apis/gui'
+import GuiApi from '../gui'
 import {
   dialog,
   shell,
-  IpcMain,
   IpcMainEvent,
-  App,
   ipcMain,
   app
 } from 'electron'
 import PicGoCore from '~/universal/types/picgo'
 import { IPicGoHelperType } from '#/types/enum'
-import shortKeyHandler from '../apis/shortKey/shortKeyHandler'
+import shortKeyHandler from '../shortKey/shortKeyHandler'
 import picgo from '~/main/apis/picgo'
 
 // eslint-disable-next-line
@@ -213,13 +211,15 @@ const handlePicGoSaveData = () => {
   })
 }
 
-export default () => {
-  handleGetPluginList()
-  handlePluginInstall()
-  handlePluginUninstall()
-  handlePluginUpdate()
-  handleGetPicBedConfig()
-  handlePluginActions()
-  handleRemoveFiles()
-  handlePicGoSaveData()
+export default {
+  listen () {
+    handleGetPluginList()
+    handlePluginInstall()
+    handlePluginUninstall()
+    handlePluginUpdate()
+    handleGetPicBedConfig()
+    handlePluginActions()
+    handleRemoveFiles()
+    handlePicGoSaveData()
+  }
 }

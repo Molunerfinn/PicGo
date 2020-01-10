@@ -3,9 +3,7 @@ import {
   BrowserWindow,
   clipboard,
   Notification,
-  WebContents,
-  ipcMain,
-  webContents
+  ipcMain
 } from 'electron'
 import db from '#/datastore'
 import uploader from '../uploader'
