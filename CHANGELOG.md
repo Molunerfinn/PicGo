@@ -1,3 +1,13 @@
+## :tada: 2.2.2 (2020-01-20)
+
+
+### :bug: Bug Fixes
+
+* picgo-server upload clipboard file's result bug ([4ebd76f](https://github.com/Molunerfinn/PicGo/commit/4ebd76f))
+* releaseUrl may can't get latest version ([ee46ab1](https://github.com/Molunerfinn/PicGo/commit/ee46ab1))
+
+
+
 ## :tada: 2.2.1 (2020-01-09)
 
 
