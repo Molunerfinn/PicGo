@@ -17,13 +17,16 @@
   <a href="https://github.com/PicGo/bump-version">
     <img src="https://img.shields.io/badge/picgo-convention-blue.svg?style=flat-square" alt="">
   </a>
+  <a href="https://gitter.im/picgo-all/PicGo?utm_source=share-link&utm_medium=link&utm_campaign=share-link">
+    <img src="https://img.shields.io/badge/gitter-join%20chat%20%E2%86%92-66ae93.svg?style=flat-square" alt="">
+  </a>
 </div>
 
-## 应用说明
+## 应用概述
 
-**PicGo 在上传图片之后自动会将图片链接复制到你的剪贴板里，可选 5 种复制的链接格式。**
+**PicGo: 一个用于快速上传图片并获取图片URL链接的工具**
 
-PicGo 目前支持了
+PicGo 本体支持如下图床：
 
 - ~~`微博图床` v1.0~~ **微博图床从 2019 年 4 月开始进行防盗链，不建议继续使用**
 - `七牛图床` v1.0
@@ -36,28 +39,47 @@ PicGo 目前支持了
 
 **本体不再增加默认的图床支持。你可以自行开发第三方图床插件。详见 [PicGo-Core](https://picgo.github.io/PicGo-Core-Doc/)**。
 
-第三方插件以及使用了 PicGo 底层的应用可以在 [Awesome-PicGo](https://github.com/PicGo/Awesome-PicGo) 找到。欢迎贡献！
 
-PicGo 支持 macOS、Windows 64位（>= v1.3.1），Linux（>= v1.6.0）。
+## 特色功能
 
-支持快捷键`command+shift+p`（macOS）或者`control+shift+p`（Windows\Linux）用以支持快捷上传剪贴板里的图片（第一张）。
-PicGo 支持自定义快捷键，使用方法见[配置手册](https://picgo.github.io/PicGo-Doc/zh/guide/config.html)。
+- 支持拖拽图片上传
+- 支持快捷键上传剪贴板里第一张图片
+- Windows和macOS支持右键图片文件通过菜单上传 (v2.1.0+)
+- 上传图片后自动复制链接到剪贴板
+- 支持自定义复制到剪贴板的链接格式
+- 支持修改快捷键，默认快速上传快捷键：`command+shift+p`（macOS）| `control+shift+p`（Windows\Linux)
+- 支持插件系统，已有插件支持Gitee、青云等第三方图床
+  - 更多第三方插件以及使用了 PicGo 底层的应用可以在 [Awesome-PicGo](https://github.com/PicGo/Awesome-PicGo) 找到。欢迎贡献！
+- 支持通过发送HTTP请求调用 PicGo 上传（v2.2.0+)
+- 更多功能等你自己去发现，同时也会不断开发新功能
+  - 开发进度可以查看 [Projects](https://github.com/Molunerfinn/PicGo/projects)，会同步更新开发进度
+  - 欢迎加入[官方Gitter频道](https://gitter.im/picgo-all/PicGo?utm_source=share-link&utm_medium=link&utm_campaign=share-link)与我交流
 
-开发进度可以查看 [Projects](https://github.com/Molunerfinn/PicGo/projects)，会同步更新开发进度。
 
-**如果第一次使用，请参考应用使用[快速上手](https://picgo.github.io/PicGo-Doc/zh/guide/getting-started.html)。遇到问题了还可以看看 [FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md) 以及被关闭的 [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)。**
+**如果第一次使用，请参考应用[使用文档](https://picgo.github.io/PicGo-Doc/zh/guide/getting-started.html)。遇到问题了还可以看看 [FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md) 以及被关闭的 [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)。**
 
 ## 下载安装
 
 点击此处下载[应用](https://github.com/Molunerfinn/PicGo/releases)。
 
-macOS 用户请下载最新版本的 `dmg` 文件，Windows 用户请下载最新版本的 `exe` 文件，Linux用户请下载 `AppImage` 文件。
+### Windows
+
+Windows 用户请下载最新版本的 `exe` 文件。
+
+**还可以使用 [Scoop](https://scoop.sh/) 来安装 PicGo: `scoop bucket add helbing https://github.com/helbing/scoop-bucket` & `scoop install picgo`。 感谢 @helbing 的贡献！**
+
+### macOS
+
+macOS 用户请下载最新版本的 `dmg` 文件。
+
+**还可以使用 `brew cask` 来安装 PicGo: `brew cask install picgo`。感谢 @womeimingzi11 的贡献！**
+
+### Linux
+
+Linux用户请下载 `AppImage` 文件。
 
 **如果你是 Arch 类的 Linux 用户，可以直接通过 `aurman -S picgo-appimage` 来安装 PicGo。感谢 @houbaron 的贡献！**
 
-**如果你是 macOS 用户，可以使用 `brew cask` 来安装 PicGo: `brew cask install picgo`。感谢 @womeimingzi11 的贡献！**
-
-**如果你是 Windows 用户，还可以使用 [Scoop](https://scoop.sh/) 来安装 PicGo: `scoop bucket add helbing https://github.com/helbing/scoop-bucket` & `scoop install picgo`。 感谢 @helbing 的贡献！**
 
 ## 应用截图
 
@@ -84,19 +106,21 @@ macOS 用户请下载最新版本的 `dmg` 文件，Windows 用户请下载最�
 
 ```bash
 ctrl+c # 退出开发模式
-npm run dev # 重新进入开发模式
+npm run electron:serve # 重新进入开发模式
 ```
+
+**注：Windows开发模式运行之后会在底部任务栏的右下角应用区出现PicGo的应用图标。**
 
 ### 生产模式
 
 如果你需要自行构建，可以 `npm run electron:build` 开始进行构建。构建成功后，会在 `dist_electron` 目录里出现构建成功的相应安装文件。
 
-**注意**：如果你的网络环境不太好，可能会出现 `electron-builder` 下载 `electron` 二进制文件失败的情况。这个时候需要在 `npm run build` 之前指定一下 `electron` 的源为国内源：
+**注意**：如果你的网络环境不太好，可能会出现 `electron-builder` 下载 `electron` 二进制文件失败的情况。这个时候需要在 `npm run electron:build` 之前指定一下 `electron` 的源为国内源：
 
 ```bash
 export ELECTRON_MIRROR="https://npm.taobao.org/mirrors/electron/"
 # 在 Windows 上，则可以使用 set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/ （无需引号）
-npm run build
+npm run electron:build
 ```
 
 只需第一次构建的时候指定一下国内源即可。后续构建不需要特地指定。二进制文件下载在 `~/.electron/` 目录下。如果想要更新 `electron` 构建版本，可以删除 `~/.electron/` 目录，然后重新运行上一步，让 `electron-builder `去下载最新的 `electron` 二进制文件。
