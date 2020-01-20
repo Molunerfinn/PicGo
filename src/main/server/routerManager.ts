@@ -24,7 +24,7 @@ router.get('/upload', async ({
           response,
           body: {
             success: true,
-            result: [res.result]
+            result: res.result
           }
         })
       } else {
