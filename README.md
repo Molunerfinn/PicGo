@@ -33,7 +33,7 @@ PicGo 本体支持如下图床：
 - `腾讯云 COS v4\v5版本` v1.1 & v1.5.0
 - `又拍云` v1.2.0
 - `GitHub` v1.5.0
-- `SM.MS` v1.5.1
+- ~~`SM.MS` v1.5.1~~ **由于官方不再支持V1版本，暂时请使用[smms-user](https://github.com/xlzy520/picgo-plugin-smms-user)插件**
 - `阿里云 OSS` v1.6.0
 - `Imgur` v1.6.0
 
