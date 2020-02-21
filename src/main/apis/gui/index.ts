@@ -12,6 +12,9 @@ import {
   getWindowId,
   getSettingWindowId
 } from '~/main/apis/bus'
+import {
+  SHOW_INPUT_BOX
+} from '~/universal/events/constants'
 
 class GuiApi implements IGuiApi {
   private windowId: number = -1
@@ -40,9 +43,9 @@ class GuiApi implements IGuiApi {
   }) {
     await this.showSettingWindow()
     this.getWebcontentsByWindowId(this.settingWindowId)
-      .send('showInputBox', options)
+      .send(SHOW_INPUT_BOX, options)
     return new Promise<string>((resolve, reject) => {
-      ipcMain.once('showInputBox', (event: Event, value: string) => {
+      ipcMain.once(SHOW_INPUT_BOX, (event: Event, value: string) => {
         resolve(value)
       })
     })

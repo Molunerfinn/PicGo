@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import VueLazyLoad from 'vue-lazyload'
 import axios from 'axios'
 import mainMixin from './renderer/utils/mainMixin'
+import bus from '@/utils/bus'
 
 webFrame.setVisualZoomLevelLimits(1, 1)
 webFrame.setLayoutZoomLevelLimits(0, 0)
@@ -25,6 +26,7 @@ Vue.prototype.$builtInPicBed = [
 ]
 Vue.prototype.$db = db
 Vue.prototype.$http = axios
+Vue.prototype.$bus = bus
 
 Vue.use(ElementUI)
 Vue.use(VueLazyLoad)

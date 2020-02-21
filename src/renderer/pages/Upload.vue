@@ -48,7 +48,8 @@
             <div class="paste-style__text">
               快捷上传
             </div>
-            <el-button type="primary" round size="mini" @click="uploadClipboardFiles" class="paste-upload">剪贴板图片上传</el-button>
+            <el-button type="primary" round size="mini" @click="uploadClipboardFiles" class="quick-upload">剪贴板</el-button>
+            <el-button type="primary" round size="mini" @click="uploadURLFiles" class="quick-upload">URL</el-button>
           </div>
         </div>
       </el-col>
@@ -62,6 +63,10 @@ import {
   IpcRendererEvent,
   remote
 } from 'electron'
+import {
+  SHOW_INPUT_BOX,
+  SHOW_INPUT_BOX_RESPONSE
+} from '~/universal/events/constants'
 const { Menu } = remote
 @Component({
   name: 'upload'
@@ -92,6 +97,7 @@ export default class extends Vue {
     })
     ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
+    this.$bus.$on(SHOW_INPUT_BOX_RESPONSE, this.handleInputBoxValue)
   }
   @Watch('progress')
   onProgressChange (val: number) {
@@ -140,6 +146,22 @@ export default class extends Vue {
   }
   uploadClipboardFiles () {
     ipcRenderer.send('uploadClipboardFilesFromUploadPage')
+  }
+  uploadURLFiles () {
+    this.$bus.$emit(SHOW_INPUT_BOX, {
+      title: '请输入URL',
+      placeholder: 'http://或者https://开头'
+    })
+  }
+  handleInputBoxValue (val: string) {
+    if (val === '') return false
+    if (val.includes('http://') || val.includes('https://')) {
+      ipcRenderer.send('uploadChoosedFiles', {
+        path: val
+      })
+    } else {
+      this.$message.error('请输入合法的URL')
+    }
   }
   getDefaultPicBed () {
     const current: string = this.$db.get('picBed.current')
@@ -239,8 +261,8 @@ export default class extends Vue {
     .el-radio-button__inner
       border-left none
       border-radius 0 14px 14px 0
-  .paste-upload
-    width 100%
+  .quick-upload
+    width 46%
   .el-icon-caret-bottom
     cursor pointer
 </style>

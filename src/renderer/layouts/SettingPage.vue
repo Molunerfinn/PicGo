@@ -120,20 +120,7 @@
         <el-button type="primary" @click="confirmCustomLink">确定</el-button>
       </span>
     </el-dialog>
-    <el-dialog
-      :title="inputBoxOptions.title || '输入框'"
-      :visible.sync="showInputBoxVisible"
-      :modal-append-to-body="false"
-      @close="handleInputBoxClose"
-    >
-      <el-input
-        v-model="inputBoxValue"
-        :placeholder="inputBoxOptions.placeholder"></el-input>
-      <span slot="footer">
-        <el-button @click="showInputBoxVisible = false" round>取消</el-button>
-        <el-button type="primary" @click="showInputBoxVisible = false" round>确定</el-button>
-      </span>
-    </el-dialog>
+    <input-box-dialog />
   </div>
 </template>
 <script lang="ts">
@@ -143,6 +130,7 @@ import keyDetect from '@/utils/key-binding'
 import { remote, ipcRenderer, IpcRendererEvent } from 'electron'
 import db from '#/datastore'
 import mixin from '@/utils/mixin'
+import InputBoxDialog from '@/components/InputBoxDialog.vue'
 const { Menu, dialog, BrowserWindow } = remote
 const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
   if (!/\$url/.test(value)) {
@@ -153,7 +141,10 @@ const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) =>
 }
 @Component({
   name: 'setting-page',
-  mixins: [mixin]
+  mixins: [mixin],
+  components: {
+    InputBoxDialog
+  }
 })
 export default class extends Vue {
   version = process.env.NODE_ENV === 'production' ? pkg.version : 'Dev'
@@ -175,24 +166,11 @@ export default class extends Vue {
     upload: db.get('shortKey.upload')
   }
   picBed: IPicBedType[] = []
-  // for showInputBox
-  showInputBoxVisible = false
-  inputBoxValue = ''
-  inputBoxOptions = {
-    title: '',
-    placeholder: ''
-  }
   created () {
     this.os = process.platform
     this.buildMenu()
     ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
-    ipcRenderer.on('showInputBox', (evt: IpcRendererEvent, options: IShowInputBoxOption) => {
-      this.inputBoxValue = ''
-      this.inputBoxOptions.title = options.title || ''
-      this.inputBoxOptions.placeholder = options.placeholder || ''
-      this.showInputBoxVisible = true
-    })
   }
   handleSelect (index: string) {
     const type = index.match(/picbeds-/)
@@ -279,9 +257,6 @@ export default class extends Vue {
   getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
   }
-  handleInputBoxClose () {
-    ipcRenderer.send('showInputBox', this.inputBoxValue)
-  }
   beforeRouteEnter (to: any, from: any, next: any) {
     next((vm: this) => {
       vm.defaultActive = to.name
@@ -289,7 +264,6 @@ export default class extends Vue {
   }
   beforeDestroy () {
     ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
-    ipcRenderer.removeAllListeners('showInputBox')
   }
 }
 </script>
