@@ -39,15 +39,15 @@ export default class extends Vue {
     this.initInputBoxValue(options)
   }
   initInputBoxValue (options: IShowInputBoxOption) {
-    this.inputBoxValue = ''
+    this.inputBoxValue = options.value || ''
     this.inputBoxOptions.title = options.title || ''
     this.inputBoxOptions.placeholder = options.placeholder || ''
     this.showInputBoxVisible = true
   }
   handleInputBoxClose () {
     // TODO: RPCServer
-    ipcRenderer.send(SHOW_INPUT_BOX, this.inputBoxValue)
-    this.$bus.$emit(SHOW_INPUT_BOX_RESPONSE, this.inputBoxValue)
+    ipcRenderer.send(SHOW_INPUT_BOX, '')
+    this.$bus.$emit(SHOW_INPUT_BOX_RESPONSE, '')
   }
   beforeDestroy () {
     ipcRenderer.removeListener(SHOW_INPUT_BOX, this.ipcEventHandler)

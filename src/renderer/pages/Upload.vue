@@ -48,8 +48,8 @@
             <div class="paste-style__text">
               快捷上传
             </div>
-            <el-button type="primary" round size="mini" @click="uploadClipboardFiles" class="quick-upload">剪贴板</el-button>
-            <el-button type="primary" round size="mini" @click="uploadURLFiles" class="quick-upload">URL</el-button>
+            <el-button type="primary" round size="mini" @click="uploadClipboardFiles" class="quick-upload" style="width: 50%">剪贴板图片</el-button>
+            <el-button type="primary" round size="mini" @click="uploadURLFiles" class="quick-upload" style="width: 46%; margin-left: 6px">URL</el-button>
           </div>
         </div>
       </el-col>
@@ -67,6 +67,9 @@ import {
   SHOW_INPUT_BOX,
   SHOW_INPUT_BOX_RESPONSE
 } from '~/universal/events/constants'
+import {
+  isUrl
+} from '~/universal/utils/common'
 const { Menu } = remote
 @Component({
   name: 'upload'
@@ -118,7 +121,34 @@ export default class extends Vue {
   }
   onDrop (e: DragEvent) {
     this.dragover = false
-    this.ipcSendFiles(e.dataTransfer!.files)
+    const items = e.dataTransfer!.items
+    if (items.length === 2 && items[0].type === 'text/uri-list') {
+      this.handleURLDrag(items, e.dataTransfer!)
+    } else if (items[0].type === 'text/plain') {
+      const str = e.dataTransfer!.getData(items[0].type)
+      if (isUrl(str)) {
+        ipcRenderer.send('uploadChoosedFiles', [{ path: str }])
+      } else {
+        this.$message.error('请拖入合法的图片文件或者图片URL地址')
+      }
+    } else {
+      this.ipcSendFiles(e.dataTransfer!.files)
+    }
+  }
+  handleURLDrag (items: DataTransferItemList, dataTransfer: DataTransfer) {
+    // text/html
+    // Use this data to get a more precise URL
+    const urlString = dataTransfer.getData(items[1].type)
+    const urlMatch = urlString.match(/<img.*src="(.*?)"/)
+    if (urlMatch) {
+      ipcRenderer.send('uploadChoosedFiles', [
+        {
+          path: urlMatch[1]
+        }
+      ])
+    } else {
+      this.$message.error('请拖入合法的图片文件或者图片URL地址')
+    }
   }
   openUplodWindow () {
     document.getElementById('file-uploader')!.click()
@@ -147,15 +177,17 @@ export default class extends Vue {
   uploadClipboardFiles () {
     ipcRenderer.send('uploadClipboardFilesFromUploadPage')
   }
-  uploadURLFiles () {
+  async uploadURLFiles () {
+    const str = await navigator.clipboard.readText()
     this.$bus.$emit(SHOW_INPUT_BOX, {
+      value: isUrl(str) ? str : '',
       title: '请输入URL',
       placeholder: 'http://或者https://开头'
     })
   }
   handleInputBoxValue (val: string) {
     if (val === '') return false
-    if (val.startsWith('http://') || val.startsWith('https://')) {
+    if (isUrl(val)) {
       ipcRenderer.send('uploadChoosedFiles', [{
         path: val
       }])
@@ -261,8 +293,6 @@ export default class extends Vue {
     .el-radio-button__inner
       border-left none
       border-radius 0 14px 14px 0
-  .quick-upload
-    width 46%
   .el-icon-caret-bottom
     cursor pointer
 </style>

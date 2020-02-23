@@ -179,6 +179,7 @@ interface IGuiApi {
   showMessageBox: (options?: IShowMessageBoxOption) => Promise<IShowMessageBoxResult>
 }
 interface IShowInputBoxOption {
+  value?: string
   title: string
   placeholder: string
 }
