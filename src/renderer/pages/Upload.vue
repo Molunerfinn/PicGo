@@ -155,10 +155,10 @@ export default class extends Vue {
   }
   handleInputBoxValue (val: string) {
     if (val === '') return false
-    if (val.includes('http://') || val.includes('https://')) {
-      ipcRenderer.send('uploadChoosedFiles', {
+    if (val.startsWith('http://') || val.startsWith('https://')) {
+      ipcRenderer.send('uploadChoosedFiles', [{
         path: val
-      })
+      }])
     } else {
       this.$message.error('请输入合法的URL')
     }
