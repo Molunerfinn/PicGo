@@ -115,6 +115,7 @@ export default class extends Vue {
     }
   }
   beforeDestroy () {
+    this.$bus.$off(SHOW_INPUT_BOX_RESPONSE)
     ipcRenderer.removeAllListeners('uploadProgress')
     ipcRenderer.removeAllListeners('syncPicBed')
     ipcRenderer.removeListener('getPicBeds', this.getPicBeds)

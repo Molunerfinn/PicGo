@@ -3,14 +3,13 @@
     :title="inputBoxOptions.title || '输入框'"
     :visible.sync="showInputBoxVisible"
     :modal-append-to-body="false"
-    @close="handleInputBoxClose"
   >
     <el-input
       v-model="inputBoxValue"
       :placeholder="inputBoxOptions.placeholder"></el-input>
     <span slot="footer">
-      <el-button @click="showInputBoxVisible = false" round>取消</el-button>
-      <el-button type="primary" @click="showInputBoxVisible = false" round>确定</el-button>
+      <el-button @click="handleInputBoxCancel" round>取消</el-button>
+      <el-button type="primary" @click="handleInputBoxConfirm" round>确定</el-button>
     </span>
   </el-dialog>
 </template>
@@ -44,10 +43,16 @@ export default class extends Vue {
     this.inputBoxOptions.placeholder = options.placeholder || ''
     this.showInputBoxVisible = true
   }
-  handleInputBoxClose () {
+  handleInputBoxCancel () {
     // TODO: RPCServer
+    this.showInputBoxVisible = false
     ipcRenderer.send(SHOW_INPUT_BOX, '')
     this.$bus.$emit(SHOW_INPUT_BOX_RESPONSE, '')
+  }
+  handleInputBoxConfirm () {
+    this.showInputBoxVisible = false
+    ipcRenderer.send(SHOW_INPUT_BOX, this.inputBoxValue)
+    this.$bus.$emit(SHOW_INPUT_BOX_RESPONSE, this.inputBoxValue)
   }
   beforeDestroy () {
     ipcRenderer.removeListener(SHOW_INPUT_BOX, this.ipcEventHandler)
