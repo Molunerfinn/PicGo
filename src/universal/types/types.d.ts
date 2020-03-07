@@ -252,6 +252,10 @@ interface IQiniuConfig {
   path: string
 }
 
+interface ISMMSConfig {
+  token: string
+}
+
 interface ITcYunConfig {
   secretId: string,
   secretKey: string,
