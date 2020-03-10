@@ -68,6 +68,8 @@ Windows 用户请下载最新版本的 `exe` 文件。
 
 **还可以使用 [Scoop](https://scoop.sh/) 来安装 PicGo: `scoop bucket add helbing https://github.com/helbing/scoop-bucket` & `scoop install picgo`。 感谢 @helbing 的贡献！**
 
+**还可以使用 [Chocolatey](https://chocolatey.org/) 来安装 PicGo: `choco install picgo`。 感谢 @iYato 的贡献！**
+
 ### macOS
 
 macOS 用户请下载最新版本的 `dmg` 文件。
