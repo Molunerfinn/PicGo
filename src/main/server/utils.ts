@@ -17,3 +17,9 @@ export const handleResponse = ({
   response.write(JSON.stringify(body))
   response.end()
 }
+
+export const ensureHTTPLink = (url: string): string => {
+  return url.startsWith('http')
+    ? url
+    : `http://${url}`
+}

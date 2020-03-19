@@ -541,6 +541,7 @@ export default class extends Vue {
     this.form.logLevel = logLevel
   }
   confirmServerSetting () {
+    this.server.port = parseInt(this.server.port, 10)
     this.letPicGoSaveData({
       'settings.server': this.server
     })

@@ -1,10 +1,12 @@
 import http from 'http'
 import routers from './routerManager'
 import {
-  handleResponse
+  handleResponse,
+  ensureHTTPLink
 } from './utils'
 import picgo from '~/main/apis/picgo'
 import logger from '~/main/utils/logger'
+import axios from 'axios'
 
 class Server {
   private httpServer: http.Server
@@ -75,16 +77,24 @@ class Server {
       response.end()
     }
   }
-  private listen = (port: number) => {
+  // port as string is a bug
+  private listen = (port: number | string) => {
     logger.info(`[PicGo Server] is listening at ${port}`)
-    this.httpServer.listen(port, this.config.host).on('error', (err: ErrnoException) => {
+    if (typeof port === 'string') {
+      port = parseInt(port, 10)
+    }
+    this.httpServer.listen(port, this.config.host).on('error', async (err: ErrnoException) => {
       if (err.errno === 'EADDRINUSE') {
-        logger.warn(`[PicGo Server] ${port} is busy, trying with port ${port + 1}`)
-        this.config.port += 1
-        picgo.saveConfig({
-          'settings.server': this.config
-        })
-        this.listen(this.config.port)
+        try {
+          // make sure the system has a PicGo Server instance
+          await axios.post(ensureHTTPLink(`${this.config.host}:${port}/heartbeat`))
+          this.shutdown(true)
+        } catch (e) {
+          logger.warn(`[PicGo Server] ${port} is busy, trying with port ${(port as number) + 1}`)
+          // fix a bug: not write an increase number to config file
+          // to solve the auto number problem
+          this.listen((port as number) + 1)
+        }
       }
     })
   }
@@ -93,9 +103,11 @@ class Server {
       this.listen(this.config.port)
     }
   }
-  shutdown () {
+  shutdown (hasStarted?: boolean) {
     this.httpServer.close()
-    logger.info('[PicGo Server] shutdown')
+    if (!hasStarted) {
+      logger.info('[PicGo Server] shutdown')
+    }
   }
   restart () {
     this.config = picgo.getConfig('settings.server')

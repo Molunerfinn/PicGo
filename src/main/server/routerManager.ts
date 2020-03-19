@@ -8,7 +8,7 @@ import {
 } from './utils'
 import logger from '../utils/logger'
 
-router.get('/upload', async ({
+router.post('/upload', async ({
   response,
   list = []
 } : {
@@ -64,6 +64,20 @@ router.get('/upload', async ({
       }
     })
   }
+})
+
+router.post('/heartbeat', async ({
+  response
+} : {
+  response: IHttpResponse,
+}) => {
+  handleResponse({
+    response,
+    body: {
+      success: true,
+      result: 'alive'
+    }
+  })
 })
 
 export default router

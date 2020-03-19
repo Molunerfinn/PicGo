@@ -30,8 +30,8 @@ interface IServerCTX {
 }
 
 interface IServerConfig {
-  port: number
-  host: string,
+  port: number | string
+  host: string
   enable: boolean
 }
 
