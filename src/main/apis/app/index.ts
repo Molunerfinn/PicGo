@@ -15,6 +15,7 @@ import { IWindowList } from '~/main/apis/window/constants'
 import picgo from '~/main/apis/picgo'
 import pasteTemplate from '#/utils/pasteTemplate'
 import pkg from 'root/package.json'
+import { handleCopyUrl } from '~/main/utils/common'
 let contextMenu: Menu | null
 let menu: Menu | null
 let tray: Tray | null
@@ -148,8 +149,9 @@ export function createTray () {
       .setWebContents(trayWindow.webContents)
       .upload(files)
     if (imgs !== false) {
+      let pasteText = ''
       for (let i = 0; i < imgs.length; i++) {
-        clipboard.writeText(pasteTemplate(pasteStyle, imgs[i]))
+        pasteText += pasteTemplate(pasteStyle, imgs[i]) + '\r\n'
         const notification = new Notification({
           title: '上传成功',
           body: imgs[i].imgUrl!,
@@ -160,6 +162,7 @@ export function createTray () {
         }, i * 100)
         db.insert('uploaded', imgs[i])
       }
+      handleCopyUrl(pasteText)
       trayWindow.webContents.send('dragFiles', imgs)
     }
   })

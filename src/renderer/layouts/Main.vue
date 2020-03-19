@@ -1,5 +1,5 @@
 <template>
-  <div id="setting-page">
+  <div id="main-page">
     <div class="fake-title-bar" :class="{ 'darwin': os === 'darwin' }">
       <div class="fake-title-bar__title">
         PicGo - {{ version }}
@@ -140,7 +140,7 @@ const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) =>
   }
 }
 @Component({
-  name: 'setting-page',
+  name: 'main-page',
   mixins: [mixin],
   components: {
     InputBoxDialog
@@ -282,7 +282,7 @@ $darwinBg = transparentify(#172426, #000, 0.7)
   font-size 20px
   text-align center
   margin 10px auto
-#setting-page
+#main-page
   .fake-title-bar
     -webkit-app-region drag
     height h = 22px

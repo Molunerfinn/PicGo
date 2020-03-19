@@ -1,5 +1,4 @@
 import {
-  clipboard,
   Notification,
   WebContents
 } from 'electron'
@@ -8,6 +7,7 @@ import { IWindowList } from '~/main/apis/window/constants'
 import uploader from './'
 import pasteTemplate from '#/utils/pasteTemplate'
 import db from '#/datastore'
+import { handleCopyUrl } from '~/main/utils/common'
 export const uploadClipboardFiles = async (): Promise<string> => {
   const win = windowManager.getAvailableWindow()
   let img = await uploader.setWebContents(win!.webContents).upload()
@@ -15,7 +15,7 @@ export const uploadClipboardFiles = async (): Promise<string> => {
     if (img.length > 0) {
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
-      clipboard.writeText(pasteTemplate(pasteStyle, img[0]))
+      handleCopyUrl(pasteTemplate(pasteStyle, img[0]))
       const notification = new Notification({
         title: '上传成功',
         body: img[0].imgUrl!,
@@ -62,7 +62,7 @@ export const uploadChoosedFiles = async (webContents: WebContents, files: IFileW
       db.insert('uploaded', imgs[i])
       result.push(imgs[i].imgUrl!)
     }
-    clipboard.writeText(pasteText)
+    handleCopyUrl(pasteText)
     windowManager.get(IWindowList.TRAY_WINDOW)!.webContents.send('uploadFiles', imgs)
     if (windowManager.has(IWindowList.SETTING_WINDOW)) {
       windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('updateGallery')

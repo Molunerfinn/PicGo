@@ -19,6 +19,7 @@ import {
   uploadChoosedFiles
 } from '~/main/apis/uploader/api'
 import picgoCoreIPC from './picgoCoreIPC'
+import { handleCopyUrl } from '~/main/utils/common'
 
 export default {
   listen () {
@@ -29,7 +30,7 @@ export default {
       const img = await uploader.setWebContents(trayWindow.webContents).upload()
       if (img !== false) {
         const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
-        clipboard.writeText(pasteTemplate(pasteStyle, img[0]))
+        handleCopyUrl(pasteTemplate(pasteStyle, img[0]))
         const notification = new Notification({
           title: '上传成功',
           body: img[0].imgUrl!,

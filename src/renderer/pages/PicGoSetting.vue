@@ -4,10 +4,10 @@
       PicGo设置 - <i class="el-icon-document" @click="goConfigPage"></i>
     </div>
     <el-row class="setting-list">
-      <el-col :span="15" :offset="4">
+      <el-col :span="16" :offset="4">
         <el-row>
         <el-form
-          label-width="120px"
+          label-width="160px"
           label-position="right"
           size="small"
         >
@@ -105,6 +105,16 @@
               active-text="开"
               inactive-text="关"
               @change="handleMiniWindowOntop"
+            ></el-switch>
+          </el-form-item>
+          <el-form-item
+            label="上传后自动复制URL"
+          >
+            <el-switch
+              v-model="form.autoCopyUrl"
+              active-text="开"
+              inactive-text="关"
+              @change="handleAutoCopyUrl"
             ></el-switch>
           </el-form-item>
           <el-form-item
@@ -336,7 +346,8 @@ export default class extends Vue {
     autoRename: db.get('settings.autoRename') || false,
     uploadNotification: db.get('settings.uploadNotification') || false,
     miniWindowOntop: db.get('settings.miniWindowOntop') || false,
-    logLevel
+    logLevel,
+    autoCopyUrl: db.get('settings.autoCopy') === undefined ? true : db.get('settings.autoCopy')
   }
   picBed: IPicBedType[] = []
   logFileVisible = false
@@ -512,6 +523,15 @@ export default class extends Vue {
   handleMiniWindowOntop (val: boolean) {
     db.set('settings.miniWindowOntop', val)
     this.$message.info('需要重启生效')
+  }
+  handleAutoCopyUrl (val: boolean) {
+    db.set('settings.autoCopy', val)
+    const successNotification = new Notification('设置自动复制链接', {
+      body: '设置成功'
+    })
+    successNotification.onclick = () => {
+      return true
+    }
   }
   confirmLogLevelSetting () {
     if (this.form.logLevel.length === 0) {

@@ -7,6 +7,7 @@ interface ISettingForm {
   uploadNotification: boolean
   miniWindowOntop: boolean
   logLevel: string[]
+  autoCopyUrl: boolean
 }
 
 interface IShortKeyMap {

@@ -8,6 +8,7 @@ import {
 import db from '#/datastore'
 import uploader from '../uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
+import { handleCopyUrl } from '~/main/utils/common'
 import {
   getWindowId,
   getSettingWindowId
@@ -79,7 +80,7 @@ class GuiApi implements IGuiApi {
         }, i * 100)
         db.insert('uploaded', imgs[i])
       }
-      clipboard.writeText(pasteText)
+      handleCopyUrl(pasteText)
       webContents.send('uploadFiles', imgs)
       webContents.send('updateGallery')
       return imgs

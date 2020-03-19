@@ -22,9 +22,9 @@ export default new Router({
       component: () => import(/* webpackChunkName: "MiniPage" */ '@/pages/MiniPage.vue')
     },
     {
-      path: '/setting',
-      name: 'setting-page',
-      component: () => import(/* webpackChunkName: "SettingPage" */ '@/layouts/SettingPage.vue'),
+      path: '/main-page',
+      name: 'main-page',
+      component: () => import(/* webpackChunkName: "SettingPage" */ '@/layouts/Main.vue'),
       children: [
         {
           path: 'upload',
