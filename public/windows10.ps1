@@ -27,6 +27,7 @@ function main {
     $stream.Dispose() | out-null
 
     $imagePath
+    Exit 1
 }
 
 try {
