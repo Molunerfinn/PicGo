@@ -1,4 +1,4 @@
-import bus from '../../utils/eventBus'
+import bus from '.'
 import {
   UPLOAD_WITH_FILES,
   UPLOAD_WITH_FILES_RESPONSE,

@@ -30,6 +30,12 @@
       ],
       "#/*": [
         "src/universal/*"
+      ],
+      "apis/*": [
+        "src/main/apis/*"
+      ],
+      "@core/*": [
+        "src/main/apis/core/*"
       ]
     },
     "lib": [

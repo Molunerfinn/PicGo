@@ -3,13 +3,13 @@ import {
 } from 'electron'
 import {
   IWindowList
-} from '~/main/apis/window/constants'
+} from 'apis/app/window/constants'
 
 declare interface IWindowListItem {
   isValid: boolean
   multiple: boolean
   options: () => IBrowserWindowOptions,
-  callback: (window: BrowserWindow | null) => void
+  callback: (window: BrowserWindow) => void
 }
 
 declare interface IWindowManager {

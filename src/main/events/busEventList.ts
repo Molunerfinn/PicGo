@@ -1,13 +1,13 @@
-import bus from '~/main/utils/eventBus'
+import bus from '@core/bus'
 import {
   uploadClipboardFiles,
   uploadChoosedFiles
-} from '~/main/apis/uploader/api'
+} from 'apis/app/uploader/apis'
 import {
   createMenu
-} from '~/main/apis/app'
-import { IWindowList } from '~/main/apis/window/constants'
-import windowManager from '~/main/apis/window/windowManager'
+} from 'apis/app/system'
+import { IWindowList } from 'apis/app/window/constants'
+import windowManager from 'apis/app/window/windowManager'
 import {
   UPLOAD_WITH_FILES,
   UPLOAD_WITH_FILES_RESPONSE,
@@ -18,7 +18,7 @@ import {
   GET_SETTING_WINDOW_ID,
   GET_SETTING_WINDOW_ID_RESPONSE,
   CREATE_APP_MENU
-} from '~/main/apis/bus/constants'
+} from '@core/bus/constants'
 function initEventCenter () {
   const eventList: any = {
     'picgo:upload': uploadClipboardFiles,

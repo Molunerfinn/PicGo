@@ -8,27 +8,27 @@ import {
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
 import db from '#/datastore'
-import { IWindowList } from '~/main/apis/window/constants'
-import windowManager from '~/main/apis/window/windowManager'
+import { IWindowList } from 'apis/app/window/constants'
+import windowManager from 'apis/app/window/windowManager'
 import {
   uploadChoosedFiles,
   uploadClipboardFiles
-} from '~/main/apis/uploader/api'
+} from 'apis/app/uploader/apis'
 import beforeOpen from '~/main/utils/beforeOpen'
 import updateChecker from '~/main/utils/updateChecker'
-import ipcList from '~/main/apis/eventCenter/ipcList'
-import busEventList from '~/main/apis/eventCenter/busEventList'
+import ipcList from '~/main/events/ipcList'
+import busEventList from '~/main/events/busEventList'
 import fixPath from 'fix-path'
 import { getUploadFiles } from '~/main/utils/handleArgv'
-import bus from '~/main/utils/eventBus'
+import bus from '@core/bus'
 import {
   updateShortKeyFromVersion212
 } from '~/main/migrate'
-import shortKeyHandler from '~/main/apis/shortKey/shortKeyHandler'
+import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import server from '~/main/server/index'
 import {
   createTray
-} from '~/main/apis/app'
+} from 'apis/app/system'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 protocol.registerSchemesAsPrivileged([{ scheme: 'picgo', privileges: { secure: true, standard: true } }])

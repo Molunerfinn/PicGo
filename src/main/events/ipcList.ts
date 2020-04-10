@@ -5,19 +5,19 @@ import {
   Notification,
   IpcMainEvent
 } from 'electron'
-import windowManager from '~/main/apis/window/windowManager'
-import { IWindowList } from '~/main/apis/window/constants'
-import uploader from '~/main/apis/uploader'
+import windowManager from 'apis/app/window/windowManager'
+import { IWindowList } from 'apis/app/window/constants'
+import uploader from 'apis/app/uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
 import db from '#/datastore'
 import server from '~/main/server'
 import getPicBeds from '~/main/utils/getPicBeds'
-import shortKeyHandler from '~/main/apis/shortKey/shortKeyHandler'
-import bus from '~/main/utils/eventBus'
+import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
+import bus from '@core/bus'
 import {
   uploadClipboardFiles,
   uploadChoosedFiles
-} from '~/main/apis/uploader/api'
+} from '~/main/apis/app/uploader/apis'
 import picgoCoreIPC from './picgoCoreIPC'
 import { handleCopyUrl } from '~/main/utils/common'
 

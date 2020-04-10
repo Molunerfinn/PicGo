@@ -8,11 +8,11 @@ import {
   RENAME_WINDOW_URL
 } from './constants'
 import { IWindowListItem } from '#/types/electron'
-import bus from '~/main/utils/eventBus'
+import bus from '@core/bus'
 import db from '#/datastore'
-import { getWindowId } from '~/main/apis/bus'
+import { getWindowId } from '@core/bus/apis'
 import { BrowserWindow, app } from 'electron'
-import { CREATE_APP_MENU } from '~/main/apis/bus/constants'
+import { CREATE_APP_MENU } from '@core/bus/constants'
 
 const windowList = new Map<IWindowList, IWindowListItem>()
 
@@ -37,14 +37,14 @@ windowList.set(IWindowList.TRAY_WINDOW, {
     }
   },
   callback (window) {
-    const id = window!.id
-    window!.loadURL(TRAY_WINDOW_URL)
-    window!.on('closed', () => {
+    const id = window.id
+    window.loadURL(TRAY_WINDOW_URL)
+    window.on('closed', () => {
       bus.emit(DELETE_WINDOW_EVENT, id)
     })
 
-    window!.on('blur', () => {
-      window!.hide()
+    window.on('blur', () => {
+      window.hide()
     })
   }
 })
@@ -82,9 +82,9 @@ windowList.set(IWindowList.SETTING_WINDOW, {
     return options
   },
   callback (window) {
-    const id = window!.id
-    window!.loadURL(SETTING_WINDOW_URL)
-    window!.on('closed', () => {
+    const id = window.id
+    window.loadURL(SETTING_WINDOW_URL)
+    window.on('closed', () => {
       bus.emit('toggleShortKeyModifiedMode', false)
       bus.emit(DELETE_WINDOW_EVENT, id)
       if (process.platform === 'linux') {
@@ -125,9 +125,9 @@ windowList.set(IWindowList.MINI_WINDOW, {
     return obj
   },
   callback (window) {
-    const id = window!.id
-    window!.loadURL(MINI_WINDOW_URL)
-    window!.on('closed', () => {
+    const id = window.id
+    window.loadURL(MINI_WINDOW_URL)
+    window.on('closed', () => {
       bus.emit(DELETE_WINDOW_EVENT, id)
     })
   }
@@ -159,7 +159,7 @@ windowList.set(IWindowList.RENAME_WINDOW, {
     return options
   },
   async callback (window) {
-    window!.loadURL(RENAME_WINDOW_URL)
+    window.loadURL(RENAME_WINDOW_URL)
     const currentWindowId = await getWindowId()
     const currentWindow = BrowserWindow.fromId(currentWindowId)
     if (currentWindow && currentWindow.isVisible()) {
@@ -173,7 +173,7 @@ windowList.set(IWindowList.RENAME_WINDOW, {
       } else { // if is the miniWindow
         positionY = bounds.y + bounds.height / 2
       }
-      window!.setPosition(positionX, positionY, false)
+      window.setPosition(positionX, positionY, false)
     }
   }
 })

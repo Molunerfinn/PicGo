@@ -20,6 +20,8 @@ module.exports = {
           .set('~', resolve('src'))
           .set('root', resolve('./'))
           .set('#', resolve('src/universal'))
+          .set('apis', resolve('src/main/apis'))
+          .set('@core', resolve('src/main/apis/core'))
       },
       builderOptions: {
         productName: 'PicGo',

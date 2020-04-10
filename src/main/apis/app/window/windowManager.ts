@@ -8,7 +8,7 @@ import {
   DELETE_WINDOW_EVENT,
   CREATE_WINDOW_EVENT
 } from './constants'
-import bus from '~/main/utils/eventBus'
+import bus from '@core/bus'
 
 class WindowManager implements IWindowManager {
   private windowMap: Map<IWindowList | string, BrowserWindow> = new Map()

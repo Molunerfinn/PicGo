@@ -2,11 +2,11 @@ import router from './router'
 import {
   uploadWithClipboardFiles,
   uploadWithFiles
-} from '~/main/apis/bus/index'
+} from '@core/bus/apis'
 import {
   handleResponse
 } from './utils'
-import logger from '../utils/logger'
+import logger from '@core/picgo/logger'
 
 router.post('/upload', async ({
   response,

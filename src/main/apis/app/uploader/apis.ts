@@ -2,9 +2,9 @@ import {
   Notification,
   WebContents
 } from 'electron'
-import windowManager from '~/main/apis/window/windowManager'
-import { IWindowList } from '~/main/apis/window/constants'
-import uploader from './'
+import windowManager from 'apis/app/window/windowManager'
+import { IWindowList } from 'apis/app/window/constants'
+import uploader from '.'
 import pasteTemplate from '#/utils/pasteTemplate'
 import db from '#/datastore'
 import { handleCopyUrl } from '~/main/utils/common'

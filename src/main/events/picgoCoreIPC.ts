@@ -1,5 +1,5 @@
 import path from 'path'
-import GuiApi from '../gui'
+import GuiApi from 'apis/gui'
 import {
   dialog,
   shell,
@@ -9,8 +9,8 @@ import {
 } from 'electron'
 import PicGoCore from '~/universal/types/picgo'
 import { IPicGoHelperType } from '#/types/enum'
-import shortKeyHandler from '../shortKey/shortKeyHandler'
-import picgo from '~/main/apis/picgo'
+import shortKeyHandler from '../apis/app/shortKey/shortKeyHandler'
+import picgo from '@core/picgo'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require

@@ -4,8 +4,8 @@ import {
   handleResponse,
   ensureHTTPLink
 } from './utils'
-import picgo from '~/main/apis/picgo'
-import logger from '~/main/utils/logger'
+import picgo from '@core/picgo'
+import logger from '@core/picgo/logger'
 import axios from 'axios'
 
 class Server {

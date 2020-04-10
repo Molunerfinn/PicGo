@@ -1,4 +1,4 @@
-import bus from '../../utils/eventBus'
+import bus from '@core/bus'
 import PicGoCore from '~/universal/types/picgo'
 import path from 'path'
 import {
@@ -6,11 +6,11 @@ import {
   globalShortcut,
   BrowserWindow
 } from 'electron'
-import logger from '../../utils/logger'
-import GuiApi from '../gui'
+import logger from '@core/picgo/logger'
+import GuiApi from '../../gui'
 import db from '#/datastore'
 import shortKeyService from './shortKeyService'
-import picgo from '../picgo'
+import picgo from '@core/picgo'
 
 class ShortKeyHandler {
   private isInModifiedMode: boolean = false

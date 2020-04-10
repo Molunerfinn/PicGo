@@ -6,10 +6,10 @@ import {
   WebContents
 } from 'electron'
 import dayjs from 'dayjs'
-import picgo from '~/main/apis/picgo'
+import picgo from '@core/picgo'
 import db from '#/datastore'
-import windowManager from '~/main/apis/window/windowManager'
-import { IWindowList } from '~/main/apis/window/constants'
+import windowManager from 'apis/app/window/windowManager'
+import { IWindowList } from 'apis/app/window/constants'
 
 const waitForShow = (webcontent: WebContents) => {
   return new Promise((resolve, reject) => {

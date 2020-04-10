@@ -1,4 +1,4 @@
-import logger from '../../utils/logger'
+import logger from '@core/picgo/logger'
 class ShortKeyService {
   private commandList: Map<string, IShortKeyHandler> = new Map()
   registerCommand (command: string, handler: IShortKeyHandler) {

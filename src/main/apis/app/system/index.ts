@@ -7,12 +7,12 @@ import {
   systemPreferences,
   Notification
 } from 'electron'
-import uploader from '~/main/apis/uploader'
+import uploader from 'apis/app/uploader'
 import getPicBeds from '~/main/utils/getPicBeds'
 import db from '#/datastore'
-import windowManager from '~/main/apis/window/windowManager'
-import { IWindowList } from '~/main/apis/window/constants'
-import picgo from '~/main/apis/picgo'
+import windowManager from 'apis/app/window/windowManager'
+import { IWindowList } from 'apis/app/window/constants'
+import picgo from '@core/picgo'
 import pasteTemplate from '#/utils/pasteTemplate'
 import pkg from 'root/package.json'
 import { handleCopyUrl } from '~/main/utils/common'
