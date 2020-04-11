@@ -111,14 +111,16 @@ const handleGetPluginList = () => {
 
 const handlePluginInstall = () => {
   ipcMain.on('installPlugin', async (event: IpcMainEvent, msg: string) => {
+    const dispose = handleNPMError()
     picgo.once('installSuccess', (notice: PicGoNotice) => {
       event.sender.send('installSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
       shortKeyHandler.registerPluginShortKey(notice.body[0])
       picgo.removeAllListeners('installFailed')
+      dispose()
     })
     picgo.once('installFailed', () => {
-      handleNPMError()
       picgo.removeAllListeners('installSuccess')
+      dispose()
     })
     await picgo.pluginHandler.install([msg])
     picgo.cmd.program.removeAllListeners()
@@ -127,14 +129,16 @@ const handlePluginInstall = () => {
 
 const handlePluginUninstall = () => {
   ipcMain.on('uninstallPlugin', async (event: IpcMainEvent, msg: string) => {
+    const dispose = handleNPMError()
     picgo.once('uninstallSuccess', (notice: PicGoNotice) => {
       event.sender.send('uninstallSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
       shortKeyHandler.unregisterPluginShortKey(notice.body[0])
       picgo.removeAllListeners('uninstallFailed')
+      dispose()
     })
     picgo.once('uninstallFailed', () => {
-      handleNPMError()
       picgo.removeAllListeners('uninstallSuccess')
+      dispose()
     })
     await picgo.pluginHandler.uninstall([msg])
     picgo.cmd.program.removeAllListeners()
@@ -143,29 +147,37 @@ const handlePluginUninstall = () => {
 
 const handlePluginUpdate = () => {
   ipcMain.on('updatePlugin', async (event: IpcMainEvent, msg: string) => {
+    const dispose = handleNPMError()
     picgo.once('updateSuccess', (notice: { body: string[], title: string }) => {
       event.sender.send('updateSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
       picgo.removeAllListeners('updateFailed')
+      dispose()
     })
     picgo.once('updateFailed', () => {
-      handleNPMError()
       picgo.removeAllListeners('updateSuccess')
+      dispose()
     })
     await picgo.pluginHandler.update([msg])
     picgo.cmd.program.removeAllListeners()
   })
 }
 
-const handleNPMError = () => {
-  dialog.showMessageBox({
-    title: '发生错误',
-    message: '请安装Node.js并重启PicGo再继续操作',
-    buttons: ['Yes']
-  }).then((res) => {
-    if (res.response === 0) {
-      shell.openExternal('https://nodejs.org/')
+const handleNPMError = (): IDispose => {
+  const handler = (msg: string) => {
+    if (msg === 'NPM is not installed') {
+      dialog.showMessageBox({
+        title: '发生错误',
+        message: '请安装Node.js并重启PicGo再继续操作',
+        buttons: ['Yes']
+      }).then((res) => {
+        if (res.response === 0) {
+          shell.openExternal('https://nodejs.org/')
+        }
+      })
     }
-  })
+  }
+  picgo.once('failed', handler)
+  return () => picgo.off('failed', handler)
 }
 
 const handleGetPicBedConfig = () => {

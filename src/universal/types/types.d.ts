@@ -170,6 +170,8 @@ interface INPMSearchResultObject {
   }
 }
 
+type IDispose = () => void
+
 // GuiApi
 interface IGuiApi {
   showInputBox: (options: IShowInputBoxOption) => Promise<string>
