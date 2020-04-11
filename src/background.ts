@@ -65,77 +65,76 @@ if (!gotTheLock) {
       }
     }
   })
-}
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('com.molunerfinn.picgo')
+  }
 
-if (process.platform === 'win32') {
-  app.setAppUserModelId('com.molunerfinn.picgo')
-}
+  if (process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity')) {
+    process.env.XDG_CURRENT_DESKTOP = 'Unity'
+  }
 
-if (process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity')) {
-  process.env.XDG_CURRENT_DESKTOP = 'Unity'
-}
-
-app.on('ready', async () => {
-  createProtocol('picgo')
-  if (isDevelopment && !process.env.IS_TEST) {
+  app.on('ready', async () => {
+    createProtocol('picgo')
+    if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
-    try {
-      await installVueDevtools()
-    } catch (e) {
-      console.error('Vue Devtools failed to install:', e.toString())
-    }
-  }
-  windowManager.create(IWindowList.TRAY_WINDOW)
-  windowManager.create(IWindowList.SETTING_WINDOW)
-  if (process.platform === 'darwin' || process.platform === 'win32') {
-    createTray()
-  }
-  db.set('needReload', false)
-  updateChecker()
-  // 不需要阻塞
-  process.nextTick(() => {
-    updateShortKeyFromVersion212(db, db.get('settings.shortKey'))
-    shortKeyHandler.init()
-  })
-  server.startup()
-  if (process.env.NODE_ENV !== 'development') {
-    let files = getUploadFiles()
-    if (files === null || files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
-      if (files === null) {
-        uploadClipboardFiles()
-      } else {
-        const win = windowManager.getAvailableWindow()
-        uploadChoosedFiles(win.webContents, files)
+      try {
+        await installVueDevtools()
+      } catch (e) {
+        console.error('Vue Devtools failed to install:', e.toString())
       }
     }
-  }
-})
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
-app.on('activate', () => {
-  createProtocol('picgo')
-  if (!windowManager.has(IWindowList.TRAY_WINDOW)) {
     windowManager.create(IWindowList.TRAY_WINDOW)
-  }
-  if (!windowManager.has(IWindowList.SETTING_WINDOW)) {
     windowManager.create(IWindowList.SETTING_WINDOW)
-  }
-})
+    if (process.platform === 'darwin' || process.platform === 'win32') {
+      createTray()
+    }
+    db.set('needReload', false)
+    updateChecker()
+    // 不需要阻塞
+    process.nextTick(() => {
+      updateShortKeyFromVersion212(db, db.get('settings.shortKey'))
+      shortKeyHandler.init()
+    })
+    server.startup()
+    if (process.env.NODE_ENV !== 'development') {
+      let files = getUploadFiles()
+      if (files === null || files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
+        if (files === null) {
+          uploadClipboardFiles()
+        } else {
+          const win = windowManager.getAvailableWindow()
+          uploadChoosedFiles(win.webContents, files)
+        }
+      }
+    }
+  })
 
-app.on('will-quit', () => {
-  globalShortcut.unregisterAll()
-  bus.removeAllListeners()
-  server.shutdown()
-})
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
 
-app.setLoginItemSettings({
-  openAtLogin: db.get('settings.autoStart') || false
-})
+  app.on('activate', () => {
+    createProtocol('picgo')
+    if (!windowManager.has(IWindowList.TRAY_WINDOW)) {
+      windowManager.create(IWindowList.TRAY_WINDOW)
+    }
+    if (!windowManager.has(IWindowList.SETTING_WINDOW)) {
+      windowManager.create(IWindowList.SETTING_WINDOW)
+    }
+  })
+
+  app.on('will-quit', () => {
+    globalShortcut.unregisterAll()
+    bus.removeAllListeners()
+    server.shutdown()
+  })
+
+  app.setLoginItemSettings({
+    openAtLogin: db.get('settings.autoStart') || false
+  })
+}
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
