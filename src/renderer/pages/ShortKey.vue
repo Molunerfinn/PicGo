@@ -98,6 +98,7 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import keyDetect from '@/utils/key-binding'
 import { ipcRenderer, IpcRendererEvent } from 'electron'
+import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 
 @Component({
   name: 'shortkey-page'
@@ -119,7 +120,7 @@ export default class extends Vue {
   }
   @Watch('keyBindingVisible')
   onKeyBindingVisibleChange (val: boolean) {
-    ipcRenderer.send('toggleShortKeyModifiedMode', val)
+    ipcRenderer.send(TOGGLE_SHORTKEY_MODIFIED_MODE, val)
   }
   calcOrigin (item: string) {
     const [origin] = item.split(':')
@@ -162,7 +163,7 @@ export default class extends Vue {
     })
   }
   beforeDestroy () {
-    ipcRenderer.send('toggleShortKeyModifiedMode', false)
+    ipcRenderer.send(TOGGLE_SHORTKEY_MODIFIED_MODE, false)
   }
 }
 </script>

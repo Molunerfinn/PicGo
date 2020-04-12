@@ -1,7 +1,6 @@
 import {
   app,
   ipcMain,
-  clipboard,
   Notification,
   IpcMainEvent
 } from 'electron'
@@ -14,6 +13,7 @@ import server from '~/main/server'
 import getPicBeds from '~/main/utils/getPicBeds'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import bus from '@core/bus'
+import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import {
   uploadClipboardFiles,
   uploadChoosedFiles
@@ -132,8 +132,8 @@ export default {
       evt.returnValue = picBeds
     })
 
-    ipcMain.on('toggleShortKeyModifiedMode', (evt: IpcMainEvent, val: boolean) => {
-      bus.emit('toggleShortKeyModifiedMode', val)
+    ipcMain.on(TOGGLE_SHORTKEY_MODIFIED_MODE, (evt: IpcMainEvent, val: boolean) => {
+      bus.emit(TOGGLE_SHORTKEY_MODIFIED_MODE, val)
     })
 
     ipcMain.on('updateServer', () => {

@@ -1,21 +1,18 @@
 import bus from '@core/bus'
-import PicGoCore from '~/universal/types/picgo'
-import path from 'path'
 import {
-  app,
-  globalShortcut,
-  BrowserWindow
+  globalShortcut
 } from 'electron'
 import logger from '@core/picgo/logger'
 import GuiApi from '../../gui'
 import db from '#/datastore'
+import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import shortKeyService from './shortKeyService'
 import picgo from '@core/picgo'
 
 class ShortKeyHandler {
   private isInModifiedMode: boolean = false
   constructor () {
-    bus.on('toggleShortKeyModifiedMode', flag => {
+    bus.on(TOGGLE_SHORTKEY_MODIFIED_MODE, flag => {
       this.isInModifiedMode = flag
     })
   }

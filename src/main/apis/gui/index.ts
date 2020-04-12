@@ -1,7 +1,6 @@
 import {
   dialog,
   BrowserWindow,
-  clipboard,
   Notification,
   ipcMain
 } from 'electron'
@@ -17,6 +16,7 @@ import {
   SHOW_INPUT_BOX
 } from '~/universal/events/constants'
 
+// Cross-process support may be required in the future
 class GuiApi implements IGuiApi {
   private windowId: number = -1
   private settingWindowId: number = -1
