@@ -62,22 +62,24 @@ class Uploader {
       handle: async ctx => {
         const rename = db.get('settings.rename')
         const autoRename = db.get('settings.autoRename')
-        await Promise.all(ctx.output.map(async (item, index) => {
-          let name: undefined | string | null
-          let fileName: string | undefined
-          if (autoRename) {
-            fileName = dayjs().add(index, 'second').format('YYYYMMDDHHmmss') + item.extname
-          } else {
-            fileName = item.fileName
-          }
-          if (rename) {
-            const window = windowManager.create(IWindowList.RENAME_WINDOW)!
-            await waitForShow(window.webContents)
-            window.webContents.send('rename', fileName, window.webContents.id)
-            name = await waitForRename(window, window.webContents.id)
-          }
-          item.fileName = name || fileName
-        }))
+        if (autoRename || rename) {
+          await Promise.all(ctx.output.map(async (item, index) => {
+            let name: undefined | string | null
+            let fileName: string | undefined
+            if (autoRename) {
+              fileName = dayjs().add(index, 'second').format('YYYYMMDDHHmmss') + item.extname
+            } else {
+              fileName = item.fileName
+            }
+            if (rename) {
+              const window = windowManager.create(IWindowList.RENAME_WINDOW)!
+              await waitForShow(window.webContents)
+              window.webContents.send('rename', fileName, window.webContents.id)
+              name = await waitForRename(window, window.webContents.id)
+            }
+            item.fileName = name || fileName
+          }))
+        }
       }
     })
   }
