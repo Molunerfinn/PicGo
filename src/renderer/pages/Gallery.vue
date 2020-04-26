@@ -48,14 +48,19 @@
                 <i slot="suffix" class="el-input__icon el-icon-close" v-if="searchText" @click="cleanSearch" style="cursor: pointer"></i>
               </el-input>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="4">
               <div class="item-base copy round" :class="{ active: isMultiple(choosedList)}" @click="multiCopy">
-                <i class="el-icon-document"></i> 批量复制
+                复制
               </div>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="4">
               <div class="item-base delete round" :class="{ active: isMultiple(choosedList)}" @click="multiRemove">
-                <i class="el-icon-delete"></i> 批量删除
+                删除
+              </div>
+            </el-col>
+            <el-col :span="4">
+              <div class="item-base all-pick round" :class="{ active: filterList.length > 0}" @click="toggleSelectAll">
+                {{ isAllSelected ? '取消' : '全选' }}
               </div>
             </el-col>
           </el-row>
@@ -82,7 +87,7 @@
               <i class="el-icon-document" @click="copy(item)"></i>
               <i class="el-icon-edit-outline" @click="openDialog(item)"></i>
               <i class="el-icon-delete" @click="remove(item.id)"></i>
-              <el-checkbox v-model="choosedList[item.id]" class="pull-right" @change=" handleBarActive = true"></el-checkbox>
+              <el-checkbox v-model="choosedList[item.id]" class="pull-right" @change="(val) => handleChooseImage(val, index)"></el-checkbox>
             </div>
           </el-col>
         </el-row>
@@ -106,7 +111,7 @@
 // @ts-ignore
 import gallerys from 'vue-gallery'
 import pasteStyle from '#/utils/pasteTemplate'
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import {
   ipcRenderer,
   clipboard,
@@ -128,11 +133,13 @@ export default class extends Vue {
   }
   dialogVisible = false
   imgInfo = {
-    id: null,
+    id: '',
     imgUrl: ''
   }
   choosedList: IObjT<boolean> = {}
   choosedPicBed: string[] = []
+  lastChoosed: number = -1
+  isShiftKeyPress: boolean = false
   searchText = ''
   handleBarActive = false
   pasteStyle = ''
@@ -144,12 +151,11 @@ export default class extends Vue {
     Custom: 'Custom'
   }
   picBed: IPicBedType[] = []
-  beforeRouteEnter (to: any, from: any, next: any) {
-    next((vm: any) => {
-      vm.getGallery()
-      vm.getPasteStyle()
-      vm.getPicBeds()
-    })
+  @Watch('$route')
+  handleRouteUpdate (to: any, from: any) {
+    if (from.name === 'gallery') {
+      this.clearChoosedList()
+    }
   }
   created () {
     ipcRenderer.on('updateGallery', (event: IpcRendererEvent) => {
@@ -160,11 +166,30 @@ export default class extends Vue {
     ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
   }
+  mounted () {
+    document.addEventListener('keydown', this.handleDetectShiftKey)
+    document.addEventListener('keyup', this.handleDetectShiftKey)
+  }
+  handleDetectShiftKey (event: KeyboardEvent) {
+    if (event.keyCode === 16) {
+      this.isShiftKeyPress = !this.isShiftKeyPress
+    }
+  }
   get filterList () {
     return this.getGallery()
   }
   set filterList (val) {
     this.images = val
+  }
+  get isAllSelected () {
+    const values = Object.values(this.choosedList)
+    if (values.length === 0) {
+      return false
+    } else {
+      return this.filterList.every(item => {
+        return this.choosedList[item.id!]
+      })
+    }
   }
   getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
@@ -199,6 +224,31 @@ export default class extends Vue {
       }
     }
     return this.images
+  }
+  @Watch('filterList')
+  handleFilterListChange () {
+    this.clearChoosedList()
+  }
+  handleChooseImage (val: boolean, index: number) {
+    if (val === true) {
+      this.handleBarActive = true
+      if (this.lastChoosed !== -1 && this.isShiftKeyPress) {
+        let min = Math.min(this.lastChoosed, index)
+        let max = Math.max(this.lastChoosed, index)
+        for (let i = min + 1; i < max; i++) {
+          const id = this.filterList[i].id!
+          this.$set(this.choosedList, id, true)
+        }
+      }
+      this.lastChoosed = index
+    }
+  }
+  clearChoosedList () {
+    this.isShiftKeyPress = false
+    Object.keys(this.choosedList).forEach(key => {
+      this.choosedList[key] = false
+    })
+    this.lastChoosed = -1
   }
   zoomImage (index: number) {
     this.idx = index
@@ -255,7 +305,7 @@ export default class extends Vue {
     })
   }
   openDialog (item: ImgInfo) {
-    this.imgInfo.id = item.id
+    this.imgInfo.id = item.id!
     this.imgInfo.imgUrl = item.imgUrl as string
     this.dialogVisible = true
   }
@@ -291,10 +341,17 @@ export default class extends Vue {
   isMultiple (obj: IObj) {
     return Object.values(obj).some(item => item)
   }
+  toggleSelectAll () {
+    const result = !this.isAllSelected
+    this.filterList.forEach(item => {
+      this.$set(this.choosedList, item.id!, result)
+    })
+  }
   multiRemove () {
     // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
-    if (Object.values(this.choosedList).some(item => item)) {
-      this.$confirm('将删除刚才选中的图片，是否继续？', '提示', {
+    const multiRemoveNumber = Object.values(this.choosedList).filter(item => item).length
+    if (multiRemoveNumber) {
+      this.$confirm(`将在相册中移除刚才选中的 ${multiRemoveNumber} 张图片，是否继续？`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -307,7 +364,8 @@ export default class extends Vue {
             this.$db.removeById('uploaded', key)
           }
         })
-        this.choosedList = {}
+        this.clearChoosedList()
+        this.choosedList = {} // 只有删除才能将这个置空
         this.getGallery()
         const obj = {
           title: '操作结果',
@@ -399,6 +457,13 @@ export default class extends Vue {
     &.active
       cursor pointer
       background #F15140
+      color #fff
+  &.all-pick
+    cursor not-allowed
+    background #69C282
+    &.active
+      cursor pointer
+      background #44B363
       color #fff
 #gallery-view
   position relative
