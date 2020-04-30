@@ -8,6 +8,7 @@ interface ISettingForm {
   miniWindowOntop: boolean
   logLevel: string[]
   autoCopyUrl: boolean
+  checkBetaUpdate: boolean
 }
 
 interface IShortKeyMap {

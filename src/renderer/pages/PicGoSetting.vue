@@ -57,6 +57,17 @@
             ></el-switch>
           </el-form-item>
           <el-form-item
+            v-show="form.updateHelper"
+            label="接受Beta版本更新"
+          >
+            <el-switch
+              v-model="form.checkBetaUpdate"
+              active-text="开"
+              inactive-text="关"
+              @change="checkBetaUpdateChange"
+            ></el-switch>
+          </el-form-item>
+          <el-form-item
             label="开机自启"
           >
             <el-switch
@@ -347,7 +358,8 @@ export default class extends Vue {
     uploadNotification: db.get('settings.uploadNotification') || false,
     miniWindowOntop: db.get('settings.miniWindowOntop') || false,
     logLevel,
-    autoCopyUrl: db.get('settings.autoCopy') === undefined ? true : db.get('settings.autoCopy')
+    autoCopyUrl: db.get('settings.autoCopy') === undefined ? true : db.get('settings.autoCopy'),
+    checkBetaUpdate: db.get('settings.checkBetaUpdate') === undefined ? true : db.get('settings.checkBetaUpdate')
   }
   picBed: IPicBedType[] = []
   logFileVisible = false
@@ -451,6 +463,9 @@ export default class extends Vue {
   }
   updateHelperChange (val: boolean) {
     db.set('settings.showUpdateTip', val)
+  }
+  checkBetaUpdateChange (val: boolean) {
+    db.set('settings.checkBetaUpdate', val)
   }
   handleShowPicBedListChange (val: string[]) {
     const list = this.picBed.map(item => {

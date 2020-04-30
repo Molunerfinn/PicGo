@@ -2,6 +2,7 @@ import { dialog, shell } from 'electron'
 import db from '#/datastore'
 import axios from 'axios'
 import pkg from 'root/package.json'
+import { lt } from 'semver'
 const version = pkg.version
 const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
 const releaseUrlBackup = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'
@@ -51,18 +52,17 @@ const checkVersion = async () => {
 
 // if true -> update else return false
 const compareVersion2Update = (current: string, latest: string) => {
-  const currentVersion = current.split('.').map(item => parseInt(item))
-  const latestVersion = latest.split('.').map(item => parseInt(item))
-
-  for (let i = 0; i < 3; i++) {
-    if (currentVersion[i] < latestVersion[i]) {
-      return true
+  try {
+    if (latest.includes('Beta')) {
+      const isCheckBetaUpdate = db.get('settings.checkBetaUpdate') !== false
+      if (!isCheckBetaUpdate) {
+        return false
+      }
     }
-    if (currentVersion[i] > latestVersion[i]) {
-      return false
-    }
+    return lt(current, latest)
+  } catch (e) {
+    return false
   }
-  return false
 }
 
 export default checkVersion

@@ -16,3 +16,4 @@ docs/dist/
 .env.local
 .env.*.local
 dist_electron/
+test.js
