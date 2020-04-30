@@ -53,7 +53,7 @@ const checkVersion = async () => {
 // if true -> update else return false
 const compareVersion2Update = (current: string, latest: string) => {
   try {
-    if (latest.includes('Beta')) {
+    if (latest.includes('beta')) {
       const isCheckBetaUpdate = db.get('settings.checkBetaUpdate') !== false
       if (!isCheckBetaUpdate) {
         return false
