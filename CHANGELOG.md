@@ -1,3 +1,39 @@
+# :tada: 2.3.0-beta.0 (2020-04-30)
+
+
+### :sparkles: Features
+
+* add autoCopy option for users to use or not ([67e526f](https://github.com/Molunerfinn/PicGo/commit/67e526f))
+* add beta-version update support ([ad6acd8](https://github.com/Molunerfinn/PicGo/commit/ad6acd8))
+* add smms-v2 support ([3f3ea69](https://github.com/Molunerfinn/PicGo/commit/3f3ea69))
+* add uploading image from URL support ([a28c678](https://github.com/Molunerfinn/PicGo/commit/a28c678))
+* finish all-select && shift multi-select ([2aeca50](https://github.com/Molunerfinn/PicGo/commit/2aeca50)), closes [#342](https://github.com/Molunerfinn/PicGo/issues/342)
+
+
+### :bug: Bug Fixes
+
+* confused port number auto increasing when opening a new PicGo app ([cd70a1a](https://github.com/Molunerfinn/PicGo/commit/cd70a1a))
+* correct inputbox value && remove listener ([32334e9](https://github.com/Molunerfinn/PicGo/commit/32334e9))
+* give a hint when node.js is not installed ([7e86618](https://github.com/Molunerfinn/PicGo/commit/7e86618))
+* right-click menu upload fails with PicGo open ([96cdfea](https://github.com/Molunerfinn/PicGo/commit/96cdfea)), closes [#415](https://github.com/Molunerfinn/PicGo/issues/415)
+* some win10 upload clipboard image crash ([cc182b0](https://github.com/Molunerfinn/PicGo/commit/cc182b0))
+* travis-ci bug ([b357dfb](https://github.com/Molunerfinn/PicGo/commit/b357dfb))
+* url uploader bug ([96544f5](https://github.com/Molunerfinn/PicGo/commit/96544f5))
+
+
+### :pencil: Documentation
+
+* update choco install picgo ([f357557](https://github.com/Molunerfinn/PicGo/commit/f357557))
+* update docs ([fd7673e](https://github.com/Molunerfinn/PicGo/commit/fd7673e))
+* update readme ([fb014dd](https://github.com/Molunerfinn/PicGo/commit/fb014dd))
+
+
+### :package: Chore
+
+* update funding url ([024d9cf](https://github.com/Molunerfinn/PicGo/commit/024d9cf))
+
+
+
 ## :tada: 2.2.2 (2020-01-20)
 
 
