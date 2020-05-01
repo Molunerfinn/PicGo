@@ -98,8 +98,8 @@ Linux用户请下载 `AppImage` 文件。
 > 如果想学习 Electron-vue 的开发，可以查看我写的系列教程——[Electron-vue 开发实战](https://molunerfinn.com/tags/Electron-vue/)
 
 1. 你需要有 Node、Git环境，了解 npm 的相关知识。
-2. `git clone https://github.com/Molunerfinn/PicGo.git` 并进入项目
-3. `npm install` 下载依赖
+2. `git clone https://github.com/Molunerfinn/PicGo.git` 并进入项目。
+3. `yarn` 下载依赖。注意如果你没有 `yarn`，请去[官网](https://classic.yarnpkg.com/en/docs/install)下载安装后再使用。 **用 `npm install` 将导致未知错误！**
 4. Mac 需要有 Xcode 环境，Windows 需要有 VS 环境。
 
 ### 开发模式
