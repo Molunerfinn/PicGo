@@ -383,22 +383,22 @@ export default class extends Vue {
   }
   multiCopy () {
     if (Object.values(this.choosedList).some(item => item)) {
-      let copyString = ''
+      const copyString: string[] = []
       const style = this.$db.get('settings.pasteStyle') || 'markdown'
       // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
       Object.keys(this.choosedList).forEach(key => {
         if (this.choosedList[key]) {
           const item = this.$db.getById('uploaded', key)
-          copyString += pasteStyle(style, item) + '\n'
+          copyString.push(pasteStyle(style, item))
           this.choosedList[key] = false
         }
       })
       const obj = {
         title: '批量复制链接成功',
-        body: copyString
+        body: copyString.join('\n')
       }
       const myNotification = new Notification(obj.title, obj)
-      clipboard.writeText(copyString)
+      clipboard.writeText(copyString.join('\n'))
       myNotification.onclick = () => {
         return true
       }

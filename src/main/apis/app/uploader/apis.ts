@@ -48,9 +48,9 @@ export const uploadChoosedFiles = async (webContents: WebContents, files: IFileW
   const result = []
   if (imgs !== false) {
     const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
-    let pasteText = ''
+    const pasteText: string[] = []
     for (let i = 0; i < imgs.length; i++) {
-      pasteText += pasteTemplate(pasteStyle, imgs[i]) + '\r\n'
+      pasteText.push(pasteTemplate(pasteStyle, imgs[i]))
       const notification = new Notification({
         title: '上传成功',
         body: imgs[i].imgUrl!,
@@ -62,7 +62,7 @@ export const uploadChoosedFiles = async (webContents: WebContents, files: IFileW
       db.insert('uploaded', imgs[i])
       result.push(imgs[i].imgUrl!)
     }
-    handleCopyUrl(pasteText)
+    handleCopyUrl(pasteText.join('\n'))
     windowManager.get(IWindowList.TRAY_WINDOW)!.webContents.send('uploadFiles', imgs)
     if (windowManager.has(IWindowList.SETTING_WINDOW)) {
       windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('updateGallery')

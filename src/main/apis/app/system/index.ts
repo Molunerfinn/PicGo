@@ -149,9 +149,9 @@ export function createTray () {
       .setWebContents(trayWindow.webContents)
       .upload(files)
     if (imgs !== false) {
-      let pasteText = ''
+      const pasteText: string[] = []
       for (let i = 0; i < imgs.length; i++) {
-        pasteText += pasteTemplate(pasteStyle, imgs[i]) + '\r\n'
+        pasteText.push(pasteTemplate(pasteStyle, imgs[i]))
         const notification = new Notification({
           title: '上传成功',
           body: imgs[i].imgUrl!,
@@ -162,7 +162,7 @@ export function createTray () {
         }, i * 100)
         db.insert('uploaded', imgs[i])
       }
-      handleCopyUrl(pasteText)
+      handleCopyUrl(pasteText.join('\n'))
       trayWindow.webContents.send('dragFiles', imgs)
     }
   })

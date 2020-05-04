@@ -67,9 +67,9 @@ class GuiApi implements IGuiApi {
     const imgs = await uploader.setWebContents(webContents).upload(input)
     if (imgs !== false) {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
-      let pasteText = ''
+      const pasteText: string[] = []
       for (let i = 0; i < imgs.length; i++) {
-        pasteText += pasteTemplate(pasteStyle, imgs[i]) + '\r\n'
+        pasteText.push(pasteTemplate(pasteStyle, imgs[i]))
         const notification = new Notification({
           title: '上传成功',
           body: imgs[i].imgUrl as string,
@@ -80,7 +80,7 @@ class GuiApi implements IGuiApi {
         }, i * 100)
         db.insert('uploaded', imgs[i])
       }
-      handleCopyUrl(pasteText)
+      handleCopyUrl(pasteText.join('\n'))
       webContents.send('uploadFiles', imgs)
       webContents.send('updateGallery')
       return imgs
