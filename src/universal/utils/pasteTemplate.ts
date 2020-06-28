@@ -1,9 +1,10 @@
 import db from '#/datastore'
 import { IPasteStyle } from '#/types/enum'
+import { handleUrlEncode } from './common'
 
 const formatCustomLink = (customLink: string, item: ImgInfo) => {
   let fileName = item.fileName!.replace(new RegExp(`\\${item.extname}$`), '')
-  let url = item.url || item.imgUrl
+  const url = handleUrlEncode(item.url || item.imgUrl)
   const formatObj = {
     url,
     fileName
@@ -19,7 +20,7 @@ const formatCustomLink = (customLink: string, item: ImgInfo) => {
 }
 
 export default (style: IPasteStyle, item: ImgInfo) => {
-  let url = item.url || item.imgUrl
+  const url = handleUrlEncode(item.url || item.imgUrl)
   const customLink = db.get('settings.customLink') || '$url'
   const tpl = {
     'markdown': `![](${url})`,
