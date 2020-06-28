@@ -1,6 +1,6 @@
 {
   "name": "picgo",
-  "version": "2.3.0-beta.0",
+  "version": "2.3.0-beta.1",
   "private": true,
   "scripts": {
     "dev": "vue-cli-service electron:serve",

@@ -1,3 +1,20 @@
+# :tada: 2.3.0-beta.1 (2020-06-28)
+
+
+### :bug: Bug Fixes
+
+* auto-copy option && copy style ([b6e3adb](https://github.com/Molunerfinn/PicGo/commit/b6e3adb))
+* beta version update bug ([18ad542](https://github.com/Molunerfinn/PicGo/commit/18ad542))
+* paste url encoding bug ([59d3eba](https://github.com/Molunerfinn/PicGo/commit/59d3eba)), closes [#454](https://github.com/Molunerfinn/PicGo/issues/454)
+
+
+### :pencil: Documentation
+
+* update FAQ && ISSUE_TEMPLATE ([2c57a27](https://github.com/Molunerfinn/PicGo/commit/2c57a27))
+* update readme ([2adff1e](https://github.com/Molunerfinn/PicGo/commit/2adff1e))
+
+
+
 # :tada: 2.3.0-beta.0 (2020-04-30)
 
 
