@@ -24,43 +24,40 @@
 
 ## 应用概述
 
-**PicGo: 一个用于快速上传图片并获取图片URL链接的工具**
+**PicGo: 一个用于快速上传图片并获取图片 URL 链接的工具**
 
 PicGo 本体支持如下图床：
 
-- ~~`微博图床` v1.0~~ **微博图床从 2019 年 4 月开始进行防盗链，不建议继续使用**
 - `七牛图床` v1.0
-- `腾讯云 COS v4\v5版本` v1.1 & v1.5.0
+- `腾讯云 COS v4\v5 版本` v1.1 & v1.5.0
 - `又拍云` v1.2.0
 - `GitHub` v1.5.0
-- ~~`SM.MS` v1.5.1~~ **由于官方不再支持V1版本，暂时请使用[smms-user](https://github.com/xlzy520/picgo-plugin-smms-user)插件**
+- `SM.MS V2` v2.3.0-beta.0
 - `阿里云 OSS` v1.6.0
 - `Imgur` v1.6.0
 
 **本体不再增加默认的图床支持。你可以自行开发第三方图床插件。详见 [PicGo-Core](https://picgo.github.io/PicGo-Core-Doc/)**。
 
-
 ## 特色功能
 
 - 支持拖拽图片上传
 - 支持快捷键上传剪贴板里第一张图片
-- Windows和macOS支持右键图片文件通过菜单上传 (v2.1.0+)
+- Windows 和 macOS 支持右键图片文件通过菜单上传 (v2.1.0+)
 - 上传图片后自动复制链接到剪贴板
 - 支持自定义复制到剪贴板的链接格式
 - 支持修改快捷键，默认快速上传快捷键：`command+shift+p`（macOS）| `control+shift+p`（Windows\Linux)
-- 支持插件系统，已有插件支持Gitee、青云等第三方图床
+- 支持插件系统，已有插件支持 Gitee、青云等第三方图床
   - 更多第三方插件以及使用了 PicGo 底层的应用可以在 [Awesome-PicGo](https://github.com/PicGo/Awesome-PicGo) 找到。欢迎贡献！
-- 支持通过发送HTTP请求调用 PicGo 上传（v2.2.0+)
+- 支持通过发送 HTTP 请求调用 PicGo 上传（v2.2.0+)
 - 更多功能等你自己去发现，同时也会不断开发新功能
   - 开发进度可以查看 [Projects](https://github.com/Molunerfinn/PicGo/projects)，会同步更新开发进度
-  - 欢迎加入[官方Gitter频道](https://gitter.im/picgo-all/PicGo?utm_source=share-link&utm_medium=link&utm_campaign=share-link)与我交流
+  - 欢迎加入 [官方 Gitter 频道](https://gitter.im/picgo-all/PicGo?utm_source=share-link&utm_medium=link&utm_campaign=share-link) 与我交流
 
-
-**如果第一次使用，请参考应用[使用文档](https://picgo.github.io/PicGo-Doc/zh/guide/getting-started.html)。遇到问题了还可以看看 [FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md) 以及被关闭的 [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)。**
+**如果第一次使用，请参考应用 [使用文档](https://picgo.github.io/PicGo-Doc/zh/guide/getting-started.html)。遇到问题了还可以看看 [FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md) 以及被关闭的 [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)。**
 
 ## 下载安装
 
-点击此处下载[应用](https://github.com/Molunerfinn/PicGo/releases)。
+点击此处下载 [应用](https://github.com/Molunerfinn/PicGo/releases)。
 
 ### Windows
 
@@ -78,10 +75,9 @@ macOS 用户请下载最新版本的 `dmg` 文件。
 
 ### Linux
 
-Linux用户请下载 `AppImage` 文件。
+Linux 用户请下载 `AppImage` 文件。
 
 **如果你是 Arch 类的 Linux 用户，可以直接通过 `aurman -S picgo-appimage` 来安装 PicGo。感谢 @houbaron 的贡献！**
-
 
 ## 应用截图
 
@@ -97,9 +93,9 @@ Linux用户请下载 `AppImage` 文件。
 
 > 如果想学习 Electron-vue 的开发，可以查看我写的系列教程——[Electron-vue 开发实战](https://molunerfinn.com/tags/Electron-vue/)
 
-1. 你需要有 Node、Git环境，了解 npm 的相关知识。
+1. 你需要有 Node、Git 环境，了解 npm 的相关知识。
 2. `git clone https://github.com/Molunerfinn/PicGo.git` 并进入项目。
-3. `yarn` 下载依赖。注意如果你没有 `yarn`，请去[官网](https://classic.yarnpkg.com/en/docs/install)下载安装后再使用。 **用 `npm install` 将导致未知错误！**
+3. `yarn` 下载依赖。注意如果你没有 `yarn`，请去 [官网](https://classic.yarnpkg.com/en/docs/install) 下载安装后再使用。 **用 `npm install` 将导致未知错误！**
 4. Mac 需要有 Xcode 环境，Windows 需要有 VS 环境。
 
 ### 开发模式
@@ -111,7 +107,7 @@ ctrl+c # 退出开发模式
 npm run electron:serve # 重新进入开发模式
 ```
 
-**注：Windows开发模式运行之后会在底部任务栏的右下角应用区出现PicGo的应用图标。**
+**注：Windows 开发模式运行之后会在底部任务栏的右下角应用区出现 PicGo 的应用图标。**
 
 ### 生产模式
 
