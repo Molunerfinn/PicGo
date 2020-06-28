@@ -16,4 +16,4 @@ picgo.saveConfig({
   PICGO_ENV: 'GUI'
 })
 
-export default picgo as PicGoCore
+export default picgo! as PicGoCore

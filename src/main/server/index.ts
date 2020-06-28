@@ -12,7 +12,7 @@ class Server {
   private httpServer: http.Server
   private config: IServerConfig
   constructor () {
-    let config = picgo.getConfig('settings.server')
+    let config = picgo.getConfig<IServerConfig>('settings.server')
     const result = this.checkIfConfigIsValid(config)
     if (result) {
       this.config = config
