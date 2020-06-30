@@ -8908,6 +8908,11 @@ qiniu@^7.2.1:
     tunnel-agent "0.6.0"
     urllib "2.22.0"
 
+qrcode.vue@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.npmjs.org/qrcode.vue/-/qrcode.vue-1.7.0.tgz#c54b2934f0650c10d92785d08aaad36c55e0fc56"
+  integrity sha512-R7t6Y3fDDtcU7L4rtqwGUDP9xD64gJhIwpfjhRCTKmBoYF6SS49PIJHRJ048cse6OI7iwTwgyy2C46N9Ygoc6g==
+
 qs@6.7.0:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"

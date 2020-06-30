@@ -43,6 +43,7 @@
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0",
     "picgo": "^1.4.10",
+    "qrcode.vue": "^1.7.0",
     "vue": "^2.6.10",
     "vue-gallery": "^2.0.1",
     "vue-lazyload": "^1.2.6",

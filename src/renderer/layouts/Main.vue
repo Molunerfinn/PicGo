@@ -120,14 +120,69 @@
         <el-button type="primary" @click="confirmCustomLink">确定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      class="qrcode-dialog"
+      top="3vh"
+      width="60%"
+      title="图床配置二维码"
+      :visible.sync="qrcodeVisible"
+      :modal-append-to-body="false"
+      lock-scroll
+    >
+      <el-form
+        label-position="left"
+        label-width="70px"
+        size="mini"
+      >
+        <el-form-item
+          label="选择图床"
+        >
+          <el-select
+            v-model="choosedPicBedForQRCode"
+            multiple
+            collapse-tags
+          >
+            <el-option
+              v-for="item in picBed"
+              :key="item.type"
+              :label="item.name"
+              :value="item.type"
+            ></el-option>
+          </el-select>
+          <el-button
+            v-show="choosedPicBedForQRCode.length > 0"
+            type="primary"
+            round
+            class="copy-picbed-config"
+            @click="handleCopyPicBedConfig"
+          >
+            复制图床配置
+          </el-button>
+        </el-form-item>
+      </el-form>
+      <div class="qrcode-container">
+        <qrcode-vue
+          v-show="choosedPicBedForQRCode.length > 0"
+          :size="280"
+          :value="picBedConfigString"
+        />
+      </div>
+    </el-dialog>
     <input-box-dialog />
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
+import QrcodeVue from 'qrcode.vue'
+import pick from 'lodash/pick'
 import pkg from 'root/package.json'
 import keyDetect from '@/utils/key-binding'
-import { remote, ipcRenderer, IpcRendererEvent } from 'electron'
+import {
+  remote,
+  ipcRenderer,
+  IpcRendererEvent,
+  clipboard
+} from 'electron'
 import db from '#/datastore'
 import mixin from '@/utils/mixin'
 import InputBoxDialog from '@/components/InputBoxDialog.vue'
@@ -143,7 +198,8 @@ const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) =>
   name: 'main-page',
   mixins: [mixin],
   components: {
-    InputBoxDialog
+    InputBoxDialog,
+    QrcodeVue
   }
 })
 export default class extends Vue {
@@ -166,12 +222,27 @@ export default class extends Vue {
     upload: db.get('shortKey.upload')
   }
   picBed: IPicBedType[] = []
+  qrcodeVisible = false
+  picBedConfigString = ''
+  choosedPicBedForQRCode: string[] = []
   created () {
     this.os = process.platform
     this.buildMenu()
     ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
   }
+
+  @Watch('choosedPicBedForQRCode')
+  choosedPicBedForQRCodeChange (val: string[], oldVal: string[]) {
+    if (val.length > 0) {
+      this.$nextTick(() => {
+        const picBedConfig = db.get('picBed')
+        const config = pick(picBedConfig, ...this.choosedPicBedForQRCode)
+        this.picBedConfigString = JSON.stringify(config)
+      })
+    }
+  }
+
   handleSelect (index: string) {
     const type = index.match(/picbeds-/)
     if (type === null) {
@@ -220,6 +291,12 @@ export default class extends Vue {
         click () {
           _this.visible = true
         }
+      },
+      {
+        label: '生成图床配置二维码',
+        click () {
+          _this.qrcodeVisible = true
+        }
       }
     ]
     this.menu = Menu.buildFromTemplate(template)
@@ -254,6 +331,10 @@ export default class extends Vue {
   openMiniWindow () {
     ipcRenderer.send('openMiniWindow')
   }
+  handleCopyPicBedConfig () {
+    clipboard.writeText(this.picBedConfigString)
+    this.$message.success('图床配置复制成功')
+  }
   getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
   }
@@ -283,6 +364,16 @@ $darwinBg = transparentify(#172426, #000, 0.7)
   text-align center
   margin 10px auto
 #main-page
+  .qrcode-dialog
+    .qrcode-container
+      display flex
+      justify-content center
+    .el-dialog__body
+      padding-top 10px
+    .copy-picbed-config
+      margin-left 10px
+    .el-input__inner
+      border-radius 14px
   .fake-title-bar
     -webkit-app-region drag
     height h = 22px
