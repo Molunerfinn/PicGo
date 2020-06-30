@@ -8,6 +8,7 @@ import uploader from '.'
 import pasteTemplate from '#/utils/pasteTemplate'
 import db from '#/datastore'
 import { handleCopyUrl } from '~/main/utils/common'
+import { handleUrlEncode } from '#/utils/common'
 export const uploadClipboardFiles = async (): Promise<string> => {
   const win = windowManager.getAvailableWindow()
   let img = await uploader.setWebContents(win!.webContents).upload()
@@ -28,7 +29,7 @@ export const uploadClipboardFiles = async (): Promise<string> => {
       if (windowManager.has(IWindowList.SETTING_WINDOW)) {
         windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('updateGallery')
       }
-      return img[0].imgUrl as string
+      return handleUrlEncode(img[0].imgUrl as string)
     } else {
       const notification = new Notification({
         title: '上传不成功',
@@ -60,7 +61,7 @@ export const uploadChoosedFiles = async (webContents: WebContents, files: IFileW
         notification.show()
       }, i * 100)
       db.insert('uploaded', imgs[i])
-      result.push(imgs[i].imgUrl!)
+      result.push(handleUrlEncode(imgs[i].imgUrl!))
     }
     handleCopyUrl(pasteText.join('\n'))
     windowManager.get(IWindowList.TRAY_WINDOW)!.webContents.send('uploadFiles', imgs)
