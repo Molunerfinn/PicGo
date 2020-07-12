@@ -1,3 +1,13 @@
+# :tada: 2.3.0-beta.3 (2020-07-12)
+
+
+### :bug: Bug Fixes
+
+* choose default picBed failure ([21d3942](https://github.com/Molunerfinn/PicGo/commit/21d3942)), closes [#537](https://github.com/Molunerfinn/PicGo/issues/537)
+* shortkey disabled failure ([4f0809e](https://github.com/Molunerfinn/PicGo/commit/4f0809e)), closes [#534](https://github.com/Molunerfinn/PicGo/issues/534)
+
+
+
 # :tada: 2.3.0-beta.2 (2020-07-12)
 
 
