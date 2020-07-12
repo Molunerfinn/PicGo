@@ -1,3 +1,23 @@
+# :tada: 2.3.0-beta.2 (2020-07-12)
+
+
+### :sparkles: Features
+
+* add qrcode for picbeds' config ([7fabc47](https://github.com/Molunerfinn/PicGo/commit/7fabc47))
+
+
+### :bug: Bug Fixes
+
+* encoding the result of picgo-server ([db71139](https://github.com/Molunerfinn/PicGo/commit/db71139))
+* initialize db bugs ([5f87018](https://github.com/Molunerfinn/PicGo/commit/5f87018))
+
+
+### :pencil: Documentation
+
+* update readme ([1c5880a](https://github.com/Molunerfinn/PicGo/commit/1c5880a))
+
+
+
 # :tada: 2.3.0-beta.1 (2020-06-28)
 
 
