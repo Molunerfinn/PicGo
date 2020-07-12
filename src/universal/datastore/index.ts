@@ -29,7 +29,11 @@ class DB {
 
     if (!this.db.has('picBed').value()) {
       this.db.set('picBed', {
-        current: 'weibo'
+        current: 'smms',
+        uploader: 'smms',
+        smms: {
+          token: ''
+        }
       }).write()
     }
 
