@@ -24,11 +24,14 @@ class ShortKeyHandler {
     const commands = db.get('settings.shortKey') as IShortKeyConfigs
     Object.keys(commands)
       .filter(item => item.includes('picgo:'))
-      .map(command => {
+      .forEach(command => {
         const config = commands[command]
-        globalShortcut.register(config.key, () => {
-          this.handler(command)
-        })
+        // if disabled, don't register #534
+        if (config.enable) {
+          globalShortcut.register(config.key, () => {
+            this.handler(command)
+          })
+        }
       })
   }
   private initPluginsShortKey () {
@@ -46,7 +49,10 @@ class ShortKeyHandler {
           const command = `${item}:${cmd.name}`
           if (db.has(`settings.shortKey[${command}]`)) {
             const commandConfig = db.get(`settings.shortKey.${command}`) as IShortKeyConfig
-            this.registerShortKey(commandConfig, command, cmd.handle, false)
+            // if disabled, don't register #534
+            if (commandConfig.enable) {
+              this.registerShortKey(commandConfig, command, cmd.handle, false)
+            }
           } else {
             this.registerShortKey(cmd, command, cmd.handle, true)
           }
@@ -65,6 +71,8 @@ class ShortKeyHandler {
     } else {
       logger.warn(`${command} do not provide a key to bind`)
     }
+    // if the configfile already had this command
+    // then writeFlag -> false
     if (writeFlag) {
       picgo.saveConfig({
         [`settings.shortKey.${command}`]: {
