@@ -28,7 +28,8 @@ export function createContextMenu () {
       checked: db.get('picBed.current') === item.type,
       click () {
         picgo.saveConfig({
-          'picBed.current': item.type
+          'picBed.current': item.type,
+          'picBed.uploader': item.type
         })
         if (windowManager.has(IWindowList.SETTING_WINDOW)) {
           windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('syncPicBed')

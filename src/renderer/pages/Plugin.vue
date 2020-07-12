@@ -433,7 +433,8 @@ export default class extends Vue {
       const current = this.$db.get('picBed.current')
       if (current === name) {
         this.letPicGoSaveData({
-          'picBed.current': 'smms'
+          'picBed.current': 'smms',
+          'picBed.uploader': 'smms'
         })
       }
     }

@@ -5,7 +5,8 @@ export default class extends Vue {
   defaultPicBed = this.$db.get('picBed.current')
   setDefaultPicBed (type: string) {
     this.letPicGoSaveData({
-      'picBed.current': type
+      'picBed.current': type,
+      'picBed.uploader': type
     })
     this.defaultPicBed = type
     const successNotification = new Notification('设置默认图床', {

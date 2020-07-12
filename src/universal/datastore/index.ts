@@ -29,7 +29,7 @@ class DB {
 
     if (!this.db.has('picBed').value()) {
       this.db.set('picBed', {
-        current: 'smms',
+        current: 'smms', // deprecated
         uploader: 'smms',
         smms: {
           token: ''

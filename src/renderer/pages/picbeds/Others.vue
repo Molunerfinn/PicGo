@@ -69,7 +69,8 @@ export default class extends Vue {
   }
   setDefaultPicBed (type: string) {
     this.letPicGoSaveData({
-      'picBed.current': type
+      'picBed.current': type,
+      'picBed.uploader': type
     })
     // @ts-ignore 来自mixin的数据
     this.defaultPicBed = type

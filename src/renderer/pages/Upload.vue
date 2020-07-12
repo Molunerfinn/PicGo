@@ -222,7 +222,8 @@ export default class extends Vue {
         checked: this.$db.get('picBed.current') === item.type,
         click () {
           _this.letPicGoSaveData({
-            'picBed.current': item.type
+            'picBed.current': item.type,
+            'picBed.uploader': item.type
           })
           ipcRenderer.send('syncPicBed')
         }

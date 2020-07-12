@@ -28,7 +28,8 @@ export default {
   methods: {
     choosePicBed (val) {
       this.letPicGoSaveData({
-        'picBed.current': this.type
+        'picBed.current': this.type,
+        'picBed.uploader': this.type
       })
       this.$emit('update:choosed', this.type)
     }
