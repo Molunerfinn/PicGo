@@ -133,7 +133,8 @@ npm run electron:build
 
 ## 其他相关
 
-- [vs-picgo](https://github.com/Spades-S/vs-picgo)：PicGo 的 VS Code 版。
+- [vs-picgo](https://github.com/PicGo/vs-picgo)：PicGo 的 VS Code 版。
+- [flutter-picgo](https://github.com/PicGo/flutter-picgo)：PicGo 的手机版（支持 Android 和 iOS ）。
 
 ## 赞助
 
