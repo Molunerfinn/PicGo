@@ -1,11 +1,3 @@
-“PicGo is being sponsored by the following tool; please help to support us by taking a look anj signing up to a free trial”
-
-<a href="https://tracking.gitads.io/?repo=PicGo">
- <img src="https://images.gitads.io/PicGo" alt="GitAds"/>
-</a>
-
----
-
 <div align="center">
   <img src="https://raw.githubusercontent.com/Molunerfinn/test/master/picgo/New%20LOGO-150.png" alt="">
   <h1>PicGo</h1>
