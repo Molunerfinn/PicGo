@@ -2,11 +2,18 @@ import fs from 'fs-extra'
 import path from 'path'
 import os from 'os'
 import { remote, app } from 'electron'
+import pkg from 'root/package.json'
 
 const APP = process.type === 'renderer' ? remote.app : app
 const STORE_PATH = APP.getPath('userData')
 
+function injectPicGoVersion () {
+  global.PICGO_GUI_VERSION = pkg.version
+  global.PICGO_CORE_VERSION = pkg.dependencies.picgo.replace('^', '')
+}
+
 function beforeOpen () {
+  injectPicGoVersion()
   if (process.platform === 'darwin') {
     resolveMacWorkFlow()
   }

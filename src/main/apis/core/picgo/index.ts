@@ -16,4 +16,7 @@ picgo.saveConfig({
   PICGO_ENV: 'GUI'
 })
 
+// @ts-ignore
+picgo.GUI_VERSION = global.PICGO_GUI_VERSION
+
 export default picgo! as PicGoCore
