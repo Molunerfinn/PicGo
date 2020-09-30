@@ -77,7 +77,7 @@ macOS 用户请下载最新版本的 `dmg` 文件。
 
 Linux 用户请下载 `AppImage` 文件。
 
-**如果你是 Arch 类的 Linux 用户，可以直接通过 `aurman -S picgo-appimage` 来安装 PicGo。感谢 @houbaron 的贡献！**
+**如果你是 Arch 类的 Linux 用户，可以直接通过 `yay -S picgo-appimage` 来安装 PicGo （若是没有则先安装 yay ，是 aur 仓库助手）。感谢 @houbaron 的贡献！**
 
 ## 应用截图
 
