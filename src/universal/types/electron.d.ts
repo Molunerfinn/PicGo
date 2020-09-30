@@ -27,6 +27,7 @@ declare global {
     interface Global {
       PICGO_GUI_VERSION: string
       PICGO_CORE_VERSION: string
+      notificationList: IAppNotification[]
     }
   }
 }

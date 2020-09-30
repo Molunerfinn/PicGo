@@ -5,6 +5,7 @@ import FileSync from 'lowdb/adapters/FileSync'
 import path from 'path'
 import fs from 'fs-extra'
 import { remote, app } from 'electron'
+import { dbChecker } from './dbChecker'
 
 const APP = process.type === 'renderer' ? remote.app : app
 const STORE_PATH = APP.getPath('userData')
@@ -14,6 +15,8 @@ if (process.type !== 'renderer') {
     fs.mkdirpSync(STORE_PATH)
   }
 }
+
+dbChecker()
 
 class DB {
   private db: Datastore.LowdbSync<Datastore.AdapterSync>

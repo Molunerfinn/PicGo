@@ -1,7 +1,9 @@
 import {
   app,
   globalShortcut,
-  protocol
+  protocol,
+  dialog,
+  Notification
 } from 'electron'
 import {
   createProtocol,
@@ -73,6 +75,14 @@ class LifeCycle {
             const win = windowManager.getAvailableWindow()
             uploadChoosedFiles(win.webContents, files)
           }
+        }
+      }
+
+      if (global.notificationList?.length > 0) {
+        while (global.notificationList.length) {
+          const option = global.notificationList.pop()
+          const notice = new Notification(option!)
+          notice.show()
         }
       }
     })

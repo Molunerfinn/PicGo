@@ -279,3 +279,9 @@ interface IUpYunConfig {
 }
 
 type ILoggerType = string | Error | boolean | number | undefined
+
+interface IAppNotification {
+  title: string
+  body: string
+  icon?: string
+}
