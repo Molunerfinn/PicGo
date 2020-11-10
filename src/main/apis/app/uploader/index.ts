@@ -10,6 +10,7 @@ import picgo from '@core/picgo'
 import db from '#/datastore'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
+import util from 'util'
 
 const waitForShow = (webcontent: WebContents) => {
   return new Promise((resolve, reject) => {
@@ -101,11 +102,11 @@ class Uploader {
         }
         picgo.removeAllListeners('failed')
       })
-      picgo.once('failed', ctx => {
+      picgo.once('failed', (e: Error) => {
         setTimeout(() => {
           const notification = new Notification({
             title: '上传失败',
-            body: '请检查配置和上传的文件是否符合要求'
+            body: util.format(e.stack)
           })
           notification.show()
         }, 500)
