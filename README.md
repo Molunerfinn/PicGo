@@ -51,7 +51,7 @@ PicGo 本体支持如下图床：
 - 支持通过发送 HTTP 请求调用 PicGo 上传（v2.2.0+)
 - 更多功能等你自己去发现，同时也会不断开发新功能
   - 开发进度可以查看 [Projects](https://github.com/Molunerfinn/PicGo/projects)，会同步更新开发进度
-  - 欢迎加入 [官方 Gitter 频道](https://gitter.im/picgo-all/PicGo?utm_source=share-link&utm_medium=link&utm_campaign=share-link) 与我交流
+  - 欢迎加入 [官方讨论区](https://github.com/Molunerfinn/PicGo/discussions) 与我交流
 
 **如果第一次使用，请参考应用 [使用文档](https://picgo.github.io/PicGo-Doc/zh/guide/getting-started.html)。遇到问题了还可以看看 [FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md) 以及被关闭的 [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)。**
 
