@@ -71,7 +71,7 @@ Windows 用户请下载最新版本的 `exe` 文件。
 
 macOS 用户请下载最新版本的 `dmg` 文件。
 
-**还可以使用 `brew cask` 来安装 PicGo: `brew cask install picgo`。感谢 @womeimingzi11 的贡献！**
+**还可以使用 [Homebrew](https://brew.sh/) 来安装 PicGo: `brew install picgo --cask`。感谢 @womeimingzi11 的贡献！**
 
 ### Linux
 
