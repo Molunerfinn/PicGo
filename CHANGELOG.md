@@ -1,3 +1,30 @@
+# :tada: 2.3.0-beta.4 (2020-12-19)
+
+
+### :sparkles: Features
+
+* add global value for PicGo get GUI_VERSION & CORE_VERSION ([eab014d](https://github.com/Molunerfinn/PicGo/commit/eab014d))
+* **config:** auto configuration backup & fallback to avoid main process crash ([32b8b97](https://github.com/Molunerfinn/PicGo/commit/32b8b97)), closes [#568](https://github.com/Molunerfinn/PicGo/issues/568)
+
+
+### :bug: Bug Fixes
+
+* disabled plugin won't be shown in plugin page ([33fdb16](https://github.com/Molunerfinn/PicGo/commit/33fdb16))
+* shortKeyConfig maybe undefined ([7b5e5ef](https://github.com/Molunerfinn/PicGo/commit/7b5e5ef)), closes [#557](https://github.com/Molunerfinn/PicGo/issues/557)
+* url encode before uploading by url ([ce2b5cd](https://github.com/Molunerfinn/PicGo/commit/ce2b5cd)), closes [#581](https://github.com/Molunerfinn/PicGo/issues/581)
+
+
+### :pencil: Documentation
+
+* add flutter-picgo ([92ff282](https://github.com/Molunerfinn/PicGo/commit/92ff282))
+* add gitads ([2d42381](https://github.com/Molunerfinn/PicGo/commit/2d42381))
+* rm gitads ([bb90e17](https://github.com/Molunerfinn/PicGo/commit/bb90e17))
+* update discussions in doc ([e793599](https://github.com/Molunerfinn/PicGo/commit/e793599))
+* update install command by Homebrew ([#599](https://github.com/Molunerfinn/PicGo/issues/599)) ([bd2311b](https://github.com/Molunerfinn/PicGo/commit/bd2311b))
+* update README.md ([#555](https://github.com/Molunerfinn/PicGo/issues/555)) ([2151857](https://github.com/Molunerfinn/PicGo/commit/2151857))
+
+
+
 # :tada: 2.3.0-beta.3 (2020-07-12)
 
 
