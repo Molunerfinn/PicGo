@@ -58,7 +58,7 @@ const handleConfigWithFunction = (config: any[]) => {
 
 const handleGetPluginList = () => {
   ipcMain.on('getPluginList', (event: IpcMainEvent) => {
-    const pluginList = picgo.pluginLoader.getList()
+    const pluginList = picgo.pluginLoader.getFullList()
     const list = []
     for (let i in pluginList) {
       const plugin = picgo.pluginLoader.getPlugin(pluginList[i])

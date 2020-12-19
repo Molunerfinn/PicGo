@@ -8289,10 +8289,10 @@ performance-now@^2.1.0:
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-picgo@^1.4.12:
-  version "1.4.12"
-  resolved "https://registry.yarnpkg.com/picgo/-/picgo-1.4.12.tgz#c8d1e496cba03795d41d94255fd8dc7567854e66"
-  integrity sha512-vPopTG66D97o/NmkLxx64oUNwCVWPuOoEaKYQa501VjKbWfmi63S0kLxXbIsoDNIM8rkU11VQinLnouL1Ufv/A==
+picgo@^1.4.14:
+  version "1.4.14"
+  resolved "https://registry.yarnpkg.com/picgo/-/picgo-1.4.14.tgz#312a1814d35eb8e326587d5cd99316b09a2882cc"
+  integrity sha512-r2i/Ox85xG5oskI4nemhdCU0SC/pxUzJ9np53qGC9qfQ2WumTLN5Ro09pDwFctxtI4Pl0jO03LAQ7hzVSX4rfA==
   dependencies:
     chalk "^2.4.1"
     commander "^2.17.0"

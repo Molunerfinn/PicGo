@@ -35,6 +35,7 @@ class ShortKeyHandler {
       })
   }
   private initPluginsShortKey () {
+    // get enabled plugin
     const pluginList = picgo.pluginLoader.getList()
     for (let item of pluginList) {
       const plugin = picgo.pluginLoader.getPlugin(item)
