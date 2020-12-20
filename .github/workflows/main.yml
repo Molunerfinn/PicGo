@@ -1,0 +1,55 @@
+# main.yml
+
+# Workflow's name
+name: Build
+
+# Workflow's trigger
+on:
+  push:
+    branches:
+      - master
+
+# Workflow's jobs
+jobs:
+  # job's id
+  release:
+    # job's name
+    name: build and release electron app
+
+    # the type of machine to run the job on
+    runs-on: ${{ matrix.os }}
+
+    # create a build matrix for jobs
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-10.15]
+
+    # create steps
+    steps:
+      # step1: check out repository
+      - name: Check out git repository
+        uses: actions/checkout@v2
+
+      # step2: install node env
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install system deps
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get install --no-install-recommends -y icnsutils graphicsmagick xz-utils
+
+      # step3: yarn
+      - name: Yarn install
+        run: |
+          yarn
+          yarn global add xvfb-maybe
+
+      - name: Build  & release app
+        run: |
+          npm run release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
