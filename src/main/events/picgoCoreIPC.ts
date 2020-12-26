@@ -11,6 +11,7 @@ import PicGoCore from '~/universal/types/picgo'
 import { IPicGoHelperType } from '#/types/enum'
 import shortKeyHandler from '../apis/app/shortKey/shortKeyHandler'
 import picgo from '@core/picgo'
+import { handleStreamlinePluginName } from '~/universal/utils/common'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -77,7 +78,8 @@ const handleGetPluginList = () => {
         }
       }
       const obj: IPicGoPlugin = {
-        name: pluginList[i].replace(/picgo-plugin-/, ''),
+        name: handleStreamlinePluginName(pluginList[i]),
+        fullName: pluginList[i],
         author: pluginPKG.author.name || pluginPKG.author,
         description: pluginPKG.description,
         logo: 'file://' + path.join(pluginPath, 'logo.png').split(path.sep).join('/'),
@@ -85,7 +87,8 @@ const handleGetPluginList = () => {
         gui,
         config: {
           plugin: {
-            name: pluginList[i].replace(/picgo-plugin-/, ''),
+            fullName: pluginList[i],
+            name: handleStreamlinePluginName(pluginList[i]),
             config: plugin.config ? handleConfigWithFunction(plugin.config(picgo)) : []
           },
           uploader: {
@@ -113,7 +116,7 @@ const handlePluginInstall = () => {
   ipcMain.on('installPlugin', async (event: IpcMainEvent, msg: string) => {
     const dispose = handleNPMError()
     picgo.once('installSuccess', (notice: PicGoNotice) => {
-      event.sender.send('installSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
+      event.sender.send('installSuccess', notice.body[0])
       shortKeyHandler.registerPluginShortKey(notice.body[0])
       picgo.removeAllListeners('installFailed')
       dispose()
@@ -131,7 +134,7 @@ const handlePluginUninstall = () => {
   ipcMain.on('uninstallPlugin', async (event: IpcMainEvent, msg: string) => {
     const dispose = handleNPMError()
     picgo.once('uninstallSuccess', (notice: PicGoNotice) => {
-      event.sender.send('uninstallSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
+      event.sender.send('uninstallSuccess', notice.body[0])
       shortKeyHandler.unregisterPluginShortKey(notice.body[0])
       picgo.removeAllListeners('uninstallFailed')
       dispose()
@@ -149,7 +152,7 @@ const handlePluginUpdate = () => {
   ipcMain.on('updatePlugin', async (event: IpcMainEvent, msg: string) => {
     const dispose = handleNPMError()
     picgo.once('updateSuccess', (notice: { body: string[], title: string }) => {
-      event.sender.send('updateSuccess', notice.body[0].replace(/picgo-plugin-/, ''))
+      event.sender.send('updateSuccess', notice.body[0])
       picgo.removeAllListeners('updateFailed')
       dispose()
     })
@@ -195,7 +198,7 @@ const handleGetPicBedConfig = () => {
 
 const handlePluginActions = () => {
   ipcMain.on('pluginActions', (event: IpcMainEvent, name: string, label: string) => {
-    const plugin = picgo.pluginLoader.getPlugin(`picgo-plugin-${name}`)
+    const plugin = picgo.pluginLoader.getPlugin(name)
     const guiApi = new GuiApi()
     if (plugin.guiMenu && plugin.guiMenu(picgo).length > 0) {
       const menu: GuiMenuItem[] = plugin.guiMenu(picgo)

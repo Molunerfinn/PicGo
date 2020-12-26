@@ -13,7 +13,7 @@
       </el-input>
     </el-row>
     <el-row :gutter="10" class="plugin-list" v-loading="loading">
-      <el-col :span="12" v-for="item in pluginList" :key="item.name">
+      <el-col :span="12" v-for="item in pluginList" :key="item.fullName">
         <div class="plugin-item" :class="{ 'darwin': os === 'darwin' }">
           <div class="cli-only-badge" v-if="!item.gui" title="CLI only">CLI</div>
           <img class="plugin-item__logo" :src="item.logo"
@@ -106,6 +106,7 @@ import {
   remote,
   IpcRendererEvent
 } from 'electron'
+import { handleStreamlinePluginName } from '~/universal/utils/common'
 const { Menu } = remote
 
 @Component({
@@ -159,13 +160,13 @@ export default class extends Vue {
     this.os = process.platform
     ipcRenderer.on('pluginList', (evt: IpcRendererEvent, list: IPicGoPlugin[]) => {
       this.pluginList = list
-      this.pluginNameList = list.map(item => item.name)
+      this.pluginNameList = list.map(item => item.fullName)
       this.loading = false
     })
     ipcRenderer.on('installSuccess', (evt: IpcRendererEvent, plugin: string) => {
       this.loading = false
       this.pluginList.forEach(item => {
-        if (item.name === plugin) {
+        if (item.fullName === plugin) {
           item.ing = false
           item.hasInstall = true
         }
@@ -174,7 +175,7 @@ export default class extends Vue {
     ipcRenderer.on('updateSuccess', (evt: IpcRendererEvent, plugin: string) => {
       this.loading = false
       this.pluginList.forEach(item => {
-        if (item.name === plugin) {
+        if (item.fullName === plugin) {
           item.ing = false
           item.hasInstall = true
         }
@@ -186,7 +187,7 @@ export default class extends Vue {
     ipcRenderer.on('uninstallSuccess', (evt: IpcRendererEvent, plugin: string) => {
       this.loading = false
       this.pluginList = this.pluginList.filter(item => {
-        if (item.name === plugin) { // restore Uploader & Transformer after uninstalling
+        if (item.fullName === plugin) { // restore Uploader & Transformer after uninstalling
           if (item.config.transformer.name) {
             this.handleRestoreState('transformer', item.config.transformer.name)
           }
@@ -195,7 +196,7 @@ export default class extends Vue {
           }
           this.getPicBeds()
         }
-        return item.name !== plugin
+        return item.fullName !== plugin
       })
       this.pluginNameList = this.pluginNameList.filter(item => item !== plugin)
     })
@@ -210,7 +211,7 @@ export default class extends Vue {
       enabled: !plugin.enabled,
       click () {
         _this.letPicGoSaveData({
-          [`picgoPlugins.picgo-plugin-${plugin.name}`]: true
+          [`picgoPlugins.${plugin.fullName}`]: true
         })
         plugin.enabled = true
         _this.getPicBeds()
@@ -220,7 +221,7 @@ export default class extends Vue {
       enabled: plugin.enabled,
       click () {
         _this.letPicGoSaveData({
-          [`picgoPlugins.picgo-plugin-${plugin.name}`]: false
+          [`picgoPlugins.${plugin.fullName}`]: false
         })
         plugin.enabled = false
         _this.getPicBeds()
@@ -234,21 +235,21 @@ export default class extends Vue {
     }, {
       label: '卸载插件',
       click () {
-        _this.uninstallPlugin(plugin.name)
+        _this.uninstallPlugin(plugin.fullName)
       }
     }, {
       label: '更新插件',
       click () {
-        _this.updatePlugin(plugin.name)
+        _this.updatePlugin(plugin.fullName)
       }
     }]
     for (let i in plugin.config) {
       if (plugin.config[i].config.length > 0) {
         const obj = {
-          label: `配置${i} - ${plugin.config[i].name}`,
+          label: `配置${i} - ${plugin.config[i].fullName || plugin.config[i].name}`,
           click () {
             _this.currentType = i
-            _this.configName = plugin.config[i].name
+            _this.configName = plugin.config[i].fullName || plugin.config[i].name
             _this.dialogVisible = true
             _this.config = plugin.config[i].config
           }
@@ -280,7 +281,7 @@ export default class extends Vue {
         menu.push({
           label: i.label,
           click () {
-            ipcRenderer.send('pluginActions', plugin.name, i.label)
+            ipcRenderer.send('pluginActions', plugin.fullName, i.label)
           }
         })
       }
@@ -322,7 +323,7 @@ export default class extends Vue {
   }
   updatePlugin (val: string) {
     this.pluginList.forEach(item => {
-      if (item.name === val) {
+      if (item.fullName === val) {
         item.ing = true
       }
     })
@@ -364,7 +365,7 @@ export default class extends Vue {
       switch (this.currentType) {
         case 'plugin':
           this.letPicGoSaveData({
-            [`picgo-plugin-${this.configName}`]: result
+            [`${this.configName}`]: result
           })
           break
         case 'uploader':
@@ -407,7 +408,7 @@ export default class extends Vue {
       })
   }
   handleSearchResult (item: INPMSearchResultObject) {
-    const name = item.package.name.replace(/picgo-plugin-/, '')
+    const name = handleStreamlinePluginName(item.package.name)
     let gui = false
     if (item.package.keywords && item.package.keywords.length > 0) {
       if (item.package.keywords.includes('picgo-gui-plugin')) {
@@ -416,12 +417,13 @@ export default class extends Vue {
     }
     return {
       name: name,
+      fullName: item.package.name,
       author: item.package.author.name,
       description: item.package.description,
       logo: `https://cdn.jsdelivr.net/npm/${item.package.name}/logo.png`,
       config: {},
       homepage: item.package.links ? item.package.links.homepage : '',
-      hasInstall: this.pluginNameList.some(plugin => plugin === item.package.name.replace(/picgo-plugin-/, '')),
+      hasInstall: this.pluginNameList.some(plugin => plugin === item.package.name),
       version: item.package.version,
       gui,
       ing: false // installing or uninstalling
