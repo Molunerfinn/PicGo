@@ -56,7 +56,7 @@ class LifeCycle {
       }
       windowManager.create(IWindowList.TRAY_WINDOW)
       windowManager.create(IWindowList.SETTING_WINDOW)
-      if (process.platform === 'darwin' || process.platform === 'win32') {
+      if (process.platform === 'darwin' || process.platform === 'win32' || process.platform === "linux") {
         createTray()
       }
       db.set('needReload', false)
