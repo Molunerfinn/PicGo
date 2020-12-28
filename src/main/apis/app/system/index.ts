@@ -19,7 +19,7 @@ import { handleCopyUrl } from '~/main/utils/common'
 let contextMenu: Menu | null
 let menu: Menu | null
 let tray: Tray | null
-export function createContextMenu () {
+export function createContextMenu() {
   const picBeds = getPicBeds()
   if (process.platform === "darwin" || process.platform === "win32") {
     const submenu = picBeds.filter(item => item.visible).map(item => {
@@ -27,7 +27,7 @@ export function createContextMenu () {
         label: item.name,
         type: 'radio',
         checked: db.get('picBed.current') === item.type,
-        click () {
+        click() {
           picgo.saveConfig({
             'picBed.current': item.type,
             'picBed.uploader': item.type
@@ -41,7 +41,7 @@ export function createContextMenu () {
     contextMenu = Menu.buildFromTemplate([
       {
         label: '关于',
-        click () {
+        click() {
           dialog.showMessageBox({
             title: 'PicGo',
             message: 'PicGo',
@@ -51,7 +51,7 @@ export function createContextMenu () {
       },
       {
         label: '打开详细窗口',
-        click () {
+        click() {
           const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)
           settingWindow!.show()
           settingWindow!.focus()
@@ -71,14 +71,14 @@ export function createContextMenu () {
         label: '打开更新助手',
         type: 'checkbox',
         checked: db.get('settings.showUpdateTip'),
-        click () {
+        click() {
           const value = db.get('settings.showUpdateTip')
           db.set('settings.showUpdateTip', !value)
         }
       },
       {
         label: '重启应用',
-        click () {
+        click() {
           app.relaunch()
           app.exit(0)
         }
@@ -91,26 +91,17 @@ export function createContextMenu () {
     ])
   }
   else if (process.platform === "linux") {
-    const submenu = picBeds.filter(item => item.visible).map(item => {
-      return {
-        label: item.name,
-        type: 'radio',
-        checked: db.get('picBed.current') === item.type,
-        click () {
-          picgo.saveConfig({
-            'picBed.current': item.type,
-            'picBed.uploader': item.type
-          })
-          if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-            windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('syncPicBed')
-          }
-        }
-      }
-    })
+    // TODO 图床选择功能
+    // 由于在Linux难以像在Mac和Windows上那样在点击时构造ContextMenu，
+    // 暂时取消这个选单，避免引起和设置中启用的图床不一致
+
+    // TODO 重启应用功能
+    // 目前的实现无法正常工作
+
     contextMenu = Menu.buildFromTemplate([
       {
         label: '打开详细窗口',
-        click () {
+        click() {
           const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)
           settingWindow!.show()
           settingWindow!.focus()
@@ -119,40 +110,25 @@ export function createContextMenu () {
           }
         }
       },
-      // 由于在Linux难以像在Mac和Windows上那样在点击时构造ContextMenu，
-      // 暂时取消这个选单，避免引起和设置中启用的图床不一致
-      // {
-      //   label: '选择默认图床',
-      //   type: 'submenu',
-      //   // @ts-ignore
-      //   submenu
-      // },
       // @ts-ignore
       {
         label: '打开更新助手',
         type: 'checkbox',
         checked: db.get('settings.showUpdateTip'),
-        click () {
+        click() {
           const value = db.get('settings.showUpdateTip')
           db.set('settings.showUpdateTip', !value)
         }
       },
       {
         label: '关于应用',
-        click () {
+        click() {
           dialog.showMessageBox({
             title: 'PicGo',
             message: 'PicGo',
             buttons: ['Ok'],
             detail: `Version: ${pkg.version}\nAuthor: Molunerfinn\nGithub: https://github.com/Molunerfinn/PicGo`,
           });
-        }
-      },
-      {
-        label: '重启应用',
-        click () {
-          app.relaunch()
-          app.exit(0)
         }
       },
       // @ts-ignore
@@ -164,7 +140,7 @@ export function createContextMenu () {
   }
 }
 
-export function createTray () {
+export function createTray() {
   const menubarPic = process.platform === 'darwin' ? `${__static}/menubar.png` : `${__static}/menubar-nodarwin.png`
   tray = new Tray(menubarPic)
   // click事件在Mac和Windows上可以触发（在Ubuntu上无法触发，Unity不支持）
@@ -206,7 +182,45 @@ export function createTray () {
         }
       }
     })
-  } 
+
+    tray.on('drag-enter', () => {
+      if (systemPreferences.isDarkMode()) {
+        tray!.setImage(`${__static}/upload-dark.png`)
+      } else {
+        tray!.setImage(`${__static}/upload.png`)
+      }
+    })
+
+    tray.on('drag-end', () => {
+      tray!.setImage(`${__static}/menubar.png`)
+    })
+
+    tray.on('drop-files', async (event: Event, files: string[]) => {
+      const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
+      const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
+      const imgs = await uploader
+        .setWebContents(trayWindow.webContents)
+        .upload(files)
+      if (imgs !== false) {
+        const pasteText: string[] = []
+        for (let i = 0; i < imgs.length; i++) {
+          pasteText.push(pasteTemplate(pasteStyle, imgs[i]))
+          const notification = new Notification({
+            title: '上传成功',
+            body: imgs[i].imgUrl!,
+            icon: files[i]
+          })
+          setTimeout(() => {
+            notification.show()
+          }, i * 100)
+          db.insert('uploaded', imgs[i])
+        }
+        handleCopyUrl(pasteText.join('\n'))
+        trayWindow.webContents.send('dragFiles', imgs)
+      }
+    })
+    // toggleWindow()
+  }
   // click事件在Ubuntu上无法触发，Unity不支持（在Mac和Windows上可以触发）
   // 需要使用 setContextMenu 设置菜单
   else if (process.platform === "linux") {
@@ -215,7 +229,7 @@ export function createTray () {
   }
 }
 
-export function createMenu () {
+export function createMenu() {
   if (process.env.NODE_ENV !== 'development') {
     const template = [{
       label: 'Edit',
@@ -230,7 +244,7 @@ export function createMenu () {
         {
           label: 'Quit',
           accelerator: 'CmdOrCtrl+Q',
-          click () {
+          click() {
             app.quit()
           }
         }
