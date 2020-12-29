@@ -271,7 +271,11 @@ export default class extends Vue {
   }
   closeWindow () {
     const window = BrowserWindow.getFocusedWindow()
-    window!.close()
+    if (process.platform === 'linux') {
+      window!.hide()
+    } else {
+      window!.close()
+    }
   }
   buildMenu () {
     const _this = this

@@ -56,9 +56,7 @@ class LifeCycle {
       }
       windowManager.create(IWindowList.TRAY_WINDOW)
       windowManager.create(IWindowList.SETTING_WINDOW)
-      if (process.platform === 'darwin' || process.platform === 'win32') {
-        createTray()
-      }
+      createTray()
       db.set('needReload', false)
       updateChecker()
       // 不需要阻塞
