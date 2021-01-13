@@ -25,7 +25,7 @@
             :rules="{
               required: true, message: '分支名不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.branch" @keyup.native.enter="confirm" placeholder="例如：master"></el-input>
+            <el-input v-model="form.branch" @keyup.native.enter="confirm" placeholder="例如：main"></el-input>
           </el-form-item>
           <el-form-item
             label="设定Token"
