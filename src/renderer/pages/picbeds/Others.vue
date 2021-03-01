@@ -1,6 +1,6 @@
 <template>
   <div id="others-view">
-    <el-row :gutter="16">
+    <el-row :gutter="16" class="setting-list">
       <el-col :span="16" :offset="4">
         <div class="view-title">
           {{ picBedName }}设置
@@ -92,6 +92,10 @@ export default class extends Vue {
 </script>
 <style lang='stylus'>
 #others-view
+  .setting-list
+    height 425px
+    overflow-y auto
+    overflow-x hidden
   .el-form
     label
       line-height 22px
