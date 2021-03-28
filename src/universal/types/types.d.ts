@@ -196,6 +196,14 @@ type IUploadOption = string[]
 interface IShowNotificationOption {
   title: string
   body: string
+  icon?: string | import('electron').NativeImage
+}
+
+interface IPrivateShowNotificationOption extends IShowNotificationOption{
+  /**
+   * click notification to copy the body
+   */
+  clickToCopy?: boolean
 }
 
 interface IShowMessageBoxOption {

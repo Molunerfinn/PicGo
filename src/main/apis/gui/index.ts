@@ -27,7 +27,7 @@ class GuiApi implements IGuiApi {
       return true
     }
     settingWindow.show()
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
         resolve()
       }, 1000) // TODO: a better way to wait page loaded.

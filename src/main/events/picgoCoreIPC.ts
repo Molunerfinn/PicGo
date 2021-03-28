@@ -12,6 +12,7 @@ import { IPicGoHelperType } from '#/types/enum'
 import shortKeyHandler from '../apis/app/shortKey/shortKeyHandler'
 import picgo from '@core/picgo'
 import { handleStreamlinePluginName } from '~/universal/utils/common'
+import { IGuiMenuItem } from 'picgo/dist/src/types'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -62,12 +63,12 @@ const handleGetPluginList = () => {
     const pluginList = picgo.pluginLoader.getFullList()
     const list = []
     for (let i in pluginList) {
-      const plugin = picgo.pluginLoader.getPlugin(pluginList[i])
+      const plugin = picgo.pluginLoader.getPlugin(pluginList[i])!
       const pluginPath = path.join(STORE_PATH, `/node_modules/${pluginList[i]}`)
       const pluginPKG = requireFunc(path.join(pluginPath, 'package.json'))
       const uploaderName = plugin.uploader || ''
       const transformerName = plugin.transformer || ''
-      let menu = []
+      let menu: IGuiMenuItem[] = []
       if (plugin.guiMenu) {
         menu = plugin.guiMenu(picgo)
       }
@@ -200,7 +201,7 @@ const handlePluginActions = () => {
   ipcMain.on('pluginActions', (event: IpcMainEvent, name: string, label: string) => {
     const plugin = picgo.pluginLoader.getPlugin(name)
     const guiApi = new GuiApi()
-    if (plugin.guiMenu && plugin.guiMenu(picgo).length > 0) {
+    if (plugin?.guiMenu?.(picgo)?.length) {
       const menu: GuiMenuItem[] = plugin.guiMenu(picgo)
       menu.forEach(item => {
         if (item.label === label) {

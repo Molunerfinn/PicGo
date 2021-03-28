@@ -1,5 +1,4 @@
 import {
-  app,
   Notification,
   BrowserWindow,
   ipcMain,
@@ -11,9 +10,11 @@ import db from '#/datastore'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import util from 'util'
+import { IPicGo } from 'picgo/dist/src/types'
+import { showNotification } from '~/main/utils/common'
 
 const waitForShow = (webcontent: WebContents) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     webcontent.on('did-finish-load', () => {
       resolve()
     })
@@ -37,6 +38,7 @@ const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> 
 
 class Uploader {
   private webContents: WebContents | null = null
+  private uploading: boolean = false
   constructor () {
     this.init()
   }
@@ -60,7 +62,7 @@ class Uploader {
       }
     })
     picgo.helper.beforeUploadPlugins.register('renameFn', {
-      handle: async ctx => {
+      handle: async (ctx: IPicGo) => {
         const rename = db.get('settings.rename')
         const autoRename = db.get('settings.autoRename')
         if (autoRename || rename) {
@@ -91,28 +93,44 @@ class Uploader {
   }
 
   upload (img?: IUploadOption): Promise<ImgInfo[]|false> {
-    picgo.upload(img)
-
+    if (this.uploading) {
+      showNotification({
+        title: '上传失败',
+        body: '前序上传还在继续，请稍后再试'
+      })
+      return Promise.resolve(false)
+    }
     return new Promise((resolve) => {
-      picgo.once('finished', ctx => {
-        if (ctx.output.every((item: ImgInfo) => item.imgUrl)) {
-          resolve(ctx.output)
-        } else {
+      try {
+        this.uploading = true
+        picgo.upload(img)
+        picgo.once('finished', ctx => {
+          this.uploading = false
+          if (ctx.output.every((item: ImgInfo) => item.imgUrl)) {
+            resolve(ctx.output)
+          } else {
+            resolve(false)
+          }
+          picgo.removeAllListeners('failed')
+        })
+        picgo.once('failed', (e: Error) => {
+          this.uploading = false
+          setTimeout(() => {
+            showNotification({
+              title: '上传失败',
+              body: util.format(e.stack),
+              clickToCopy: true
+            })
+          }, 500)
+          picgo.removeAllListeners('finished')
           resolve(false)
-        }
+        })
+      } catch (e) {
+        this.uploading = false
         picgo.removeAllListeners('failed')
-      })
-      picgo.once('failed', (e: Error) => {
-        setTimeout(() => {
-          const notification = new Notification({
-            title: '上传失败',
-            body: util.format(e.stack)
-          })
-          notification.show()
-        }, 500)
         picgo.removeAllListeners('finished')
-        resolve(false)
-      })
+        resolve([])
+      }
     })
   }
 }

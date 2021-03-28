@@ -17,7 +17,7 @@ function dbChecker () {
     if (!fs.existsSync(configFilePath)) {
       return
     }
-    let configFile: string = ''
+    let configFile: string = '{}'
     let optionsTpl = {
       title: '注意',
       body: ''

@@ -14,9 +14,8 @@ if (process.type !== 'renderer') {
   if (!fs.pathExistsSync(STORE_PATH)) {
     fs.mkdirpSync(STORE_PATH)
   }
+  dbChecker()
 }
-
-dbChecker()
 
 class DB {
   private db: Datastore.LowdbSync<Datastore.AdapterSync>
