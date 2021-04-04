@@ -1,3 +1,23 @@
+# :tada: 2.3.0-beta.5 (2021-04-04)
+
+
+### :sparkles: Features
+
+* add local plugin support && npm registry/proxy support ([f0e1fa1](https://github.com/Molunerfinn/PicGo/commit/f0e1fa1))
+* 为Linux系统适配桌面图标栏（Tray） ([#603](https://github.com/Molunerfinn/PicGo/issues/603)) ([0fe3ade](https://github.com/Molunerfinn/PicGo/commit/0fe3ade))
+
+
+### :bug: Bug Fixes
+
+* default github placeholder ([51d80a6](https://github.com/Molunerfinn/PicGo/commit/51d80a6))
+
+
+### :package: Chore
+
+* change travis-ci -> GitHub Actions ([064f37d](https://github.com/Molunerfinn/PicGo/commit/064f37d))
+
+
+
 # :tada: 2.3.0-beta.4 (2020-12-19)
 
 
