@@ -32,7 +32,7 @@
             <el-button type="primary" round size="mini" @click="customLinkVisible = true">点击设置</el-button>
           </el-form-item>
           <el-form-item
-            label="设置代理"
+            label="设置代理和镜像地址"
           >
             <el-button type="primary" round size="mini" @click="proxyVisible = true">点击设置</el-button>
           </el-form-item>
@@ -183,24 +183,43 @@
       </span>
     </el-dialog>
     <el-dialog
-      title="设置代理"
+      title="设置代理和镜像地址"
       :visible.sync="proxyVisible"
       :modal-append-to-body="false"
+      width="70%"
     >
       <el-form
         label-position="right"
         :model="customLink"
         ref="customLink"
         :rules="rules"
-        label-width="80px"
+        label-width="120px"
       >
         <el-form-item
-          label="代理地址"
+          label="上传代理"
         >
           <el-input
             v-model="proxy"
             :autofocus="true"
             placeholder="例如：http://127.0.0.1:1080"
+          ></el-input>
+        </el-form-item>
+        <el-form-item
+          label="插件安装代理"
+        >
+          <el-input
+            v-model="npmProxy"
+            :autofocus="true"
+            placeholder="例如：http://127.0.0.1:1080"
+          ></el-input>
+        </el-form-item>
+        <el-form-item
+          label="插件镜像地址"
+        >
+          <el-input
+            v-model="npmRegistry"
+            :autofocus="true"
+            placeholder="例如：https://registry.npm.taobao.org/"
           ></el-input>
         </el-form-item>
       </el-form>
@@ -375,6 +394,8 @@ export default class extends Vue {
     upload: db.get('settings.shortKey.upload')
   }
   proxy = db.get('picBed.proxy') || ''
+  npmRegistry = db.get('settings.registry') || ''
+  npmProxy = db.get('settings.proxy') || ''
   rules = {
     value: [
       { validator: customLinkRule, trigger: 'blur' }
@@ -452,7 +473,9 @@ export default class extends Vue {
   confirmProxy () {
     this.proxyVisible = false
     this.letPicGoSaveData({
-      'picBed.proxy': this.proxy
+      'picBed.proxy': this.proxy,
+      'settings.proxy': this.npmProxy,
+      'settings.registry': this.npmRegistry
     })
     const successNotification = new Notification('设置代理', {
       body: '设置成功'

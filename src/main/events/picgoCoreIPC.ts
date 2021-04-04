@@ -9,10 +9,13 @@ import {
 } from 'electron'
 import PicGoCore from '~/universal/types/picgo'
 import { IPicGoHelperType } from '#/types/enum'
-import shortKeyHandler from '../apis/app/shortKey/shortKeyHandler'
+import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import picgo from '@core/picgo'
 import { handleStreamlinePluginName } from '~/universal/utils/common'
 import { IGuiMenuItem } from 'picgo/dist/src/types'
+import windowManager from 'apis/app/window/windowManager'
+import { IWindowList } from 'apis/app/window/constants'
+import { showNotification } from '~/main/utils/common'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -58,111 +61,100 @@ const handleConfigWithFunction = (config: any[]) => {
   return config
 }
 
+const getPluginList = (): IPicGoPlugin[] => {
+  const pluginList = picgo.pluginLoader.getFullList()
+  const list = []
+  for (let i in pluginList) {
+    const plugin = picgo.pluginLoader.getPlugin(pluginList[i])!
+    const pluginPath = path.join(STORE_PATH, `/node_modules/${pluginList[i]}`)
+    const pluginPKG = requireFunc(path.join(pluginPath, 'package.json'))
+    const uploaderName = plugin.uploader || ''
+    const transformerName = plugin.transformer || ''
+    let menu: IGuiMenuItem[] = []
+    if (plugin.guiMenu) {
+      menu = plugin.guiMenu(picgo)
+    }
+    let gui = false
+    if (pluginPKG.keywords && pluginPKG.keywords.length > 0) {
+      if (pluginPKG.keywords.includes('picgo-gui-plugin')) {
+        gui = true
+      }
+    }
+    const obj: IPicGoPlugin = {
+      name: handleStreamlinePluginName(pluginList[i]),
+      fullName: pluginList[i],
+      author: pluginPKG.author.name || pluginPKG.author,
+      description: pluginPKG.description,
+      logo: 'file://' + path.join(pluginPath, 'logo.png').split(path.sep).join('/'),
+      version: pluginPKG.version,
+      gui,
+      config: {
+        plugin: {
+          fullName: pluginList[i],
+          name: handleStreamlinePluginName(pluginList[i]),
+          config: plugin.config ? handleConfigWithFunction(plugin.config(picgo)) : []
+        },
+        uploader: {
+          name: uploaderName,
+          config: handleConfigWithFunction(getConfig(uploaderName, IPicGoHelperType.uploader, picgo))
+        },
+        transformer: {
+          name: transformerName,
+          config: handleConfigWithFunction(getConfig(uploaderName, IPicGoHelperType.transformer, picgo))
+        }
+      },
+      enabled: picgo.getConfig(`picgoPlugins.${pluginList[i]}`),
+      homepage: pluginPKG.homepage ? pluginPKG.homepage : '',
+      guiMenu: menu,
+      ing: false
+    }
+    list.push(obj)
+  }
+  return list
+}
+
 const handleGetPluginList = () => {
   ipcMain.on('getPluginList', (event: IpcMainEvent) => {
-    const pluginList = picgo.pluginLoader.getFullList()
-    const list = []
-    for (let i in pluginList) {
-      const plugin = picgo.pluginLoader.getPlugin(pluginList[i])!
-      const pluginPath = path.join(STORE_PATH, `/node_modules/${pluginList[i]}`)
-      const pluginPKG = requireFunc(path.join(pluginPath, 'package.json'))
-      const uploaderName = plugin.uploader || ''
-      const transformerName = plugin.transformer || ''
-      let menu: IGuiMenuItem[] = []
-      if (plugin.guiMenu) {
-        menu = plugin.guiMenu(picgo)
-      }
-      let gui = false
-      if (pluginPKG.keywords && pluginPKG.keywords.length > 0) {
-        if (pluginPKG.keywords.includes('picgo-gui-plugin')) {
-          gui = true
-        }
-      }
-      const obj: IPicGoPlugin = {
-        name: handleStreamlinePluginName(pluginList[i]),
-        fullName: pluginList[i],
-        author: pluginPKG.author.name || pluginPKG.author,
-        description: pluginPKG.description,
-        logo: 'file://' + path.join(pluginPath, 'logo.png').split(path.sep).join('/'),
-        version: pluginPKG.version,
-        gui,
-        config: {
-          plugin: {
-            fullName: pluginList[i],
-            name: handleStreamlinePluginName(pluginList[i]),
-            config: plugin.config ? handleConfigWithFunction(plugin.config(picgo)) : []
-          },
-          uploader: {
-            name: uploaderName,
-            config: handleConfigWithFunction(getConfig(uploaderName, IPicGoHelperType.uploader, picgo))
-          },
-          transformer: {
-            name: transformerName,
-            config: handleConfigWithFunction(getConfig(uploaderName, IPicGoHelperType.transformer, picgo))
-          }
-        },
-        enabled: picgo.getConfig(`picgoPlugins.${pluginList[i]}`),
-        homepage: pluginPKG.homepage ? pluginPKG.homepage : '',
-        guiMenu: menu,
-        ing: false
-      }
-      list.push(obj)
-    }
+    const list = getPluginList()
     event.sender.send('pluginList', list)
-    picgo.cmd.program.removeAllListeners()
   })
 }
 
 const handlePluginInstall = () => {
   ipcMain.on('installPlugin', async (event: IpcMainEvent, msg: string) => {
     const dispose = handleNPMError()
-    picgo.once('installSuccess', (notice: PicGoNotice) => {
-      event.sender.send('installSuccess', notice.body[0])
-      shortKeyHandler.registerPluginShortKey(notice.body[0])
-      picgo.removeAllListeners('installFailed')
-      dispose()
-    })
-    picgo.once('installFailed', () => {
-      picgo.removeAllListeners('installSuccess')
-      dispose()
-    })
-    await picgo.pluginHandler.install([msg])
-    picgo.cmd.program.removeAllListeners()
+    const res = await picgo.pluginHandler.install([msg])
+    if (res.success) {
+      event.sender.send('installSuccess', res.body[0])
+      shortKeyHandler.registerPluginShortKey(res.body[0])
+    }
+    event.sender.send('hideLoading')
+    dispose()
   })
 }
 
 const handlePluginUninstall = () => {
   ipcMain.on('uninstallPlugin', async (event: IpcMainEvent, msg: string) => {
     const dispose = handleNPMError()
-    picgo.once('uninstallSuccess', (notice: PicGoNotice) => {
-      event.sender.send('uninstallSuccess', notice.body[0])
-      shortKeyHandler.unregisterPluginShortKey(notice.body[0])
-      picgo.removeAllListeners('uninstallFailed')
-      dispose()
-    })
-    picgo.once('uninstallFailed', () => {
-      picgo.removeAllListeners('uninstallSuccess')
-      dispose()
-    })
-    await picgo.pluginHandler.uninstall([msg])
-    picgo.cmd.program.removeAllListeners()
+    const res = await picgo.pluginHandler.uninstall([msg])
+    if (res.success) {
+      event.sender.send('uninstallSuccess', res.body[0])
+      shortKeyHandler.unregisterPluginShortKey(res.body[0])
+    }
+    event.sender.send('hideLoading')
+    dispose()
   })
 }
 
 const handlePluginUpdate = () => {
   ipcMain.on('updatePlugin', async (event: IpcMainEvent, msg: string) => {
     const dispose = handleNPMError()
-    picgo.once('updateSuccess', (notice: { body: string[], title: string }) => {
-      event.sender.send('updateSuccess', notice.body[0])
-      picgo.removeAllListeners('updateFailed')
-      dispose()
-    })
-    picgo.once('updateFailed', () => {
-      picgo.removeAllListeners('updateSuccess')
-      dispose()
-    })
-    await picgo.pluginHandler.update([msg])
-    picgo.cmd.program.removeAllListeners()
+    const res = await picgo.pluginHandler.update([msg])
+    if (res.success) {
+      event.sender.send('updateSuccess', res.body[0])
+    }
+    event.sender.send('hideLoading')
+    dispose()
   })
 }
 
@@ -193,7 +185,6 @@ const handleGetPicBedConfig = () => {
     } else {
       event.sender.send('getPicBedConfig', [], name)
     }
-    picgo.cmd.program.removeAllListeners()
   })
 }
 
@@ -227,6 +218,33 @@ const handlePicGoSaveData = () => {
   })
 }
 
+const handleImportLocalPlugin = () => {
+  ipcMain.on('importLocalPlugin', (event: IpcMainEvent) => {
+    const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)!
+    dialog.showOpenDialog(settingWindow, {
+      properties: ['openDirectory']
+    }, async (filePath: string[]) => {
+      if (filePath.length > 0) {
+        const res = await picgo.pluginHandler.install(filePath)
+        if (res.success) {
+          const list = getPluginList()
+          event.sender.send('pluginList', list)
+          showNotification({
+            title: '导入插件成功',
+            body: ''
+          })
+        } else {
+          showNotification({
+            title: '导入插件失败',
+            body: res.body as string
+          })
+        }
+      }
+      event.sender.send('hideLoading')
+    })
+  })
+}
+
 export default {
   listen () {
     handleGetPluginList()
@@ -237,5 +255,6 @@ export default {
     handlePluginActions()
     handleRemoveFiles()
     handlePicGoSaveData()
+    handleImportLocalPlugin()
   }
 }

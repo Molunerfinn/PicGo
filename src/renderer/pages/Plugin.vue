@@ -1,7 +1,13 @@
 <template>
   <div id="plugin-view">
     <div class="view-title">
-      插件设置 - <i class="el-icon-goods" @click="goAwesomeList"></i>
+      插件设置 -
+      <el-tooltip :content="pluginListToolTip" placement="right">
+        <i class="el-icon-goods" @click="goAwesomeList"></i>
+      </el-tooltip>
+      <el-tooltip :content="importLocalPluginToolTip" placement="left">
+        <i class="el-icon-download" @click="handleImportLocalPlugin"/>
+      </el-tooltip>
     </div>
     <el-row class="handle-bar" :class="{ 'cut-width': pluginList.length > 6 }">
       <el-input
@@ -126,6 +132,8 @@ export default class extends Vue {
   pluginNameList: string[] = []
   loading = true
   needReload = false
+  pluginListToolTip = '插件列表'
+  importLocalPluginToolTip = '导入本地插件'
   id = ''
   os = ''
   defaultLogo: string = 'this.src="https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@dev/public/roundLogo.png"'
@@ -158,6 +166,9 @@ export default class extends Vue {
   }
   created () {
     this.os = process.platform
+    ipcRenderer.on('hideLoading', () => {
+      this.loading = false
+    })
     ipcRenderer.on('pluginList', (evt: IpcRendererEvent, list: IPicGoPlugin[]) => {
       this.pluginList = list
       this.pluginNameList = list.map(item => item.fullName)
@@ -319,6 +330,7 @@ export default class extends Vue {
         item.ing = true
       }
     })
+    this.loading = true
     ipcRenderer.send('uninstallPlugin', val)
   }
   updatePlugin (val: string) {
@@ -327,6 +339,7 @@ export default class extends Vue {
         item.ing = true
       }
     })
+    this.loading = true
     ipcRenderer.send('updatePlugin', val)
   }
   reloadApp () {
@@ -460,11 +473,16 @@ export default class extends Vue {
   letPicGoSaveData (data: IObj) {
     ipcRenderer.send('picgoSaveData', data)
   }
+  handleImportLocalPlugin () {
+    ipcRenderer.send('importLocalPlugin')
+    this.loading = true
+  }
   beforeDestroy () {
     ipcRenderer.removeAllListeners('pluginList')
     ipcRenderer.removeAllListeners('installSuccess')
     ipcRenderer.removeAllListeners('uninstallSuccess')
     ipcRenderer.removeAllListeners('updateSuccess')
+    ipcRenderer.removeAllListeners('hideLoading')
   }
 }
 </script>
@@ -494,7 +512,18 @@ $darwinBg = #172426
     font-size 20px
     text-align center
     margin 10px auto
+    position relative
     i.el-icon-goods
+      font-size 20px
+      vertical-align middle
+      cursor pointer
+      transition color .2s ease-in-out
+      &:hover
+        color #49B1F5
+    i.el-icon-download
+      position absolute
+      right 0
+      top 8px
       font-size 20px
       vertical-align middle
       cursor pointer
