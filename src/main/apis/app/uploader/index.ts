@@ -12,6 +12,7 @@ import { IWindowList } from 'apis/app/window/constants'
 import util from 'util'
 import { IPicGo } from 'picgo/dist/src/types'
 import { showNotification } from '~/main/utils/common'
+import { BAIDU_TONGJI_EVENT } from '~/universal/events/constants'
 
 const waitForShow = (webcontent: WebContents) => {
   return new Promise<void>((resolve, reject) => {
@@ -34,6 +35,20 @@ const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> 
       windowManager.deleteById(windowId)
     })
   })
+}
+
+const handleBaiduTongJi = (webContents: WebContents, options: IAnalyticsData) => {
+  const data: IBaiduTongJiOptions = {
+    category: 'upload',
+    action: options.fromClipboard ? 'clipboard' : 'files', // 上传剪贴板图片还是选择的文件
+    opt_label: JSON.stringify({
+      type: options.type, // 上传的图床种类
+      count: options.count, // 上传的图片数量
+      timestamp: dayjs().format('YYYYMMDDHHmmss'), // 上传完成的时间戳
+      duration: options.duration // 耗时
+    })
+  }
+  webContents.send(BAIDU_TONGJI_EVENT, data)
 }
 
 class Uploader {
@@ -102,11 +117,20 @@ class Uploader {
     }
     return new Promise((resolve) => {
       try {
+        const startTime = Date.now()
         this.uploading = true
         picgo.upload(img)
         picgo.once('finished', ctx => {
           this.uploading = false
           if (ctx.output.every((item: ImgInfo) => item.imgUrl)) {
+            if (this.webContents) {
+              handleBaiduTongJi(this.webContents, {
+                fromClipboard: !img,
+                type: db.get('picBed.current') || 'smms',
+                count: img ? img.length : 1,
+                duration: Date.now() - startTime
+              } as IAnalyticsData)
+            }
             resolve(ctx.output)
           } else {
             resolve(false)

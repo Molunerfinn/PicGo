@@ -295,3 +295,19 @@ interface IAppNotification {
   body: string
   icon?: string
 }
+
+interface IBaiduTongJiOptions {
+  category: string
+  action: string
+  // eslint-disable-next-line camelcase
+  opt_label?: string
+  // eslint-disable-next-line camelcase
+  opt_value?: number
+}
+
+interface IAnalyticsData {
+  fromClipboard: boolean
+  type: string
+  count: number
+  duration?: number // 耗时
+}

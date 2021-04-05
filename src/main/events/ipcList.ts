@@ -13,13 +13,19 @@ import server from '~/main/server'
 import getPicBeds from '~/main/utils/getPicBeds'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import bus from '@core/bus'
-import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
+import {
+  TOGGLE_SHORTKEY_MODIFIED_MODE,
+  BAIDU_TONGJI_INIT,
+  BAIDU_TONGJI_CODE,
+  BAIDU_TONGJI_INIT_RES
+} from '#/events/constants'
 import {
   uploadClipboardFiles,
   uploadChoosedFiles
 } from '~/main/apis/app/uploader/apis'
 import picgoCoreIPC from './picgoCoreIPC'
 import { handleCopyUrl } from '~/main/utils/common'
+import axios from 'axios'
 
 export default {
   listen () {
@@ -138,6 +144,26 @@ export default {
 
     ipcMain.on('updateServer', () => {
       server.restart()
+    })
+
+    ipcMain.on(BAIDU_TONGJI_INIT, (evt: IpcMainEvent) => {
+      axios.get(`https://hm.baidu.com/hm.js?${BAIDU_TONGJI_CODE}`, {
+        headers: {
+          referer: 'https://molunerfinn.com/'
+        }
+      }).then(res => {
+        if (res.status === 200) {
+          let scriptContent: string = res.data
+          // thanks to https://github.com/joehecn/electron-baidu-tongji/blob/master/index.js
+          const source = '(h.c.b.su=h.c.b.u||document.location.href),h.c.b.u=f.protocol+"//"+document.location.host+'
+          if (scriptContent.includes(source)) {
+            const target = '(h.c.b.su=h.c.b.u||"https://"+c.dm[0]+a[1]),h.c.b.u="https://"+c.dm[0]+'
+            const target2 = '"https://"+c.dm[0]+window.location.pathname+window.location.hash'
+            scriptContent = scriptContent.replace(source, target).replace(/window.location.href/g, target2)
+          }
+          evt.sender.send(BAIDU_TONGJI_INIT_RES, scriptContent)
+        }
+      })
     })
   },
   dispose () {}
