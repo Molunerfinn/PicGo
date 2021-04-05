@@ -41,12 +41,8 @@ const handleBaiduTongJi = (webContents: WebContents, options: IAnalyticsData) =>
   const data: IBaiduTongJiOptions = {
     category: 'upload',
     action: options.fromClipboard ? 'clipboard' : 'files', // 上传剪贴板图片还是选择的文件
-    opt_label: JSON.stringify({
-      type: options.type, // 上传的图床种类
-      count: options.count, // 上传的图片数量
-      timestamp: dayjs().format('YYYYMMDDHHmmss'), // 上传完成的时间戳
-      duration: options.duration // 耗时
-    })
+    opt_label: options.type,
+    opt_value: options.duration
   }
   webContents.send(BAIDU_TONGJI_EVENT, data)
 }
