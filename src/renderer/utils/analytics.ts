@@ -1,26 +1,23 @@
 /* eslint-disable camelcase */
-import { ipcRenderer } from 'electron'
 import {
-  BAIDU_TONGJI_INIT,
-  BAIDU_TONGJI_INIT_RES,
-  BAIDU_TONGJI_EVENT
+  TALKING_DATA_APPID, TALKING_DATA_EVENT
 } from '~/universal/events/constants'
-import { handleBaiduTongJiEvent } from './common'
+import pkg from 'root/package.json'
+import { ipcRenderer } from 'electron'
+import { handleTalkingDataEvent } from './common'
+const { version } = pkg
 
-ipcRenderer.on(BAIDU_TONGJI_INIT_RES, (_, scriptContent) => {
-  window._hmt = window._hmt || []
-  const hm = document.createElement('script')
-  hm.text = scriptContent
-  const head = document.getElementsByTagName('head')[0]
-  head.appendChild(hm)
-})
-
-ipcRenderer.on(BAIDU_TONGJI_EVENT, (_, data: IBaiduTongJiOptions) => {
-  handleBaiduTongJiEvent(data)
-})
-
-export const initBaiduTongJi = () => {
+export const initTalkingData = () => {
   setTimeout(() => {
-    ipcRenderer.send(BAIDU_TONGJI_INIT)
+    const talkingDataScript = document.createElement('script')
+
+    talkingDataScript.src = `http://sdk.talkingdata.com/app/h5/v1?appid=${TALKING_DATA_APPID}&vn=${version}&vc=${version}`
+
+    const head = document.getElementsByTagName('head')[0]
+    head.appendChild(talkingDataScript)
   }, 0)
 }
+
+ipcRenderer.on(TALKING_DATA_EVENT, (_, data: ITalkingDataOptions) => {
+  handleTalkingDataEvent(data)
+})

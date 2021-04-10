@@ -12,6 +12,8 @@ declare global {
   }
 
   interface Window {
-    _hmt: any[]
+    TDAPP: {
+      onEvent: (EventId: string, Label?: string, MapKv?: IStringKeyMap) => void
+    }
   }
 }

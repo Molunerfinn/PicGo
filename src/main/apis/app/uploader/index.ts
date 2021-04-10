@@ -11,8 +11,8 @@ import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import util from 'util'
 import { IPicGo } from 'picgo/dist/src/types'
-import { showNotification } from '~/main/utils/common'
-import { BAIDU_TONGJI_EVENT } from '~/universal/events/constants'
+import { showNotification, calcDurationRange } from '~/main/utils/common'
+import { TALKING_DATA_EVENT } from '~/universal/events/constants'
 
 const waitForShow = (webcontent: WebContents) => {
   return new Promise<void>((resolve, reject) => {
@@ -37,14 +37,18 @@ const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> 
   })
 }
 
-const handleBaiduTongJi = (webContents: WebContents, options: IAnalyticsData) => {
-  const data: IBaiduTongJiOptions = {
-    category: 'upload',
-    action: options.fromClipboard ? 'clipboard' : 'files', // 上传剪贴板图片还是选择的文件
-    opt_label: options.type,
-    opt_value: options.duration
+const handleTalkingData = (webContents: WebContents, options: IAnalyticsData) => {
+  const data: ITalkingDataOptions = {
+    EventId: 'upload',
+    Label: options.type,
+    MapKv: {
+      by: options.fromClipboard ? 'clipboard' : 'files', // 上传剪贴板图片还是选择的文文件
+      count: options.count, // 上传的数量
+      duration: calcDurationRange(options.duration || 0), // 上传耗时
+      type: options.type
+    }
   }
-  webContents.send(BAIDU_TONGJI_EVENT, data)
+  webContents.send(TALKING_DATA_EVENT, data)
 }
 
 class Uploader {
@@ -120,7 +124,7 @@ class Uploader {
           this.uploading = false
           if (ctx.output.every((item: ImgInfo) => item.imgUrl)) {
             if (this.webContents) {
-              handleBaiduTongJi(this.webContents, {
+              handleTalkingData(this.webContents, {
                 fromClipboard: !img,
                 type: db.get('picBed.current') || 'smms',
                 count: img ? img.length : 1,

@@ -186,6 +186,9 @@ import {
 import db from '#/datastore'
 import mixin from '@/utils/mixin'
 import InputBoxDialog from '@/components/InputBoxDialog.vue'
+import {
+  SHOW_PRIVACY_MESSAGE
+} from '~/universal/events/constants'
 const { Menu, dialog, BrowserWindow } = remote
 const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
   if (!/\$url/.test(value)) {
@@ -300,6 +303,12 @@ export default class extends Vue {
         label: '生成图床配置二维码',
         click () {
           _this.qrcodeVisible = true
+        }
+      },
+      {
+        label: '隐私协议',
+        click () {
+          ipcRenderer.send(SHOW_PRIVACY_MESSAGE)
         }
       }
     ]

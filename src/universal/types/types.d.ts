@@ -296,13 +296,10 @@ interface IAppNotification {
   icon?: string
 }
 
-interface IBaiduTongJiOptions {
-  category: string
-  action: string
-  // eslint-disable-next-line camelcase
-  opt_label?: string
-  // eslint-disable-next-line camelcase
-  opt_value?: number
+interface ITalkingDataOptions {
+  EventId: string
+  Label?: string
+  MapKv?: IStringKeyMap
 }
 
 interface IAnalyticsData {
@@ -310,4 +307,8 @@ interface IAnalyticsData {
   type: string
   count: number
   duration?: number // 耗时
+}
+
+interface IStringKeyMap {
+  [propName: string]: any
 }

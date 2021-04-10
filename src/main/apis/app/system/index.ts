@@ -16,6 +16,7 @@ import picgo from '@core/picgo'
 import pasteTemplate from '#/utils/pasteTemplate'
 import pkg from 'root/package.json'
 import { handleCopyUrl } from '~/main/utils/common'
+import { privacyManager } from '~/main/utils/privacyManager'
 let contextMenu: Menu | null
 let menu: Menu | null
 let tray: Tray | null
@@ -74,6 +75,12 @@ export function createContextMenu () {
         click () {
           const value = db.get('settings.showUpdateTip')
           db.set('settings.showUpdateTip', !value)
+        }
+      },
+      {
+        label: '隐私协议',
+        click () {
+          privacyManager.show(false)
         }
       },
       {

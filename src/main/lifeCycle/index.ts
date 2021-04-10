@@ -2,7 +2,6 @@ import {
   app,
   globalShortcut,
   protocol,
-  dialog,
   Notification
 } from 'electron'
 import {
@@ -31,6 +30,7 @@ import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import { getUploadFiles } from '~/main/utils/handleArgv'
 import db from '#/datastore'
 import bus from '@core/bus'
+import { privacyManager } from '~/main/utils/privacyManager'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 class LifeCycle {
@@ -53,6 +53,10 @@ class LifeCycle {
         } catch (e) {
           console.error('Vue Devtools failed to install:', e.toString())
         }
+      }
+      const res = await privacyManager.init()
+      if (!res) {
+        return app.quit()
       }
       windowManager.create(IWindowList.TRAY_WINDOW)
       windowManager.create(IWindowList.SETTING_WINDOW)

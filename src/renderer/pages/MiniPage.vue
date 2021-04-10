@@ -23,7 +23,7 @@ import {
   IpcRendererEvent,
   remote
 } from 'electron'
-import path from 'path'
+import { SHOW_PRIVACY_MESSAGE } from '~/universal/events/constants'
 @Component({
   name: 'mini-page',
   mixins: [mixin]
@@ -174,6 +174,12 @@ export default class extends Vue {
         label: '隐藏窗口',
         click () {
           remote.BrowserWindow.getFocusedWindow()!.hide()
+        }
+      },
+      {
+        label: '隐私协议',
+        click () {
+          ipcRenderer.send(SHOW_PRIVACY_MESSAGE)
         }
       },
       {

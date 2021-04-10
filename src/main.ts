@@ -9,7 +9,7 @@ import VueLazyLoad from 'vue-lazyload'
 import axios from 'axios'
 import mainMixin from './renderer/utils/mainMixin'
 import bus from '@/utils/bus'
-import { initBaiduTongJi } from './renderer/utils/analytics'
+import { initTalkingData } from './renderer/utils/analytics'
 
 webFrame.setVisualZoomLevelLimits(1, 1)
 webFrame.setLayoutZoomLevelLimits(0, 0)
@@ -38,4 +38,4 @@ new Vue({
   render: h => h(App)
 }).$mount('#app')
 
-initBaiduTongJi()
+initTalkingData()
