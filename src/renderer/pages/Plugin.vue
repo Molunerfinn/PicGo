@@ -174,12 +174,15 @@ export default class extends Vue {
       this.pluginNameList = list.map(item => item.fullName)
       this.loading = false
     })
-    ipcRenderer.on('installSuccess', (evt: IpcRendererEvent, plugin: string) => {
+    ipcRenderer.on('installPlugin', (evt: IpcRendererEvent, { success, body }: {
+      success: boolean,
+      body: string
+    }) => {
       this.loading = false
       this.pluginList.forEach(item => {
-        if (item.fullName === plugin) {
+        if (item.fullName === body) {
           item.ing = false
-          item.hasInstall = true
+          item.hasInstall = success
         }
       })
     })
@@ -315,13 +318,13 @@ export default class extends Vue {
         type: 'warning'
       }).then(() => {
         item.ing = true
-        ipcRenderer.send('installPlugin', item.name)
+        ipcRenderer.send('installPlugin', item.fullName)
       }).catch(() => {
         console.log('Install canceled')
       })
     } else {
       item.ing = true
-      ipcRenderer.send('installPlugin', item.name)
+      ipcRenderer.send('installPlugin', item.fullName)
     }
   }
   uninstallPlugin (val: string) {
@@ -479,7 +482,7 @@ export default class extends Vue {
   }
   beforeDestroy () {
     ipcRenderer.removeAllListeners('pluginList')
-    ipcRenderer.removeAllListeners('installSuccess')
+    ipcRenderer.removeAllListeners('installPlugin')
     ipcRenderer.removeAllListeners('uninstallSuccess')
     ipcRenderer.removeAllListeners('updateSuccess')
     ipcRenderer.removeAllListeners('hideLoading')

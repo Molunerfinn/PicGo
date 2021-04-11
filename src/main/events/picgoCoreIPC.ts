@@ -121,12 +121,21 @@ const handleGetPluginList = () => {
 }
 
 const handlePluginInstall = () => {
-  ipcMain.on('installPlugin', async (event: IpcMainEvent, msg: string) => {
+  ipcMain.on('installPlugin', async (event: IpcMainEvent, fullName: string) => {
     const dispose = handleNPMError()
-    const res = await picgo.pluginHandler.install([msg])
+    const res = await picgo.pluginHandler.install([fullName])
+    event.sender.send('installPlugin', {
+      success: res.success,
+      body: fullName,
+      errMsg: res.success ? '' : res.body
+    })
     if (res.success) {
-      event.sender.send('installSuccess', res.body[0])
       shortKeyHandler.registerPluginShortKey(res.body[0])
+    } else {
+      showNotification({
+        title: '插件安装失败',
+        body: res.body as string
+      })
     }
     event.sender.send('hideLoading')
     dispose()
@@ -140,6 +149,11 @@ const handlePluginUninstall = () => {
     if (res.success) {
       event.sender.send('uninstallSuccess', res.body[0])
       shortKeyHandler.unregisterPluginShortKey(res.body[0])
+    } else {
+      showNotification({
+        title: '插件卸载失败',
+        body: res.body as string
+      })
     }
     event.sender.send('hideLoading')
     dispose()
@@ -152,6 +166,11 @@ const handlePluginUpdate = () => {
     const res = await picgo.pluginHandler.update([msg])
     if (res.success) {
       event.sender.send('updateSuccess', res.body[0])
+    } else {
+      showNotification({
+        title: '插件更新失败',
+        body: res.body as string
+      })
     }
     event.sender.send('hideLoading')
     dispose()
