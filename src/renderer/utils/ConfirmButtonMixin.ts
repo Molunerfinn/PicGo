@@ -2,7 +2,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import { ipcRenderer } from 'electron'
 @Component
 export default class extends Vue {
-  defaultPicBed = this.$db.get('picBed.current')
+  defaultPicBed = this.$db.get('picBed.uploader') || this.$db.get('picBed.current') || 'smms'
   setDefaultPicBed (type: string) {
     this.letPicGoSaveData({
       'picBed.current': type,
