@@ -1,35 +1,55 @@
 import path from 'path'
 import fs from 'fs-extra'
-type ClipboardFileObject = {
+import Logger from 'picgo/dist/src/lib/Logger'
+interface IResultFileObject {
   path: string
 }
-type Result = ClipboardFileObject[]
-const getUploadFiles = (argv = process.argv, cwd = process.cwd()) => {
-  let files = argv.slice(1)
-  if (files.length > 0 && files[0] === 'upload') {
-    if (files.length === 1) {
+type Result = IResultFileObject[]
+
+interface IHandleArgvResult {
+  success: boolean
+  fileList?: string[]
+}
+
+const handleArgv = (argv: string[]): IHandleArgvResult => {
+  const uploadIndex = argv.indexOf('upload')
+  if (uploadIndex !== -1) {
+    const fileList = argv.slice(1 + uploadIndex)
+    return {
+      success: true,
+      fileList
+    }
+  }
+  return {
+    success: false
+  }
+}
+
+const getUploadFiles = (argv = process.argv, cwd = process.cwd(), logger: Logger) => {
+  const { success, fileList } = handleArgv(argv)
+  if (!success) {
+    return []
+  } else {
+    if (fileList?.length === 0) {
       return null // for uploading images in clipboard
-    } else if (files.length > 1) {
-      files = argv.slice(1)
-      let result: Result = []
-      if (files.length > 0) {
-        result = files.map(item => {
-          if (path.isAbsolute(item)) {
+    } else if ((fileList?.length || 0) > 0) {
+      const result = fileList!.map(item => {
+        if (path.isAbsolute(item)) {
+          return {
+            path: item
+          }
+        } else {
+          let tempPath = path.join(cwd, item)
+          if (fs.existsSync(tempPath)) {
             return {
-              path: item
+              path: tempPath
             }
           } else {
-            let tempPath = path.join(cwd, item)
-            if (fs.existsSync(tempPath)) {
-              return {
-                path: tempPath
-              }
-            } else {
-              return null
-            }
+            logger.warn(`cli -> can't get file: ${tempPath}, invalid path`)
+            return null
           }
-        }).filter(item => item !== null) as Result
-      }
+        }
+      }).filter(item => item !== null) as Result
       return result
     }
   }

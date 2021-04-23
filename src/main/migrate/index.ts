@@ -20,6 +20,7 @@ const updateShortKeyFromVersion212 = (db: typeof DB, shortKeyConfig: IShortKeyCo
       name: 'upload',
       label: '快捷上传'
     }
+    // @ts-ignore
     delete shortKeyConfig.upload
     db.set('settings.shortKey', shortKeyConfig)
     return true

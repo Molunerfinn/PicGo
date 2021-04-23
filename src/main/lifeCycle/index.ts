@@ -31,8 +31,27 @@ import { getUploadFiles } from '~/main/utils/handleArgv'
 import db from '#/datastore'
 import bus from '@core/bus'
 import { privacyManager } from '~/main/utils/privacyManager'
+import logger from 'apis/core/picgo/logger'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
+
+const handleStartUpFiles = (argv: string[], cwd: string) => {
+  const files = getUploadFiles(argv, cwd, logger)
+  if (files === null || files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
+    if (files === null) {
+      logger.info('cli -> uploading file from clipboard')
+      uploadClipboardFiles()
+    } else {
+      logger.info('cli -> uploading files from cli', ...files.map(item => item.path))
+      const win = windowManager.getAvailableWindow()
+      uploadChoosedFiles(win.webContents, files)
+    }
+    return true
+  } else {
+    return false
+  }
+}
+
 class LifeCycle {
   private beforeReady () {
     protocol.registerSchemesAsPrivileged([{ scheme: 'picgo', privileges: { secure: true, standard: true } }])
@@ -69,15 +88,7 @@ class LifeCycle {
       })
       server.startup()
       if (process.env.NODE_ENV !== 'development') {
-        let files = getUploadFiles()
-        if (files === null || files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
-          if (files === null) {
-            uploadClipboardFiles()
-          } else {
-            const win = windowManager.getAvailableWindow()
-            uploadChoosedFiles(win.webContents, files)
-          }
-        }
+        handleStartUpFiles(process.argv, process.cwd())
       }
 
       if (global.notificationList?.length > 0) {
@@ -91,15 +102,9 @@ class LifeCycle {
   }
   private onRunning () {
     app.on('second-instance', (event, commandLine, workingDirectory) => {
-      let files = getUploadFiles(commandLine, workingDirectory)
-      if (files === null || files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
-        if (files === null) {
-          uploadClipboardFiles()
-        } else {
-          const win = windowManager.getAvailableWindow()
-          uploadChoosedFiles(win.webContents, files)
-        }
-      } else {
+      logger.info('detect second instance')
+      const result = handleStartUpFiles(commandLine, workingDirectory)
+      if (!result) {
         if (windowManager.has(IWindowList.SETTING_WINDOW)) {
           const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)!
           if (settingWindow.isMinimized()) {
