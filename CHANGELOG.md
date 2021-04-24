@@ -1,3 +1,30 @@
+# :tada: 2.3.0-beta.6 (2021-04-24)
+
+
+### :sparkles: Features
+
+* add baidu tongji for analytics ([f536391](https://github.com/Molunerfinn/PicGo/commit/f536391))
+* add logs for picgo-server ([2d9e9c0](https://github.com/Molunerfinn/PicGo/commit/2d9e9c0)), closes [#627](https://github.com/Molunerfinn/PicGo/issues/627)
+* add privacy policy ([992ff35](https://github.com/Molunerfinn/PicGo/commit/992ff35))
+
+
+### :bug: Bug Fixes
+
+* add plugin install failed notice ([b05139f](https://github.com/Molunerfinn/PicGo/commit/b05139f))
+* default picBed using picBed.uploader instead of picBed.current ([0a986c8](https://github.com/Molunerfinn/PicGo/commit/0a986c8))
+* dev error with install vue-devtools ([a657c51](https://github.com/Molunerfinn/PicGo/commit/a657c51)), closes [#653](https://github.com/Molunerfinn/PicGo/issues/653) [#658](https://github.com/Molunerfinn/PicGo/issues/658)
+* disable plugin need reload app ([a1b70b4](https://github.com/Molunerfinn/PicGo/commit/a1b70b4))
+* fix analytics value ([06d40ef](https://github.com/Molunerfinn/PicGo/commit/06d40ef))
+* windows cli uploading bug ([321e339](https://github.com/Molunerfinn/PicGo/commit/321e339)), closes [#657](https://github.com/Molunerfinn/PicGo/issues/657)
+
+
+### :package: Chore
+
+* add main process hot reload ([3fd6e4e](https://github.com/Molunerfinn/PicGo/commit/3fd6e4e))
+* fix eslint error notice in indent ([69e1dc8](https://github.com/Molunerfinn/PicGo/commit/69e1dc8))
+
+
+
 # :tada: 2.3.0-beta.5 (2021-04-04)
 
 
