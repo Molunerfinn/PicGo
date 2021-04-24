@@ -5,9 +5,9 @@ import {
   Notification
 } from 'electron'
 import {
-  createProtocol,
-  installVueDevtools
+  createProtocol
 } from 'vue-cli-plugin-electron-builder/lib'
+import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import beforeOpen from '~/main/utils/beforeOpen'
 import fixPath from 'fix-path'
 import ipcList from '~/main/events/ipcList'
@@ -68,7 +68,7 @@ class LifeCycle {
       if (isDevelopment && !process.env.IS_TEST) {
         // Install Vue Devtools
         try {
-          await installVueDevtools()
+          await installExtension(VUEJS_DEVTOOLS)
         } catch (e) {
           console.error('Vue Devtools failed to install:', e.toString())
         }
