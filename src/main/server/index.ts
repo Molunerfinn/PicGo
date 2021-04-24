@@ -39,6 +39,7 @@ class Server {
   private handleRequest = (request: http.IncomingMessage, response: http.ServerResponse) => {
     if (request.method === 'POST') {
       if (!routers.getHandler(request.url!)) {
+        logger.warn(`[PicGo Server] don't support [${request.url}] url`)
         handleResponse({
           response,
           statusCode: 404,
@@ -57,6 +58,7 @@ class Server {
           try {
             postObj = (body === '') ? {} : JSON.parse(body)
           } catch (err) {
+            logger.error(`[PicGo Server]`, err)
             return handleResponse({
               response,
               body: {
@@ -65,6 +67,7 @@ class Server {
               }
             })
           }
+          logger.info(`[PicGo Server] get the request`)
           const handler = routers.getHandler(request.url!)
           handler!({
             ...postObj,
@@ -73,6 +76,7 @@ class Server {
         })
       }
     } else {
+      logger.warn(`[PicGo Server] don't support [${request.method}] method`)
       response.statusCode = 404
       response.end()
     }

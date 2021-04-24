@@ -18,6 +18,7 @@ router.post('/upload', async ({
   try {
     if (list.length === 0) {
       // upload with clipboard
+      logger.info('[PicGo Server] upload clipboard file')
       const res = await uploadWithClipboardFiles()
       if (res.success) {
         handleResponse({
@@ -29,10 +30,15 @@ router.post('/upload', async ({
         })
       } else {
         handleResponse({
-          response
+          response,
+          body: {
+            success: false,
+            message: 'upload error'
+          }
         })
       }
     } else {
+      logger.info('[PicGo Server] upload files in list')
       //  upload with files
       const pathList = list.map(item => {
         return {
@@ -50,7 +56,11 @@ router.post('/upload', async ({
         })
       } else {
         handleResponse({
-          response
+          response,
+          body: {
+            success: false,
+            message: 'upload error'
+          }
         })
       }
     }

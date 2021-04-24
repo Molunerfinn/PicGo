@@ -1,3 +1,5 @@
+import logger from '@core/picgo/logger'
+
 export const handleResponse = ({
   response,
   statusCode = 200,
@@ -13,6 +15,9 @@ export const handleResponse = ({
   header?: IObj,
   body?: any
 }) => {
+  if (body?.success === false) {
+    logger.warn('[PicGo Server] upload failed, see picgo.log for more detail ↑')
+  }
   response.writeHead(statusCode, header)
   response.write(JSON.stringify(body))
   response.end()

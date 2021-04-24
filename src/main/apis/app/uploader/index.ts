@@ -13,6 +13,7 @@ import util from 'util'
 import { IPicGo } from 'picgo/dist/src/types'
 import { showNotification, calcDurationRange } from '~/main/utils/common'
 import { TALKING_DATA_EVENT } from '~/universal/events/constants'
+import logger from '@core/picgo/logger'
 
 const waitForShow = (webcontent: WebContents) => {
   return new Promise<void>((resolve, reject) => {
@@ -107,7 +108,7 @@ class Uploader {
     return this
   }
 
-  upload (img?: IUploadOption): Promise<ImgInfo[]|false> {
+  async upload (img?: IUploadOption): Promise<ImgInfo[]|false> {
     if (this.uploading) {
       showNotification({
         title: '上传失败',
@@ -115,47 +116,36 @@ class Uploader {
       })
       return Promise.resolve(false)
     }
-    return new Promise((resolve) => {
-      try {
-        const startTime = Date.now()
-        this.uploading = true
-        picgo.upload(img)
-        picgo.once('finished', ctx => {
-          this.uploading = false
-          if (ctx.output.every((item: ImgInfo) => item.imgUrl)) {
-            if (this.webContents) {
-              handleTalkingData(this.webContents, {
-                fromClipboard: !img,
-                type: db.get('picBed.current') || 'smms',
-                count: img ? img.length : 1,
-                duration: Date.now() - startTime
-              } as IAnalyticsData)
-            }
-            resolve(ctx.output)
-          } else {
-            resolve(false)
-          }
-          picgo.removeAllListeners('failed')
-        })
-        picgo.once('failed', (e: Error) => {
-          this.uploading = false
-          setTimeout(() => {
-            showNotification({
-              title: '上传失败',
-              body: util.format(e.stack),
-              clickToCopy: true
-            })
-          }, 500)
-          picgo.removeAllListeners('finished')
-          resolve(false)
-        })
-      } catch (e) {
-        this.uploading = false
-        picgo.removeAllListeners('failed')
-        picgo.removeAllListeners('finished')
-        resolve([])
+    try {
+      const startTime = Date.now()
+      this.uploading = true
+      const output = await picgo.upload(img)
+      this.uploading = false
+      if (Array.isArray(output) && output.every((item: ImgInfo) => item.imgUrl)) {
+        if (this.webContents) {
+          handleTalkingData(this.webContents, {
+            fromClipboard: !img,
+            type: db.get('picBed.current') || 'smms',
+            count: img ? img.length : 1,
+            duration: Date.now() - startTime
+          } as IAnalyticsData)
+        }
+        return output
+      } else {
+        return false
       }
-    })
+    } catch (e) {
+      this.uploading = false
+      logger.error(e)
+      setTimeout(() => {
+        showNotification({
+          title: '上传失败',
+          body: util.format(e.stack),
+          clickToCopy: true
+        })
+      }, 500)
+      return false
+    }
   }
 }
 

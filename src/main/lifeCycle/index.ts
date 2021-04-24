@@ -1,3 +1,4 @@
+import './errorHandler'
 import {
   app,
   globalShortcut,
@@ -152,13 +153,11 @@ class LifeCycle {
         process.on('message', data => {
           if (data === 'graceful-exit') {
             app.quit()
-            server.shutdown()
           }
         })
       } else {
         process.on('SIGTERM', () => {
           app.quit()
-          server.shutdown()
         })
       }
     }
