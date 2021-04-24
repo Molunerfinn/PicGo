@@ -245,6 +245,7 @@ export default class extends Vue {
         if (plugin.config.uploader.name) {
           _this.handleRestoreState('uploader', plugin.config.uploader.name)
         }
+        _this.needReload = true
       }
     }, {
       label: '卸载插件',
