@@ -125,7 +125,7 @@ class Uploader {
         if (this.webContents) {
           handleTalkingData(this.webContents, {
             fromClipboard: !img,
-            type: db.get('picBed.current') || 'smms',
+            type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
             count: img ? img.length : 1,
             duration: Date.now() - startTime
           } as IAnalyticsData)
