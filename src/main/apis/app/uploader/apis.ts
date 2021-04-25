@@ -14,7 +14,7 @@ export const uploadClipboardFiles = async (): Promise<string> => {
   let img = await uploader.setWebContents(win!.webContents).upload()
   if (img !== false) {
     if (img.length > 0) {
-      const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
+      const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       handleCopyUrl(pasteTemplate(pasteStyle, img[0]))
       const notification = new Notification({
@@ -24,8 +24,9 @@ export const uploadClipboardFiles = async (): Promise<string> => {
       })
       notification.show()
       db.insert('uploaded', img[0])
-      trayWindow.webContents.send('clipboardFiles', [])
-      trayWindow.webContents.send('uploadFiles', img)
+      // trayWindow just be created in mac/windows, not in linux
+      trayWindow?.webContents?.send('clipboardFiles', [])
+      trayWindow?.webContents?.send('uploadFiles', img)
       if (windowManager.has(IWindowList.SETTING_WINDOW)) {
         windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('updateGallery')
       }
@@ -64,7 +65,8 @@ export const uploadChoosedFiles = async (webContents: WebContents, files: IFileW
       result.push(handleUrlEncode(imgs[i].imgUrl!))
     }
     handleCopyUrl(pasteText.join('\n'))
-    windowManager.get(IWindowList.TRAY_WINDOW)!.webContents.send('uploadFiles', imgs)
+    // trayWindow just be created in mac/windows, not in linux
+    windowManager.get(IWindowList.TRAY_WINDOW)?.webContents?.send('uploadFiles', imgs)
     if (windowManager.has(IWindowList.SETTING_WINDOW)) {
       windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('updateGallery')
     }

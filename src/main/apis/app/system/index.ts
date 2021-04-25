@@ -201,6 +201,8 @@ export function createTray () {
       tray!.setImage(`${__static}/menubar.png`)
     })
 
+    // drop-files only be supported in macOS
+    // so the tray window must be available
     tray.on('drop-files', async (event: Event, files: string[]) => {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
