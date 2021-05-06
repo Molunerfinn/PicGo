@@ -1,12 +1,10 @@
 import router from './router'
 import {
-  uploadWithClipboardFiles,
-  uploadWithFiles
-} from '@core/bus/apis'
-import {
   handleResponse
 } from './utils'
 import logger from '@core/picgo/logger'
+import windowManager from 'apis/app/window/windowManager'
+import { uploadChoosedFiles, uploadClipboardFiles } from 'apis/app/uploader/apis'
 
 router.post('/upload', async ({
   response,
@@ -19,13 +17,13 @@ router.post('/upload', async ({
     if (list.length === 0) {
       // upload with clipboard
       logger.info('[PicGo Server] upload clipboard file')
-      const res = await uploadWithClipboardFiles()
-      if (res.success) {
+      const res = await uploadClipboardFiles()
+      if (res) {
         handleResponse({
           response,
           body: {
             success: true,
-            result: res.result
+            result: res
           }
         })
       } else {
@@ -45,13 +43,14 @@ router.post('/upload', async ({
           path: item
         }
       })
-      const res = await uploadWithFiles(pathList)
-      if (res.success) {
+      const win = windowManager.getAvailableWindow()
+      const res = await uploadChoosedFiles(win.webContents, pathList)
+      if (res.length) {
         handleResponse({
           response,
           body: {
             success: true,
-            result: res.result
+            result: res
           }
         })
       } else {

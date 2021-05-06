@@ -54,7 +54,7 @@ const handleTalkingData = (webContents: WebContents, options: IAnalyticsData) =>
 
 class Uploader {
   private webContents: WebContents | null = null
-  private uploading: boolean = false
+  // private uploading: boolean = false
   constructor () {
     this.init()
   }
@@ -109,18 +109,18 @@ class Uploader {
   }
 
   async upload (img?: IUploadOption): Promise<ImgInfo[]|false> {
-    if (this.uploading) {
-      showNotification({
-        title: '上传失败',
-        body: '前序上传还在继续，请稍后再试'
-      })
-      return Promise.resolve(false)
-    }
+    // if (this.uploading) {
+    //   showNotification({
+    //     title: '上传失败',
+    //     body: '前序上传还在继续，请稍后再试'
+    //   })
+    //   return Promise.resolve(false)
+    // }
     try {
       const startTime = Date.now()
-      this.uploading = true
+      // this.uploading = true
       const output = await picgo.upload(img)
-      this.uploading = false
+      // this.uploading = false
       if (Array.isArray(output) && output.every((item: ImgInfo) => item.imgUrl)) {
         if (this.webContents) {
           handleTalkingData(this.webContents, {
@@ -135,7 +135,7 @@ class Uploader {
         return false
       }
     } catch (e) {
-      this.uploading = false
+      // this.uploading = false
       logger.error(e)
       setTimeout(() => {
         showNotification({

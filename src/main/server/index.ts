@@ -67,7 +67,7 @@ class Server {
               }
             })
           }
-          logger.info(`[PicGo Server] get the request`)
+          logger.info(`[PicGo Server] get the request`, body)
           const handler = routers.getHandler(request.url!)
           handler!({
             ...postObj,
