@@ -5,6 +5,12 @@ import {
 import logger from '@core/picgo/logger'
 import windowManager from 'apis/app/window/windowManager'
 import { uploadChoosedFiles, uploadClipboardFiles } from 'apis/app/uploader/apis'
+import { app } from 'electron'
+import path from 'path'
+const STORE_PATH = app.getPath('userData')
+const LOG_PATH = path.join(STORE_PATH, 'picgo.log')
+
+const errorMessage = `upload error. see ${LOG_PATH} for more detail.`
 
 router.post('/upload', async ({
   response,
@@ -31,7 +37,7 @@ router.post('/upload', async ({
           response,
           body: {
             success: false,
-            message: 'upload error'
+            message: errorMessage
           }
         })
       }
@@ -58,7 +64,7 @@ router.post('/upload', async ({
           response,
           body: {
             success: false,
-            message: 'upload error'
+            message: errorMessage
           }
         })
       }
@@ -69,7 +75,7 @@ router.post('/upload', async ({
       response,
       body: {
         success: false,
-        message: err
+        message: errorMessage
       }
     })
   }

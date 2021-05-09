@@ -109,19 +109,10 @@ class Uploader {
   }
 
   async upload (img?: IUploadOption): Promise<ImgInfo[]|false> {
-    // if (this.uploading) {
-    //   showNotification({
-    //     title: '上传失败',
-    //     body: '前序上传还在继续，请稍后再试'
-    //   })
-    //   return Promise.resolve(false)
-    // }
     try {
       const startTime = Date.now()
-      // this.uploading = true
       const output = await picgo.upload(img)
-      // this.uploading = false
-      if (Array.isArray(output) && output.every((item: ImgInfo) => item.imgUrl)) {
+      if (Array.isArray(output) && output.some((item: ImgInfo) => item.imgUrl)) {
         if (this.webContents) {
           handleTalkingData(this.webContents, {
             fromClipboard: !img,
@@ -130,12 +121,11 @@ class Uploader {
             duration: Date.now() - startTime
           } as IAnalyticsData)
         }
-        return output
+        return output.filter(item => item.imgUrl)
       } else {
         return false
       }
     } catch (e) {
-      // this.uploading = false
       logger.error(e)
       setTimeout(() => {
         showNotification({
