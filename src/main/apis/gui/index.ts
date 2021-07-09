@@ -18,8 +18,18 @@ import {
 
 // Cross-process support may be required in the future
 class GuiApi implements IGuiApi {
+  private static instance: GuiApi
   private windowId: number = -1
   private settingWindowId: number = -1
+  private constructor () {
+    console.log('init guiapi')
+  }
+  public static getInstance (): GuiApi {
+    if (!GuiApi.instance) {
+      GuiApi.instance = new GuiApi()
+    }
+    return GuiApi.instance
+  }
   private async showSettingWindow () {
     this.settingWindowId = await getSettingWindowId()
     const settingWindow = BrowserWindow.fromId(this.settingWindowId)

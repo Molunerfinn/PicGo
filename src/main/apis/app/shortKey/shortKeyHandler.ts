@@ -130,8 +130,7 @@ class ShortKeyHandler {
     } else if (command.includes('picgo-plugin-')) {
       const handler = shortKeyService.getShortKeyHandler(command)
       if (handler) {
-        const guiApi = new GuiApi()
-        return handler(picgo, guiApi)
+        return handler(picgo, GuiApi.getInstance())
       }
     } else {
       logger.warn(`can not find command: ${command}`)
