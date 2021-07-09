@@ -66,7 +66,13 @@ const config = {
         },
         win: {
           icon: 'build/icons/icon.ico',
-          target: 'nsis'
+          target: [{
+            targe: 'nsis',
+            arch: [
+              'x64',
+              'ia32'
+            ]
+          }]
         },
         nsis: {
           shortcutName: 'PicGo',
