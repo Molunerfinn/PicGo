@@ -229,6 +229,7 @@ export default class extends Vue {
         })
         plugin.enabled = true
         _this.getPicBeds()
+        _this.needReload = true
       }
     }, {
       label: '禁用插件',
