@@ -3,6 +3,10 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
+console.log(process.argv)
+
+const arch = process.argv.includes('--ia32') ? 'ia32' : 'x64'
+
 const config = {
   configureWebpack: {
     devtool: 'nosources-source-map'
@@ -66,11 +70,12 @@ const config = {
         },
         win: {
           icon: 'build/icons/icon.ico',
+          // eslint-disable-next-line no-template-curly-in-string
+          artifactName: `PicGo Setup \${version}-${arch}.exe`,
           target: [{
-            targe: 'nsis',
+            target: 'nsis',
             arch: [
-              'x64',
-              'ia32'
+              arch
             ]
           }]
         },

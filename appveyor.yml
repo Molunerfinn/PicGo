@@ -26,6 +26,7 @@ install:
 
 build_script:
   #- yarn test
-  - npm run release
+  - yarn build --win --ia32
+  - yarn release
 
 test: off
