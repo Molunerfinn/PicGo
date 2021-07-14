@@ -86,7 +86,7 @@ class Uploader {
             let name: undefined | string | null
             let fileName: string | undefined
             if (autoRename) {
-              fileName = dayjs().add(index, 'second').format('YYYYMMDDHHmmss') + item.extname
+              fileName = dayjs().add(index, 'ms').format('YYYYMMDDHHmmSSS') + item.extname
             } else {
               fileName = item.fileName
             }
