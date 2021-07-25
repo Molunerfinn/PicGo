@@ -71,8 +71,8 @@ export default class extends Vue {
     customUrl: '',
     branch: ''
   }
-  created () {
-    const config = this.$db.get('picBed.github') as IGitHubConfig
+  async created () {
+    const config = await this.getConfig<IGitHubConfig>('picBed.github')
     if (config) {
       this.form = Object.assign({}, config)
     }
@@ -81,7 +81,7 @@ export default class extends Vue {
     // @ts-ignore
     this.$refs.github.validate((valid) => {
       if (valid) {
-        this.letPicGoSaveData({
+        this.saveConfig({
           'picBed.github': this.form
         })
         const successNotification = new Notification('设置结果', {

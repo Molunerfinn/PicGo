@@ -16,6 +16,7 @@ import { IGuiMenuItem } from 'picgo/dist/src/types'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import { showNotification } from '~/main/utils/common'
+import { PICGO_SAVE_CONFIG, PICGO_GET_CONFIG } from '#/events/constants'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -229,9 +230,16 @@ const handleRemoveFiles = () => {
   })
 }
 
-const handlePicGoSaveData = () => {
-  ipcMain.on('picgoSaveData', (event: IpcMainEvent, data: IObj) => {
+const handlePicGoSaveConfig = () => {
+  ipcMain.on(PICGO_SAVE_CONFIG, (event: IpcMainEvent, data: IObj) => {
     picgo.saveConfig(data)
+  })
+}
+
+const handlePicGoGetConfig = () => {
+  ipcMain.on(PICGO_GET_CONFIG, (event: IpcMainEvent, key: string | undefined, callbackId: string) => {
+    const result = picgo.getConfig(key)
+    event.sender.send(PICGO_GET_CONFIG, result, callbackId)
   })
 }
 
@@ -271,7 +279,8 @@ export default {
     handleGetPicBedConfig()
     handlePluginActions()
     handleRemoveFiles()
-    handlePicGoSaveData()
+    handlePicGoSaveConfig()
+    handlePicGoGetConfig()
     handleImportLocalPlugin()
   }
 }

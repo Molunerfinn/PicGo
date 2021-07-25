@@ -4,7 +4,7 @@ import {
   Notification,
   ipcMain
 } from 'electron'
-import db from '#/datastore'
+import db from '~/main/apis/core/datastore'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
 import { handleCopyUrl } from '~/main/utils/common'

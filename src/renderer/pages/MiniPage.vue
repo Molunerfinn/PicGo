@@ -136,15 +136,16 @@ export default class extends Vue {
   openContextMenu () {
     this.menu!.popup()
   }
-  buildMenu () {
+  async buildMenu () {
     const _this = this
+    const current = await this.getConfig('picBed.current')
     const submenu = this.picBed.filter(item => item.visible).map(item => {
       return {
         label: item.name,
         type: 'radio',
-        checked: this.$db.get('picBed.current') === item.type,
+        checked: current === item.type,
         click () {
-          _this.letPicGoSaveData({
+          _this.saveConfig({
             'picBed.current': item.type,
             'picBed.uploader': item.type
           })

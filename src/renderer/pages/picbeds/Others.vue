@@ -56,7 +56,7 @@ export default class extends Vue {
     // @ts-ignore
     const result = await this.$refs.configForm.validate()
     if (result !== false) {
-      this.letPicGoSaveData({
+      this.saveConfig({
         [`picBed.${this.type}`]: result
       })
       const successNotification = new Notification('设置结果', {
@@ -68,7 +68,7 @@ export default class extends Vue {
     }
   }
   setDefaultPicBed (type: string) {
-    this.letPicGoSaveData({
+    this.saveConfig({
       'picBed.current': type,
       'picBed.uploader': type
     })

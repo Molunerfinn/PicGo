@@ -1,4 +1,4 @@
-import db from '#/datastore'
+import db from '~/main/apis/core/datastore'
 import { IPasteStyle } from '#/types/enum'
 import { handleUrlEncode } from './common'
 

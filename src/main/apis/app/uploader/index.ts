@@ -6,7 +6,7 @@ import {
 } from 'electron'
 import dayjs from 'dayjs'
 import picgo from '@core/picgo'
-import db from '#/datastore'
+import db from '~/main/apis/core/datastore'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import util from 'util'

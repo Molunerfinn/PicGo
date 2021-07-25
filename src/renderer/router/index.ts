@@ -32,11 +32,6 @@ export default new Router({
           name: 'upload'
         },
         {
-          path: 'weibo',
-          component: () => import(/* webpackChunkName: "Weibo" */ '@/pages/picbeds/Weibo.vue'),
-          name: 'weibo'
-        },
-        {
           path: 'qiniu',
           component: () => import(/* webpackChunkName: "Qiniu" */ '@/pages/picbeds/Qiniu.vue'),
           name: 'qiniu'

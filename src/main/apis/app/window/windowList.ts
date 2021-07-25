@@ -8,7 +8,7 @@ import {
 import { IWindowListItem } from '#/types/electron'
 import bus from '@core/bus'
 import { CREATE_APP_MENU } from '@core/bus/constants'
-import db from '#/datastore'
+import db from '~/main/apis/core/datastore'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { app } from 'electron'
 

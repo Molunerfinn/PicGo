@@ -164,7 +164,7 @@ export default class extends Vue {
       document.querySelector('.main-content.el-row').style.zIndex = 10
     }
   }
-  created () {
+  async created () {
     this.os = process.platform
     ipcRenderer.on('hideLoading', () => {
       this.loading = false
@@ -216,15 +216,15 @@ export default class extends Vue {
     })
     this.getPluginList()
     this.getSearchResult = debounce(this.getSearchResult, 50)
-    this.needReload = this.$db.get('needReload')
+    this.needReload = await this.getConfig<boolean>('needReload') || false
   }
-  buildContextMenu (plugin: IPicGoPlugin) {
+  async buildContextMenu (plugin: IPicGoPlugin) {
     const _this = this
     let menu = [{
       label: '启用插件',
       enabled: !plugin.enabled,
       click () {
-        _this.letPicGoSaveData({
+        _this.saveConfig({
           [`picgoPlugins.${plugin.fullName}`]: true
         })
         plugin.enabled = true
@@ -235,7 +235,7 @@ export default class extends Vue {
       label: '禁用插件',
       enabled: plugin.enabled,
       click () {
-        _this.letPicGoSaveData({
+        _this.saveConfig({
           [`picgoPlugins.${plugin.fullName}`]: false
         })
         plugin.enabled = false
@@ -276,7 +276,7 @@ export default class extends Vue {
 
     // handle transformer
     if (plugin.config.transformer.name) {
-      let currentTransformer = this.$db.get('picBed.transformer') || 'path'
+      let currentTransformer = await this.getConfig<string>('picBed.transformer') || 'path'
       let pluginTransformer = plugin.config.transformer.name
       const obj = {
         label: `${currentTransformer === pluginTransformer ? '禁用' : '启用'}transformer - ${plugin.config.transformer.name}`,
@@ -351,8 +351,10 @@ export default class extends Vue {
     remote.app.relaunch()
     remote.app.exit(0)
   }
-  handleReload () {
-    this.$db.set('needReload', true)
+  async handleReload () {
+    this.saveConfig({
+      needReload: true
+    })
     this.needReload = true
     const successNotification = new Notification('更新成功', {
       body: '请点击此通知重启应用以生效'
@@ -364,14 +366,14 @@ export default class extends Vue {
   cleanSearch () {
     this.searchText = ''
   }
-  toggleTransformer (transformer: string) {
-    let currentTransformer = this.$db.get('picBed.transformer') || 'path'
+  async toggleTransformer (transformer: string) {
+    let currentTransformer = await this.getConfig<string>('picBed.transformer') || 'path'
     if (currentTransformer === transformer) {
-      this.letPicGoSaveData({
+      this.saveConfig({
         'picBed.transformer': 'path'
       })
     } else {
-      this.letPicGoSaveData({
+      this.saveConfig({
         'picBed.transformer': transformer
       })
     }
@@ -382,17 +384,17 @@ export default class extends Vue {
     if (result !== false) {
       switch (this.currentType) {
         case 'plugin':
-          this.letPicGoSaveData({
+          this.saveConfig({
             [`${this.configName}`]: result
           })
           break
         case 'uploader':
-          this.letPicGoSaveData({
+          this.saveConfig({
             [`picBed.${this.configName}`]: result
           })
           break
         case 'transformer':
-          this.letPicGoSaveData({
+          this.saveConfig({
             [`transformer.${this.configName}`]: result
           })
           break
@@ -448,20 +450,20 @@ export default class extends Vue {
     }
   }
   // restore Uploader & Transformer
-  handleRestoreState (item: string, name: string) {
+  async handleRestoreState (item: string, name: string) {
     if (item === 'uploader') {
-      const current = this.$db.get('picBed.current')
+      const current = await this.getConfig('picBed.current')
       if (current === name) {
-        this.letPicGoSaveData({
+        this.saveConfig({
           'picBed.current': 'smms',
           'picBed.uploader': 'smms'
         })
       }
     }
     if (item === 'transformer') {
-      const current = this.$db.get('picBed.transformer')
+      const current = await this.getConfig('picBed.transformer')
       if (current === name) {
-        this.letPicGoSaveData({
+        this.saveConfig({
           'picBed.transformer': 'path'
         })
       }
@@ -475,7 +477,7 @@ export default class extends Vue {
   goAwesomeList () {
     remote.shell.openExternal('https://github.com/PicGo/Awesome-PicGo')
   }
-  letPicGoSaveData (data: IObj) {
+  saveConfig (data: IObj) {
     ipcRenderer.send('picgoSaveData', data)
   }
   handleImportLocalPlugin () {

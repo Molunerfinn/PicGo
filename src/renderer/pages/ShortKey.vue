@@ -109,8 +109,8 @@ export default class extends Vue {
   command = ''
   shortKey = ''
   currentIndex = 0
-  created () {
-    const shortKeyConfig = this.$db.get('settings.shortKey') as IShortKeyConfigs
+  async created () {
+    const shortKeyConfig = (await this.getConfig<IShortKeyConfigs>('settings.shortKey'))!
     this.list = Object.keys(shortKeyConfig).map(item => {
       return {
         ...shortKeyConfig[item],
@@ -132,26 +132,23 @@ export default class extends Vue {
   toggleEnable (item: IShortKeyConfig) {
     const status = !item.enable
     item.enable = status
-    // this.$db.set(`settings.shortKey.${item.name}.enable`, status)
     ipcRenderer.send('bindOrUnbindShortKey', item, item.from)
   }
   keyDetect (event: KeyboardEvent) {
     this.shortKey = keyDetect(event).join('+')
   }
-  openKeyBindingDialog (config: IShortKeyConfig, index: number) {
+  async openKeyBindingDialog (config: IShortKeyConfig, index: number) {
     this.command = `${config.from}:${config.name}`
-    this.shortKey = this.$db.get(`settings.shortKey.${this.command}.key`)
+    this.shortKey = await this.getConfig(`settings.shortKey.${this.command}.key`) || ''
     this.currentIndex = index
     this.keyBindingVisible = true
   }
-  cancelKeyBinding () {
+  async cancelKeyBinding () {
     this.keyBindingVisible = false
-    this.shortKey = this.$db.get(`settings.shortKey.${this.command}.key`)
+    this.shortKey = await this.getConfig<string>(`settings.shortKey.${this.command}.key`) || ''
   }
-  confirmKeyBinding () {
-    const oldKey = this.$db.get(`settings.shortKey.${this.command}.key`)
-    // this.$db.set(`settings.shortKey.${this.command}.key`, this.shortKey)
-    // const newKey = this.$db.get(`settings.shortKey.${this.command}`)
+  async confirmKeyBinding () {
+    const oldKey = await this.getConfig<string>(`settings.shortKey.${this.command}.key`)
     const config = Object.assign({}, this.list[this.currentIndex])
     config.key = this.shortKey
     ipcRenderer.send('updateShortKey', config, oldKey, config.from)

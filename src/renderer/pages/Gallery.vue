@@ -111,7 +111,9 @@
 // @ts-ignore
 import gallerys from 'vue-gallery'
 import pasteStyle from '#/utils/pasteTemplate'
+import { IPasteStyle } from '#/types/enum'
 import { Component, Vue, Watch } from 'vue-property-decorator'
+import { IResult } from '@picgo/store/dist/types'
 import {
   ipcRenderer,
   clipboard,
@@ -194,6 +196,7 @@ export default class extends Vue {
   getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
   }
+  // FIXME: gallery db && async computed - -||.....
   getGallery () {
     if (this.choosedPicBed.length > 0) {
       let arr: ImgInfo[] = []
@@ -204,7 +207,6 @@ export default class extends Vue {
         if (this.searchText) {
           obj.fileName = this.searchText
         }
-        // @ts-ignore
         arr = arr.concat(this.$db.read().get('uploaded').filter(obj => {
           return obj.fileName.indexOf(this.searchText) !== -1 && obj.type === item
         }).reverse().value())
@@ -212,6 +214,7 @@ export default class extends Vue {
       this.images = arr
     } else {
       if (this.searchText) {
+        // FIXME: gallery db
         let data = this.$db.read().get('uploaded')
         // @ts-ignore
           .filter(item => {
@@ -219,7 +222,7 @@ export default class extends Vue {
           }).reverse().value()
         this.images = data
       } else {
-        // @ts-ignore
+        // FIXME: gallery db
         this.images = this.$db.read().get('uploaded').slice().reverse().value()
       }
     }
@@ -267,8 +270,8 @@ export default class extends Vue {
     this.idx = null
     this.changeZIndexForGallery(false)
   }
-  copy (item: ImgInfo) {
-    const style = this.$db.get('settings.pasteStyle') || 'markdown'
+  async copy (item: ImgInfo) {
+    const style = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
     const copyLink = pasteStyle(style, item)
     const obj = {
       title: '复制链接成功',
@@ -286,9 +289,9 @@ export default class extends Vue {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
-    }).then(() => {
-      const file = this.$db.getById('uploaded', id)
-      this.$db.removeById('uploaded', id)
+    }).then(async () => {
+      const file = await this.$$db.getById(id)
+      await this.$$db.removeById(id)
       ipcRenderer.send('removeFiles', [file])
       const obj = {
         title: '操作结果',
@@ -309,12 +312,10 @@ export default class extends Vue {
     this.imgInfo.imgUrl = item.imgUrl as string
     this.dialogVisible = true
   }
-  confirmModify () {
-    this.$db.read().get('uploaded')
-      // @ts-ignore
-      .getById(this.imgInfo.id)
-      .assign({ imgUrl: this.imgInfo.imgUrl })
-      .write()
+  async confirmModify () {
+    await this.$$db.updateById(this.imgInfo.id, {
+      imgUrl: this.imgInfo.imgUrl
+    })
     const obj = {
       title: '修改图片URL成功',
       body: this.imgInfo.imgUrl,
@@ -355,15 +356,19 @@ export default class extends Vue {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        let files: ImgInfo[] = []
-        Object.keys(this.choosedList).forEach(key => {
+      }).then(async () => {
+        let files: IResult<ImgInfo>[] = []
+        const imageIDList = Object.keys(this.choosedList)
+        for (let i = 0; i < imageIDList.length; i++) {
+          const key = imageIDList[i]
           if (this.choosedList[key]) {
-            const file = this.$db.getById('uploaded', key)
-            files.push(file)
-            this.$db.removeById('uploaded', key)
+            const file = await this.$$db.getById<ImgInfo>(key)
+            if (file) {
+              files.push(file)
+              await this.$$db.removeById(key)
+            }
           }
-        })
+        }
         this.clearChoosedList()
         this.choosedList = {} // 只有删除才能将这个置空
         this.getGallery()
@@ -381,18 +386,22 @@ export default class extends Vue {
       })
     }
   }
-  multiCopy () {
+  async multiCopy () {
     if (Object.values(this.choosedList).some(item => item)) {
       const copyString: string[] = []
-      const style = this.$db.get('settings.pasteStyle') || 'markdown'
+      const style = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
       // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
-      Object.keys(this.choosedList).forEach(key => {
+      const imageIDList = Object.keys(this.choosedList)
+      for (let i = 0; i < imageIDList.length; i++) {
+        const key = imageIDList[i]
         if (this.choosedList[key]) {
-          const item = this.$db.getById('uploaded', key)
-          copyString.push(pasteStyle(style, item))
-          this.choosedList[key] = false
+          const item = await this.$$db.getById<ImgInfo>(key)
+          if (item) {
+            copyString.push(pasteStyle(style, item))
+            this.choosedList[key] = false
+          }
         }
-      })
+      }
       const obj = {
         title: '批量复制链接成功',
         body: copyString.join('\n')
@@ -407,11 +416,11 @@ export default class extends Vue {
   toggleHandleBar () {
     this.handleBarActive = !this.handleBarActive
   }
-  getPasteStyle () {
-    this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
-  }
-  handlePasteStyleChange (val: string) {
-    this.$db.set('settings.pasteStyle', val)
+  // getPasteStyle () {
+  //   this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
+  // }
+  async handlePasteStyleChange (val: string) {
+    this.saveConfig('settings.pasteStyle', val)
     this.pasteStyle = val
   }
   beforeDestroy () {

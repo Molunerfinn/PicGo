@@ -30,12 +30,15 @@ import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/mixin'
 import pasteTemplate from '#/utils/pasteTemplate'
 import { ipcRenderer, clipboard } from 'electron'
+import { IPasteStyle } from '#/types/enum'
+import { IResult } from '@picgo/store/dist/types'
+
 @Component({
   name: 'tray-page',
   mixins: [mixin]
 })
 export default class extends Vue {
-  files = []
+  files: IResult<ImgInfo>[] = []
   notification = {
     title: '复制链接成功',
     body: '',
@@ -46,15 +49,14 @@ export default class extends Vue {
   get reverseList () {
     return this.files.slice().reverse()
   }
-  getData () {
-    // @ts-ignore
-    this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
+  async getData () {
+    this.files = (await this.$$db.get<ImgInfo>()).slice().reverse().slice(0, 5)
   }
-  copyTheLink (item: ImgInfo) {
+  async copyTheLink (item: ImgInfo) {
     this.notification.body = item.imgUrl!
     this.notification.icon = item.imgUrl!
     const myNotification = new Notification(this.notification.title, this.notification)
-    const pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
+    const pasteStyle = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
     clipboard.writeText(pasteTemplate(pasteStyle, item))
     myNotification.onclick = () => {
       return true
@@ -83,19 +85,18 @@ export default class extends Vue {
   mounted () {
     this.disableDragFile()
     this.getData()
-    ipcRenderer.on('dragFiles', (event: Event, files: string[]) => {
-      files.forEach(item => {
-        this.$db.insert('uploaded', item)
-      })
-      // @ts-ignore
-      this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
+    ipcRenderer.on('dragFiles', async (event: Event, files: string[]) => {
+      for (let i = 0; i < files.length; i++) {
+        const item = files[i]
+        await this.$$db.insert(item)
+      }
+      this.files = (await this.$$db.get<ImgInfo>()).slice().reverse().slice(0, 5)
     })
     ipcRenderer.on('clipboardFiles', (event: Event, files: ImgInfo[]) => {
       this.clipboardFiles = files
     })
-    ipcRenderer.on('uploadFiles', (event: Event) => {
-      // @ts-ignore
-      this.files = this.$db.read().get('uploaded').slice().reverse().slice(0, 5).value()
+    ipcRenderer.on('uploadFiles', async (event: Event) => {
+      this.files = (await this.$$db.get()).slice().reverse().slice(0, 5)
       console.log(this.files)
       this.uploadFlag = false
     })

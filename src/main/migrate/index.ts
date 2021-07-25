@@ -1,4 +1,4 @@
-import DB from '#/datastore'
+import DB from '~/main/apis/core/datastore'
 // from v2.1.2
 const updateShortKeyFromVersion212 = (db: typeof DB, shortKeyConfig: IShortKeyConfigs | IOldShortKeyConfigs) => {
   // #557 极端情况可能会出现配置不存在，需要重新写入

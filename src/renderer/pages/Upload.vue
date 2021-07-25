@@ -169,11 +169,13 @@ export default class extends Vue {
     })
     ipcRenderer.send('uploadChoosedFiles', sendFiles)
   }
-  getPasteStyle () {
-    this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
+  async getPasteStyle () {
+    this.pasteStyle = await this.getConfig('settings.pasteStyle') || 'markdown'
   }
   handlePasteStyleChange (val: string) {
-    this.$db.set('settings.pasteStyle', val)
+    this.saveConfig({
+      'settings.pasteStyle': val
+    })
   }
   uploadClipboardFiles () {
     ipcRenderer.send('uploadClipboardFilesFromUploadPage')
@@ -196,10 +198,10 @@ export default class extends Vue {
       this.$message.error('请输入合法的URL')
     }
   }
-  getDefaultPicBed () {
-    const current: string = this.$db.get('picBed.current')
+  async getDefaultPicBed () {
+    const currentPicBed = await this.getConfig<string>('picBed.current')
     this.picBed.forEach(item => {
-      if (item.type === current) {
+      if (item.type === currentPicBed) {
         this.picBedName = item.name
       }
     })
@@ -208,20 +210,21 @@ export default class extends Vue {
     this.picBed = picBeds
     this.getDefaultPicBed()
   }
-  handleChangePicBed () {
-    this.buildMenu()
+  async handleChangePicBed () {
+    await this.buildMenu()
     // this.menu.popup(remote.getCurrentWindow())
     this.menu!.popup()
   }
-  buildMenu () {
+  async buildMenu () {
     const _this = this
+    const currentPicBed = await this.getConfig<string>('picBed.current')
     const submenu = this.picBed.filter(item => item.visible).map(item => {
       return {
         label: item.name,
         type: 'radio',
-        checked: this.$db.get('picBed.current') === item.type,
+        checked: currentPicBed === item.type,
         click () {
-          _this.letPicGoSaveData({
+          _this.saveConfig({
             'picBed.current': item.type,
             'picBed.uploader': item.type
           })

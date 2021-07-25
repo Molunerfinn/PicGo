@@ -1,4 +1,4 @@
-import db from '#/datastore'
+import db from '~/main/apis/core/datastore'
 import { clipboard, Notification, dialog } from 'electron'
 
 export const handleCopyUrl = (str: string): void => {

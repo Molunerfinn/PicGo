@@ -339,12 +339,13 @@
 import keyDetect from '@/utils/key-binding'
 import pkg from 'root/package.json'
 import path from 'path'
+import { IConfig } from 'picgo/dist/src/types/index'
 import {
   ipcRenderer,
   remote
 } from 'electron'
 import { Component, Vue } from 'vue-property-decorator'
-import db from '#/datastore'
+// import db from '#/datastore'
 const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
 const releaseUrlBackup = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'
 const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
@@ -355,30 +356,22 @@ const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) =>
     return callback()
   }
 }
-let logLevel = db.get('settings.logLevel')
-if (!Array.isArray(logLevel)) {
-  if (logLevel && logLevel.length > 0) {
-    logLevel = [logLevel]
-  } else {
-    logLevel = ['all']
-  }
-}
 
 @Component({
   name: 'picgo-setting'
 })
 export default class extends Vue {
   form: ISettingForm = {
-    updateHelper: db.get('settings.showUpdateTip'),
+    updateHelper: false,
     showPicBedList: [],
-    autoStart: db.get('settings.autoStart') || false,
-    rename: db.get('settings.rename') || false,
-    autoRename: db.get('settings.autoRename') || false,
-    uploadNotification: db.get('settings.uploadNotification') || false,
-    miniWindowOntop: db.get('settings.miniWindowOntop') || false,
-    logLevel,
-    autoCopyUrl: db.get('settings.autoCopy') === undefined ? true : db.get('settings.autoCopy'),
-    checkBetaUpdate: db.get('settings.checkBetaUpdate') === undefined ? true : db.get('settings.checkBetaUpdate')
+    autoStart: false,
+    rename: false,
+    autoRename: false,
+    uploadNotification: false,
+    miniWindowOntop: false,
+    logLevel: ['all'],
+    autoCopyUrl: true,
+    checkBetaUpdate: true
   }
   picBed: IPicBedType[] = []
   logFileVisible = false
@@ -388,14 +381,14 @@ export default class extends Vue {
   serverVisible = false
   proxyVisible = false
   customLink = {
-    value: db.get('settings.customLink') || '$url'
+    value: '$url'
   }
   shortKey: IShortKeyMap = {
-    upload: db.get('settings.shortKey.upload')
+    upload: ''
   }
-  proxy = db.get('picBed.proxy') || ''
-  npmRegistry = db.get('settings.registry') || ''
-  npmProxy = db.get('settings.proxy') || ''
+  proxy = ''
+  npmRegistry = ''
+  npmProxy = ''
   rules = {
     value: [
       { validator: customLinkRule, trigger: 'blur' }
@@ -409,7 +402,7 @@ export default class extends Vue {
     warn: '提醒-Warn',
     none: '不记录日志-None'
   }
-  server = db.get('settings.server') || {
+  server = {
     port: 36677,
     host: '127.0.0.1',
     enable: true
@@ -430,6 +423,45 @@ export default class extends Vue {
     ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
   }
+  async initData () {
+    const config = (await this.getConfig<IConfig>())!
+    if (config !== undefined) {
+      const settings = config.settings || {}
+      const picBed = config.picBed
+      this.form.updateHelper = settings.showUpdateTip || false
+      this.form.autoStart = settings.autoStart || false
+      this.form.rename = settings.rename || false
+      this.form.autoRename = settings.autoRename || false
+      this.form.uploadNotification = settings.uploadNotification || false
+      this.form.miniWindowOntop = settings.miniWindowOntop || false
+      this.form.logLevel = this.initLogLevel(settings.logLevel || [])
+      this.form.autoCopyUrl = settings.autoCopy === undefined ? true : settings.autoCopy
+      this.form.checkBetaUpdate = settings.checkBetaUpdate === undefined ? true : settings.checkBetaUpdate
+
+      this.customLink.value = settings.customLink || '$url'
+      this.shortKey.upload = settings.shortKey.upload
+      this.proxy = picBed.proxy || ''
+      this.npmRegistry = settings.registry || ''
+      this.npmProxy = settings.proxy || ''
+      this.server = settings.server || {
+        port: 36677,
+        host: '127.0.0.1',
+        enable: true
+      }
+    }
+  }
+
+  initLogLevel (logLevel: string | string[]) {
+    if (!Array.isArray(logLevel)) {
+      if (logLevel && logLevel.length > 0) {
+        logLevel = [logLevel]
+      } else {
+        logLevel = ['all']
+      }
+    }
+    return logLevel
+  }
+
   getPicBeds (event: Event, picBeds: IPicBedType[]) {
     this.picBed = picBeds
     this.form.showPicBedList = this.picBed.map(item => {
@@ -450,15 +482,15 @@ export default class extends Vue {
   keyDetect (type: string, event: KeyboardEvent) {
     this.shortKey[type] = keyDetect(event).join('+')
   }
-  cancelCustomLink () {
+  async cancelCustomLink () {
     this.customLinkVisible = false
-    this.customLink.value = db.get('settings.customLink') || '$url'
+    this.customLink.value = await this.getConfig<string>('settings.customLink') || '$url'
   }
   confirmCustomLink () {
     // @ts-ignore
     this.$refs.customLink.validate((valid: boolean) => {
       if (valid) {
-        db.set('settings.customLink', this.customLink.value)
+        this.saveConfig('settings.customLink', this.customLink.value)
         this.customLinkVisible = false
         ipcRenderer.send('updateCustomLink')
       } else {
@@ -466,13 +498,13 @@ export default class extends Vue {
       }
     })
   }
-  cancelProxy () {
+  async cancelProxy () {
     this.proxyVisible = false
-    this.proxy = db.get('picBed.proxy') || undefined
+    this.proxy = await this.getConfig<string>('picBed.proxy') || ''
   }
   confirmProxy () {
     this.proxyVisible = false
-    this.letPicGoSaveData({
+    this.saveConfig({
       'picBed.proxy': this.proxy,
       'settings.proxy': this.npmProxy,
       'settings.registry': this.npmRegistry
@@ -485,10 +517,10 @@ export default class extends Vue {
     }
   }
   updateHelperChange (val: boolean) {
-    db.set('settings.showUpdateTip', val)
+    this.saveConfig('settings.showUpdateTip', val)
   }
   checkBetaUpdateChange (val: boolean) {
-    db.set('settings.checkBetaUpdate', val)
+    this.saveConfig('settings.checkBetaUpdate', val)
   }
   handleShowPicBedListChange (val: string[]) {
     const list = this.picBed.map(item => {
@@ -499,22 +531,22 @@ export default class extends Vue {
       }
       return item
     })
-    this.letPicGoSaveData({
+    this.saveConfig({
       'picBed.list': list
     })
     ipcRenderer.send('getPicBeds')
   }
   handleAutoStartChange (val: boolean) {
-    db.set('settings.autoStart', val)
+    this.saveConfig('settings.autoStart', val)
     ipcRenderer.send('autoStart', val)
   }
   handleRename (val: boolean) {
-    this.letPicGoSaveData({
+    this.saveConfig({
       'settings.rename': val
     })
   }
   handleAutoRename (val: boolean) {
-    this.letPicGoSaveData({
+    this.saveConfig({
       'settings.autoRename': val
     })
   }
@@ -556,14 +588,16 @@ export default class extends Vue {
     this.checkUpdateVisible = false
   }
   handleUploadNotification (val: boolean) {
-    db.set('settings.uploadNotification', val)
+    this.saveConfig({
+      'settings.uploadNotification': val
+    })
   }
   handleMiniWindowOntop (val: boolean) {
-    db.set('settings.miniWindowOntop', val)
+    this.saveConfig('settings.miniWindowOntop', val)
     this.$message.info('需要重启生效')
   }
   handleAutoCopyUrl (val: boolean) {
-    db.set('settings.autoCopy', val)
+    this.saveConfig('settings.autoCopy', val)
     const successNotification = new Notification('设置自动复制链接', {
       body: '设置成功'
     })
@@ -575,7 +609,7 @@ export default class extends Vue {
     if (this.form.logLevel.length === 0) {
       return this.$message.error('请选择日志记录等级')
     }
-    this.letPicGoSaveData({
+    this.saveConfig({
       'settings.logLevel': this.form.logLevel
     })
     const successNotification = new Notification('设置日志', {
@@ -586,9 +620,9 @@ export default class extends Vue {
     }
     this.logFileVisible = false
   }
-  cancelLogLevelSetting () {
+  async cancelLogLevelSetting () {
     this.logFileVisible = false
-    let logLevel = db.get('settings.logLevel')
+    let logLevel = await this.getConfig<string | string[]>('settings.logLevel')
     if (!Array.isArray(logLevel)) {
       if (logLevel && logLevel.length > 0) {
         logLevel = [logLevel]
@@ -599,8 +633,9 @@ export default class extends Vue {
     this.form.logLevel = logLevel
   }
   confirmServerSetting () {
+    // @ts-ignore
     this.server.port = parseInt(this.server.port, 10)
-    this.letPicGoSaveData({
+    this.saveConfig({
       'settings.server': this.server
     })
     const successNotification = new Notification('设置PicGo-Server', {
@@ -612,9 +647,9 @@ export default class extends Vue {
     this.serverVisible = false
     ipcRenderer.send('updateServer')
   }
-  cancelServerSetting () {
+  async cancelServerSetting () {
     this.serverVisible = false
-    this.server = db.get('settings.server') || {
+    this.server = await this.getConfig('settings.server') || {
       port: 36677,
       host: '127.0.0.1',
       enable: true

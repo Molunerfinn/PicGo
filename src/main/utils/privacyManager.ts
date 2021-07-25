@@ -1,4 +1,4 @@
-import db from '#/datastore'
+import db from '~/main/apis/core/datastore'
 import { ipcMain } from 'electron'
 import { showMessageBox } from '~/main/utils/common'
 import { SHOW_PRIVACY_MESSAGE } from '~/universal/events/constants'

@@ -3,8 +3,6 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
-console.log(process.argv)
-
 const arch = process.argv.includes('--ia32') ? 'ia32' : 'x64'
 
 const config = {

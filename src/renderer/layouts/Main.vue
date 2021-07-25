@@ -92,35 +92,6 @@
       </el-row>
     </el-dialog>
     <el-dialog
-      title="自定义链接格式"
-      :visible.sync="customLinkVisible"
-    >
-      <el-form
-        label-position="top"
-        :model="customLink"
-        ref="customLink"
-        :rules="rules"
-      >
-        <el-form-item
-          label="用占位符$url来表示url的位置"
-          prop="value"
-        >
-          <el-input
-            class="align-center"
-            v-model="customLink.value"
-            :autofocus="true"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <div>
-        如[]($url)
-      </div>
-      <span slot="footer">
-        <el-button @click="cancelCustomLink">取消</el-button>
-        <el-button type="primary" @click="confirmCustomLink">确定</el-button>
-      </span>
-    </el-dialog>
-    <el-dialog
       class="qrcode-dialog"
       top="3vh"
       width="60%"
@@ -183,12 +154,13 @@ import {
   IpcRendererEvent,
   clipboard
 } from 'electron'
-import db from '#/datastore'
+// import db from '#/datastore'
 import mixin from '@/utils/mixin'
 import InputBoxDialog from '@/components/InputBoxDialog.vue'
 import {
   SHOW_PRIVACY_MESSAGE
 } from '~/universal/events/constants'
+import { IConfig } from 'picgo/dist/src/types/index'
 const { Menu, dialog, BrowserWindow } = remote
 const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
   if (!/\$url/.test(value)) {
@@ -212,18 +184,7 @@ export default class extends Vue {
   visible = false
   keyBindingVisible = false
   customLinkVisible = false
-  customLink = {
-    value: db.get('customLink') || '$url'
-  }
-  rules = {
-    value: [
-      { validator: customLinkRule, trigger: 'blur' }
-    ]
-  }
   os = ''
-  shortKey: IShortKeyMap = {
-    upload: db.get('shortKey.upload')
-  }
   picBed: IPicBedType[] = []
   qrcodeVisible = false
   picBedConfigString = ''
@@ -238,8 +199,8 @@ export default class extends Vue {
   @Watch('choosedPicBedForQRCode')
   choosedPicBedForQRCodeChange (val: string[], oldVal: string[]) {
     if (val.length > 0) {
-      this.$nextTick(() => {
-        const picBedConfig = db.get('picBed')
+      this.$nextTick(async () => {
+        const picBedConfig = await this.getConfig('picBed')
         const config = pick(picBedConfig, ...this.choosedPicBedForQRCode)
         this.picBedConfigString = JSON.stringify(config)
       })
@@ -317,29 +278,6 @@ export default class extends Vue {
   openDialog () {
     // this.menu!.popup(remote.getCurrentWindow())
     this.menu!.popup()
-  }
-  keyDetect (type: string, event: KeyboardEvent) {
-    this.shortKey[type] = keyDetect(event).join('+')
-  }
-  cancelKeyBinding () {
-    this.keyBindingVisible = false
-    this.shortKey = db.get('shortKey')
-  }
-  cancelCustomLink () {
-    this.customLinkVisible = false
-    this.customLink.value = db.get('customLink') || '$url'
-  }
-  confirmCustomLink () {
-    // @ts-ignore
-    this.$refs.customLink.validate((valid: boolean) => {
-      if (valid) {
-        db.set('customLink', this.customLink.value)
-        this.customLinkVisible = false
-        ipcRenderer.send('updateCustomLink')
-      } else {
-        return false
-      }
-    })
   }
   openMiniWindow () {
     ipcRenderer.send('openMiniWindow')

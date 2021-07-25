@@ -17,7 +17,7 @@
             :rules="{
               required: true, message: 'AccessKey不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.accessKey" placeholder="AccessKey" @keyup.native.enter="confirm('weiboForm')"></el-input>
+            <el-input v-model="form.accessKey" placeholder="AccessKey" @keyup.native.enter="confirm"></el-input>
           </el-form-item>
           <el-form-item
             label="设定SecretKey"
@@ -88,8 +88,8 @@ export default class extends Vue {
     options: '',
     path: ''
   }
-  created () {
-    const config = this.$db.get('picBed.qiniu') as IQiniuConfig
+  async created () {
+    const config = await this.getConfig<IQiniuConfig>('picBed.qiniu')
     if (config) {
       this.form = Object.assign({}, config)
     }
@@ -98,7 +98,7 @@ export default class extends Vue {
     // @ts-ignore
     this.$refs.qiniu.validate((valid) => {
       if (valid) {
-        this.letPicGoSaveData({
+        this.saveConfig({
           'picBed.qiniu': this.form
         })
         const successNotification = new Notification('设置结果', {

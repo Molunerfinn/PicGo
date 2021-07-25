@@ -6,7 +6,7 @@ import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import uploader from '.'
 import pasteTemplate from '#/utils/pasteTemplate'
-import db from '#/datastore'
+import db from '~/main/apis/core/datastore'
 import { handleCopyUrl } from '~/main/utils/common'
 import { handleUrlEncode } from '#/utils/common'
 export const uploadClipboardFiles = async (): Promise<string> => {

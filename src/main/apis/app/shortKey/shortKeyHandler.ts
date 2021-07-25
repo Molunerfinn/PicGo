@@ -4,7 +4,7 @@ import {
 } from 'electron'
 import logger from '@core/picgo/logger'
 import GuiApi from '../../gui'
-import db from '#/datastore'
+import db from '~/main/apis/core/datastore'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import shortKeyService from './shortKeyService'
 import picgo from '@core/picgo'

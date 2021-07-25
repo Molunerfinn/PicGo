@@ -79,8 +79,8 @@ export default class extends Vue {
     options: '',
     path: ''
   }
-  created () {
-    const config = this.$db.get('picBed.upyun') as IUpYunConfig
+  async created () {
+    const config = await this.getConfig<IUpYunConfig>('picBed.upyun')
     if (config) {
       this.form = Object.assign({}, config)
     }
@@ -89,7 +89,7 @@ export default class extends Vue {
     // @ts-ignore
     this.$refs.tcyun.validate((valid) => {
       if (valid) {
-        this.letPicGoSaveData({
+        this.saveConfig({
           'picBed.upyun': this.form
         })
         const successNotification = new Notification('设置结果', {

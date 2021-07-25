@@ -1,7 +1,11 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { app } from 'electron'
+import { remote, app } from 'electron'
 import dayjs from 'dayjs'
+const APP = process.type === 'renderer' ? remote.app : app
+const STORE_PATH = APP.getPath('userData')
+const configFilePath = path.join(STORE_PATH, 'data.json')
+const configFileBackupPath = path.join(STORE_PATH, 'data.bak.json')
 
 const errorMsg = {
   broken: 'PicGo 配置文件损坏，已经恢复为默认配置',
@@ -11,9 +15,6 @@ const errorMsg = {
 function dbChecker () {
   if (process.type !== 'renderer') {
     if (!global.notificationList) global.notificationList = []
-    const STORE_PATH = app.getPath('userData')
-    const configFilePath = path.join(STORE_PATH, 'data.json')
-    const configFileBackupPath = path.join(STORE_PATH, 'data.bak.json')
     if (!fs.existsSync(configFilePath)) {
       return
     }
@@ -50,6 +51,37 @@ function dbChecker () {
   }
 }
 
+/**
+ * Get config path
+ */
+function dbPathChecker (): string {
+  const defaultConfigPath = configFilePath
+  if (process.type !== 'renderer') {
+    // if defaultConfig path is not exit
+    // do not parse the content of config
+    if (!fs.existsSync(defaultConfigPath)) {
+      return defaultConfigPath
+    }
+    try {
+      const configString = fs.readFileSync(configFilePath, { encoding: 'utf-8' })
+      const config = JSON.parse(configString)
+      const userConfigPath: string = config.configPath || ''
+      if (userConfigPath) {
+        if (fs.existsSync(userConfigPath) && userConfigPath.endsWith('.json')) {
+          return userConfigPath
+        }
+      }
+      return defaultConfigPath
+    } catch (e) {
+      // TODO: local logger is needed
+      console.error(e)
+      return defaultConfigPath
+    }
+  }
+  return defaultConfigPath
+}
+
 export {
-  dbChecker
+  dbChecker,
+  dbPathChecker
 }

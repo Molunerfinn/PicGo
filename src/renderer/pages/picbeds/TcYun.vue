@@ -30,7 +30,7 @@
             :rules="{
               required: true, message: 'SecretId不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.secretId" placeholder="SecretId" @keyup.native.enter="confirm('weiboForm')"></el-input>
+            <el-input v-model="form.secretId" placeholder="SecretId" @keyup.native.enter="confirm"></el-input>
           </el-form-item>
           <el-form-item
             label="设定SecretKey"
@@ -104,8 +104,8 @@ export default class extends Vue {
     customUrl: '',
     version: 'v4'
   }
-  created () {
-    const config = this.$db.get('picBed.tcyun') as ITcYunConfig
+  async created () {
+    const config = await this.getConfig<ITcYunConfig>('picBed.tcyun')
     if (config) {
       this.form = Object.assign({}, config)
     }
@@ -114,7 +114,7 @@ export default class extends Vue {
     // @ts-ignore
     this.$refs.tcyun.validate((valid) => {
       if (valid) {
-        this.letPicGoSaveData({
+        this.saveConfig({
           'picBed.tcyun': this.form
         })
         const successNotification = new window.Notification('设置结果', {

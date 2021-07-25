@@ -86,8 +86,8 @@ export default class extends Vue {
     customUrl: '',
     options: ''
   }
-  created () {
-    const config = this.$db.get('picBed.aliyun') as IAliYunConfig
+  async created () {
+    const config = await this.getConfig<IAliYunConfig>('picBed.aliyun')
     if (config) {
       this.form = Object.assign({}, config)
     }
@@ -96,7 +96,7 @@ export default class extends Vue {
     // @ts-ignore
     this.$refs.aliyun.validate((valid) => {
       if (valid) {
-        this.letPicGoSaveData({
+        this.saveConfig({
           'picBed.aliyun': this.form
         })
         const successNotification = new window.Notification('设置结果', {

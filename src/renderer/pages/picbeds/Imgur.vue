@@ -48,8 +48,8 @@ export default class extends Vue {
     clientId: '',
     proxy: ''
   }
-  created () {
-    const config = this.$db.get('picBed.imgur') as IImgurConfig
+  async created () {
+    const config = await this.getConfig<IImgurConfig>('picBed.imgur')
     if (config) {
       this.form = Object.assign({}, config)
     }
@@ -58,7 +58,7 @@ export default class extends Vue {
     // @ts-ignore
     this.$refs.imgur.validate((valid) => {
       if (valid) {
-        this.letPicGoSaveData({
+        this.saveConfig({
           'picBed.imgur': this.form
         })
         const successNotification = new Notification('设置结果', {

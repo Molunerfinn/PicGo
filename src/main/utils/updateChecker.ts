@@ -1,5 +1,5 @@
 import { dialog, shell } from 'electron'
-import db from '#/datastore'
+import db from '~/main/apis/core/datastore'
 import axios from 'axios'
 import pkg from 'root/package.json'
 import { lt } from 'semver'

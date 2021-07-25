@@ -2,25 +2,27 @@ import Datastore from 'lowdb'
 // @ts-ignore
 import LodashId from 'lodash-id'
 import FileSync from 'lowdb/adapters/FileSync'
-import path from 'path'
 import fs from 'fs-extra'
-import { remote, app } from 'electron'
-import { dbChecker } from './dbChecker'
+import path from 'path'
+import { app } from 'electron'
+import { dbPathChecker } from './dbChecker'
+import { DBStore } from '@picgo/store'
 
-const APP = process.type === 'renderer' ? remote.app : app
+const APP = app
 const STORE_PATH = APP.getPath('userData')
 
-if (process.type !== 'renderer') {
-  if (!fs.pathExistsSync(STORE_PATH)) {
-    fs.mkdirpSync(STORE_PATH)
-  }
-  dbChecker()
+if (!fs.pathExistsSync(STORE_PATH)) {
+  fs.mkdirpSync(STORE_PATH)
 }
+const CONFIG_PATH: string = dbPathChecker()
+const CONFIG_DIR = path.dirname(CONFIG_PATH)
+const DB_PATH = path.join(CONFIG_DIR, 'picgo.db')
 
-class DB {
+// TODO: use JSONStore with @picgo/store
+class ConfigStore {
   private db: Datastore.LowdbSync<Datastore.AdapterSync>
   constructor () {
-    const adapter = new FileSync(path.join(STORE_PATH, '/data.json'))
+    const adapter = new FileSync(CONFIG_PATH)
 
     this.db = Datastore(adapter)
     this.db._.mixin(LodashId)
@@ -77,4 +79,11 @@ class DB {
   }
 }
 
-export default new DB()
+export default new ConfigStore()
+
+// v2.3.0 add gallery db
+const dbStore = new DBStore(DB_PATH, 'gallery')
+
+export {
+  dbStore
+}

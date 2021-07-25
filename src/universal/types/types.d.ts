@@ -144,6 +144,14 @@ interface IPicGoPlugin {
   hasInstall?: boolean
 }
 
+interface IPicGoPluginConfig {
+  name: string
+  type: string
+  required: boolean
+  default?: any
+  [propName: string]: any
+}
+
 interface IPluginMenuConfig {
   name: string
   fullName?: string

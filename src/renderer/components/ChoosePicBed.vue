@@ -8,31 +8,27 @@
     </el-switch>
   </div>
 </template>
-<script>
-export default {
-  name: 'choose-pic-bed',
-  props: {
-    type: String,
-    label: String
-  },
-  data () {
-    return {
-      value: false
-    }
-  },
-  created () {
-    if (this.type === this.$db.get('picBed.current')) {
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator'
+@Component({
+  name: 'choose-pic-bed'
+})
+export default class extends Vue {
+  value = false
+  @Prop() type!: string
+  @Prop() label!: string
+  async created () {
+    const current = await this.getConfig<string>('picBed.current')
+    if (this.type === current) {
       this.value = true
     }
-  },
-  methods: {
-    choosePicBed (val) {
-      this.letPicGoSaveData({
-        'picBed.current': this.type,
-        'picBed.uploader': this.type
-      })
-      this.$emit('update:choosed', this.type)
-    }
+  }
+  choosePicBed (val: string) {
+    this.saveConfig({
+      'picBed.current': this.type,
+      'picBed.uploader': this.type
+    })
+    this.$emit('update:choosed', this.type)
   }
 }
 </script>
