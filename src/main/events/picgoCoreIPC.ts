@@ -16,7 +16,19 @@ import { IGuiMenuItem } from 'picgo/dist/src/types'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import { showNotification } from '~/main/utils/common'
-import { PICGO_SAVE_CONFIG, PICGO_GET_CONFIG } from '#/events/constants'
+import {
+  PICGO_SAVE_CONFIG,
+  PICGO_GET_CONFIG,
+  PICGO_GET_DB,
+  PICGO_INSERT_DB,
+  PICGO_INSERT_MANY_DB,
+  PICGO_UPDATE_BY_ID_DB,
+  PICGO_GET_BY_ID_DB,
+  PICGO_REMOVE_BY_ID_DB
+} from '#/events/constants'
+
+import { GalleryDB } from 'apis/core/datastore'
+import { IObject } from '@picgo/store/dist/types'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -270,6 +282,44 @@ const handleImportLocalPlugin = () => {
   })
 }
 
+const handlePicGoGalleryDB = () => {
+  ipcMain.on(PICGO_GET_DB, async (event: IpcMainEvent, callbackId: string) => {
+    const dbStore = GalleryDB.getInstance()
+    const res = await dbStore.get()
+    event.sender.send(PICGO_GET_CONFIG, res, callbackId)
+  })
+
+  ipcMain.on(PICGO_INSERT_DB, async (event: IpcMainEvent, value: IObject, callbackId: string) => {
+    const dbStore = GalleryDB.getInstance()
+    const res = await dbStore.insert(value)
+    event.sender.send(PICGO_INSERT_DB, res, callbackId)
+  })
+
+  ipcMain.on(PICGO_INSERT_MANY_DB, async (event: IpcMainEvent, value: IObject[], callbackId: string) => {
+    const dbStore = GalleryDB.getInstance()
+    const res = await dbStore.insertMany(value)
+    event.sender.send(PICGO_INSERT_MANY_DB, res, callbackId)
+  })
+
+  ipcMain.on(PICGO_UPDATE_BY_ID_DB, async (event: IpcMainEvent, id: string, value: IObject[], callbackId: string) => {
+    const dbStore = GalleryDB.getInstance()
+    const res = await dbStore.updateById(id, value)
+    event.sender.send(PICGO_UPDATE_BY_ID_DB, res, callbackId)
+  })
+
+  ipcMain.on(PICGO_GET_BY_ID_DB, async (event: IpcMainEvent, id: string, callbackId: string) => {
+    const dbStore = GalleryDB.getInstance()
+    const res = await dbStore.getById(id)
+    event.sender.send(PICGO_GET_BY_ID_DB, res, callbackId)
+  })
+
+  ipcMain.on(PICGO_REMOVE_BY_ID_DB, async (event: IpcMainEvent, id: string, callbackId: string) => {
+    const dbStore = GalleryDB.getInstance()
+    const res = await dbStore.removeById(id)
+    event.sender.send(PICGO_REMOVE_BY_ID_DB, res, callbackId)
+  })
+}
+
 export default {
   listen () {
     handleGetPluginList()
@@ -281,6 +331,7 @@ export default {
     handleRemoveFiles()
     handlePicGoSaveConfig()
     handlePicGoGetConfig()
+    handlePicGoGalleryDB()
     handleImportLocalPlugin()
   }
 }

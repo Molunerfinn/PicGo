@@ -221,6 +221,7 @@ export function createTray () {
           setTimeout(() => {
             notification.show()
           }, i * 100)
+          // FIXME: gallery db
           db.insert('uploaded', imgs[i])
         }
         handleCopyUrl(pasteText.join('\n'))

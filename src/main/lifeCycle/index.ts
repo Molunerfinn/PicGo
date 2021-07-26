@@ -16,7 +16,8 @@ import busEventList from '~/main/events/busEventList'
 import { IWindowList } from 'apis/app/window/constants'
 import windowManager from 'apis/app/window/windowManager'
 import {
-  updateShortKeyFromVersion212
+  updateShortKeyFromVersion212,
+  migrateGalleryFromVersion230
 } from '~/main/migrate'
 import {
   uploadChoosedFiles,
@@ -29,7 +30,7 @@ import server from '~/main/server/index'
 import updateChecker from '~/main/utils/updateChecker'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import { getUploadFiles } from '~/main/utils/handleArgv'
-import db from '~/main/apis/core/datastore'
+import db, { GalleryDB } from '~/main/apis/core/datastore'
 import bus from '@core/bus'
 import { privacyManager } from '~/main/utils/privacyManager'
 import logger from 'apis/core/picgo/logger'
@@ -54,7 +55,7 @@ const handleStartUpFiles = (argv: string[], cwd: string) => {
 }
 
 class LifeCycle {
-  private beforeReady () {
+  private async beforeReady () {
     protocol.registerSchemesAsPrivileged([{ scheme: 'picgo', privileges: { secure: true, standard: true } }])
     // fix the $PATH in macOS
     fixPath()
@@ -62,6 +63,7 @@ class LifeCycle {
     ipcList.listen()
     busEventList.listen()
     updateShortKeyFromVersion212(db, db.get('settings.shortKey'))
+    await migrateGalleryFromVersion230(db, GalleryDB.getInstance())
   }
   private onReady () {
     app.on('ready', async () => {
@@ -162,12 +164,12 @@ class LifeCycle {
       }
     }
   }
-  launchApp () {
+  async launchApp () {
     const gotTheLock = app.requestSingleInstanceLock()
     if (!gotTheLock) {
       app.quit()
     } else {
-      this.beforeReady()
+      await this.beforeReady()
       this.onReady()
       this.onRunning()
       this.onQuit()

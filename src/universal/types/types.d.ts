@@ -45,6 +45,7 @@ interface ImgInfo {
   extname?: string
   imgUrl?: string
   id?: string
+  type?: string
   [propName: string]: any
 }
 

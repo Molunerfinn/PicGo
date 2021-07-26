@@ -159,14 +159,15 @@ export default class extends Vue {
       this.clearChoosedList()
     }
   }
-  created () {
+  async created () {
     ipcRenderer.on('updateGallery', (event: IpcRendererEvent) => {
-      this.$nextTick(() => {
-        this.filterList = this.getGallery()
+      this.$nextTick(async () => {
+        this.images = await this.$$db.get()
       })
     })
     ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
+    this.images = await this.$$db.get()
   }
   mounted () {
     document.addEventListener('keydown', this.handleDetectShiftKey)
@@ -179,9 +180,6 @@ export default class extends Vue {
   }
   get filterList () {
     return this.getGallery()
-  }
-  set filterList (val) {
-    this.images = val
   }
   get isAllSelected () {
     const values = Object.values(this.choosedList)
@@ -196,38 +194,21 @@ export default class extends Vue {
   getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
   }
-  // FIXME: gallery db && async computed - -||.....
-  getGallery () {
-    if (this.choosedPicBed.length > 0) {
-      let arr: ImgInfo[] = []
-      this.choosedPicBed.forEach(item => {
-        let obj: IObj = {
-          type: item
-        }
-        if (this.searchText) {
-          obj.fileName = this.searchText
-        }
-        arr = arr.concat(this.$db.read().get('uploaded').filter(obj => {
-          return obj.fileName.indexOf(this.searchText) !== -1 && obj.type === item
-        }).reverse().value())
-      })
-      this.images = arr
+  getGallery (): ImgInfo[] {
+    if (this.searchText || this.choosedPicBed.length > 0) {
+      return this.images
+        .filter(item => {
+          let isInChoosedPicBed = true
+          if (this.choosedPicBed.length > 0) {
+            isInChoosedPicBed = this.choosedPicBed.some(type => type === item.type)
+          }
+          return item.fileName?.includes(this.searchText) && isInChoosedPicBed
+        })
     } else {
-      if (this.searchText) {
-        // FIXME: gallery db
-        let data = this.$db.read().get('uploaded')
-        // @ts-ignore
-          .filter(item => {
-            return item.fileName.indexOf(this.searchText) !== -1
-          }).reverse().value()
-        this.images = data
-      } else {
-        // FIXME: gallery db
-        this.images = this.$db.read().get('uploaded').slice().reverse().value()
-      }
+      return this.images
     }
-    return this.images
   }
+
   @Watch('filterList')
   handleFilterListChange () {
     this.clearChoosedList()

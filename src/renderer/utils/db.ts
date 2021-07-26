@@ -27,8 +27,8 @@ export class GalleryDB implements IGalleryDB {
     const res = await this.msgHandler<boolean>(PICGO_UPDATE_BY_ID_DB, id, value)
     return res
   }
-  async getById (id: string): Promise<IObject | undefined> {
-    const res = await this.msgHandler<IObject | undefined>(PICGO_GET_BY_ID_DB, id)
+  async getById<T> (id: string): Promise<IResult<T> | undefined> {
+    const res = await this.msgHandler<IResult<T> | undefined>(PICGO_GET_BY_ID_DB, id)
     return res
   }
   async removeById (id: string): Promise<void> {
@@ -45,7 +45,7 @@ export class GalleryDB implements IGalleryDB {
         }
       }
       ipcRenderer.on(method, callback)
-      ipcRenderer.send(method, ...args)
+      ipcRenderer.send(method, ...args, callbackId)
     })
   }
 }

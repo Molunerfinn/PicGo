@@ -77,13 +77,27 @@ class ConfigStore {
     // @ts-ignore
     return this.read().get(key).removeById(id).write()
   }
+  getConfigPath () {
+    return CONFIG_PATH
+  }
 }
 
 export default new ConfigStore()
 
 // v2.3.0 add gallery db
-const dbStore = new DBStore(DB_PATH, 'gallery')
+class GalleryDB {
+  private static instance: DBStore
+  private constructor () {
+    console.log('init gallery db')
+  }
+  public static getInstance (): DBStore {
+    if (!GalleryDB.instance) {
+      GalleryDB.instance = new DBStore(DB_PATH, 'gallery')
+    }
+    return GalleryDB.instance
+  }
+}
 
 export {
-  dbStore
+  GalleryDB
 }
