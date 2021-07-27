@@ -199,10 +199,14 @@ export default class extends Vue {
       return this.images
         .filter(item => {
           let isInChoosedPicBed = true
+          let isIncludesSearchText = true
           if (this.choosedPicBed.length > 0) {
             isInChoosedPicBed = this.choosedPicBed.some(type => type === item.type)
           }
-          return item.fileName?.includes(this.searchText) && isInChoosedPicBed
+          if (this.searchText) {
+            isIncludesSearchText = item.fileName?.includes(this.searchText) || false
+          }
+          return isIncludesSearchText && isInChoosedPicBed
         })
     } else {
       return this.images

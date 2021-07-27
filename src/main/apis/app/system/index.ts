@@ -9,7 +9,7 @@ import {
 } from 'electron'
 import uploader from 'apis/app/uploader'
 import getPicBeds from '~/main/utils/getPicBeds'
-import db from '~/main/apis/core/datastore'
+import db, { GalleryDB } from '~/main/apis/core/datastore'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import picgo from '@core/picgo'
@@ -221,8 +221,7 @@ export function createTray () {
           setTimeout(() => {
             notification.show()
           }, i * 100)
-          // FIXME: gallery db
-          db.insert('uploaded', imgs[i])
+          await GalleryDB.getInstance().insert(imgs[i])
         }
         handleCopyUrl(pasteText.join('\n'))
         trayWindow.webContents.send('dragFiles', imgs)

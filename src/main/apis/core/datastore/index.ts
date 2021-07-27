@@ -27,10 +27,6 @@ class ConfigStore {
     this.db = Datastore(adapter)
     this.db._.mixin(LodashId)
 
-    if (!this.db.has('uploaded').value()) {
-      this.db.set('uploaded', []).write()
-    }
-
     if (!this.db.has('picBed').value()) {
       this.db.set('picBed', {
         current: 'smms', // deprecated

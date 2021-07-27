@@ -4,7 +4,7 @@ import {
   Notification,
   ipcMain
 } from 'electron'
-import db from '~/main/apis/core/datastore'
+import db, { GalleryDB } from '~/main/apis/core/datastore'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
 import { handleCopyUrl } from '~/main/utils/common'
@@ -88,7 +88,7 @@ class GuiApi implements IGuiApi {
         setTimeout(() => {
           notification.show()
         }, i * 100)
-        db.insert('uploaded', imgs[i])
+        await GalleryDB.getInstance().insert(imgs[i])
       }
       handleCopyUrl(pasteText.join('\n'))
       webContents.send('uploadFiles', imgs)

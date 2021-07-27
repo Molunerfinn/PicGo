@@ -8,7 +8,7 @@ import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
-import db from '~/main/apis/core/datastore'
+import db, { GalleryDB } from '~/main/apis/core/datastore'
 import server from '~/main/server'
 import getPicBeds from '~/main/utils/getPicBeds'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
@@ -40,7 +40,7 @@ export default {
           icon: img[0].imgUrl
         })
         notification.show()
-        db.insert('uploaded', img[0])
+        await GalleryDB.getInstance().insert(img[0])
         trayWindow.webContents.send('clipboardFiles', [])
         if (windowManager.has(IWindowList.SETTING_WINDOW)) {
           windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('updateGallery')

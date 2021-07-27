@@ -6,7 +6,7 @@ import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import uploader from '.'
 import pasteTemplate from '#/utils/pasteTemplate'
-import db from '~/main/apis/core/datastore'
+import db, { GalleryDB } from '~/main/apis/core/datastore'
 import { handleCopyUrl } from '~/main/utils/common'
 import { handleUrlEncode } from '#/utils/common'
 export const uploadClipboardFiles = async (): Promise<string> => {
@@ -23,7 +23,7 @@ export const uploadClipboardFiles = async (): Promise<string> => {
         icon: img[0].imgUrl
       })
       notification.show()
-      db.insert('uploaded', img[0])
+      await GalleryDB.getInstance().insert(img[0])
       // trayWindow just be created in mac/windows, not in linux
       trayWindow?.webContents?.send('clipboardFiles', [])
       trayWindow?.webContents?.send('uploadFiles', img)
@@ -61,7 +61,7 @@ export const uploadChoosedFiles = async (webContents: WebContents, files: IFileW
       setTimeout(() => {
         notification.show()
       }, i * 100)
-      db.insert('uploaded', imgs[i])
+      await GalleryDB.getInstance().insert(imgs[i])
       result.push(handleUrlEncode(imgs[i].imgUrl!))
     }
     handleCopyUrl(pasteText.join('\n'))
