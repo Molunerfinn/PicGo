@@ -4,7 +4,9 @@ import {
   Notification,
   ipcMain
 } from 'electron'
-import db, { GalleryDB } from '~/main/apis/core/datastore'
+import path from 'path'
+import db, { GalleryDB } from 'apis/core/datastore'
+import { dbPathChecker, defaultConfigPath } from 'apis/core/datastore/dbChecker'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
 import { handleCopyUrl } from '~/main/utils/common'
@@ -15,6 +17,8 @@ import {
 import {
   SHOW_INPUT_BOX
 } from '~/universal/events/constants'
+import { DBStore } from '@picgo/store'
+type PromiseResType<T> = T extends Promise<infer R> ? R : T
 
 // Cross-process support may be required in the future
 class GuiApi implements IGuiApi {
@@ -79,7 +83,7 @@ class GuiApi implements IGuiApi {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       const pasteText: string[] = []
       for (let i = 0; i < imgs.length; i++) {
-        pasteText.push(pasteTemplate(pasteStyle, imgs[i]))
+        pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
         const notification = new Notification({
           title: '上传成功',
           body: imgs[i].imgUrl as string,
@@ -126,6 +130,44 @@ class GuiApi implements IGuiApi {
           checkboxChecked: res.checkboxChecked
         })
       })
+    })
+  }
+
+  /**
+   * get picgo config/data path
+   */
+  async getConfigPath () {
+    const currentConfigPath = dbPathChecker()
+    const galleryDBPath = path.join(path.dirname(currentConfigPath), 'picgo.db')
+    return {
+      defaultConfigPath,
+      currentConfigPath,
+      galleryDBPath
+    }
+  }
+
+  get galleryDB (): DBStore {
+    return new Proxy<DBStore>(GalleryDB.getInstance(), {
+      get (target, prop: keyof DBStore) {
+        if (prop === 'removeById') {
+          return new Promise((resolve) => {
+            const guiApi = GuiApi.getInstance()
+            guiApi.showMessageBox({
+              title: '警告',
+              message: '有插件正在试图删除一些相册文件，是否继续',
+              type: 'info',
+              buttons: ['Yes', 'No']
+            }).then(res => {
+              if (res.result === 0) {
+                resolve(Reflect.get(target, prop))
+              } else {
+                resolve(() => {})
+              }
+            })
+          })
+        }
+        return Reflect.get(target, prop)
+      }
     })
   }
 }

@@ -71,12 +71,12 @@
       <el-col :span="20" :offset="2">
         <el-row :gutter="16">
           <gallerys
-            :images="images"
+            :images="filterList"
             :index="idx"
             @close="handleClose"
             :options="options"
           ></gallerys>
-          <el-col :span="6" v-for="(item, index) in images" :key="item.id" class="gallery-list__img">
+          <el-col :span="6" v-for="(item, index) in filterList" :key="item.id" class="gallery-list__img">
             <div
               class="gallery-list__item"
               @click="zoomImage(index)"
@@ -162,12 +162,12 @@ export default class extends Vue {
   async created () {
     ipcRenderer.on('updateGallery', (event: IpcRendererEvent) => {
       this.$nextTick(async () => {
-        this.images = await this.$$db.get()
+        this.updateGallery()
       })
     })
     ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
-    this.images = await this.$$db.get()
+    this.updateGallery()
   }
   mounted () {
     document.addEventListener('keydown', this.handleDetectShiftKey)
@@ -211,6 +211,9 @@ export default class extends Vue {
     } else {
       return this.images
     }
+  }
+  async updateGallery () {
+    this.images = (await this.$$db.get({ orderBy: 'desc' })).data
   }
 
   @Watch('filterList')
@@ -257,7 +260,8 @@ export default class extends Vue {
   }
   async copy (item: ImgInfo) {
     const style = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
-    const copyLink = pasteStyle(style, item)
+    const customLink = await this.getConfig<string>('settings.customLink')
+    const copyLink = pasteStyle(style, item, customLink)
     const obj = {
       title: '复制链接成功',
       body: copyLink,
@@ -286,7 +290,7 @@ export default class extends Vue {
       myNotification.onclick = () => {
         return true
       }
-      this.getGallery()
+      this.updateGallery()
     }).catch((e) => {
       console.log(e)
       return true
@@ -311,7 +315,7 @@ export default class extends Vue {
       return true
     }
     this.dialogVisible = false
-    this.getGallery()
+    this.updateGallery()
   }
   choosePicBed (type: string) {
     let idx = this.choosedPicBed.indexOf(type)
@@ -356,7 +360,6 @@ export default class extends Vue {
         }
         this.clearChoosedList()
         this.choosedList = {} // 只有删除才能将这个置空
-        this.getGallery()
         const obj = {
           title: '操作结果',
           body: '删除成功'
@@ -366,6 +369,7 @@ export default class extends Vue {
         myNotification.onclick = () => {
           return true
         }
+        this.updateGallery()
       }).catch(() => {
         return true
       })
@@ -375,6 +379,7 @@ export default class extends Vue {
     if (Object.values(this.choosedList).some(item => item)) {
       const copyString: string[] = []
       const style = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
+      const customLink = await this.getConfig<string>('settings.customLink')
       // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
       const imageIDList = Object.keys(this.choosedList)
       for (let i = 0; i < imageIDList.length; i++) {
@@ -382,7 +387,7 @@ export default class extends Vue {
         if (this.choosedList[key]) {
           const item = await this.$$db.getById<ImgInfo>(key)
           if (item) {
-            copyString.push(pasteStyle(style, item))
+            copyString.push(pasteStyle(style, item, customLink))
             this.choosedList[key] = false
           }
         }

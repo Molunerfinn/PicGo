@@ -50,14 +50,15 @@ export default class extends Vue {
     return this.files.slice().reverse()
   }
   async getData () {
-    this.files = (await this.$$db.get<ImgInfo>()).slice().reverse().slice(0, 5)
+    this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
   }
   async copyTheLink (item: ImgInfo) {
     this.notification.body = item.imgUrl!
     this.notification.icon = item.imgUrl!
     const myNotification = new Notification(this.notification.title, this.notification)
     const pasteStyle = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
-    clipboard.writeText(pasteTemplate(pasteStyle, item))
+    const customLink = await this.getConfig<string>('settings.customLink')
+    clipboard.writeText(pasteTemplate(pasteStyle, item, customLink))
     myNotification.onclick = () => {
       return true
     }
@@ -90,13 +91,13 @@ export default class extends Vue {
         const item = files[i]
         await this.$$db.insert(item)
       }
-      this.files = (await this.$$db.get<ImgInfo>()).slice().reverse().slice(0, 5)
+      this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
     })
     ipcRenderer.on('clipboardFiles', (event: Event, files: ImgInfo[]) => {
       this.clipboardFiles = files
     })
     ipcRenderer.on('uploadFiles', async (event: Event) => {
-      this.files = (await this.$$db.get()).slice().reverse().slice(0, 5)
+      this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
       console.log(this.files)
       this.uploadFlag = false
     })

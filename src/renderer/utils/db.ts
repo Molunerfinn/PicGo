@@ -1,4 +1,4 @@
-import { IObject, IResult } from '@picgo/store/dist/types'
+import { IObject, IResult, IGetResult, IFilter } from '@picgo/store/dist/types'
 import { ipcRenderer, IpcRendererEvent } from 'electron'
 import { uuid } from 'uuidv4'
 import {
@@ -11,8 +11,8 @@ import {
 } from '#/events/constants'
 import { IGalleryDB } from '#/types/extra-vue'
 export class GalleryDB implements IGalleryDB {
-  async get<T> (): Promise<IResult<T>[]> {
-    const res = await this.msgHandler<IResult<T>[]>(PICGO_GET_DB)
+  async get<T> (filter?: IFilter): Promise<IGetResult<T>> {
+    const res = await this.msgHandler<IGetResult<T>>(PICGO_GET_DB, filter)
     return res
   }
   async insert<T> (value: T): Promise<IResult<T>> {

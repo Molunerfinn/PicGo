@@ -1,11 +1,11 @@
 import fs from 'fs-extra'
 import path from 'path'
 import os from 'os'
-import { remote, app } from 'electron'
 import pkg from 'root/package.json'
+import { dbPathChecker } from 'apis/core/datastore/dbChecker'
 
-const APP = process.type === 'renderer' ? remote.app : app
-const STORE_PATH = APP.getPath('userData')
+const configPath = dbPathChecker()
+const CONFIG_DIR = path.dirname(configPath)
 
 function injectPicGoVersion () {
   global.PICGO_GUI_VERSION = pkg.version
@@ -41,7 +41,7 @@ function resolveMacWorkFlow () {
  */
 function resolveClipboardImageGenerator () {
   let clipboardFiles = getClipboardFiles()
-  if (!fs.pathExistsSync(path.join(STORE_PATH, 'windows10.ps1'))) {
+  if (!fs.pathExistsSync(path.join(CONFIG_DIR, 'windows10.ps1'))) {
     clipboardFiles.forEach(item => {
       fs.copyFileSync(item.origin, item.dest)
     })
@@ -52,10 +52,15 @@ function resolveClipboardImageGenerator () {
   }
 
   function diffFilesAndUpdate (filePath1: string, filePath2: string) {
-    let file1 = fs.readFileSync(filePath1)
-    let file2 = fs.readFileSync(filePath2)
+    try {
+      let file1 = fs.existsSync(filePath1) && fs.readFileSync(filePath1)
+      let file2 = fs.existsSync(filePath1) && fs.readFileSync(filePath2)
 
-    if (!file1.equals(file2)) {
+      if (!file1 || !file2 || !file1.equals(file2)) {
+        fs.copyFileSync(filePath1, filePath2)
+      }
+    } catch (e) {
+      console.error(e)
       fs.copyFileSync(filePath1, filePath2)
     }
   }
@@ -65,13 +70,14 @@ function resolveClipboardImageGenerator () {
       '/linux.sh',
       '/mac.applescript',
       '/windows.ps1',
-      '/windows10.ps1'
+      '/windows10.ps1',
+      '/wsl.sh'
     ]
 
     return files.map(item => {
       return {
         origin: path.join(__static, item),
-        dest: path.join(STORE_PATH, item)
+        dest: path.join(CONFIG_DIR, item)
       }
     })
   }

@@ -38,10 +38,11 @@ const migrateGalleryFromVersion230 = async (configDB: typeof ConfigStore, galler
   if (fse.existsSync(configBakPath)) {
     return
   }
-  fse.copyFileSync(configPath, configBakPath)
   // migrate gallery from config to gallery db
-  if (originGallery && originGallery.length > 0) {
+  if (originGallery && originGallery?.length > 0) {
+    fse.copyFileSync(configPath, configBakPath)
     await galleryDB.insertMany(originGallery)
+    configDB.set('uploaded', [])
   }
 }
 

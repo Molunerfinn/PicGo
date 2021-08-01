@@ -55,7 +55,7 @@ const handleStartUpFiles = (argv: string[], cwd: string) => {
 }
 
 class LifeCycle {
-  private async beforeReady () {
+  private beforeReady () {
     protocol.registerSchemesAsPrivileged([{ scheme: 'picgo', privileges: { secure: true, standard: true } }])
     // fix the $PATH in macOS
     fixPath()
@@ -63,10 +63,11 @@ class LifeCycle {
     ipcList.listen()
     busEventList.listen()
     updateShortKeyFromVersion212(db, db.get('settings.shortKey'))
-    await migrateGalleryFromVersion230(db, GalleryDB.getInstance())
   }
   private onReady () {
     app.on('ready', async () => {
+      console.log('on ready')
+      await migrateGalleryFromVersion230(db, GalleryDB.getInstance())
       createProtocol('picgo')
       if (isDevelopment && !process.env.IS_TEST) {
         // Install Vue Devtools
@@ -169,7 +170,7 @@ class LifeCycle {
     if (!gotTheLock) {
       app.quit()
     } else {
-      await this.beforeReady()
+      this.beforeReady()
       this.onReady()
       this.onRunning()
       this.onQuit()

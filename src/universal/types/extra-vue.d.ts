@@ -1,9 +1,9 @@
 import VueRouter, { Route } from 'vue-router'
 import axios from 'axios'
-import { IObject, IResult } from '@picgo/store/dist/types'
+import { IObject, IResult, IGetResult, IFilter } from '@picgo/store/dist/types'
 
 interface IGalleryDB {
-  get<T>(): Promise<IResult<T>[]>
+  get<T>(filter?: IFilter): Promise<IGetResult<T>>
   insert<T> (value: T): Promise<IResult<T>>
   insertMany<T> (value: T[]): Promise<IResult<T>[]>
   updateById (id: string, value: IObject): Promise<boolean>

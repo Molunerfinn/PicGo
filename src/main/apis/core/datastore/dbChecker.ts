@@ -81,6 +81,8 @@ function dbPathChecker (): string {
   return defaultConfigPath
 }
 
+export const defaultConfigPath = configFilePath
+
 export {
   dbChecker,
   dbPathChecker

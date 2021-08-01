@@ -212,7 +212,7 @@ export function createTray () {
       if (imgs !== false) {
         const pasteText: string[] = []
         for (let i = 0; i < imgs.length; i++) {
-          pasteText.push(pasteTemplate(pasteStyle, imgs[i]))
+          pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
           const notification = new Notification({
             title: '上传成功',
             body: imgs[i].imgUrl!,

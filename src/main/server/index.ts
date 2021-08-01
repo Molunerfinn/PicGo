@@ -103,6 +103,7 @@ class Server {
     })
   }
   startup () {
+    console.log('startup', this.config.enable)
     if (this.config.enable) {
       this.listen(this.config.port)
     }

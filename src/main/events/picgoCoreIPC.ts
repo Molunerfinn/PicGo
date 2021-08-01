@@ -28,7 +28,7 @@ import {
 } from '#/events/constants'
 
 import { GalleryDB } from 'apis/core/datastore'
-import { IObject } from '@picgo/store/dist/types'
+import { IObject, IFilter } from '@picgo/store/dist/types'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -283,10 +283,10 @@ const handleImportLocalPlugin = () => {
 }
 
 const handlePicGoGalleryDB = () => {
-  ipcMain.on(PICGO_GET_DB, async (event: IpcMainEvent, callbackId: string) => {
+  ipcMain.on(PICGO_GET_DB, async (event: IpcMainEvent, filter: IFilter, callbackId: string) => {
     const dbStore = GalleryDB.getInstance()
-    const res = await dbStore.get()
-    event.sender.send(PICGO_GET_CONFIG, res, callbackId)
+    const res = await dbStore.get(filter)
+    event.sender.send(PICGO_GET_DB, res, callbackId)
   })
 
   ipcMain.on(PICGO_INSERT_DB, async (event: IpcMainEvent, value: IObject, callbackId: string) => {

@@ -1,4 +1,3 @@
-import db from '~/main/apis/core/datastore'
 import { IPasteStyle } from '#/types/enum'
 import { handleUrlEncode } from './common'
 
@@ -19,15 +18,15 @@ const formatCustomLink = (customLink: string, item: ImgInfo) => {
   return customLink
 }
 
-export default (style: IPasteStyle, item: ImgInfo) => {
+export default (style: IPasteStyle, item: ImgInfo, customLink: string | undefined) => {
   const url = handleUrlEncode(item.url || item.imgUrl)
-  const customLink = db.get('settings.customLink') || '$url'
+  const _customLink = customLink || '$url'
   const tpl = {
     'markdown': `![](${url})`,
     'HTML': `<img src="${url}"/>`,
     'URL': url,
     'UBB': `[IMG]${url}[/IMG]`,
-    'Custom': formatCustomLink(customLink, item)
+    'Custom': formatCustomLink(_customLink, item)
   }
   return tpl[style]
 }
