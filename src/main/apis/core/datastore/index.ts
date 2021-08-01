@@ -3,20 +3,16 @@ import Datastore from 'lowdb'
 import LodashId from 'lodash-id'
 import FileSync from 'lowdb/adapters/FileSync'
 import fs from 'fs-extra'
-import path from 'path'
-import { app } from 'electron'
-import { dbPathChecker } from './dbChecker'
+import { dbPathChecker, dbPathDir, getGalleryDBPath } from './dbChecker'
 import { DBStore } from '@picgo/store'
 
-const APP = app
-const STORE_PATH = APP.getPath('userData')
+const STORE_PATH = dbPathDir()
 
 if (!fs.pathExistsSync(STORE_PATH)) {
   fs.mkdirpSync(STORE_PATH)
 }
 const CONFIG_PATH: string = dbPathChecker()
-const CONFIG_DIR = path.dirname(CONFIG_PATH)
-const DB_PATH = path.join(CONFIG_DIR, 'picgo.db')
+const DB_PATH: string = getGalleryDBPath().dbPath
 
 // TODO: use JSONStore with @picgo/store
 class ConfigStore {

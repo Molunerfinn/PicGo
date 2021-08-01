@@ -6,6 +6,9 @@ const APP = process.type === 'renderer' ? remote.app : app
 const STORE_PATH = APP.getPath('userData')
 const configFilePath = path.join(STORE_PATH, 'data.json')
 const configFileBackupPath = path.join(STORE_PATH, 'data.bak.json')
+export const defaultConfigPath = configFilePath
+let _configFilePath = ''
+let hasCheckPath = false
 
 const errorMsg = {
   broken: 'PicGo 配置文件损坏，已经恢复为默认配置',
@@ -15,6 +18,17 @@ const errorMsg = {
 function dbChecker () {
   if (process.type !== 'renderer') {
     if (!global.notificationList) global.notificationList = []
+    // db save bak
+    try {
+      const { dbPath, dbBackupPath } = getGalleryDBPath()
+      if (fs.existsSync(dbPath)) {
+        fs.copyFileSync(dbPath, dbBackupPath)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+
+    const configFilePath = dbPathChecker()
     if (!fs.existsSync(configFilePath)) {
       return
     }
@@ -23,6 +37,7 @@ function dbChecker () {
       title: '注意',
       body: ''
     }
+    // config save bak
     try {
       configFile = fs.readFileSync(configFilePath, { encoding: 'utf-8' })
       JSON.parse(configFile)
@@ -55,35 +70,63 @@ function dbChecker () {
  * Get config path
  */
 function dbPathChecker (): string {
-  const defaultConfigPath = configFilePath
-  if (process.type !== 'renderer') {
-    // if defaultConfig path is not exit
-    // do not parse the content of config
-    if (!fs.existsSync(defaultConfigPath)) {
-      return defaultConfigPath
-    }
-    try {
-      const configString = fs.readFileSync(configFilePath, { encoding: 'utf-8' })
-      const config = JSON.parse(configString)
-      const userConfigPath: string = config.configPath || ''
-      if (userConfigPath) {
-        if (fs.existsSync(userConfigPath) && userConfigPath.endsWith('.json')) {
-          return userConfigPath
-        }
-      }
-      return defaultConfigPath
-    } catch (e) {
-      // TODO: local logger is needed
-      console.error(e)
-      return defaultConfigPath
-    }
+  if (_configFilePath) {
+    return _configFilePath
   }
-  return defaultConfigPath
+  // defaultConfigPath
+  _configFilePath = defaultConfigPath
+  // if defaultConfig path is not exit
+  // do not parse the content of config
+  if (!fs.existsSync(defaultConfigPath)) {
+    return _configFilePath
+  }
+  try {
+    const configString = fs.readFileSync(defaultConfigPath, { encoding: 'utf-8' })
+    const config = JSON.parse(configString)
+    const userConfigPath: string = config.configPath || ''
+    if (userConfigPath) {
+      if (fs.existsSync(userConfigPath) && userConfigPath.endsWith('.json')) {
+        _configFilePath = userConfigPath
+        return _configFilePath
+      }
+    }
+    return _configFilePath
+  } catch (e) {
+    // TODO: local logger is needed
+    if (!hasCheckPath) {
+      let optionsTpl = {
+        title: '注意',
+        body: '自定义文件解析出错，请检查路径内容是否正确'
+      }
+      global.notificationList.push(optionsTpl)
+      hasCheckPath = true
+    }
+    console.error(e)
+    _configFilePath = defaultConfigPath
+    return _configFilePath
+  }
 }
 
-export const defaultConfigPath = configFilePath
+function dbPathDir () {
+  return path.dirname(dbPathChecker())
+}
+
+function getGalleryDBPath (): {
+  dbPath: string
+  dbBackupPath: string
+} {
+  const configPath = dbPathChecker()
+  const dbPath = path.join(path.dirname(configPath), 'picgo.db')
+  const dbBackupPath = path.join(path.dirname(dbPath), 'picgo.bak.db')
+  return {
+    dbPath,
+    dbBackupPath
+  }
+}
 
 export {
   dbChecker,
-  dbPathChecker
+  dbPathChecker,
+  dbPathDir,
+  getGalleryDBPath
 }

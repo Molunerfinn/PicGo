@@ -1,9 +1,9 @@
-import { app } from 'electron'
 import fse from 'fs-extra'
 import path from 'path'
 import dayjs from 'dayjs'
 import util from 'util'
-const STORE_PATH = app.getPath('userData')
+import { dbPathDir } from 'apis/core/datastore/dbChecker'
+const STORE_PATH = dbPathDir()
 const LOG_PATH = path.join(STORE_PATH, '/picgo.log')
 
 // since the error may occur in picgo-core

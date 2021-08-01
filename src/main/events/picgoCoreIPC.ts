@@ -4,8 +4,7 @@ import {
   dialog,
   shell,
   IpcMainEvent,
-  ipcMain,
-  app
+  ipcMain
 } from 'electron'
 import PicGoCore from '~/universal/types/picgo'
 import { IPicGoHelperType } from '#/types/enum'
@@ -16,6 +15,7 @@ import { IGuiMenuItem } from 'picgo/dist/src/types'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import { showNotification } from '~/main/utils/common'
+import { dbPathChecker } from 'apis/core/datastore/dbChecker'
 import {
   PICGO_SAVE_CONFIG,
   PICGO_GET_CONFIG,
@@ -24,7 +24,8 @@ import {
   PICGO_INSERT_MANY_DB,
   PICGO_UPDATE_BY_ID_DB,
   PICGO_GET_BY_ID_DB,
-  PICGO_REMOVE_BY_ID_DB
+  PICGO_REMOVE_BY_ID_DB,
+  PICGO_OPEN_FILE
 } from '#/events/constants'
 
 import { GalleryDB } from 'apis/core/datastore'
@@ -33,7 +34,7 @@ import { IObject, IFilter } from '@picgo/store/dist/types'
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
 // const PluginHandler = requireFunc('picgo/dist/lib/PluginHandler').default
-const STORE_PATH = app.getPath('userData')
+const STORE_PATH = path.dirname(dbPathChecker())
 // const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
 
 type PicGoNotice = {
@@ -320,6 +321,13 @@ const handlePicGoGalleryDB = () => {
   })
 }
 
+const handleOpenFile = () => {
+  ipcMain.on(PICGO_OPEN_FILE, (event: IpcMainEvent, fileName: string) => {
+    const abFilePath = path.join(STORE_PATH, fileName)
+    shell.openItem(abFilePath)
+  })
+}
+
 export default {
   listen () {
     handleGetPluginList()
@@ -333,5 +341,6 @@ export default {
     handlePicGoGetConfig()
     handlePicGoGalleryDB()
     handleImportLocalPlugin()
+    handleOpenFile()
   }
 }

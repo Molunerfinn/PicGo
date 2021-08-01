@@ -338,8 +338,8 @@
 <script lang="ts">
 import keyDetect from '@/utils/key-binding'
 import pkg from 'root/package.json'
-import path from 'path'
 import { IConfig } from 'picgo/dist/src/types/index'
+import { PICGO_OPEN_FILE } from '#/events/constants'
 import {
   ipcRenderer,
   remote
@@ -471,10 +471,7 @@ export default class extends Vue {
     }) as string[]
   }
   openFile (file: string) {
-    const { app, shell } = remote
-    const STORE_PATH = app.getPath('userData')
-    const FILE = path.join(STORE_PATH, `/${file}`)
-    shell.openItem(FILE)
+    ipcRenderer.send(PICGO_OPEN_FILE, file)
   }
   openLogSetting () {
     this.logFileVisible = true

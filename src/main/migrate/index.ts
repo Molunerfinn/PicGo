@@ -2,6 +2,7 @@ import { DBStore } from '@picgo/store'
 import ConfigStore from '~/main/apis/core/datastore'
 import path from 'path'
 import fse from 'fs-extra'
+import PicGoCore from '#/types/picgo'
 // from v2.1.2
 const updateShortKeyFromVersion212 = (db: typeof ConfigStore, shortKeyConfig: IShortKeyConfigs | IOldShortKeyConfigs) => {
   // #557 极端情况可能会出现配置不存在，需要重新写入
@@ -31,18 +32,19 @@ const updateShortKeyFromVersion212 = (db: typeof ConfigStore, shortKeyConfig: IS
   return false
 }
 
-const migrateGalleryFromVersion230 = async (configDB: typeof ConfigStore, galleryDB: DBStore) => {
+const migrateGalleryFromVersion230 = async (configDB: typeof ConfigStore, galleryDB: DBStore, picgo: PicGoCore) => {
   const originGallery: ImgInfo[] = configDB.get('uploaded')
   const configPath = configDB.getConfigPath()
-  const configBakPath = path.join(path.dirname(configPath), 'config-bak.json')
-  if (fse.existsSync(configBakPath)) {
-    return
-  }
+  const configBakPath = path.join(path.dirname(configPath), 'config.bak.json')
   // migrate gallery from config to gallery db
   if (originGallery && originGallery?.length > 0) {
-    fse.copyFileSync(configPath, configBakPath)
+    if (fse.existsSync(configBakPath)) {
+      fse.copyFileSync(configPath, configBakPath)
+    }
     await galleryDB.insertMany(originGallery)
-    configDB.set('uploaded', [])
+    picgo.saveConfig({
+      uploaded: []
+    })
   }
 }
 

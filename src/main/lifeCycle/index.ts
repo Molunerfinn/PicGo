@@ -34,6 +34,7 @@ import db, { GalleryDB } from '~/main/apis/core/datastore'
 import bus from '@core/bus'
 import { privacyManager } from '~/main/utils/privacyManager'
 import logger from 'apis/core/picgo/logger'
+import picgo from 'apis/core/picgo'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -55,7 +56,7 @@ const handleStartUpFiles = (argv: string[], cwd: string) => {
 }
 
 class LifeCycle {
-  private beforeReady () {
+  private async beforeReady () {
     protocol.registerSchemesAsPrivileged([{ scheme: 'picgo', privileges: { secure: true, standard: true } }])
     // fix the $PATH in macOS
     fixPath()
@@ -63,11 +64,11 @@ class LifeCycle {
     ipcList.listen()
     busEventList.listen()
     updateShortKeyFromVersion212(db, db.get('settings.shortKey'))
+    await migrateGalleryFromVersion230(db, GalleryDB.getInstance(), picgo)
   }
   private onReady () {
-    app.on('ready', async () => {
+    const readyFunction = async () => {
       console.log('on ready')
-      await migrateGalleryFromVersion230(db, GalleryDB.getInstance())
       createProtocol('picgo')
       if (isDevelopment && !process.env.IS_TEST) {
         // Install Vue Devtools
@@ -102,7 +103,12 @@ class LifeCycle {
           notice.show()
         }
       }
-    })
+    }
+    if (!app.isReady()) {
+      app.on('ready', readyFunction)
+    } else {
+      readyFunction()
+    }
   }
   private onRunning () {
     app.on('second-instance', (event, commandLine, workingDirectory) => {
@@ -170,7 +176,7 @@ class LifeCycle {
     if (!gotTheLock) {
       app.quit()
     } else {
-      this.beforeReady()
+      await this.beforeReady()
       this.onReady()
       this.onRunning()
       this.onQuit()

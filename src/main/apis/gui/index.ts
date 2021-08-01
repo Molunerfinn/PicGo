@@ -6,7 +6,7 @@ import {
 } from 'electron'
 import path from 'path'
 import db, { GalleryDB } from 'apis/core/datastore'
-import { dbPathChecker, defaultConfigPath } from 'apis/core/datastore/dbChecker'
+import { dbPathChecker, defaultConfigPath, getGalleryDBPath } from 'apis/core/datastore/dbChecker'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
 import { handleCopyUrl } from '~/main/utils/common'
@@ -138,7 +138,7 @@ class GuiApi implements IGuiApi {
    */
   async getConfigPath () {
     const currentConfigPath = dbPathChecker()
-    const galleryDBPath = path.join(path.dirname(currentConfigPath), 'picgo.db')
+    const galleryDBPath = getGalleryDBPath().dbPath
     return {
       defaultConfigPath,
       currentConfigPath,
