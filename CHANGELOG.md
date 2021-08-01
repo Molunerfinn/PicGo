@@ -1,3 +1,26 @@
+# :tada: 2.3.0-beta.7 (2021-08-01)
+
+
+### :sparkles: Features
+
+* add gallery db ([6ddd660](https://github.com/Molunerfinn/PicGo/commit/6ddd660))
+* add win32 support ([1657542](https://github.com/Molunerfinn/PicGo/commit/1657542)), closes [#632](https://github.com/Molunerfinn/PicGo/issues/632)
+* finish custom config path ([7030f7a](https://github.com/Molunerfinn/PicGo/commit/7030f7a)), closes [#255](https://github.com/Molunerfinn/PicGo/issues/255)
+
+
+### :bug: Bug Fixes
+
+* bug of gallery db for plugin ([96a63ea](https://github.com/Molunerfinn/PicGo/commit/96a63ea))
+* enable plugin should reload ([49e5f34](https://github.com/Molunerfinn/PicGo/commit/49e5f34)), closes [#659](https://github.com/Molunerfinn/PicGo/issues/659)
+* gallery db bug ([f1eb7f4](https://github.com/Molunerfinn/PicGo/commit/f1eb7f4))
+* multiple uploading in the same time will cause output conflict ([06b67e5](https://github.com/Molunerfinn/PicGo/commit/06b67e5)), closes [#666](https://github.com/Molunerfinn/PicGo/issues/666)
+* multiple uploading in the same time will cause rename failed ([12cecc2](https://github.com/Molunerfinn/PicGo/commit/12cecc2))
+* uploader error in linux ([ab762ef](https://github.com/Molunerfinn/PicGo/commit/ab762ef)), closes [#627](https://github.com/Molunerfinn/PicGo/issues/627)
+* use uploader first ([92022a6](https://github.com/Molunerfinn/PicGo/commit/92022a6))
+* windows ia32 && x64 build options ([bdf523a](https://github.com/Molunerfinn/PicGo/commit/bdf523a))
+
+
+
 # :tada: 2.3.0-beta.6 (2021-04-24)
 
 
