@@ -95,7 +95,7 @@ const config = {
 
 if (process.env.NODE_ENV === 'development') {
   config.configureWebpack = {
-    devtool: 'eval-source-map'
+    devtool: 'source-map'
   }
   // for dev main process hot reload
   config.pluginOptions.electronBuilder.mainProcessWatch = ['src/main/**/*']

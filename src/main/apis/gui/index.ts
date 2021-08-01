@@ -150,20 +150,24 @@ class GuiApi implements IGuiApi {
     return new Proxy<DBStore>(GalleryDB.getInstance(), {
       get (target, prop: keyof DBStore) {
         if (prop === 'removeById') {
-          return new Promise((resolve) => {
-            const guiApi = GuiApi.getInstance()
-            guiApi.showMessageBox({
-              title: '警告',
-              message: '有插件正在试图删除一些相册文件，是否继续',
-              type: 'info',
-              buttons: ['Yes', 'No']
-            }).then(res => {
-              if (res.result === 0) {
-                resolve(Reflect.get(target, prop))
-              } else {
-                resolve(() => {})
-              }
-            })
+          return new Proxy(GalleryDB.getInstance().removeById, {
+            apply (target, ctx, args) {
+              return new Promise((resolve) => {
+                const guiApi = GuiApi.getInstance()
+                guiApi.showMessageBox({
+                  title: '警告',
+                  message: '有插件正在试图删除一些相册图片，是否继续',
+                  type: 'info',
+                  buttons: ['Yes', 'No']
+                }).then(res => {
+                  if (res.result === 0) {
+                    resolve(Reflect.apply(target, ctx, args))
+                  } else {
+                    resolve(undefined)
+                  }
+                })
+              })
+            }
           })
         }
         return Reflect.get(target, prop)

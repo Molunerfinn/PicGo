@@ -268,7 +268,8 @@ export default class extends Vue {
             _this.configName = plugin.config[i].fullName || plugin.config[i].name
             _this.dialogVisible = true
             _this.config = plugin.config[i].config
-          }
+          },
+          enabled: plugin.enabled
         }
         menu.push(obj)
       }
@@ -476,9 +477,6 @@ export default class extends Vue {
   }
   goAwesomeList () {
     remote.shell.openExternal('https://github.com/PicGo/Awesome-PicGo')
-  }
-  saveConfig (data: IObj) {
-    ipcRenderer.send('picgoSaveData', data)
   }
   handleImportLocalPlugin () {
     ipcRenderer.send('importLocalPlugin')

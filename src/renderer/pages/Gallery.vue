@@ -155,8 +155,12 @@ export default class extends Vue {
   picBed: IPicBedType[] = []
   @Watch('$route')
   handleRouteUpdate (to: any, from: any) {
+    console.log(to, from)
     if (from.name === 'gallery') {
       this.clearChoosedList()
+    }
+    if (to.name === 'gallery') {
+      this.updateGallery()
     }
   }
   async created () {
