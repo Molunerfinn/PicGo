@@ -29,7 +29,7 @@ router.post('/upload', async ({
           response,
           body: {
             success: true,
-            result: res
+            result: [res]
           }
         })
       } else {
