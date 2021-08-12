@@ -11,7 +11,6 @@ export default class extends Vue {
         [config]: value
       }
     }
-    console.log(PICGO_SAVE_CONFIG, config, value)
     ipcRenderer.send(PICGO_SAVE_CONFIG, config)
   }
   getConfig<T> (key?: string): Promise<T | undefined> {

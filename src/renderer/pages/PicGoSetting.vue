@@ -422,6 +422,7 @@ export default class extends Vue {
     this.os = process.platform
     ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
+    this.initData()
   }
   async initData () {
     const config = (await this.getConfig<IConfig>())!

@@ -72,7 +72,7 @@ import { cloneDeep, union } from 'lodash'
 })
 export default class extends Vue {
   @Prop() private config!: any[]
-  @Prop() readonly type!: string
+  @Prop() readonly type!: 'uploader' | 'transformer' | 'plugin'
   @Prop() readonly id!: string
   configList = []
   ruleForm = {}
@@ -80,9 +80,42 @@ export default class extends Vue {
     deep: true,
     immediate: true
   })
-  async handleConfigChange (val: any) {
+  handleConfigChange (val: any) {
+    this.handleConfig(val)
+  }
+  async validate () {
+    return new Promise((resolve, reject) => {
+      // @ts-ignore
+      this.$refs.form.validate((valid: boolean) => {
+        if (valid) {
+          resolve(this.ruleForm)
+        } else {
+          resolve(false)
+          return false
+        }
+      })
+    })
+  }
+
+  getConfigType () {
+    switch (this.type) {
+      case 'plugin': {
+        return this.id
+      }
+      case 'uploader': {
+        return `picBed.${this.id}`
+      }
+      case 'transformer': {
+        return `transformer.${this.id}`
+      }
+      default:
+        return `unknown`
+    }
+  }
+
+  async handleConfig (val: any) {
     this.ruleForm = Object.assign({}, {})
-    const config = await this.getConfig<IPicGoPluginConfig>(`picBed.${this.id}`)
+    const config = await this.getConfig<IPicGoPluginConfig>(this.getConfigType())
     if (val.length > 0 && config) {
       this.configList = cloneDeep(val).map((item: any) => {
         let defaultValue = item.default !== undefined
@@ -101,19 +134,6 @@ export default class extends Vue {
         return item
       })
     }
-  }
-  async validate () {
-    return new Promise((resolve, reject) => {
-      // @ts-ignore
-      this.$refs.form.validate((valid: boolean) => {
-        if (valid) {
-          resolve(this.ruleForm)
-        } else {
-          resolve(false)
-          return false
-        }
-      })
-    })
   }
 }
 </script>

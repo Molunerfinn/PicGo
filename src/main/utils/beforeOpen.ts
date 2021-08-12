@@ -1,19 +1,12 @@
 import fs from 'fs-extra'
 import path from 'path'
 import os from 'os'
-import pkg from 'root/package.json'
 import { dbPathChecker } from 'apis/core/datastore/dbChecker'
 
 const configPath = dbPathChecker()
 const CONFIG_DIR = path.dirname(configPath)
 
-function injectPicGoVersion () {
-  global.PICGO_GUI_VERSION = pkg.version
-  global.PICGO_CORE_VERSION = pkg.dependencies.picgo.replace('^', '')
-}
-
 function beforeOpen () {
-  injectPicGoVersion()
   if (process.platform === 'darwin') {
     resolveMacWorkFlow()
   }
