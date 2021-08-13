@@ -1,3 +1,13 @@
+# :tada: 2.3.0-beta.8 (2021-08-13)
+
+
+### :bug: Bug Fixes
+
+* settings bug ([20d3cf9](https://github.com/Molunerfinn/PicGo/commit/20d3cf9)), closes [#710](https://github.com/Molunerfinn/PicGo/issues/710)
+* upload clipboard images via http should return list ([ae69263](https://github.com/Molunerfinn/PicGo/commit/ae69263)), closes [#721](https://github.com/Molunerfinn/PicGo/issues/721)
+
+
+
 # :tada: 2.3.0-beta.7 (2021-08-01)
 
 
