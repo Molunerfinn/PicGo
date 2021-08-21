@@ -96,8 +96,8 @@ class LifeCycle {
         handleStartUpFiles(process.argv, process.cwd())
       }
 
-      if (global.notificationList?.length > 0) {
-        while (global.notificationList.length) {
+      if (global.notificationList && global.notificationList?.length > 0) {
+        while (global.notificationList?.length) {
           const option = global.notificationList.pop()
           const notice = new Notification(option!)
           notice.show()

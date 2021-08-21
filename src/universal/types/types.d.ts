@@ -321,3 +321,7 @@ interface IAnalyticsData {
 interface IStringKeyMap {
   [propName: string]: any
 }
+
+type ILogArgvType = string | number
+
+type ILogArgvTypeWithError = ILogArgvType | Error

@@ -2,6 +2,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import { remote, app } from 'electron'
 import dayjs from 'dayjs'
+import { getLogger } from '@core/utils/localLogger'
 const APP = process.type === 'renderer' ? remote.app : app
 const STORE_PATH = APP.getPath('userData')
 const configFilePath = path.join(STORE_PATH, 'data.json')
@@ -15,9 +16,11 @@ const errorMsg = {
   brokenButBackup: 'PicGo 配置文件损坏，已经恢复为备份配置'
 }
 
+/** ensure notification list */
+if (!global.notificationList) global.notificationList = []
+
 function dbChecker () {
   if (process.type !== 'renderer') {
-    if (!global.notificationList) global.notificationList = []
     // db save bak
     try {
       const { dbPath, dbBackupPath } = getGalleryDBPath()
@@ -50,16 +53,16 @@ function dbChecker () {
           fs.writeFileSync(configFilePath, configFile, { encoding: 'utf-8' })
           const stats = fs.statSync(configFileBackupPath)
           optionsTpl.body = `${errorMsg.brokenButBackup}\n备份文件版本：${dayjs(stats.mtime).format('YYYY-MM-DD HH:mm:ss')}`
-          global.notificationList.push(optionsTpl)
+          global.notificationList?.push(optionsTpl)
           return
         } catch (e) {
           optionsTpl.body = errorMsg.broken
-          global.notificationList.push(optionsTpl)
+          global.notificationList?.push(optionsTpl)
           return
         }
       }
       optionsTpl.body = errorMsg.broken
-      global.notificationList.push(optionsTpl)
+      global.notificationList?.push(optionsTpl)
       return
     }
     fs.writeFileSync(configFileBackupPath, configFile, { encoding: 'utf-8' })
@@ -92,15 +95,17 @@ function dbPathChecker (): string {
     }
     return _configFilePath
   } catch (e) {
-    // TODO: local logger is needed
+    const picgoLogPath = path.join(defaultConfigPath, 'picgo.log')
+    const logger = getLogger(picgoLogPath)
     if (!hasCheckPath) {
       let optionsTpl = {
         title: '注意',
         body: '自定义文件解析出错，请检查路径内容是否正确'
       }
-      global.notificationList.push(optionsTpl)
+      global.notificationList?.push(optionsTpl)
       hasCheckPath = true
     }
+    logger('error', e)
     console.error(e)
     _configFilePath = defaultConfigPath
     return _configFilePath

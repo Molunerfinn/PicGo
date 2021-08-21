@@ -17,6 +17,7 @@
           :default-active="defaultActive"
           @select="handleSelect"
           :unique-opened="true"
+          @open="handleGetPicPeds"
           >
           <el-menu-item index="upload">
             <i class="el-icon-upload"></i>
@@ -192,8 +193,8 @@ export default class extends Vue {
   created () {
     this.os = process.platform
     this.buildMenu()
-    ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
+    this.handleGetPicPeds()
   }
 
   @Watch('choosedPicBedForQRCode')
@@ -205,6 +206,10 @@ export default class extends Vue {
         this.picBedConfigString = JSON.stringify(config)
       })
     }
+  }
+
+  handleGetPicPeds = () => {
+    ipcRenderer.send('getPicBeds')
   }
 
   handleSelect (index: string) {

@@ -116,7 +116,7 @@ export default class extends Vue {
   async handleConfig (val: any) {
     this.ruleForm = Object.assign({}, {})
     const config = await this.getConfig<IPicGoPluginConfig>(this.getConfigType())
-    if (val.length > 0 && config) {
+    if (val.length > 0) {
       this.configList = cloneDeep(val).map((item: any) => {
         let defaultValue = item.default !== undefined
           ? item.default : item.type === 'checkbox'
