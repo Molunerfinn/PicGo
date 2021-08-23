@@ -1,9 +1,8 @@
 import { IPasteStyle } from '#/types/enum'
-import { handleUrlEncode } from './common'
 
 const formatCustomLink = (customLink: string, item: ImgInfo) => {
   let fileName = item.fileName!.replace(new RegExp(`\\${item.extname}$`), '')
-  const url = handleUrlEncode(item.url || item.imgUrl)
+  const url = item.url || item.imgUrl
   const formatObj = {
     url,
     fileName
@@ -19,7 +18,7 @@ const formatCustomLink = (customLink: string, item: ImgInfo) => {
 }
 
 export default (style: IPasteStyle, item: ImgInfo, customLink: string | undefined) => {
-  const url = handleUrlEncode(item.url || item.imgUrl)
+  const url = item.url || item.imgUrl
   const _customLink = customLink || '$url'
   const tpl = {
     'markdown': `![](${url})`,
