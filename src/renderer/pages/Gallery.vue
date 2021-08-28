@@ -178,8 +178,12 @@ export default class extends Vue {
     document.addEventListener('keyup', this.handleDetectShiftKey)
   }
   handleDetectShiftKey (event: KeyboardEvent) {
-    if (event.keyCode === 16) {
-      this.isShiftKeyPress = !this.isShiftKeyPress
+    if (event.key === 'Shift') {
+      if (event.type === 'keydown') {
+        this.isShiftKeyPress = true
+      } else if (event.type === 'keyup') {
+        this.isShiftKeyPress = false
+      }
     }
   }
   get filterList () {
