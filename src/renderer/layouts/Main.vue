@@ -159,7 +159,8 @@ import {
 import mixin from '@/utils/mixin'
 import InputBoxDialog from '@/components/InputBoxDialog.vue'
 import {
-  SHOW_PRIVACY_MESSAGE
+  SHOW_PRIVACY_MESSAGE,
+  OPEN_DEVTOOLS
 } from '~/universal/events/constants'
 import { IConfig } from 'picgo/dist/src/types/index'
 const { Menu, dialog, BrowserWindow } = remote
@@ -275,6 +276,12 @@ export default class extends Vue {
         label: '隐私协议',
         click () {
           ipcRenderer.send(SHOW_PRIVACY_MESSAGE)
+        }
+      },
+      {
+        label: '打开调试器',
+        click () {
+          ipcRenderer.send(OPEN_DEVTOOLS)
         }
       }
     ]

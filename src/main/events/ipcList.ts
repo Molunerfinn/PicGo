@@ -14,7 +14,8 @@ import getPicBeds from '~/main/utils/getPicBeds'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import bus from '@core/bus'
 import {
-  TOGGLE_SHORTKEY_MODIFIED_MODE
+  TOGGLE_SHORTKEY_MODIFIED_MODE,
+  OPEN_DEVTOOLS
 } from '#/events/constants'
 import {
   uploadClipboardFiles,
@@ -140,6 +141,9 @@ export default {
 
     ipcMain.on('updateServer', () => {
       server.restart()
+    })
+    ipcMain.on(OPEN_DEVTOOLS, (event: IpcMainEvent) => {
+      event.sender.openDevTools()
     })
   },
   dispose () {}

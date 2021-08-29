@@ -23,7 +23,7 @@ import {
   IpcRendererEvent,
   remote
 } from 'electron'
-import { SHOW_PRIVACY_MESSAGE } from '~/universal/events/constants'
+import { SHOW_PRIVACY_MESSAGE, OPEN_DEVTOOLS } from '~/universal/events/constants'
 @Component({
   name: 'mini-page',
   mixins: [mixin]
@@ -188,6 +188,12 @@ export default class extends Vue {
         click () {
           remote.app.relaunch()
           remote.app.exit(0)
+        }
+      },
+      {
+        label: '打开调试器',
+        click () {
+          ipcRenderer.send(OPEN_DEVTOOLS)
         }
       },
       {
