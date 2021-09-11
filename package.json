@@ -69,7 +69,7 @@
     "commitizen": "^4.0.3",
     "conventional-changelog": "^3.1.18",
     "cz-customizable": "^6.2.0",
-    "electron": "^6.0.0",
+    "electron": "^9.4.0",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
