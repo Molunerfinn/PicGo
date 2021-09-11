@@ -1,3 +1,24 @@
+# :tada: 2.3.0 (2021-09-11)
+
+
+### :sparkles: Features
+
+* add open devtool option ([75e3edc](https://github.com/Molunerfinn/PicGo/commit/75e3edc))
+
+
+### :bug: Bug Fixes
+
+* shift key function in gallery page ([5895889](https://github.com/Molunerfinn/PicGo/commit/5895889))
+* some bugs ([a676c08](https://github.com/Molunerfinn/PicGo/commit/a676c08)), closes [#722](https://github.com/Molunerfinn/PicGo/issues/722)
+* urlEncode bug when copy ([6c6f847](https://github.com/Molunerfinn/PicGo/commit/6c6f847)), closes [#731](https://github.com/Molunerfinn/PicGo/issues/731)
+
+
+### :pencil: Documentation
+
+* update FAQ ([58420c8](https://github.com/Molunerfinn/PicGo/commit/58420c8))
+
+
+
 # :tada: 2.3.0-beta.8 (2021-08-13)
 
 
