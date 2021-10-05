@@ -11,8 +11,7 @@ dbChecker()
 
 const picgo = new PicGo(CONFIG_PATH)
 picgo.saveConfig({
-  debug: true,
-  PICGO_ENV: 'GUI'
+  debug: true
 })
 
 global.PICGO_GUI_VERSION = pkg.version

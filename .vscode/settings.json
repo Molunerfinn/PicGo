@@ -1,6 +1,20 @@
 {
   "eslint.enable": true,
   "eslint.alwaysShowStatus": true,
+  // Use eslint to format js/ts files
+  // prettier is included by eslint
+  "[javascript]": {
+    "editor.formatOnSave": false
+  },
+  "[javascriptreact]": {
+    "editor.formatOnSave": false
+  },
+  "[typescript]": {
+    "editor.formatOnSave": false
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": false
+  },
   "eslint.validate": [
     "javascript",
     "javascriptreact",
