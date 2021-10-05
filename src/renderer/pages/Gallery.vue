@@ -99,7 +99,7 @@
       width="500px"
       :modal-append-to-body="false"
     >
-      <el-input v-model="imgInfo.imgUrl"></el-input>
+      <el-input v-model="IImgInfo.imgUrl"></el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="confirmModify">确 定</el-button>
@@ -111,7 +111,7 @@
 // @ts-ignore
 import gallerys from 'vue-gallery'
 import pasteStyle from '#/utils/pasteTemplate'
-import { IPasteStyle } from '#/types/enum'
+
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { IResult } from '@picgo/store/dist/types'
 import {
@@ -119,6 +119,8 @@ import {
   clipboard,
   IpcRendererEvent
 } from 'electron'
+import { IImgInfo } from 'picgo'
+import { IPasteStyle } from '#/types/enum'
 @Component({
   name: 'gallery',
   components: {
@@ -126,7 +128,7 @@ import {
   }
 })
 export default class extends Vue {
-  images: ImgInfo[] = []
+  images: IImgInfo[] = []
   idx: null | number = null
   options = {
     titleProperty: 'fileName',
@@ -134,7 +136,7 @@ export default class extends Vue {
     closeOnSlideClick: true
   }
   dialogVisible = false
-  imgInfo = {
+  IImgInfo = {
     id: '',
     imgUrl: ''
   }
@@ -202,7 +204,7 @@ export default class extends Vue {
   getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
   }
-  getGallery (): ImgInfo[] {
+  getGallery (): IImgInfo[] {
     if (this.searchText || this.choosedPicBed.length > 0) {
       return this.images
         .filter(item => {
@@ -266,7 +268,7 @@ export default class extends Vue {
     this.idx = null
     this.changeZIndexForGallery(false)
   }
-  async copy (item: ImgInfo) {
+  async copy (item: IImgInfo) {
     const style = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
     const customLink = await this.getConfig<string>('settings.customLink')
     const copyLink = pasteStyle(style, item, customLink)
@@ -304,19 +306,19 @@ export default class extends Vue {
       return true
     })
   }
-  openDialog (item: ImgInfo) {
-    this.imgInfo.id = item.id!
-    this.imgInfo.imgUrl = item.imgUrl as string
+  openDialog (item: IImgInfo) {
+    this.IImgInfo.id = item.id!
+    this.IImgInfo.imgUrl = item.imgUrl as string
     this.dialogVisible = true
   }
   async confirmModify () {
-    await this.$$db.updateById(this.imgInfo.id, {
-      imgUrl: this.imgInfo.imgUrl
+    await this.$$db.updateById(this.IImgInfo.id, {
+      imgUrl: this.IImgInfo.imgUrl
     })
     const obj = {
       title: '修改图片URL成功',
-      body: this.imgInfo.imgUrl,
-      icon: this.imgInfo.imgUrl
+      body: this.IImgInfo.imgUrl,
+      icon: this.IImgInfo.imgUrl
     }
     const myNotification = new Notification(obj.title, obj)
     myNotification.onclick = () => {
@@ -354,12 +356,12 @@ export default class extends Vue {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        let files: IResult<ImgInfo>[] = []
+        let files: IResult<IImgInfo>[] = []
         const imageIDList = Object.keys(this.choosedList)
         for (let i = 0; i < imageIDList.length; i++) {
           const key = imageIDList[i]
           if (this.choosedList[key]) {
-            const file = await this.$$db.getById<ImgInfo>(key)
+            const file = await this.$$db.getById<IImgInfo>(key)
             if (file) {
               files.push(file)
               await this.$$db.removeById(key)
@@ -393,7 +395,7 @@ export default class extends Vue {
       for (let i = 0; i < imageIDList.length; i++) {
         const key = imageIDList[i]
         if (this.choosedList[key]) {
-          const item = await this.$$db.getById<ImgInfo>(key)
+          const item = await this.$$db.getById<IImgInfo>(key)
           if (item) {
             copyString.push(pasteStyle(style, item, customLink))
             this.choosedList[key] = false

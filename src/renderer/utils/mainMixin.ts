@@ -2,6 +2,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import { ipcRenderer, IpcRendererEvent } from 'electron'
 import { PICGO_SAVE_CONFIG, PICGO_GET_CONFIG } from '#/events/constants'
 import { uuid } from 'uuidv4'
+
 @Component
 export default class extends Vue {
   // support string key + value or object config

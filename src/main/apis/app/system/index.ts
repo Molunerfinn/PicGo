@@ -11,12 +11,13 @@ import uploader from 'apis/app/uploader'
 import getPicBeds from '~/main/utils/getPicBeds'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from 'apis/app/window/constants'
 import picgo from '@core/picgo'
 import pasteTemplate from '#/utils/pasteTemplate'
 import pkg from 'root/package.json'
 import { handleCopyUrl } from '~/main/utils/common'
 import { privacyManager } from '~/main/utils/privacyManager'
+import { IWindowList } from '#/types/enum'
+import { IImgInfo } from 'picgo'
 let contextMenu: Menu | null
 let menu: Menu | null
 let tray: Tray | null
@@ -163,7 +164,7 @@ export function createTray () {
         toggleWindow(bounds)
         setTimeout(() => {
           let img = clipboard.readImage()
-          let obj: ImgInfo[] = []
+          let obj: IImgInfo[] = []
           if (!img.isEmpty()) {
             // 从剪贴板来的图片默认转为png
             // @ts-ignore

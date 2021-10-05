@@ -338,13 +338,14 @@
 <script lang="ts">
 import keyDetect from '@/utils/key-binding'
 import pkg from 'root/package.json'
-import { IConfig } from 'picgo/dist/src/types/index'
+import { IConfig } from 'picgo'
 import { PICGO_OPEN_FILE } from '#/events/constants'
 import {
   ipcRenderer,
   remote
 } from 'electron'
 import { Component, Vue } from 'vue-property-decorator'
+
 // import db from '#/datastore'
 const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
 const releaseUrlBackup = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'

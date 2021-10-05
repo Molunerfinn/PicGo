@@ -57,7 +57,7 @@ class Server {
         request.on('end', () => {
           try {
             postObj = (body === '') ? {} : JSON.parse(body)
-          } catch (err) {
+          } catch (err: any) {
             logger.error(`[PicGo Server]`, err)
             return handleResponse({
               response,

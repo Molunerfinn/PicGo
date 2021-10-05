@@ -1,6 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator'
-import { ipcRenderer } from 'electron'
-import { IConfig } from 'picgo/dist/src/types'
+import { IConfig } from 'picgo'
 @Component
 export default class extends Vue {
   defaultPicBed = 'smms'

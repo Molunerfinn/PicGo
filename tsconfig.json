@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    // to transpile optional chaining, set target to es2019 or lower: https://stackoverflow.com/a/58725755/8242705
+    "target": "ES2019",
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
@@ -10,40 +11,20 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "types": [
-      "webpack-env"
-    ],
-    "typeRoots": [
-      "./src/universal/types/*",
-    ],
+    "types": ["webpack-env"],
+    "typeRoots": ["./src/universal/types/*"],
     "paths": {
-      "@/*": [
-        "src/renderer/*"
-      ],
-      "~/*": [
-        "src/*"
-      ],
-      "root/*": [
-        "./*"
-      ],
-      "#/*": [
-        "src/universal/*"
-      ],
-      "apis/*": [
-        "src/main/apis/*"
-      ],
-      "@core/*": [
-        "src/main/apis/core/*"
-      ]
+      "@/*": ["src/renderer/*"],
+      "~/*": ["src/*"],
+      "root/*": ["./*"],
+      "#/*": ["src/universal/*"],
+      "apis/*": ["src/main/apis/*"],
+      "@core/*": ["src/main/apis/core/*"]
     },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
   "include": [
     "src/**/*.ts",
@@ -52,7 +33,5 @@
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

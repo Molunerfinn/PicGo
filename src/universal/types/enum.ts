@@ -1,3 +1,5 @@
+// enum must be exported and imported in TS files because it needs to generate corresponding JS
+// it cannot be an ambient module
 export enum IChalkType {
   success = 'green',
   info = 'blue',
@@ -19,4 +21,11 @@ export enum IPasteStyle {
   URL = 'URL',
   UBB = 'UBB',
   CUSTOM = 'Custom'
+}
+
+export enum IWindowList {
+  SETTING_WINDOW = 'SETTING_WINDOW',
+  TRAY_WINDOW = 'TRAY_WINDOW',
+  MINI_WINDOW = 'MINI_WINDOW',
+  RENAME_WINDOW = 'RENAME_WINDOW'
 }

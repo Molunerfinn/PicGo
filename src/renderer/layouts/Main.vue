@@ -162,7 +162,7 @@ import {
   SHOW_PRIVACY_MESSAGE,
   OPEN_DEVTOOLS
 } from '~/universal/events/constants'
-import { IConfig } from 'picgo/dist/src/types/index'
+
 const { Menu, dialog, BrowserWindow } = remote
 const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
   if (!/\$url/.test(value)) {

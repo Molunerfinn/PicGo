@@ -20,6 +20,7 @@ import {
   SHOW_INPUT_BOX,
   SHOW_INPUT_BOX_RESPONSE
 } from '~/universal/events/constants'
+
 @Component({
   name: 'input-box-dialog'
 })

@@ -1,5 +1,3 @@
-import Vue, { VNode } from 'vue'
-
 declare global {
   namespace JSX {
     // tslint:disable no-empty-interface
@@ -11,9 +9,4 @@ declare global {
     }
   }
 
-  interface Window {
-    TDAPP: {
-      onEvent: (EventId: string, Label?: string, MapKv?: IStringKeyMap) => void
-    }
-  }
 }

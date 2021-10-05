@@ -9,7 +9,7 @@ import {
   PICGO_GET_BY_ID_DB,
   PICGO_REMOVE_BY_ID_DB
 } from '#/events/constants'
-import { IGalleryDB } from '#/types/extra-vue'
+
 export class GalleryDB implements IGalleryDB {
   async get<T> (filter?: IFilter): Promise<IGetResult<T>> {
     const res = await this.msgHandler<IGetResult<T>>(PICGO_GET_DB, filter)

@@ -70,6 +70,7 @@ import {
 import {
   isUrl
 } from '~/universal/utils/common'
+
 const { Menu } = remote
 @Component({
   name: 'upload'

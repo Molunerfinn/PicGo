@@ -5,7 +5,7 @@ import {
   IpcMainEvent
 } from 'electron'
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from 'apis/app/window/constants'
+import { IWindowList } from '#/types/enum'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
@@ -19,7 +19,7 @@ import {
 } from '#/events/constants'
 import {
   uploadClipboardFiles,
-  uploadChoosedFiles
+  uploadChosenFiles
 } from '~/main/apis/app/uploader/apis'
 import picgoCoreIPC from './picgoCoreIPC'
 import { handleCopyUrl } from '~/main/utils/common'
@@ -55,7 +55,7 @@ export default {
     })
 
     ipcMain.on('uploadChoosedFiles', async (evt: IpcMainEvent, files: IFileWithPath[]) => {
-      return uploadChoosedFiles(evt.sender, files)
+      return uploadChosenFiles(evt.sender, files)
     })
 
     ipcMain.on('updateShortKey', (evt: IpcMainEvent, item: IShortKeyConfig, oldKey: string, from: string) => {

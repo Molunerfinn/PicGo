@@ -59,6 +59,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
+
 @Component({
   name: 'github',
   mixins: [mixin]

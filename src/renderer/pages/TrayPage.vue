@@ -32,27 +32,28 @@ import pasteTemplate from '#/utils/pasteTemplate'
 import { ipcRenderer, clipboard } from 'electron'
 import { IPasteStyle } from '#/types/enum'
 import { IResult } from '@picgo/store/dist/types'
+import { IImgInfo } from 'picgo'
 
 @Component({
   name: 'tray-page',
   mixins: [mixin]
 })
 export default class extends Vue {
-  files: IResult<ImgInfo>[] = []
+  files: IResult<IImgInfo>[] = []
   notification = {
     title: '复制链接成功',
     body: '',
     icon: ''
   }
-  clipboardFiles: ImgInfo[] = []
+  clipboardFiles: IImgInfo[] = []
   uploadFlag = false
   get reverseList () {
     return this.files.slice().reverse()
   }
   async getData () {
-    this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
+    this.files = (await this.$$db.get<IImgInfo>({ orderBy: 'desc', limit: 5 })).data
   }
-  async copyTheLink (item: ImgInfo) {
+  async copyTheLink (item: IImgInfo) {
     this.notification.body = item.imgUrl!
     this.notification.icon = item.imgUrl!
     const myNotification = new Notification(this.notification.title, this.notification)
@@ -91,13 +92,13 @@ export default class extends Vue {
         const item = files[i]
         await this.$$db.insert(item)
       }
-      this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
+      this.files = (await this.$$db.get<IImgInfo>({ orderBy: 'desc', limit: 5 })).data
     })
-    ipcRenderer.on('clipboardFiles', (event: Event, files: ImgInfo[]) => {
+    ipcRenderer.on('clipboardFiles', (event: Event, files: IImgInfo[]) => {
       this.clipboardFiles = files
     })
     ipcRenderer.on('uploadFiles', async (event: Event) => {
-      this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
+      this.files = (await this.$$db.get<IImgInfo>({ orderBy: 'desc', limit: 5 })).data
       console.log(this.files)
       this.uploadFlag = false
     })

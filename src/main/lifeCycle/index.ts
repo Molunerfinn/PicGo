@@ -13,14 +13,14 @@ import beforeOpen from '~/main/utils/beforeOpen'
 import fixPath from 'fix-path'
 import ipcList from '~/main/events/ipcList'
 import busEventList from '~/main/events/busEventList'
-import { IWindowList } from 'apis/app/window/constants'
+import { IWindowList } from '#/types/enum'
 import windowManager from 'apis/app/window/windowManager'
 import {
   updateShortKeyFromVersion212,
   migrateGalleryFromVersion230
 } from '~/main/migrate'
 import {
-  uploadChoosedFiles,
+  uploadChosenFiles,
   uploadClipboardFiles
 } from 'apis/app/uploader/apis'
 import {
@@ -47,7 +47,7 @@ const handleStartUpFiles = (argv: string[], cwd: string) => {
     } else {
       logger.info('cli -> uploading files from cli', ...files.map(item => item.path))
       const win = windowManager.getAvailableWindow()
-      uploadChoosedFiles(win.webContents, files)
+      uploadChosenFiles(win.webContents, files)
     }
     return true
   } else {
@@ -74,7 +74,7 @@ class LifeCycle {
         // Install Vue Devtools
         try {
           await installExtension(VUEJS_DEVTOOLS)
-        } catch (e) {
+        } catch (e: any) {
           console.error('Vue Devtools failed to install:', e.toString())
         }
       }

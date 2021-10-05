@@ -113,6 +113,7 @@ import {
   IpcRendererEvent
 } from 'electron'
 import { handleStreamlinePluginName } from '~/universal/utils/common'
+
 const { Menu } = remote
 
 @Component({
@@ -423,7 +424,7 @@ export default class extends Vue {
           })
         this.loading = false
       })
-      .catch(err => {
+      .catch((err: any) => {
         console.log(err)
         this.loading = false
       })

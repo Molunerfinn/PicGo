@@ -1,6 +1,6 @@
+import { IImgInfo } from 'picgo'
 import { IPasteStyle } from '#/types/enum'
-
-const formatCustomLink = (customLink: string, item: ImgInfo) => {
+const formatCustomLink = (customLink: string, item: IImgInfo) => {
   let fileName = item.fileName!.replace(new RegExp(`\\${item.extname}$`), '')
   const url = item.url || item.imgUrl
   const formatObj = {
@@ -17,7 +17,7 @@ const formatCustomLink = (customLink: string, item: ImgInfo) => {
   return customLink
 }
 
-export default (style: IPasteStyle, item: ImgInfo, customLink: string | undefined) => {
+export default (style: IPasteStyle, item: IImgInfo, customLink: string | undefined) => {
   const url = item.url || item.imgUrl
   const _customLink = customLink || '$url'
   const tpl = {

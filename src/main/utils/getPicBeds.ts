@@ -1,5 +1,6 @@
 import picgo from '@core/picgo'
 
+
 const getPicBeds = () => {
   const picBedTypes = picgo.helper.uploader.getIdList()
   const picBedFromDB = picgo.getConfig<IPicBedType[]>('picBed.list') || []

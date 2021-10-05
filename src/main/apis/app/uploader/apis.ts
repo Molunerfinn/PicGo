@@ -3,12 +3,13 @@ import {
   WebContents
 } from 'electron'
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from 'apis/app/window/constants'
+import { IWindowList } from '#/types/enum'
 import uploader from '.'
 import pasteTemplate from '#/utils/pasteTemplate'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
 import { handleCopyUrl } from '~/main/utils/common'
 import { handleUrlEncode } from '#/utils/common'
+
 export const uploadClipboardFiles = async (): Promise<string> => {
   const win = windowManager.getAvailableWindow()
   let img = await uploader.setWebContents(win!.webContents).upload()
@@ -44,7 +45,7 @@ export const uploadClipboardFiles = async (): Promise<string> => {
   }
 }
 
-export const uploadChoosedFiles = async (webContents: WebContents, files: IFileWithPath[]): Promise<string[]> => {
+export const uploadChosenFiles = async (webContents: WebContents, files: IFileWithPath[]): Promise<string[]> => {
   const input = files.map(item => item.path)
   const imgs = await uploader.setWebContents(webContents).upload(input)
   const result = []

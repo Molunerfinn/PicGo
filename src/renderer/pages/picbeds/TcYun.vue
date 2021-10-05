@@ -89,6 +89,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
 import { remote } from 'electron'
+
 @Component({
   name: 'tcyun',
   mixins: [mixin]

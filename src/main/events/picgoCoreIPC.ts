@@ -6,14 +6,12 @@ import {
   IpcMainEvent,
   ipcMain
 } from 'electron'
-import PicGoCore from '~/universal/types/picgo'
-import { IPicGoHelperType } from '#/types/enum'
+import { IPicGoHelperType, IWindowList } from '#/types/enum'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import picgo from '@core/picgo'
 import { handleStreamlinePluginName } from '~/universal/utils/common'
-import { IGuiMenuItem } from 'picgo/dist/src/types'
+import { IGuiMenuItem, IImgInfo, PicGo } from 'picgo'
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from 'apis/app/window/constants'
 import { showNotification } from '~/main/utils/common'
 import { dbPathChecker } from 'apis/core/datastore/dbChecker'
 import {
@@ -31,24 +29,20 @@ import {
 import { GalleryDB } from 'apis/core/datastore'
 import { IObject, IFilter } from '@picgo/store/dist/types'
 
+
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
 // const PluginHandler = requireFunc('picgo/dist/lib/PluginHandler').default
 const STORE_PATH = path.dirname(dbPathChecker())
 // const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
 
-type PicGoNotice = {
-  title: string,
-  body: string[]
-}
-
 interface GuiMenuItem {
   label: string
-  handle: (arg0: PicGoCore, arg1: GuiApi) => Promise<void>
+  handle: (arg0: PicGo, arg1: GuiApi) => Promise<void>
 }
 
 // get uploader or transformer config
-const getConfig = (name: string, type: IPicGoHelperType, ctx: PicGoCore) => {
+const getConfig = (name: string, type: IPicGoHelperType, ctx: PicGo) => {
   let config: any[] = []
   if (name === '') {
     return config
@@ -236,7 +230,7 @@ const handlePluginActions = () => {
 }
 
 const handleRemoveFiles = () => {
-  ipcMain.on('removeFiles', (event: IpcMainEvent, files: ImgInfo[]) => {
+  ipcMain.on('removeFiles', (event: IpcMainEvent, files: IImgInfo[]) => {
     setTimeout(() => {
       picgo.emit('remove', files, GuiApi.getInstance())
     }, 500)

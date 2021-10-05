@@ -121,7 +121,7 @@ interface IBounds {
 }
 
 // PicGo Types
-type ICtx = import('picgo')
+
 interface IPicGoPlugin {
   name: string
   fullName: string
@@ -233,7 +233,7 @@ interface IShortKeyHandlerObj {
   label: string
 }
 
-type IShortKeyHandler = (ctx: ICtx, guiApi?: IGuiApi) => Promise<void | ICtx>
+type IShortKeyHandler = (ctx: PicGo, guiApi?: IGuiApi) => Promise<void | PicGo>
 
 interface shortKeyHandlerMap {
   from: string
@@ -325,3 +325,12 @@ interface IStringKeyMap {
 type ILogArgvType = string | number
 
 type ILogArgvTypeWithError = ILogArgvType | Error
+
+interface IGalleryDB {
+  get<T>(filter?: IFilter): Promise<IGetResult<T>>
+  insert<T> (value: T): Promise<IResult<T>>
+  insertMany<T> (value: T[]): Promise<IResult<T>[]>
+  updateById (id: string, value: IObject): Promise<boolean>
+  getById<T> (id: string): Promise<IResult<T> | undefined>
+  removeById (id: string): Promise<void>
+}

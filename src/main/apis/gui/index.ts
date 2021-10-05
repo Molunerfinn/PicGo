@@ -18,7 +18,6 @@ import {
   SHOW_INPUT_BOX
 } from '~/universal/events/constants'
 import { DBStore } from '@picgo/store'
-type PromiseResType<T> = T extends Promise<infer R> ? R : T
 
 // Cross-process support may be required in the future
 class GuiApi implements IGuiApi {

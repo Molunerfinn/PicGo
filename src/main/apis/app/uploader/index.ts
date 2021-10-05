@@ -8,9 +8,9 @@ import dayjs from 'dayjs'
 import picgo from '@core/picgo'
 import db from '~/main/apis/core/datastore'
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from 'apis/app/window/constants'
+import { IWindowList } from '#/types/enum'
 import util from 'util'
-import { IPicGo } from 'picgo/dist/src/types'
+import { IPicGo, IImgInfo } from 'picgo'
 import { showNotification, calcDurationRange } from '~/main/utils/common'
 import { TALKING_DATA_EVENT } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
@@ -108,11 +108,11 @@ class Uploader {
     return this
   }
 
-  async upload (img?: IUploadOption): Promise<ImgInfo[]|false> {
+  async upload (img?: IUploadOption): Promise<IImgInfo[]|false> {
     try {
       const startTime = Date.now()
       const output = await picgo.upload(img)
-      if (Array.isArray(output) && output.some((item: ImgInfo) => item.imgUrl)) {
+      if (Array.isArray(output) && output.some((item: IImgInfo) => item.imgUrl)) {
         if (this.webContents) {
           handleTalkingData(this.webContents, {
             fromClipboard: !img,
@@ -126,11 +126,11 @@ class Uploader {
         return false
       }
     } catch (e) {
-      logger.error(e)
+      logger.error(e as any)
       setTimeout(() => {
         showNotification({
           title: '上传失败',
-          body: util.format(e.stack),
+          body: util.format((e as any)?.stack),
           clickToCopy: true
         })
       }, 500)

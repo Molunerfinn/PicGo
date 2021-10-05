@@ -24,6 +24,7 @@ import {
   remote
 } from 'electron'
 import { SHOW_PRIVACY_MESSAGE, OPEN_DEVTOOLS } from '~/universal/events/constants'
+
 @Component({
   name: 'mini-page',
   mixins: [mixin]

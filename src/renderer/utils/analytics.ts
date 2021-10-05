@@ -5,6 +5,7 @@ import {
 import pkg from 'root/package.json'
 import { ipcRenderer } from 'electron'
 import { handleTalkingDataEvent } from './common'
+
 const { version } = pkg
 
 export const initTalkingData = () => {

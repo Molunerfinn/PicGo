@@ -39,6 +39,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
+
 @Component({
   name: 'imgur',
   mixins: [mixin]
