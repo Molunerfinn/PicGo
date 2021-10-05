@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
   #app(v-cloak)
     #header
       .mask
@@ -31,7 +31,7 @@
 <script>
 export default {
   name: '',
-  data () {
+  data() {
     return {
       version: '',
       year: new Date().getFullYear(),
@@ -69,22 +69,23 @@ export default {
       ]
     }
   },
-  created () {
+  created() {
     this.getVersion()
   },
   methods: {
-    goLink (link) {
+    goLink(link) {
       window.open(link, '_blank')
     },
-    async getVersion () {
-      const release = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
+    async getVersion() {
+      const release =
+        'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
       const res = await this.$http.get(release)
       this.version = res.data.name
     }
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 [v-cloak]
   display none
 *
@@ -94,7 +95,7 @@ html,
 h1
   margin 0
   padding 0
-  font-family "Source Sans Pro","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif  
+  font-family "Source Sans Pro","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif
 #app
   position relative
 .mask

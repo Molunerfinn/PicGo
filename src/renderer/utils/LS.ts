@@ -1,5 +1,5 @@
 class LS {
-  get (name: string) {
+  get(name: string) {
     if (localStorage.getItem(name)) {
       return JSON.parse(localStorage.getItem(name) as string)
     } else {
@@ -7,7 +7,7 @@ class LS {
     }
   }
 
-  set (name: string, value: any) {
+  set(name: string, value: any) {
     return localStorage.setItem(name, JSON.stringify(value))
   }
 }

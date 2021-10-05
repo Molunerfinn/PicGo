@@ -2,18 +2,15 @@
   <div id="tcyun-view">
     <el-row :gutter="16">
       <el-col :span="16" :offset="4">
-        <div class="view-title">
-          腾讯云COS设置
-        </div>
+        <div class="view-title">腾讯云COS设置</div>
         <el-form
           ref="tcyun"
           label-position="right"
           label-width="120px"
           :model="form"
-          size="mini">
-          <el-form-item
-            label="COS版本"
-          >
+          size="mini"
+        >
+          <el-form-item label="COS版本">
             <el-switch
               v-model="form.version"
               active-text="v4"
@@ -28,56 +25,102 @@
             label="设定SecretId"
             prop="secretId"
             :rules="{
-              required: true, message: 'SecretId不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.secretId" placeholder="SecretId" @keyup.native.enter="confirm"></el-input>
+              required: true,
+              message: 'SecretId不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.secretId"
+              placeholder="SecretId"
+              @keyup.native.enter="confirm"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定SecretKey"
             prop="secretKey"
             :rules="{
-              required: true, message: 'SecretKey不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.secretKey" type="password" @keyup.native.enter="confirm" placeholder="SecretKey"></el-input>
+              required: true,
+              message: 'SecretKey不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.secretKey"
+              type="password"
+              @keyup.native.enter="confirm"
+              placeholder="SecretKey"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定APPID"
             prop="appId"
             :rules="{
-              required: true, message: 'APPID不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.appId" @keyup.native.enter="confirm" placeholder="例如1234567890"></el-input>
+              required: true,
+              message: 'APPID不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.appId"
+              @keyup.native.enter="confirm"
+              placeholder="例如1234567890"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定存储空间名"
             prop="bucket"
             :rules="{
-              required: true, message: 'Bucket不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.bucket" @keyup.native.enter="confirm" placeholder="Bucket"></el-input>
+              required: true,
+              message: 'Bucket不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.bucket"
+              @keyup.native.enter="confirm"
+              placeholder="Bucket"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="确认存储区域"
             prop="area"
             :rules="{
-              required: true, message: '区域代码不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.area" @keyup.native.enter="confirm" placeholder="例如tj"></el-input>
+              required: true,
+              message: '区域代码不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.area"
+              @keyup.native.enter="confirm"
+              placeholder="例如tj"
+            ></el-input>
           </el-form-item>
-          <el-form-item
-            label="指定存储路径"
-            >
-            <el-input v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/"></el-input>
+          <el-form-item label="指定存储路径">
+            <el-input
+              v-model="form.path"
+              @keyup.native.enter="confirm"
+              placeholder="例如img/"
+            ></el-input>
           </el-form-item>
-          <el-form-item
-            label="设定自定义域名"
-            >
-            <el-input v-model="form.customUrl" @keyup.native.enter="confirm" placeholder="例如https://xxxx.com"></el-input>
+          <el-form-item label="设定自定义域名">
+            <el-input
+              v-model="form.customUrl"
+              @keyup.native.enter="confirm"
+              placeholder="例如https://xxxx.com"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
-              <el-button type="success" @click="setDefaultPicBed('tcyun')" round :disabled="defaultPicBed === 'tcyun'">设为默认图床</el-button>
+              <el-button
+                type="success"
+                @click="setDefaultPicBed('tcyun')"
+                round
+                :disabled="defaultPicBed === 'tcyun'"
+                >设为默认图床</el-button
+              >
             </el-button-group>
           </el-form-item>
         </el-form>
@@ -105,13 +148,15 @@ export default class extends Vue {
     customUrl: '',
     version: 'v4'
   }
-  async created () {
+
+  async created() {
     const config = await this.getConfig<ITcYunConfig>('picBed.tcyun')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
-  confirm () {
+
+  confirm() {
     // @ts-ignore
     this.$refs.tcyun.validate((valid) => {
       if (valid) {
@@ -129,12 +174,15 @@ export default class extends Vue {
       }
     })
   }
-  openWiki () {
-    remote.shell.openExternal('https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#腾讯云cos')
+
+  openWiki() {
+    remote.shell.openExternal(
+      'https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#腾讯云cos'
+    )
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 #tcyun-view
   .el-form
     label

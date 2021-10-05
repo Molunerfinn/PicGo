@@ -1,7 +1,12 @@
 <template>
   <div id="gallery-view">
     <div class="view-title">
-      相册 - {{ filterList.length }} <i class="el-icon-caret-bottom" @click="toggleHandleBar" :class="{'active': handleBarActive}"></i>
+      相册 - {{ filterList.length }}
+      <i
+        class="el-icon-caret-bottom"
+        @click="toggleHandleBar"
+        :class="{ active: handleBarActive }"
+      ></i>
     </div>
     <transition name="el-zoom-in-top">
       <el-row v-show="handleBarActive">
@@ -14,12 +19,14 @@
                 collapse-tags
                 size="mini"
                 style="width: 100%"
-                placeholder="请选择显示的图床">
+                placeholder="请选择显示的图床"
+              >
                 <el-option
                   v-for="item in picBed"
                   :key="item.type"
                   :label="item.name"
-                  :value="item.type">
+                  :value="item.type"
+                >
                 </el-option>
               </el-select>
             </el-col>
@@ -29,37 +36,54 @@
                 size="mini"
                 style="width: 100%"
                 @change="handlePasteStyleChange"
-                placeholder="请选择粘贴的格式">
+                placeholder="请选择粘贴的格式"
+              >
                 <el-option
                   v-for="(value, key) in pasteStyleMap"
                   :key="key"
                   :label="key"
-                  :value="value">
+                  :value="value"
+                >
                 </el-option>
               </el-select>
             </el-col>
           </el-row>
           <el-row class="handle-bar" :gutter="16">
             <el-col :span="12">
-              <el-input
-                placeholder="搜索"
-                size="mini"
-                v-model="searchText">
-                <i slot="suffix" class="el-input__icon el-icon-close" v-if="searchText" @click="cleanSearch" style="cursor: pointer"></i>
+              <el-input placeholder="搜索" size="mini" v-model="searchText">
+                <i
+                  slot="suffix"
+                  class="el-input__icon el-icon-close"
+                  v-if="searchText"
+                  @click="cleanSearch"
+                  style="cursor: pointer"
+                ></i>
               </el-input>
             </el-col>
             <el-col :span="4">
-              <div class="item-base copy round" :class="{ active: isMultiple(choosedList)}" @click="multiCopy">
+              <div
+                class="item-base copy round"
+                :class="{ active: isMultiple(choosedList) }"
+                @click="multiCopy"
+              >
                 复制
               </div>
             </el-col>
             <el-col :span="4">
-              <div class="item-base delete round" :class="{ active: isMultiple(choosedList)}" @click="multiRemove">
+              <div
+                class="item-base delete round"
+                :class="{ active: isMultiple(choosedList) }"
+                @click="multiRemove"
+              >
                 删除
               </div>
             </el-col>
             <el-col :span="4">
-              <div class="item-base all-pick round" :class="{ active: filterList.length > 0}" @click="toggleSelectAll">
+              <div
+                class="item-base all-pick round"
+                :class="{ active: filterList.length > 0 }"
+                @click="toggleSelectAll"
+              >
                 {{ isAllSelected ? '取消' : '全选' }}
               </div>
             </el-col>
@@ -76,18 +100,24 @@
             @close="handleClose"
             :options="options"
           ></gallerys>
-          <el-col :span="6" v-for="(item, index) in filterList" :key="item.id" class="gallery-list__img">
-            <div
-              class="gallery-list__item"
-              @click="zoomImage(index)"
-            >
-              <img v-lazy="item.imgUrl" class="gallery-list__item-img">
+          <el-col
+            :span="6"
+            v-for="(item, index) in filterList"
+            :key="item.id"
+            class="gallery-list__img"
+          >
+            <div class="gallery-list__item" @click="zoomImage(index)">
+              <img v-lazy="item.imgUrl" class="gallery-list__item-img" />
             </div>
             <div class="gallery-list__tool-panel">
               <i class="el-icon-document" @click="copy(item)"></i>
               <i class="el-icon-edit-outline" @click="openDialog(item)"></i>
               <i class="el-icon-delete" @click="remove(item.id)"></i>
-              <el-checkbox v-model="choosedList[item.id]" class="pull-right" @change="(val) => handleChooseImage(val, index)"></el-checkbox>
+              <el-checkbox
+                v-model="choosedList[item.id]"
+                class="pull-right"
+                @change="(val) => handleChooseImage(val, index)"
+              ></el-checkbox>
             </div>
           </el-col>
         </el-row>
@@ -114,11 +144,7 @@ import pasteStyle from '#/utils/pasteTemplate'
 
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { IResult } from '@picgo/store/dist/types'
-import {
-  ipcRenderer,
-  clipboard,
-  IpcRendererEvent
-} from 'electron'
+import { ipcRenderer, clipboard, IpcRendererEvent } from 'electron'
 import { IImgInfo } from 'picgo'
 import { IPasteStyle } from '#/types/enum'
 @Component({
@@ -135,11 +161,13 @@ export default class extends Vue {
     urlProperty: 'imgUrl',
     closeOnSlideClick: true
   }
+
   dialogVisible = false
   IImgInfo = {
     id: '',
     imgUrl: ''
   }
+
   choosedList: IObjT<boolean> = {}
   choosedPicBed: string[] = []
   lastChoosed: number = -1
@@ -154,9 +182,10 @@ export default class extends Vue {
     UBB: 'UBB',
     Custom: 'Custom'
   }
+
   picBed: IPicBedType[] = []
   @Watch('$route')
-  handleRouteUpdate (to: any, from: any) {
+  handleRouteUpdate(to: any, from: any) {
     console.log(to, from)
     if (from.name === 'gallery') {
       this.clearChoosedList()
@@ -165,7 +194,8 @@ export default class extends Vue {
       this.updateGallery()
     }
   }
-  async created () {
+
+  async created() {
     ipcRenderer.on('updateGallery', (event: IpcRendererEvent) => {
       this.$nextTick(async () => {
         this.updateGallery()
@@ -175,11 +205,13 @@ export default class extends Vue {
     ipcRenderer.on('getPicBeds', this.getPicBeds)
     this.updateGallery()
   }
-  mounted () {
+
+  mounted() {
     document.addEventListener('keydown', this.handleDetectShiftKey)
     document.addEventListener('keyup', this.handleDetectShiftKey)
   }
-  handleDetectShiftKey (event: KeyboardEvent) {
+
+  handleDetectShiftKey(event: KeyboardEvent) {
     if (event.key === 'Shift') {
       if (event.type === 'keydown') {
         this.isShiftKeyPress = true
@@ -188,54 +220,62 @@ export default class extends Vue {
       }
     }
   }
-  get filterList () {
+
+  get filterList() {
     return this.getGallery()
   }
-  get isAllSelected () {
+
+  get isAllSelected() {
     const values = Object.values(this.choosedList)
     if (values.length === 0) {
       return false
     } else {
-      return this.filterList.every(item => {
+      return this.filterList.every((item) => {
         return this.choosedList[item.id!]
       })
     }
   }
-  getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
+
+  getPicBeds(event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
   }
-  getGallery (): IImgInfo[] {
+
+  getGallery(): IImgInfo[] {
     if (this.searchText || this.choosedPicBed.length > 0) {
-      return this.images
-        .filter(item => {
-          let isInChoosedPicBed = true
-          let isIncludesSearchText = true
-          if (this.choosedPicBed.length > 0) {
-            isInChoosedPicBed = this.choosedPicBed.some(type => type === item.type)
-          }
-          if (this.searchText) {
-            isIncludesSearchText = item.fileName?.includes(this.searchText) || false
-          }
-          return isIncludesSearchText && isInChoosedPicBed
-        })
+      return this.images.filter((item) => {
+        let isInChoosedPicBed = true
+        let isIncludesSearchText = true
+        if (this.choosedPicBed.length > 0) {
+          isInChoosedPicBed = this.choosedPicBed.some(
+            (type) => type === item.type
+          )
+        }
+        if (this.searchText) {
+          isIncludesSearchText =
+            item.fileName?.includes(this.searchText) || false
+        }
+        return isIncludesSearchText && isInChoosedPicBed
+      })
     } else {
       return this.images
     }
   }
-  async updateGallery () {
+
+  async updateGallery() {
     this.images = (await this.$$db.get({ orderBy: 'desc' })).data
   }
 
   @Watch('filterList')
-  handleFilterListChange () {
+  handleFilterListChange() {
     this.clearChoosedList()
   }
-  handleChooseImage (val: boolean, index: number) {
+
+  handleChooseImage(val: boolean, index: number) {
     if (val === true) {
       this.handleBarActive = true
       if (this.lastChoosed !== -1 && this.isShiftKeyPress) {
-        let min = Math.min(this.lastChoosed, index)
-        let max = Math.max(this.lastChoosed, index)
+        const min = Math.min(this.lastChoosed, index)
+        const max = Math.max(this.lastChoosed, index)
         for (let i = min + 1; i < max; i++) {
           const id = this.filterList[i].id!
           this.$set(this.choosedList, id, true)
@@ -244,18 +284,21 @@ export default class extends Vue {
       this.lastChoosed = index
     }
   }
-  clearChoosedList () {
+
+  clearChoosedList() {
     this.isShiftKeyPress = false
-    Object.keys(this.choosedList).forEach(key => {
+    Object.keys(this.choosedList).forEach((key) => {
       this.choosedList[key] = false
     })
     this.lastChoosed = -1
   }
-  zoomImage (index: number) {
+
+  zoomImage(index: number) {
     this.idx = index
     this.changeZIndexForGallery(true)
   }
-  changeZIndexForGallery (isOpen: boolean) {
+
+  changeZIndexForGallery(isOpen: boolean) {
     if (isOpen) {
       // @ts-ignore
       document.querySelector('.main-content.el-row').style.zIndex = 101
@@ -264,12 +307,16 @@ export default class extends Vue {
       document.querySelector('.main-content.el-row').style.zIndex = 10
     }
   }
-  handleClose () {
+
+  handleClose() {
     this.idx = null
     this.changeZIndexForGallery(false)
   }
-  async copy (item: IImgInfo) {
-    const style = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
+
+  async copy(item: IImgInfo) {
+    const style =
+      (await this.getConfig<IPasteStyle>('settings.pasteStyle')) ||
+      IPasteStyle.MARKDOWN
     const customLink = await this.getConfig<string>('settings.customLink')
     const copyLink = pasteStyle(style, item, customLink)
     const obj = {
@@ -283,35 +330,40 @@ export default class extends Vue {
       return true
     }
   }
-  remove (id: string) {
+
+  remove(id: string) {
     this.$confirm('此操作将把该图片移出相册, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
-    }).then(async () => {
-      const file = await this.$$db.getById(id)
-      await this.$$db.removeById(id)
-      ipcRenderer.send('removeFiles', [file])
-      const obj = {
-        title: '操作结果',
-        body: '删除成功'
-      }
-      const myNotification = new Notification(obj.title, obj)
-      myNotification.onclick = () => {
-        return true
-      }
-      this.updateGallery()
-    }).catch((e) => {
-      console.log(e)
-      return true
     })
+      .then(async () => {
+        const file = await this.$$db.getById(id)
+        await this.$$db.removeById(id)
+        ipcRenderer.send('removeFiles', [file])
+        const obj = {
+          title: '操作结果',
+          body: '删除成功'
+        }
+        const myNotification = new Notification(obj.title, obj)
+        myNotification.onclick = () => {
+          return true
+        }
+        this.updateGallery()
+      })
+      .catch((e) => {
+        console.log(e)
+        return true
+      })
   }
-  openDialog (item: IImgInfo) {
+
+  openDialog(item: IImgInfo) {
     this.IImgInfo.id = item.id!
     this.IImgInfo.imgUrl = item.imgUrl as string
     this.dialogVisible = true
   }
-  async confirmModify () {
+
+  async confirmModify() {
     await this.$$db.updateById(this.IImgInfo.id, {
       imgUrl: this.IImgInfo.imgUrl
     })
@@ -327,68 +379,84 @@ export default class extends Vue {
     this.dialogVisible = false
     this.updateGallery()
   }
-  choosePicBed (type: string) {
-    let idx = this.choosedPicBed.indexOf(type)
+
+  choosePicBed(type: string) {
+    const idx = this.choosedPicBed.indexOf(type)
     if (idx !== -1) {
       this.choosedPicBed.splice(idx, 1)
     } else {
       this.choosedPicBed.push(type)
     }
   }
-  cleanSearch () {
+
+  cleanSearch() {
     this.searchText = ''
   }
-  isMultiple (obj: IObj) {
-    return Object.values(obj).some(item => item)
+
+  isMultiple(obj: IObj) {
+    return Object.values(obj).some((item) => item)
   }
-  toggleSelectAll () {
+
+  toggleSelectAll() {
     const result = !this.isAllSelected
-    this.filterList.forEach(item => {
+    this.filterList.forEach((item) => {
       this.$set(this.choosedList, item.id!, result)
     })
   }
-  multiRemove () {
+
+  multiRemove() {
     // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
-    const multiRemoveNumber = Object.values(this.choosedList).filter(item => item).length
+    const multiRemoveNumber = Object.values(this.choosedList).filter(
+      (item) => item
+    ).length
     if (multiRemoveNumber) {
-      this.$confirm(`将在相册中移除刚才选中的 ${multiRemoveNumber} 张图片，是否继续？`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(async () => {
-        let files: IResult<IImgInfo>[] = []
-        const imageIDList = Object.keys(this.choosedList)
-        for (let i = 0; i < imageIDList.length; i++) {
-          const key = imageIDList[i]
-          if (this.choosedList[key]) {
-            const file = await this.$$db.getById<IImgInfo>(key)
-            if (file) {
-              files.push(file)
-              await this.$$db.removeById(key)
+      this.$confirm(
+        `将在相册中移除刚才选中的 ${multiRemoveNumber} 张图片，是否继续？`,
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
+        .then(async () => {
+          const files: IResult<IImgInfo>[] = []
+          const imageIDList = Object.keys(this.choosedList)
+          for (let i = 0; i < imageIDList.length; i++) {
+            const key = imageIDList[i]
+            if (this.choosedList[key]) {
+              const file = await this.$$db.getById<IImgInfo>(key)
+              if (file) {
+                files.push(file)
+                await this.$$db.removeById(key)
+              }
             }
           }
-        }
-        this.clearChoosedList()
-        this.choosedList = {} // 只有删除才能将这个置空
-        const obj = {
-          title: '操作结果',
-          body: '删除成功'
-        }
-        ipcRenderer.send('removeFiles', files)
-        const myNotification = new Notification(obj.title, obj)
-        myNotification.onclick = () => {
+          this.clearChoosedList()
+          this.choosedList = {} // 只有删除才能将这个置空
+          const obj = {
+            title: '操作结果',
+            body: '删除成功'
+          }
+          ipcRenderer.send('removeFiles', files)
+          const myNotification = new Notification(obj.title, obj)
+          myNotification.onclick = () => {
+            return true
+          }
+          this.updateGallery()
+        })
+        .catch(() => {
           return true
-        }
-        this.updateGallery()
-      }).catch(() => {
-        return true
-      })
+        })
     }
   }
-  async multiCopy () {
-    if (Object.values(this.choosedList).some(item => item)) {
+
+  async multiCopy() {
+    if (Object.values(this.choosedList).some((item) => item)) {
       const copyString: string[] = []
-      const style = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
+      const style =
+        (await this.getConfig<IPasteStyle>('settings.pasteStyle')) ||
+        IPasteStyle.MARKDOWN
       const customLink = await this.getConfig<string>('settings.customLink')
       // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
       const imageIDList = Object.keys(this.choosedList)
@@ -413,23 +481,26 @@ export default class extends Vue {
       }
     }
   }
-  toggleHandleBar () {
+
+  toggleHandleBar() {
     this.handleBarActive = !this.handleBarActive
   }
+
   // getPasteStyle () {
   //   this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
   // }
-  async handlePasteStyleChange (val: string) {
+  async handlePasteStyleChange(val: string) {
     this.saveConfig('settings.pasteStyle', val)
     this.pasteStyle = val
   }
-  beforeDestroy () {
+
+  beforeDestroy() {
     ipcRenderer.removeAllListeners('updateGallery')
     ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 .view-title
   color #eee
   font-size 20px

@@ -1,5 +1,5 @@
 const path = require('path')
-function resolve (dir) {
+function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
@@ -9,7 +9,7 @@ const config = {
   configureWebpack: {
     devtool: 'nosources-source-map'
   },
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     config.resolve.alias
       .set('@', resolve('src/renderer'))
       .set('~', resolve('src'))
@@ -25,7 +25,7 @@ const config = {
     electronBuilder: {
       customFileProtocol: 'picgo://./',
       externals: ['picgo'],
-      chainWebpackMainProcess: config => {
+      chainWebpackMainProcess: (config) => {
         config.resolve.alias
           .set('@', resolve('src/renderer'))
           .set('~', resolve('src'))
@@ -70,12 +70,12 @@ const config = {
           icon: 'build/icons/icon.ico',
           // eslint-disable-next-line no-template-curly-in-string
           artifactName: `PicGo Setup \${version}-${arch}.exe`,
-          target: [{
-            target: 'nsis',
-            arch: [
-              arch
-            ]
-          }]
+          target: [
+            {
+              target: 'nsis',
+              arch: [arch]
+            }
+          ]
         },
         nsis: {
           shortcutName: 'PicGo',

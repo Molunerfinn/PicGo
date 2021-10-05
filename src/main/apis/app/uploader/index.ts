@@ -1,9 +1,4 @@
-import {
-  Notification,
-  BrowserWindow,
-  ipcMain,
-  WebContents
-} from 'electron'
+import { Notification, BrowserWindow, ipcMain, WebContents } from 'electron'
 import dayjs from 'dayjs'
 import picgo from '@core/picgo'
 import db from '~/main/apis/core/datastore'
@@ -23,7 +18,10 @@ const waitForShow = (webcontent: WebContents) => {
   })
 }
 
-const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> => {
+const waitForRename = (
+  window: BrowserWindow,
+  id: number
+): Promise<string | null> => {
   return new Promise((resolve, reject) => {
     const windowId = window.id
     ipcMain.once(`rename${id}`, (evt: Event, newName: string) => {
@@ -38,7 +36,10 @@ const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> 
   })
 }
 
-const handleTalkingData = (webContents: WebContents, options: IAnalyticsData) => {
+const handleTalkingData = (
+  webContents: WebContents,
+  options: IAnalyticsData
+) => {
   const data: ITalkingDataOptions = {
     EventId: 'upload',
     Label: options.type,
@@ -55,20 +56,20 @@ const handleTalkingData = (webContents: WebContents, options: IAnalyticsData) =>
 class Uploader {
   private webContents: WebContents | null = null
   // private uploading: boolean = false
-  constructor () {
+  constructor() {
     this.init()
   }
 
-  init () {
-    picgo.on('notification', message => {
+  init() {
+    picgo.on('notification', (message) => {
       const notification = new Notification(message)
       notification.show()
     })
 
-    picgo.on('uploadProgress', progress => {
+    picgo.on('uploadProgress', (progress) => {
       this.webContents?.send('uploadProgress', progress)
     })
-    picgo.on('beforeTransform', ctx => {
+    picgo.on('beforeTransform', (ctx) => {
       if (db.get('settings.uploadNotification')) {
         const notification = new Notification({
           title: '上传进度',
@@ -82,46 +83,58 @@ class Uploader {
         const rename = db.get('settings.rename')
         const autoRename = db.get('settings.autoRename')
         if (autoRename || rename) {
-          await Promise.all(ctx.output.map(async (item, index) => {
-            let name: undefined | string | null
-            let fileName: string | undefined
-            if (autoRename) {
-              fileName = dayjs().add(index, 'ms').format('YYYYMMDDHHmmSSS') + item.extname
-            } else {
-              fileName = item.fileName
-            }
-            if (rename) {
-              const window = windowManager.create(IWindowList.RENAME_WINDOW)!
-              await waitForShow(window.webContents)
-              window.webContents.send('rename', fileName, window.webContents.id)
-              name = await waitForRename(window, window.webContents.id)
-            }
-            item.fileName = name || fileName
-          }))
+          await Promise.all(
+            ctx.output.map(async (item, index) => {
+              let name: undefined | string | null
+              let fileName: string | undefined
+              if (autoRename) {
+                fileName =
+                  dayjs().add(index, 'ms').format('YYYYMMDDHHmmSSS') +
+                  item.extname
+              } else {
+                fileName = item.fileName
+              }
+              if (rename) {
+                const window = windowManager.create(IWindowList.RENAME_WINDOW)!
+                await waitForShow(window.webContents)
+                window.webContents.send(
+                  'rename',
+                  fileName,
+                  window.webContents.id
+                )
+                name = await waitForRename(window, window.webContents.id)
+              }
+              item.fileName = name || fileName
+            })
+          )
         }
       }
     })
   }
 
-  setWebContents (webContents: WebContents) {
+  setWebContents(webContents: WebContents) {
     this.webContents = webContents
     return this
   }
 
-  async upload (img?: IUploadOption): Promise<IImgInfo[]|false> {
+  async upload(img?: IUploadOption): Promise<IImgInfo[] | false> {
     try {
       const startTime = Date.now()
       const output = await picgo.upload(img)
-      if (Array.isArray(output) && output.some((item: IImgInfo) => item.imgUrl)) {
+      if (
+        Array.isArray(output) &&
+        output.some((item: IImgInfo) => item.imgUrl)
+      ) {
         if (this.webContents) {
           handleTalkingData(this.webContents, {
             fromClipboard: !img,
-            type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
+            type:
+              db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
             count: img ? img.length : 1,
             duration: Date.now() - startTime
           } as IAnalyticsData)
         }
-        return output.filter(item => item.imgUrl)
+        return output.filter((item) => item.imgUrl)
       } else {
         return false
       }

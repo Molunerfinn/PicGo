@@ -2,53 +2,84 @@
   <div id="github-view">
     <el-row :gutter="16">
       <el-col :span="16" :offset="4">
-        <div class="view-title">
-          GitHub设置
-        </div>
+        <div class="view-title">GitHub设置</div>
         <el-form
           ref="github"
           label-position="right"
           label-width="120px"
           :model="form"
-          size="mini">
+          size="mini"
+        >
           <el-form-item
             label="设定仓库名"
             prop="repo"
             :rules="{
-              required: true, message: '仓库名不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.repo" @keyup.native.enter="confirm" placeholder="格式：username/repo"></el-input>
+              required: true,
+              message: '仓库名不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.repo"
+              @keyup.native.enter="confirm"
+              placeholder="格式：username/repo"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定分支名"
             prop="branch"
             :rules="{
-              required: true, message: '分支名不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.branch" @keyup.native.enter="confirm" placeholder="例如：main"></el-input>
+              required: true,
+              message: '分支名不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.branch"
+              @keyup.native.enter="confirm"
+              placeholder="例如：main"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定Token"
             prop="token"
             :rules="{
-              required: true, message: 'Token不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.token" @keyup.native.enter="confirm" placeholder="token" type="password"></el-input>
+              required: true,
+              message: 'Token不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.token"
+              @keyup.native.enter="confirm"
+              placeholder="token"
+              type="password"
+            ></el-input>
           </el-form-item>
-          <el-form-item
-            label="指定存储路径"
-            >
-            <el-input v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/"></el-input>
+          <el-form-item label="指定存储路径">
+            <el-input
+              v-model="form.path"
+              @keyup.native.enter="confirm"
+              placeholder="例如img/"
+            ></el-input>
           </el-form-item>
-          <el-form-item
-            label="设定自定义域名"
-            >
-            <el-input v-model="form.customUrl" @keyup.native.enter="confirm" placeholder="例如https://xxxx.com"></el-input>
+          <el-form-item label="设定自定义域名">
+            <el-input
+              v-model="form.customUrl"
+              @keyup.native.enter="confirm"
+              placeholder="例如https://xxxx.com"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
-              <el-button type="success" @click="setDefaultPicBed('github')" round :disabled="defaultPicBed === 'github'">设为默认图床</el-button>
+              <el-button
+                type="success"
+                @click="setDefaultPicBed('github')"
+                round
+                :disabled="defaultPicBed === 'github'"
+                >设为默认图床</el-button
+              >
             </el-button-group>
           </el-form-item>
         </el-form>
@@ -72,13 +103,15 @@ export default class extends Vue {
     customUrl: '',
     branch: ''
   }
-  async created () {
+
+  async created() {
     const config = await this.getConfig<IGitHubConfig>('picBed.github')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
-  confirm () {
+
+  confirm() {
     // @ts-ignore
     this.$refs.github.validate((valid) => {
       if (valid) {
@@ -98,7 +131,7 @@ export default class extends Vue {
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 #github-view
   .el-form
     label

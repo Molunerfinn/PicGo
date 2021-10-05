@@ -1,11 +1,6 @@
 import bus from '@core/bus'
-import {
-  uploadClipboardFiles,
-  uploadChosenFiles
-} from 'apis/app/uploader/apis'
-import {
-  createMenu
-} from 'apis/app/system'
+import { uploadClipboardFiles, uploadChosenFiles } from 'apis/app/uploader/apis'
+import { createMenu } from 'apis/app/system'
 import { IWindowList } from '#/types/enum'
 import windowManager from 'apis/app/window/windowManager'
 import {
@@ -20,7 +15,7 @@ import {
   CREATE_APP_MENU
 } from '@core/bus/constants'
 
-function initEventCenter () {
+function initEventCenter() {
   const eventList: any = {
     'picgo:upload': uploadClipboardFiles,
     [UPLOAD_WITH_CLIPBOARD_FILES]: busCallUploadClipboardFiles,
@@ -29,34 +24,34 @@ function initEventCenter () {
     [GET_SETTING_WINDOW_ID]: busCallGetSettingWindowId,
     [CREATE_APP_MENU]: createMenu
   }
-  for (let i in eventList) {
+  for (const i in eventList) {
     bus.on(i, eventList[i])
   }
 }
 
-async function busCallUploadClipboardFiles () {
+async function busCallUploadClipboardFiles() {
   const imgUrl = await uploadClipboardFiles()
   bus.emit(UPLOAD_WITH_CLIPBOARD_FILES_RESPONSE, imgUrl)
 }
 
-async function busCallUploadFiles (pathList: IFileWithPath[]) {
+async function busCallUploadFiles(pathList: IFileWithPath[]) {
   const win = windowManager.getAvailableWindow()
   const urls = await uploadChosenFiles(win.webContents, pathList)
   bus.emit(UPLOAD_WITH_FILES_RESPONSE, urls)
 }
 
-function busCallGetWindowId () {
+function busCallGetWindowId() {
   const win = windowManager.getAvailableWindow()
   bus.emit(GET_WINDOW_ID_RESPONSE, win.id)
 }
 
-function busCallGetSettingWindowId () {
+function busCallGetSettingWindowId() {
   const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)!
   bus.emit(GET_SETTING_WINDOW_ID_RESPONSE, settingWindow.id)
 }
 
 export default {
-  listen () {
+  listen() {
     initEventCenter()
   }
 }

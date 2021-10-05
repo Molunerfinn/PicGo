@@ -2,61 +2,99 @@
   <div id="tcyun-view">
     <el-row :gutter="16">
       <el-col :span="16" :offset="4">
-        <div class="view-title">
-          又拍云设置
-        </div>
+        <div class="view-title">又拍云设置</div>
         <el-form
           ref="tcyun"
           label-position="right"
           label-width="120px"
           :model="form"
-          size="mini">
+          size="mini"
+        >
           <el-form-item
             label="设定存储空间名"
             prop="bucket"
             :rules="{
-              required: true, message: 'Bucket不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.bucket" @keyup.native.enter="confirm" placeholder="Bucket"></el-input>
+              required: true,
+              message: 'Bucket不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.bucket"
+              @keyup.native.enter="confirm"
+              placeholder="Bucket"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定操作员"
             prop="operator"
             :rules="{
-              required: true, message: '操作员不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.operator" @keyup.native.enter="confirm" placeholder="例如：me"></el-input>
+              required: true,
+              message: '操作员不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.operator"
+              @keyup.native.enter="confirm"
+              placeholder="例如：me"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定操作员密码"
             prop="password"
             :rules="{
-              required: true, message: '操作员密码不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.password" @keyup.native.enter="confirm" placeholder="输入操作员密码" type="password"></el-input>
+              required: true,
+              message: '操作员密码不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.password"
+              @keyup.native.enter="confirm"
+              placeholder="输入操作员密码"
+              type="password"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定加速域名"
             prop="url"
             :rules="{
-              required: true, message: '加速域名不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.url" placeholder="例如http://xxx.test.upcdn.net" @keyup.native.enter="confirm()"></el-input>
+              required: true,
+              message: '加速域名不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.url"
+              placeholder="例如http://xxx.test.upcdn.net"
+              @keyup.native.enter="confirm()"
+            ></el-input>
           </el-form-item>
-          <el-form-item
-            label="设定网址后缀"
-            >
-            <el-input v-model="form.options" @keyup.native.enter="confirm" placeholder="例如!imgslim"></el-input>
+          <el-form-item label="设定网址后缀">
+            <el-input
+              v-model="form.options"
+              @keyup.native.enter="confirm"
+              placeholder="例如!imgslim"
+            ></el-input>
           </el-form-item>
-          <el-form-item
-            label="指定存储路径"
-            >
-            <el-input v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/"></el-input>
+          <el-form-item label="指定存储路径">
+            <el-input
+              v-model="form.path"
+              @keyup.native.enter="confirm"
+              placeholder="例如img/"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
-              <el-button type="success" @click="setDefaultPicBed('upyun')" round :disabled="defaultPicBed === 'upyun'">设为默认图床</el-button>
+              <el-button
+                type="success"
+                @click="setDefaultPicBed('upyun')"
+                round
+                :disabled="defaultPicBed === 'upyun'"
+                >设为默认图床</el-button
+              >
             </el-button-group>
           </el-form-item>
         </el-form>
@@ -80,13 +118,15 @@ export default class extends Vue {
     options: '',
     path: ''
   }
-  async created () {
+
+  async created() {
     const config = await this.getConfig<IUpYunConfig>('picBed.upyun')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
-  confirm () {
+
+  confirm() {
     // @ts-ignore
     this.$refs.tcyun.validate((valid) => {
       if (valid) {
@@ -106,7 +146,7 @@ export default class extends Vue {
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 #tcyun-view
   .el-form
     label

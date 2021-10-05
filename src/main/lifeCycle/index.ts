@@ -1,13 +1,6 @@
 import './errorHandler'
-import {
-  app,
-  globalShortcut,
-  protocol,
-  Notification
-} from 'electron'
-import {
-  createProtocol
-} from 'vue-cli-plugin-electron-builder/lib'
+import { app, globalShortcut, protocol, Notification } from 'electron'
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import beforeOpen from '~/main/utils/beforeOpen'
 import fixPath from 'fix-path'
@@ -19,13 +12,8 @@ import {
   updateShortKeyFromVersion212,
   migrateGalleryFromVersion230
 } from '~/main/migrate'
-import {
-  uploadChosenFiles,
-  uploadClipboardFiles
-} from 'apis/app/uploader/apis'
-import {
-  createTray
-} from 'apis/app/system'
+import { uploadChosenFiles, uploadClipboardFiles } from 'apis/app/uploader/apis'
+import { createTray } from 'apis/app/system'
 import server from '~/main/server/index'
 import updateChecker from '~/main/utils/updateChecker'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
@@ -40,12 +28,16 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 
 const handleStartUpFiles = (argv: string[], cwd: string) => {
   const files = getUploadFiles(argv, cwd, logger)
-  if (files === null || files.length > 0) { // 如果有文件列表作为参数，说明是命令行启动
+  if (files === null || files.length > 0) {
+    // 如果有文件列表作为参数，说明是命令行启动
     if (files === null) {
       logger.info('cli -> uploading file from clipboard')
       uploadClipboardFiles()
     } else {
-      logger.info('cli -> uploading files from cli', ...files.map(item => item.path))
+      logger.info(
+        'cli -> uploading files from cli',
+        ...files.map((item) => item.path)
+      )
       const win = windowManager.getAvailableWindow()
       uploadChosenFiles(win.webContents, files)
     }
@@ -56,8 +48,10 @@ const handleStartUpFiles = (argv: string[], cwd: string) => {
 }
 
 class LifeCycle {
-  private async beforeReady () {
-    protocol.registerSchemesAsPrivileged([{ scheme: 'picgo', privileges: { secure: true, standard: true } }])
+  private async beforeReady() {
+    protocol.registerSchemesAsPrivileged([
+      { scheme: 'picgo', privileges: { secure: true, standard: true } }
+    ])
     // fix the $PATH in macOS
     fixPath()
     beforeOpen()
@@ -66,7 +60,8 @@ class LifeCycle {
     updateShortKeyFromVersion212(db, db.get('settings.shortKey'))
     await migrateGalleryFromVersion230(db, GalleryDB.getInstance(), picgo)
   }
-  private onReady () {
+
+  private onReady() {
     const readyFunction = async () => {
       console.log('on ready')
       createProtocol('picgo')
@@ -110,7 +105,8 @@ class LifeCycle {
       readyFunction()
     }
   }
-  private onRunning () {
+
+  private onRunning() {
     app.on('second-instance', (event, commandLine, workingDirectory) => {
       logger.info('detect second instance')
       const result = handleStartUpFiles(commandLine, workingDirectory)
@@ -140,11 +136,15 @@ class LifeCycle {
       app.setAppUserModelId('com.molunerfinn.picgo')
     }
 
-    if (process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity')) {
+    if (
+      process.env.XDG_CURRENT_DESKTOP &&
+      process.env.XDG_CURRENT_DESKTOP.includes('Unity')
+    ) {
       process.env.XDG_CURRENT_DESKTOP = 'Unity'
     }
   }
-  private onQuit () {
+
+  private onQuit() {
     app.on('window-all-closed', () => {
       if (process.platform !== 'darwin') {
         app.quit()
@@ -159,7 +159,7 @@ class LifeCycle {
     // Exit cleanly on request from parent process in development mode.
     if (isDevelopment) {
       if (process.platform === 'win32') {
-        process.on('message', data => {
+        process.on('message', (data) => {
           if (data === 'graceful-exit') {
             app.quit()
           }
@@ -171,7 +171,8 @@ class LifeCycle {
       }
     }
   }
-  async launchApp () {
+
+  async launchApp() {
     const gotTheLock = app.requestSingleInstanceLock()
     if (!gotTheLock) {
       app.quit()
@@ -186,6 +187,4 @@ class LifeCycle {
 
 const bootstrap = new LifeCycle()
 
-export {
-  bootstrap
-}
+export { bootstrap }

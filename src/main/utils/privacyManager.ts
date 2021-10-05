@@ -4,7 +4,7 @@ import { showMessageBox } from '~/main/utils/common'
 import { SHOW_PRIVACY_MESSAGE } from '~/universal/events/constants'
 
 class PrivacyManager {
-  async init () {
+  async init() {
     ipcMain.on(SHOW_PRIVACY_MESSAGE, () => {
       this.show(false)
     })
@@ -21,7 +21,7 @@ class PrivacyManager {
     return true
   }
 
-  async show (showCancel = true) {
+  async show(showCancel = true) {
     const res = await showMessageBox({
       type: 'info',
       buttons: showCancel ? ['Yes', 'No'] : ['Yes'],
@@ -56,6 +56,4 @@ class PrivacyManager {
 
 const privacyManager = new PrivacyManager()
 
-export {
-  privacyManager
-}
+export { privacyManager }

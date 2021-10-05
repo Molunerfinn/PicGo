@@ -25,7 +25,11 @@ const handleArgv = (argv: string[]): IHandleArgvResult => {
   }
 }
 
-const getUploadFiles = (argv = process.argv, cwd = process.cwd(), logger: Logger) => {
+const getUploadFiles = (
+  argv = process.argv,
+  cwd = process.cwd(),
+  logger: Logger
+) => {
   const { success, fileList } = handleArgv(argv)
   if (!success) {
     return []
@@ -33,29 +37,29 @@ const getUploadFiles = (argv = process.argv, cwd = process.cwd(), logger: Logger
     if (fileList?.length === 0) {
       return null // for uploading images in clipboard
     } else if ((fileList?.length || 0) > 0) {
-      const result = fileList!.map(item => {
-        if (path.isAbsolute(item)) {
-          return {
-            path: item
-          }
-        } else {
-          let tempPath = path.join(cwd, item)
-          if (fs.existsSync(tempPath)) {
+      const result = fileList!
+        .map((item) => {
+          if (path.isAbsolute(item)) {
             return {
-              path: tempPath
+              path: item
             }
           } else {
-            logger.warn(`cli -> can't get file: ${tempPath}, invalid path`)
-            return null
+            const tempPath = path.join(cwd, item)
+            if (fs.existsSync(tempPath)) {
+              return {
+                path: tempPath
+              }
+            } else {
+              logger.warn(`cli -> can't get file: ${tempPath}, invalid path`)
+              return null
+            }
           }
-        }
-      }).filter(item => item !== null) as Result
+        })
+        .filter((item) => item !== null) as Result
       return result
     }
   }
   return []
 }
 
-export {
-  getUploadFiles
-}
+export { getUploadFiles }

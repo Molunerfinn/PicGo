@@ -6,7 +6,7 @@ import { uuid } from 'uuidv4'
 @Component
 export default class extends Vue {
   // support string key + value or object config
-  saveConfig (config: IObj | string, value?: any) {
+  saveConfig(config: IObj | string, value?: any) {
     if (typeof config === 'string') {
       config = {
         [config]: value
@@ -14,10 +14,15 @@ export default class extends Vue {
     }
     ipcRenderer.send(PICGO_SAVE_CONFIG, config)
   }
-  getConfig<T> (key?: string): Promise<T | undefined> {
+
+  getConfig<T>(key?: string): Promise<T | undefined> {
     return new Promise((resolve) => {
       const callbackId = uuid()
-      const callback = (event: IpcRendererEvent, config: T | undefined, returnCallbackId: string) => {
+      const callback = (
+        event: IpcRendererEvent,
+        config: T | undefined,
+        returnCallbackId: string
+      ) => {
         if (returnCallbackId === callbackId) {
           resolve(config)
           ipcRenderer.removeListener(PICGO_GET_CONFIG, callback)

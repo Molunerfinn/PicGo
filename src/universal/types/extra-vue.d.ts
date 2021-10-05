@@ -1,10 +1,10 @@
 import Vue from 'vue'
-import axios  from 'axios'
+import axios from 'axios'
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $router: VueRouter,
-    $route: Route,
+    $router: VueRouter
+    $route: Route
     $http: typeof axios
     $builtInPicBed: string[]
     $bus: Vue

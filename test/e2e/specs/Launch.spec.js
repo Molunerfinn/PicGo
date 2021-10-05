@@ -5,9 +5,8 @@ describe('Launch', function () {
   afterEach(utils.afterEach)
 
   it('shows the proper application title', function () {
-    return this.app.client.getTitle()
-      .then(title => {
-        expect(title).to.equal('picgo')
-      })
+    return this.app.client.getTitle().then((title) => {
+      expect(title).to.equal('picgo')
+    })
   })
 })

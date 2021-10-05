@@ -9,10 +9,10 @@ export const handleResponse = ({
   body = {
     success: false
   }
-} : {
-  response: IHttpResponse,
-  statusCode?: number,
-  header?: IObj,
+}: {
+  response: IHttpResponse
+  statusCode?: number
+  header?: IObj
   body?: any
 }) => {
   if (body?.success === false) {
@@ -24,7 +24,5 @@ export const handleResponse = ({
 }
 
 export const ensureHTTPLink = (url: string): string => {
-  return url.startsWith('http')
-    ? url
-    : `http://${url}`
+  return url.startsWith('http') ? url : `http://${url}`
 }

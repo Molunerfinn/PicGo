@@ -8,14 +8,14 @@ interface IObjT<T> {
 }
 
 declare interface ErrnoException extends Error {
-  errno?: number | string;
-  code?: string;
-  path?: string;
-  syscall?: string;
-  stack?: string;
+  errno?: number | string
+  code?: string
+  path?: string
+  syscall?: string
+  stack?: string
 }
 
-declare var __static: string
+declare let __static: string
 
 declare type ILogType = 'success' | 'info' | 'warn' | 'error'
 
@@ -80,24 +80,24 @@ interface IOldShortKeyConfigs {
 }
 
 interface IKeyCommandType {
-  key: string,
+  key: string
   command: string
 }
 
 // Main process
 interface IBrowserWindowOptions {
-  height: number,
-  width: number,
-  show: boolean,
-  fullscreenable: boolean,
-  resizable: boolean,
+  height: number
+  width: number
+  show: boolean
+  fullscreenable: boolean
+  resizable: boolean
   webPreferences: {
-    nodeIntegration: boolean,
-    nodeIntegrationInWorker: boolean,
+    nodeIntegration: boolean
+    nodeIntegrationInWorker: boolean
     backgroundThrottling: boolean
     webSecurity?: boolean
-  },
-  vibrancy?: string | any,
+  }
+  vibrancy?: string | any
   frame?: boolean
   center?: boolean
   title?: string
@@ -130,14 +130,16 @@ interface IPicGoPlugin {
   logo: string
   version: string | number
   gui: boolean
-  config: {
-    plugin: IPluginMenuConfig
-    uploader: IPluginMenuConfig
-    transformer: IPluginMenuConfig
-    [index: string]: IPluginMenuConfig
-  } | {
-    [propName: string]: any
-  }
+  config:
+    | {
+        plugin: IPluginMenuConfig
+        uploader: IPluginMenuConfig
+        transformer: IPluginMenuConfig
+        [index: string]: IPluginMenuConfig
+      }
+    | {
+        [propName: string]: any
+      }
   enabled?: boolean
   homepage: string
   guiMenu?: any[]
@@ -190,7 +192,9 @@ interface IGuiApi {
   showFileExplorer: (options: IShowFileExplorerOption) => Promise<string>
   upload: (input: IUploadOption) => Promise<ImgInfo[]>
   showNotification: (options?: IShowNotificationOption) => void
-  showMessageBox: (options?: IShowMessageBoxOption) => Promise<IShowMessageBoxResult>
+  showMessageBox: (
+    options?: IShowMessageBoxOption
+  ) => Promise<IShowMessageBoxResult>
 }
 interface IShowInputBoxOption {
   value?: string
@@ -208,7 +212,7 @@ interface IShowNotificationOption {
   icon?: string | import('electron').NativeImage
 }
 
-interface IPrivateShowNotificationOption extends IShowNotificationOption{
+interface IPrivateShowNotificationOption extends IShowNotificationOption {
   /**
    * click notification to copy the body
    */
@@ -243,34 +247,34 @@ interface shortKeyHandlerMap {
 // PicBeds
 interface IAliYunConfig {
   accessKeyId: string
-  accessKeySecret: string,
-  bucket: string,
-  area: string,
-  path: string,
+  accessKeySecret: string
+  bucket: string
+  area: string
+  path: string
   customUrl: string
   options: string
 }
 
 interface IGitHubConfig {
-  repo: string,
-  token: string,
-  path: string,
-  customUrl: string,
+  repo: string
+  token: string
+  path: string
+  customUrl: string
   branch: string
 }
 
 interface IImgurConfig {
-  clientId: string,
+  clientId: string
   proxy: string
 }
 
 interface IQiniuConfig {
-  accessKey: string,
-  secretKey: string,
-  bucket: string,
-  url: string,
-  area: string,
-  options: string,
+  accessKey: string
+  secretKey: string
+  bucket: string
+  url: string
+  area: string
+  options: string
   path: string
 }
 
@@ -279,21 +283,21 @@ interface ISMMSConfig {
 }
 
 interface ITcYunConfig {
-  secretId: string,
-  secretKey: string,
-  bucket: string,
-  appId: string,
-  area: string,
-  path: string,
-  customUrl: string,
+  secretId: string
+  secretKey: string
+  bucket: string
+  appId: string
+  area: string
+  path: string
+  customUrl: string
   version: 'v4' | 'v5'
 }
 
 interface IUpYunConfig {
-  bucket: string,
-  operator: string,
-  password: string,
-  options: string,
+  bucket: string
+  operator: string
+  password: string
+  options: string
   path: string
 }
 
@@ -328,9 +332,9 @@ type ILogArgvTypeWithError = ILogArgvType | Error
 
 interface IGalleryDB {
   get<T>(filter?: IFilter): Promise<IGetResult<T>>
-  insert<T> (value: T): Promise<IResult<T>>
-  insertMany<T> (value: T[]): Promise<IResult<T>[]>
-  updateById (id: string, value: IObject): Promise<boolean>
-  getById<T> (id: string): Promise<IResult<T> | undefined>
-  removeById (id: string): Promise<void>
+  insert<T>(value: T): Promise<IResult<T>>
+  insertMany<T>(value: T[]): Promise<IResult<T>[]>
+  updateById(id: string, value: IObject): Promise<boolean>
+  getById<T>(id: string): Promise<IResult<T> | undefined>
+  removeById(id: string): Promise<void>
 }

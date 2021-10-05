@@ -11,11 +11,13 @@ export const handleCopyUrl = (str: string): void => {
  * show notification
  * @param options
  */
-export const showNotification = (options: IPrivateShowNotificationOption = {
-  title: '',
-  body: '',
-  clickToCopy: false
-}) => {
+export const showNotification = (
+  options: IPrivateShowNotificationOption = {
+    title: '',
+    body: '',
+    clickToCopy: false
+  }
+) => {
   const notification = new Notification({
     title: options.title,
     body: options.body,
@@ -35,9 +37,7 @@ export const showNotification = (options: IPrivateShowNotificationOption = {
 
 export const showMessageBox = (options: any) => {
   return new Promise<IShowMessageBoxResult>(async (resolve, reject) => {
-    dialog.showMessageBox(
-      options
-    ).then((res) => {
+    dialog.showMessageBox(options).then((res) => {
       resolve({
         result: res.response,
         checkboxChecked: res.checkboxChecked

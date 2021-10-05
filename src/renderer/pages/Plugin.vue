@@ -6,7 +6,7 @@
         <i class="el-icon-goods" @click="goAwesomeList"></i>
       </el-tooltip>
       <el-tooltip :content="importLocalPluginToolTip" placement="left">
-        <i class="el-icon-download" @click="handleImportLocalPlugin"/>
+        <i class="el-icon-download" @click="handleImportLocalPlugin" />
       </el-tooltip>
     </div>
     <el-row class="handle-bar" :class="{ 'cut-width': pluginList.length > 6 }">
@@ -15,16 +15,26 @@
         placeholder="搜索npm上的PicGo插件，或者点击上方按钮查看优秀插件列表"
         size="small"
       >
-        <i slot="suffix" class="el-input__icon el-icon-close" v-if="searchText" @click="cleanSearch" style="cursor: pointer"></i>
+        <i
+          slot="suffix"
+          class="el-input__icon el-icon-close"
+          v-if="searchText"
+          @click="cleanSearch"
+          style="cursor: pointer"
+        ></i>
       </el-input>
     </el-row>
     <el-row :gutter="10" class="plugin-list" v-loading="loading">
       <el-col :span="12" v-for="item in pluginList" :key="item.fullName">
-        <div class="plugin-item" :class="{ 'darwin': os === 'darwin' }">
-          <div class="cli-only-badge" v-if="!item.gui" title="CLI only">CLI</div>
-          <img class="plugin-item__logo" :src="item.logo"
+        <div class="plugin-item" :class="{ darwin: os === 'darwin' }">
+          <div class="cli-only-badge" v-if="!item.gui" title="CLI only">
+            CLI
+          </div>
+          <img
+            class="plugin-item__logo"
+            :src="item.logo"
             :onerror="defaultLogo"
-          >
+          />
           <div
             class="plugin-item__content"
             :class="{ disabled: !item.enabled }"
@@ -39,19 +49,21 @@
               <span class="plugin-item__author">
                 {{ item.author }}
               </span>
-              <span class="plugin-item__config" >
+              <span class="plugin-item__config">
                 <template v-if="searchText">
                   <template v-if="!item.hasInstall">
-                    <span class="config-button install" v-if="!item.ing" @click="installPlugin(item)">
+                    <span
+                      class="config-button install"
+                      v-if="!item.ing"
+                      @click="installPlugin(item)"
+                    >
                       安装
                     </span>
                     <span v-else-if="item.ing" class="config-button ing">
                       安装中
                     </span>
                   </template>
-                  <span v-else class="config-button ing">
-                    已安装
-                  </span>
+                  <span v-else class="config-button ing"> 已安装 </span>
                 </template>
                 <template v-else>
                   <span v-if="item.ing" class="config-button ing">
@@ -76,8 +88,14 @@
         </div>
       </el-col>
     </el-row>
-    <el-row v-show="needReload" class="reload-mask" :class="{ 'cut-width': pluginList.length > 6 }">
-      <el-button type="primary" @click="reloadApp" size="mini" round>重启以生效</el-button>
+    <el-row
+      v-show="needReload"
+      class="reload-mask"
+      :class="{ 'cut-width': pluginList.length > 6 }"
+    >
+      <el-button type="primary" @click="reloadApp" size="mini" round
+        >重启以生效</el-button
+      >
     </el-row>
     <el-dialog
       :visible.sync="dialogVisible"
@@ -94,24 +112,18 @@
       </config-form>
       <span slot="footer">
         <el-button @click="dialogVisible = false" round>取消</el-button>
-        <el-button type="primary" @click="handleConfirmConfig" round>确定</el-button>
+        <el-button type="primary" @click="handleConfirmConfig" round
+          >确定</el-button
+        >
       </span>
     </el-dialog>
   </div>
 </template>
 <script lang="ts">
-import {
-  Component,
-  Vue,
-  Watch
-} from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import ConfigForm from '@/components/ConfigForm.vue'
 import { debounce } from 'lodash'
-import {
-  ipcRenderer,
-  remote,
-  IpcRendererEvent
-} from 'electron'
+import { ipcRenderer, remote, IpcRendererEvent } from 'electron'
 import { handleStreamlinePluginName } from '~/universal/utils/common'
 
 const { Menu } = remote
@@ -137,16 +149,19 @@ export default class extends Vue {
   importLocalPluginToolTip = '导入本地插件'
   id = ''
   os = ''
-  defaultLogo: string = 'this.src="https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@dev/public/roundLogo.png"'
-  get npmSearchText () {
+  defaultLogo: string =
+    'this.src="https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@dev/public/roundLogo.png"'
+
+  get npmSearchText() {
     return this.searchText.match('picgo-plugin-')
       ? this.searchText
       : this.searchText !== ''
-        ? `picgo-plugin-${this.searchText}`
-        : this.searchText
+      ? `picgo-plugin-${this.searchText}`
+      : this.searchText
   }
+
   @Watch('npmSearchText')
-  onNpmSearchTextChange (val: string) {
+  onNpmSearchTextChange(val: string) {
     if (val) {
       this.loading = true
       this.pluginList = []
@@ -155,8 +170,9 @@ export default class extends Vue {
       this.getPluginList()
     }
   }
+
   @Watch('dialogVisible')
-  onDialogVisible (val: boolean) {
+  onDialogVisible(val: boolean) {
     if (val) {
       // @ts-ignore
       document.querySelector('.main-content.el-row').style.zIndex = 101
@@ -165,31 +181,44 @@ export default class extends Vue {
       document.querySelector('.main-content.el-row').style.zIndex = 10
     }
   }
-  async created () {
+
+  async created() {
     this.os = process.platform
     ipcRenderer.on('hideLoading', () => {
       this.loading = false
     })
-    ipcRenderer.on('pluginList', (evt: IpcRendererEvent, list: IPicGoPlugin[]) => {
-      this.pluginList = list
-      this.pluginNameList = list.map(item => item.fullName)
-      this.loading = false
-    })
-    ipcRenderer.on('installPlugin', (evt: IpcRendererEvent, { success, body }: {
-      success: boolean,
-      body: string
-    }) => {
-      this.loading = false
-      this.pluginList.forEach(item => {
-        if (item.fullName === body) {
-          item.ing = false
-          item.hasInstall = success
+    ipcRenderer.on(
+      'pluginList',
+      (evt: IpcRendererEvent, list: IPicGoPlugin[]) => {
+        this.pluginList = list
+        this.pluginNameList = list.map((item) => item.fullName)
+        this.loading = false
+      }
+    )
+    ipcRenderer.on(
+      'installPlugin',
+      (
+        evt: IpcRendererEvent,
+        {
+          success,
+          body
+        }: {
+          success: boolean
+          body: string
         }
-      })
-    })
+      ) => {
+        this.loading = false
+        this.pluginList.forEach((item) => {
+          if (item.fullName === body) {
+            item.ing = false
+            item.hasInstall = success
+          }
+        })
+      }
+    )
     ipcRenderer.on('updateSuccess', (evt: IpcRendererEvent, plugin: string) => {
       this.loading = false
-      this.pluginList.forEach(item => {
+      this.pluginList.forEach((item) => {
         if (item.fullName === plugin) {
           item.ing = false
           item.hasInstall = true
@@ -199,74 +228,95 @@ export default class extends Vue {
       this.handleReload()
       this.getPluginList()
     })
-    ipcRenderer.on('uninstallSuccess', (evt: IpcRendererEvent, plugin: string) => {
-      this.loading = false
-      this.pluginList = this.pluginList.filter(item => {
-        if (item.fullName === plugin) { // restore Uploader & Transformer after uninstalling
-          if (item.config.transformer.name) {
-            this.handleRestoreState('transformer', item.config.transformer.name)
+    ipcRenderer.on(
+      'uninstallSuccess',
+      (evt: IpcRendererEvent, plugin: string) => {
+        this.loading = false
+        this.pluginList = this.pluginList.filter((item) => {
+          if (item.fullName === plugin) {
+            // restore Uploader & Transformer after uninstalling
+            if (item.config.transformer.name) {
+              this.handleRestoreState(
+                'transformer',
+                item.config.transformer.name
+              )
+            }
+            if (item.config.uploader.name) {
+              this.handleRestoreState('uploader', item.config.uploader.name)
+            }
+            this.getPicBeds()
           }
-          if (item.config.uploader.name) {
-            this.handleRestoreState('uploader', item.config.uploader.name)
-          }
-          this.getPicBeds()
-        }
-        return item.fullName !== plugin
-      })
-      this.pluginNameList = this.pluginNameList.filter(item => item !== plugin)
-    })
+          return item.fullName !== plugin
+        })
+        this.pluginNameList = this.pluginNameList.filter(
+          (item) => item !== plugin
+        )
+      }
+    )
     this.getPluginList()
     this.getSearchResult = debounce(this.getSearchResult, 50)
-    this.needReload = await this.getConfig<boolean>('needReload') || false
+    this.needReload = (await this.getConfig<boolean>('needReload')) || false
   }
-  async buildContextMenu (plugin: IPicGoPlugin) {
+
+  async buildContextMenu(plugin: IPicGoPlugin) {
     const _this = this
-    let menu = [{
-      label: '启用插件',
-      enabled: !plugin.enabled,
-      click () {
-        _this.saveConfig({
-          [`picgoPlugins.${plugin.fullName}`]: true
-        })
-        plugin.enabled = true
-        _this.getPicBeds()
-        _this.needReload = true
-      }
-    }, {
-      label: '禁用插件',
-      enabled: plugin.enabled,
-      click () {
-        _this.saveConfig({
-          [`picgoPlugins.${plugin.fullName}`]: false
-        })
-        plugin.enabled = false
-        _this.getPicBeds()
-        if (plugin.config.transformer.name) {
-          _this.handleRestoreState('transformer', plugin.config.transformer.name)
+    const menu = [
+      {
+        label: '启用插件',
+        enabled: !plugin.enabled,
+        click() {
+          _this.saveConfig({
+            [`picgoPlugins.${plugin.fullName}`]: true
+          })
+          plugin.enabled = true
+          _this.getPicBeds()
+          _this.needReload = true
         }
-        if (plugin.config.uploader.name) {
-          _this.handleRestoreState('uploader', plugin.config.uploader.name)
+      },
+      {
+        label: '禁用插件',
+        enabled: plugin.enabled,
+        click() {
+          _this.saveConfig({
+            [`picgoPlugins.${plugin.fullName}`]: false
+          })
+          plugin.enabled = false
+          _this.getPicBeds()
+          if (plugin.config.transformer.name) {
+            _this.handleRestoreState(
+              'transformer',
+              plugin.config.transformer.name
+            )
+          }
+          if (plugin.config.uploader.name) {
+            _this.handleRestoreState('uploader', plugin.config.uploader.name)
+          }
+          _this.needReload = true
         }
-        _this.needReload = true
+      },
+      {
+        label: '卸载插件',
+        click() {
+          _this.uninstallPlugin(plugin.fullName)
+        }
+      },
+      {
+        label: '更新插件',
+        click() {
+          _this.updatePlugin(plugin.fullName)
+        }
       }
-    }, {
-      label: '卸载插件',
-      click () {
-        _this.uninstallPlugin(plugin.fullName)
-      }
-    }, {
-      label: '更新插件',
-      click () {
-        _this.updatePlugin(plugin.fullName)
-      }
-    }]
-    for (let i in plugin.config) {
+    ]
+    for (const i in plugin.config) {
       if (plugin.config[i].config.length > 0) {
         const obj = {
-          label: `配置${i} - ${plugin.config[i].fullName || plugin.config[i].name}`,
-          click () {
+          label: `配置${i} - ${
+            plugin.config[i].fullName || plugin.config[i].name
+          }`,
+          click() {
             _this.currentType = i
-            _this.configName = plugin.config[i].fullName || plugin.config[i].name
+            _this.configName =
+              plugin.config[i].fullName || plugin.config[i].name
             _this.dialogVisible = true
             _this.config = plugin.config[i].config
           },
@@ -278,11 +328,14 @@ export default class extends Vue {
 
     // handle transformer
     if (plugin.config.transformer.name) {
-      let currentTransformer = await this.getConfig<string>('picBed.transformer') || 'path'
-      let pluginTransformer = plugin.config.transformer.name
+      const currentTransformer =
+        (await this.getConfig<string>('picBed.transformer')) || 'path'
+      const pluginTransformer = plugin.config.transformer.name
       const obj = {
-        label: `${currentTransformer === pluginTransformer ? '禁用' : '启用'}transformer - ${plugin.config.transformer.name}`,
-        click () {
+        label: `${
+          currentTransformer === pluginTransformer ? '禁用' : '启用'
+        }transformer - ${plugin.config.transformer.name}`,
+        click() {
           _this.toggleTransformer(plugin.config.transformer.name)
         }
       }
@@ -295,10 +348,10 @@ export default class extends Vue {
         // @ts-ignore
         type: 'separator'
       })
-      for (let i of plugin.guiMenu) {
+      for (const i of plugin.guiMenu) {
         menu.push({
           label: i.label,
-          click () {
+          click() {
             ipcRenderer.send('pluginActions', plugin.fullName, i.label)
           }
         })
@@ -308,31 +361,37 @@ export default class extends Vue {
     this.menu = Menu.buildFromTemplate(menu)
     this.menu.popup()
   }
-  getPluginList () {
+
+  getPluginList() {
     ipcRenderer.send('getPluginList')
   }
-  getPicBeds () {
+
+  getPicBeds() {
     ipcRenderer.send('getPicBeds')
   }
-  installPlugin (item: IPicGoPlugin) {
+
+  installPlugin(item: IPicGoPlugin) {
     if (!item.gui) {
       this.$confirm('该插件未对可视化界面进行优化, 是否继续安装?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        item.ing = true
-        ipcRenderer.send('installPlugin', item.fullName)
-      }).catch(() => {
-        console.log('Install canceled')
       })
+        .then(() => {
+          item.ing = true
+          ipcRenderer.send('installPlugin', item.fullName)
+        })
+        .catch(() => {
+          console.log('Install canceled')
+        })
     } else {
       item.ing = true
       ipcRenderer.send('installPlugin', item.fullName)
     }
   }
-  uninstallPlugin (val: string) {
-    this.pluginList.forEach(item => {
+
+  uninstallPlugin(val: string) {
+    this.pluginList.forEach((item) => {
       if (item.name === val) {
         item.ing = true
       }
@@ -340,8 +399,9 @@ export default class extends Vue {
     this.loading = true
     ipcRenderer.send('uninstallPlugin', val)
   }
-  updatePlugin (val: string) {
-    this.pluginList.forEach(item => {
+
+  updatePlugin(val: string) {
+    this.pluginList.forEach((item) => {
       if (item.fullName === val) {
         item.ing = true
       }
@@ -349,11 +409,13 @@ export default class extends Vue {
     this.loading = true
     ipcRenderer.send('updatePlugin', val)
   }
-  reloadApp () {
+
+  reloadApp() {
     remote.app.relaunch()
     remote.app.exit(0)
   }
-  async handleReload () {
+
+  async handleReload() {
     this.saveConfig({
       needReload: true
     })
@@ -365,11 +427,14 @@ export default class extends Vue {
       this.reloadApp()
     }
   }
-  cleanSearch () {
+
+  cleanSearch() {
     this.searchText = ''
   }
-  async toggleTransformer (transformer: string) {
-    let currentTransformer = await this.getConfig<string>('picBed.transformer') || 'path'
+
+  async toggleTransformer(transformer: string) {
+    const currentTransformer =
+      (await this.getConfig<string>('picBed.transformer')) || 'path'
     if (currentTransformer === transformer) {
       this.saveConfig({
         'picBed.transformer': 'path'
@@ -380,7 +445,8 @@ export default class extends Vue {
       })
     }
   }
-  async handleConfirmConfig () {
+
+  async handleConfirmConfig() {
     // @ts-ignore
     const result = await this.$refs.configForm.validate()
     if (result !== false) {
@@ -411,12 +477,14 @@ export default class extends Vue {
       this.getPluginList()
     }
   }
-  getSearchResult (val: string) {
+
+  getSearchResult(val: string) {
     // this.$http.get(`https://api.npms.io/v2/search?q=${val}`)
-    this.$http.get(`https://registry.npmjs.com/-/v1/search?text=${val}`)
+    this.$http
+      .get(`https://registry.npmjs.com/-/v1/search?text=${val}`)
       .then((res: INPMSearchResult) => {
         this.pluginList = res.data.objects
-          .filter((item:INPMSearchResultObject) => {
+          .filter((item: INPMSearchResultObject) => {
             return item.package.name.includes('picgo-plugin-')
           })
           .map((item: INPMSearchResultObject) => {
@@ -429,7 +497,8 @@ export default class extends Vue {
         this.loading = false
       })
   }
-  handleSearchResult (item: INPMSearchResultObject) {
+
+  handleSearchResult(item: INPMSearchResultObject) {
     const name = handleStreamlinePluginName(item.package.name)
     let gui = false
     if (item.package.keywords && item.package.keywords.length > 0) {
@@ -445,14 +514,17 @@ export default class extends Vue {
       logo: `https://cdn.jsdelivr.net/npm/${item.package.name}/logo.png`,
       config: {},
       homepage: item.package.links ? item.package.links.homepage : '',
-      hasInstall: this.pluginNameList.some(plugin => plugin === item.package.name),
+      hasInstall: this.pluginNameList.some(
+        (plugin) => plugin === item.package.name
+      ),
       version: item.package.version,
       gui,
       ing: false // installing or uninstalling
     }
   }
+
   // restore Uploader & Transformer
-  async handleRestoreState (item: string, name: string) {
+  async handleRestoreState(item: string, name: string) {
     if (item === 'uploader') {
       const current = await this.getConfig('picBed.current')
       if (current === name) {
@@ -471,19 +543,23 @@ export default class extends Vue {
       }
     }
   }
-  openHomepage (url: string) {
+
+  openHomepage(url: string) {
     if (url) {
       remote.shell.openExternal(url)
     }
   }
-  goAwesomeList () {
+
+  goAwesomeList() {
     remote.shell.openExternal('https://github.com/PicGo/Awesome-PicGo')
   }
-  handleImportLocalPlugin () {
+
+  handleImportLocalPlugin() {
     ipcRenderer.send('importLocalPlugin')
     this.loading = true
   }
-  beforeDestroy () {
+
+  beforeDestroy() {
     ipcRenderer.removeAllListeners('pluginList')
     ipcRenderer.removeAllListeners('installPlugin')
     ipcRenderer.removeAllListeners('uninstallSuccess')
@@ -492,7 +568,7 @@ export default class extends Vue {
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 $darwinBg = #172426
 #plugin-view
   position relative

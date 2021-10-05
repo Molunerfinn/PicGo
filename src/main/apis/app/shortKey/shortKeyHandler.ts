@@ -1,7 +1,5 @@
 import bus from '@core/bus'
-import {
-  globalShortcut
-} from 'electron'
+import { globalShortcut } from 'electron'
 import logger from '@core/picgo/logger'
 import GuiApi from '../../gui'
 import db from '~/main/apis/core/datastore'
@@ -11,20 +9,22 @@ import picgo from '@core/picgo'
 
 class ShortKeyHandler {
   private isInModifiedMode: boolean = false
-  constructor () {
-    bus.on(TOGGLE_SHORTKEY_MODIFIED_MODE, flag => {
+  constructor() {
+    bus.on(TOGGLE_SHORTKEY_MODIFIED_MODE, (flag) => {
       this.isInModifiedMode = flag
     })
   }
-  init () {
+
+  init() {
     this.initBuiltInShortKey()
     this.initPluginsShortKey()
   }
-  private initBuiltInShortKey () {
+
+  private initBuiltInShortKey() {
     const commands = db.get('settings.shortKey') as IShortKeyConfigs
     Object.keys(commands)
-      .filter(item => item.includes('picgo:'))
-      .forEach(command => {
+      .filter((item) => item.includes('picgo:'))
+      .forEach((command) => {
         const config = commands[command]
         // if disabled, don't register #534
         if (config.enable) {
@@ -34,10 +34,11 @@ class ShortKeyHandler {
         }
       })
   }
-  private initPluginsShortKey () {
+
+  private initPluginsShortKey() {
     // get enabled plugin
     const pluginList = picgo.pluginLoader.getList()
-    for (let item of pluginList) {
+    for (const item of pluginList) {
       const plugin = picgo.pluginLoader.getPlugin(item)
       // if a plugin has commands
       if (plugin && plugin.commands) {
@@ -46,10 +47,12 @@ class ShortKeyHandler {
           continue
         }
         const commands = plugin.commands(picgo) as IPluginShortKeyConfig[]
-        for (let cmd of commands) {
+        for (const cmd of commands) {
           const command = `${item}:${cmd.name}`
           if (db.has(`settings.shortKey[${command}]`)) {
-            const commandConfig = db.get(`settings.shortKey.${command}`) as IShortKeyConfig
+            const commandConfig = db.get(
+              `settings.shortKey.${command}`
+            ) as IShortKeyConfig
             // if disabled, don't register #534
             if (commandConfig.enable) {
               this.registerShortKey(commandConfig, command, cmd.handle, false)
@@ -63,7 +66,13 @@ class ShortKeyHandler {
       }
     }
   }
-  private registerShortKey (config: IShortKeyConfig | IPluginShortKeyConfig, command: string, handler: IShortKeyHandler, writeFlag: boolean) {
+
+  private registerShortKey(
+    config: IShortKeyConfig | IPluginShortKeyConfig,
+    command: string,
+    handler: IShortKeyHandler,
+    writeFlag: boolean
+  ) {
     shortKeyService.registerCommand(command, handler)
     if (config.key) {
       globalShortcut.register(config.key, () => {
@@ -85,8 +94,9 @@ class ShortKeyHandler {
       })
     }
   }
+
   // enable or disable shortKey
-  bindOrUnbindShortKey (item: IShortKeyConfig, from: string): boolean {
+  bindOrUnbindShortKey(item: IShortKeyConfig, from: string): boolean {
     const command = `${from}:${item.name}`
     if (item.enable === false) {
       globalShortcut.unregister(item.key)
@@ -108,8 +118,9 @@ class ShortKeyHandler {
       }
     }
   }
+
   // update shortKey bindings
-  updateShortKey (item: IShortKeyConfig, oldKey: string, from: string): boolean {
+  updateShortKey(item: IShortKeyConfig, oldKey: string, from: string): boolean {
     const command = `${from}:${item.name}`
     if (globalShortcut.isRegistered(item.key)) return false
     globalShortcut.unregister(oldKey)
@@ -121,7 +132,8 @@ class ShortKeyHandler {
     })
     return true
   }
-  private async handler (command: string) {
+
+  private async handler(command: string) {
     if (this.isInModifiedMode) {
       return
     }
@@ -136,7 +148,8 @@ class ShortKeyHandler {
       logger.warn(`can not find command: ${command}`)
     }
   }
-  registerPluginShortKey (pluginName: string) {
+
+  registerPluginShortKey(pluginName: string) {
     const plugin = picgo.pluginLoader.getPlugin(pluginName)
     if (plugin && plugin.commands) {
       if (typeof plugin.commands !== 'function') {
@@ -144,10 +157,12 @@ class ShortKeyHandler {
         return
       }
       const commands = plugin.commands(picgo) as IPluginShortKeyConfig[]
-      for (let cmd of commands) {
+      for (const cmd of commands) {
         const command = `${pluginName}:${cmd.name}`
         if (db.has(`settings.shortKey[${command}]`)) {
-          const commandConfig = db.get(`settings.shortKey[${command}]`) as IShortKeyConfig
+          const commandConfig = db.get(
+            `settings.shortKey[${command}]`
+          ) as IShortKeyConfig
           this.registerShortKey(commandConfig, command, cmd.handle, false)
         } else {
           this.registerShortKey(cmd, command, cmd.handle, true)
@@ -155,17 +170,18 @@ class ShortKeyHandler {
       }
     }
   }
-  unregisterPluginShortKey (pluginName: string) {
+
+  unregisterPluginShortKey(pluginName: string) {
     const commands = db.get('settings.shortKey') as IShortKeyConfigs
     const keyList = Object.keys(commands)
-      .filter(command => command.includes(pluginName))
-      .map(command => {
+      .filter((command) => command.includes(pluginName))
+      .map((command) => {
         return {
           command,
           key: commands[command].key
         }
       }) as IKeyCommandType[]
-    keyList.forEach(item => {
+    keyList.forEach((item) => {
       globalShortcut.unregister(item.key)
       shortKeyService.unregisterCommand(item.command)
       picgo.unsetConfig('settings.shortKey', item.command)

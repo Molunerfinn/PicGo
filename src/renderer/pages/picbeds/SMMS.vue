@@ -2,27 +2,40 @@
   <div id="smms-view">
     <el-row :gutter="16">
       <el-col :span="16" :offset="4">
-        <div class="view-title">
-          SM.MS设置
-        </div>
+        <div class="view-title">SM.MS设置</div>
         <el-form
           ref="smms"
           label-position="right"
           label-width="120px"
           :model="form"
-          size="mini">
+          size="mini"
+        >
           <el-form-item
             label="设定Token"
             prop="token"
             :rules="{
-              required: true, message: 'Token不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.token" type="password" placeholder="token" @keyup.native.enter="confirm('smmsForm')"></el-input>
+              required: true,
+              message: 'Token不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.token"
+              type="password"
+              placeholder="token"
+              @keyup.native.enter="confirm('smmsForm')"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
-              <el-button type="success" @click="setDefaultPicBed('smms')" round :disabled="defaultPicBed === 'smms'">设为默认图床</el-button>
+              <el-button
+                type="success"
+                @click="setDefaultPicBed('smms')"
+                round
+                :disabled="defaultPicBed === 'smms'"
+                >设为默认图床</el-button
+              >
             </el-button-group>
           </el-form-item>
         </el-form>
@@ -42,13 +55,15 @@ export default class extends Vue {
   form: ISMMSConfig = {
     token: ''
   }
-  async created () {
+
+  async created() {
     const config = await this.getConfig<string | boolean>('picBed.smms.token')
     if (typeof config !== 'boolean') {
       this.form.token = config || ''
     }
   }
-  confirm () {
+
+  confirm() {
     // @ts-ignore
     this.$refs.smms.validate((valid) => {
       if (valid) {
@@ -68,7 +83,7 @@ export default class extends Vue {
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 #smms-view
   .el-form
     label

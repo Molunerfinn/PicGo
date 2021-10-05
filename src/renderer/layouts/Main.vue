@@ -1,16 +1,14 @@
 <template>
   <div id="main-page">
-    <div class="fake-title-bar" :class="{ 'darwin': os === 'darwin' }">
-      <div class="fake-title-bar__title">
-        PicGo - {{ version }}
-      </div>
+    <div class="fake-title-bar" :class="{ darwin: os === 'darwin' }">
+      <div class="fake-title-bar__title">PicGo - {{ version }}</div>
       <div class="handle-bar" v-if="os !== 'darwin'">
         <i class="el-icon-minus" @click="minimizeWindow"></i>
         <i class="el-icon-circle-plus-outline" @click="openMiniWindow"></i>
         <i class="el-icon-close" @click="closeWindow"></i>
       </div>
     </div>
-    <el-row style="padding-top: 22px;" class="main-content">
+    <el-row style="padding-top: 22px" class="main-content">
       <el-col :span="5" class="side-bar-menu">
         <el-menu
           class="picgo-sidebar"
@@ -18,7 +16,7 @@
           @select="handleSelect"
           :unique-opened="true"
           @open="handleGetPicPeds"
-          >
+        >
           <el-menu-item index="upload">
             <i class="el-icon-upload"></i>
             <span slot="title">上传区</span>
@@ -27,16 +25,12 @@
             <i class="el-icon-picture"></i>
             <span slot="title">相册</span>
           </el-menu-item>
-          <el-submenu
-            index="sub-menu"
-          >
+          <el-submenu index="sub-menu">
             <template slot="title">
               <i class="el-icon-menu"></i>
               <span>图床设置</span>
             </template>
-            <template
-              v-for="item in picBed"
-            >
+            <template v-for="item in picBed">
               <el-menu-item
                 v-if="item.visible"
                 :index="`picbeds-${item.type}`"
@@ -63,31 +57,36 @@
         :offset="5"
         style="height: 428px"
         class="main-wrapper"
-        :class="{ 'darwin': os === 'darwin' }">
+        :class="{ darwin: os === 'darwin' }"
+      >
         <transition name="picgo-fade" mode="out-in">
           <keep-alive>
             <router-view v-if="$route.meta.keepAlive"></router-view>
           </keep-alive>
         </transition>
         <transition name="picgo-fade" mode="out-in">
-          <router-view :key="$route.path" v-if="!$route.meta.keepAlive"></router-view>
+          <router-view
+            :key="$route.path"
+            v-if="!$route.meta.keepAlive"
+          ></router-view>
         </transition>
       </el-col>
     </el-row>
-    <el-dialog
-      title="赞助PicGo"
-      :visible.sync="visible"
-      width="70%"
-      top="10vh"
-    >
+    <el-dialog title="赞助PicGo" :visible.sync="visible" width="70%" top="10vh">
       PicGo是免费开源的软件，如果你喜欢它，对你有帮助，不妨请我喝杯咖啡？
       <el-row class="support">
         <el-col :span="12">
-          <img src="https://user-images.githubusercontent.com/12621342/34188165-e7cdf372-e56f-11e7-8732-1338c88b9bb7.jpg" alt="支付宝">
+          <img
+            src="https://user-images.githubusercontent.com/12621342/34188165-e7cdf372-e56f-11e7-8732-1338c88b9bb7.jpg"
+            alt="支付宝"
+          />
           <div class="support-title">支付宝</div>
         </el-col>
         <el-col :span="12">
-          <img src="https://user-images.githubusercontent.com/12621342/34188201-212cda84-e570-11e7-9b7a-abb298699d85.jpg" alt="支付宝">
+          <img
+            src="https://user-images.githubusercontent.com/12621342/34188201-212cda84-e570-11e7-9b7a-abb298699d85.jpg"
+            alt="支付宝"
+          />
           <div class="support-title">微信</div>
         </el-col>
       </el-row>
@@ -101,19 +100,9 @@
       :modal-append-to-body="false"
       lock-scroll
     >
-      <el-form
-        label-position="left"
-        label-width="70px"
-        size="mini"
-      >
-        <el-form-item
-          label="选择图床"
-        >
-          <el-select
-            v-model="choosedPicBedForQRCode"
-            multiple
-            collapse-tags
-          >
+      <el-form label-position="left" label-width="70px" size="mini">
+        <el-form-item label="选择图床">
+          <el-select v-model="choosedPicBedForQRCode" multiple collapse-tags>
             <el-option
               v-for="item in picBed"
               :key="item.type"
@@ -149,12 +138,7 @@ import QrcodeVue from 'qrcode.vue'
 import pick from 'lodash/pick'
 import pkg from 'root/package.json'
 import keyDetect from '@/utils/key-binding'
-import {
-  remote,
-  ipcRenderer,
-  IpcRendererEvent,
-  clipboard
-} from 'electron'
+import { remote, ipcRenderer, IpcRendererEvent, clipboard } from 'electron'
 // import db from '#/datastore'
 import mixin from '@/utils/mixin'
 import InputBoxDialog from '@/components/InputBoxDialog.vue'
@@ -164,7 +148,11 @@ import {
 } from '~/universal/events/constants'
 
 const { Menu, dialog, BrowserWindow } = remote
-const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
+const customLinkRule = (
+  rule: string,
+  value: string,
+  callback: (arg0?: Error) => void
+) => {
   if (!/\$url/.test(value)) {
     return callback(new Error('必须含有$url'))
   } else {
@@ -191,7 +179,7 @@ export default class extends Vue {
   qrcodeVisible = false
   picBedConfigString = ''
   choosedPicBedForQRCode: string[] = []
-  created () {
+  created() {
     this.os = process.platform
     this.buildMenu()
     ipcRenderer.on('getPicBeds', this.getPicBeds)
@@ -199,7 +187,7 @@ export default class extends Vue {
   }
 
   @Watch('choosedPicBedForQRCode')
-  choosedPicBedForQRCodeChange (val: string[], oldVal: string[]) {
+  choosedPicBedForQRCodeChange(val: string[], oldVal: string[]) {
     if (val.length > 0) {
       this.$nextTick(async () => {
         const picBedConfig = await this.getConfig('picBed')
@@ -213,7 +201,7 @@ export default class extends Vue {
     ipcRenderer.send('getPicBeds')
   }
 
-  handleSelect (index: string) {
+  handleSelect(index: string) {
     const type = index.match(/picbeds-/)
     if (type === null) {
       this.$router.push({
@@ -235,11 +223,13 @@ export default class extends Vue {
       }
     }
   }
-  minimizeWindow () {
+
+  minimizeWindow() {
     const window = BrowserWindow.getFocusedWindow()
     window!.minimize()
   }
-  closeWindow () {
+
+  closeWindow() {
     const window = BrowserWindow.getFocusedWindow()
     if (process.platform === 'linux') {
       window!.hide()
@@ -247,12 +237,13 @@ export default class extends Vue {
       window!.close()
     }
   }
-  buildMenu () {
+
+  buildMenu() {
     const _this = this
     const template = [
       {
         label: '关于',
-        click () {
+        click() {
           dialog.showMessageBox({
             title: 'PicGo',
             message: 'PicGo',
@@ -262,56 +253,62 @@ export default class extends Vue {
       },
       {
         label: '赞助PicGo',
-        click () {
+        click() {
           _this.visible = true
         }
       },
       {
         label: '生成图床配置二维码',
-        click () {
+        click() {
           _this.qrcodeVisible = true
         }
       },
       {
         label: '隐私协议',
-        click () {
+        click() {
           ipcRenderer.send(SHOW_PRIVACY_MESSAGE)
         }
       },
       {
         label: '打开调试器',
-        click () {
+        click() {
           ipcRenderer.send(OPEN_DEVTOOLS)
         }
       }
     ]
     this.menu = Menu.buildFromTemplate(template)
   }
-  openDialog () {
+
+  openDialog() {
     // this.menu!.popup(remote.getCurrentWindow())
     this.menu!.popup()
   }
-  openMiniWindow () {
+
+  openMiniWindow() {
     ipcRenderer.send('openMiniWindow')
   }
-  handleCopyPicBedConfig () {
+
+  handleCopyPicBedConfig() {
     clipboard.writeText(this.picBedConfigString)
     this.$message.success('图床配置复制成功')
   }
-  getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
+
+  getPicBeds(event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
   }
-  beforeRouteEnter (to: any, from: any, next: any) {
+
+  beforeRouteEnter(to: any, from: any, next: any) {
     next((vm: this) => {
       vm.defaultActive = to.name
     })
   }
-  beforeDestroy () {
+
+  beforeDestroy() {
     ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 $darwinBg = transparentify(#172426, #000, 0.7)
 .picgo-fade
   &-enter,

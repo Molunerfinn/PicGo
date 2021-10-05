@@ -11,7 +11,7 @@ import {
 } from './constants'
 
 export const uploadWithClipboardFiles = (): Promise<{
-  success: boolean,
+  success: boolean
   result?: string[]
 }> => {
   return new Promise((resolve, reject) => {
@@ -31,8 +31,10 @@ export const uploadWithClipboardFiles = (): Promise<{
   })
 }
 
-export const uploadWithFiles = (pathList: IFileWithPath[]): Promise<{
-  success: boolean,
+export const uploadWithFiles = (
+  pathList: IFileWithPath[]
+): Promise<{
+  success: boolean
   result?: string[]
 }> => {
   return new Promise((resolve, reject) => {

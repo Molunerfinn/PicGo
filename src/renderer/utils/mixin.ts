@@ -1,15 +1,17 @@
 import { Component, Vue } from 'vue-property-decorator'
 @Component
 export default class extends Vue {
-  mounted () {
+  mounted() {
     this.disableDragEvent()
   }
-  disableDragEvent () {
+
+  disableDragEvent() {
     window.addEventListener('dragenter', this.disableDrag, false)
     window.addEventListener('dragover', this.disableDrag)
     window.addEventListener('drop', this.disableDrag)
   }
-  disableDrag (e: DragEvent) {
+
+  disableDrag(e: DragEvent) {
     const dropzone = document.getElementById('upload-area')
     if (dropzone === null || !dropzone.contains(<Node>e.target)) {
       e.preventDefault()
@@ -17,7 +19,8 @@ export default class extends Vue {
       e.dataTransfer!.dropEffect = 'none'
     }
   }
-  beforeDestroy () {
+
+  beforeDestroy() {
     window.removeEventListener('dragenter', this.disableDrag, false)
     window.removeEventListener('dragover', this.disableDrag)
     window.removeEventListener('drop', this.disableDrag)

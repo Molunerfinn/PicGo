@@ -66,19 +66,20 @@ import { cloneDeep, union } from 'lodash'
   name: 'config-form'
 })
 export default class extends Vue {
-  @Prop() private config!: any[];
-  @Prop() readonly type!: 'uploader' | 'transformer' | 'plugin';
-  @Prop() readonly id!: string;
-  configList = [];
-  ruleForm = {};
+  @Prop() private config!: any[]
+  @Prop() readonly type!: 'uploader' | 'transformer' | 'plugin'
+  @Prop() readonly id!: string
+  configList = []
+  ruleForm = {}
   @Watch('config', {
     deep: true,
     immediate: true
   })
-  handleConfigChange (val: any) {
+  handleConfigChange(val: any) {
     this.handleConfig(val)
   }
-  async validate () {
+
+  async validate() {
     return new Promise((resolve, reject) => {
       // @ts-ignore
       this.$refs.form.validate((valid: boolean) => {
@@ -92,7 +93,7 @@ export default class extends Vue {
     })
   }
 
-  getConfigType () {
+  getConfigType() {
     switch (this.type) {
       case 'plugin': {
         return this.id
@@ -108,7 +109,7 @@ export default class extends Vue {
     }
   }
 
-  async handleConfig (val: any) {
+  async handleConfig(val: any) {
     this.ruleForm = Object.assign({}, {})
     const config = await this.getConfig<IPicGoPluginConfig>(
       this.getConfigType()
@@ -119,8 +120,8 @@ export default class extends Vue {
           item.default !== undefined
             ? item.default
             : item.type === 'checkbox'
-              ? []
-              : null
+            ? []
+            : null
         if (item.type === 'checkbox') {
           const defaults = item.choices
             .filter((i: any) => {

@@ -17,59 +17,72 @@ const DB_PATH: string = getGalleryDBPath().dbPath
 // TODO: use JSONStore with @picgo/store
 class ConfigStore {
   private db: Datastore.LowdbSync<Datastore.AdapterSync>
-  constructor () {
+  constructor() {
     const adapter = new FileSync(CONFIG_PATH)
 
     this.db = Datastore(adapter)
     this.db._.mixin(LodashId)
 
     if (!this.db.has('picBed').value()) {
-      this.db.set('picBed', {
-        current: 'smms', // deprecated
-        uploader: 'smms',
-        smms: {
-          token: ''
-        }
-      }).write()
+      this.db
+        .set('picBed', {
+          current: 'smms', // deprecated
+          uploader: 'smms',
+          smms: {
+            token: ''
+          }
+        })
+        .write()
     }
 
     if (!this.db.has('settings.shortKey').value()) {
-      this.db.set('settings.shortKey[picgo:upload]', {
-        enable: true,
-        key: 'CommandOrControl+Shift+P',
-        name: 'upload',
-        label: '快捷上传'
-      }).write()
+      this.db
+        .set('settings.shortKey[picgo:upload]', {
+          enable: true,
+          key: 'CommandOrControl+Shift+P',
+          name: 'upload',
+          label: '快捷上传'
+        })
+        .write()
     }
   }
-  read () {
+
+  read() {
     return this.db.read()
   }
-  get (key = '') {
+
+  get(key = '') {
     return this.read().get(key).value()
   }
-  set (key: string, value: any) {
+
+  set(key: string, value: any) {
     return this.read().set(key, value).write()
   }
-  has (key: string) {
+
+  has(key: string) {
     return this.read().has(key).value()
   }
-  insert (key: string, value: any): void {
+
+  insert(key: string, value: any): void {
     // @ts-ignore
     return this.read().get(key).insert(value).write()
   }
-  unset (key: string, value: any): boolean {
+
+  unset(key: string, value: any): boolean {
     return this.read().get(key).unset(value).value()
   }
-  getById (key: string, id: string) {
+
+  getById(key: string, id: string) {
     // @ts-ignore
     return this.read().get(key).getById(id).value()
   }
-  removeById (key: string, id: string) {
+
+  removeById(key: string, id: string) {
     // @ts-ignore
     return this.read().get(key).removeById(id).write()
   }
-  getConfigPath () {
+
+  getConfigPath() {
     return CONFIG_PATH
   }
 }
@@ -79,10 +92,11 @@ export default new ConfigStore()
 // v2.3.0 add gallery db
 class GalleryDB {
   private static instance: DBStore
-  private constructor () {
+  private constructor() {
     console.log('init gallery db')
   }
-  public static getInstance (): DBStore {
+
+  public static getInstance(): DBStore {
     if (!GalleryDB.instance) {
       GalleryDB.instance = new DBStore(DB_PATH, 'gallery')
     }
@@ -90,6 +104,4 @@ class GalleryDB {
   }
 }
 
-export {
-  GalleryDB
-}
+export { GalleryDB }

@@ -4,12 +4,17 @@
     <div class="content">
       <div class="wait-upload-img" v-if="clipboardFiles.length > 0">
         <div class="list-title">等待上传</div>
-        <div v-for="(item, index) in clipboardFiles" :key="index" class="img-list">
+        <div
+          v-for="(item, index) in clipboardFiles"
+          :key="index"
+          class="img-list"
+        >
           <div
             class="upload-img__container"
             :class="{ upload: uploadFlag }"
-            @click="uploadClipboardFiles">
-            <img :src="item.imgUrl" class="upload-img">
+            @click="uploadClipboardFiles"
+          >
+            <img :src="item.imgUrl" class="upload-img" />
           </div>
         </div>
       </div>
@@ -17,7 +22,7 @@
         <div class="list-title">已上传</div>
         <div v-for="item in files" :key="item.imgUrl" class="img-list">
           <div class="upload-img__container" @click="copyTheLink(item)">
-            <img :src="item.imgUrl" class="upload-img">
+            <img :src="item.imgUrl" class="upload-img" />
           </div>
         </div>
       </div>
@@ -45,46 +50,68 @@ export default class extends Vue {
     body: '',
     icon: ''
   }
+
   clipboardFiles: IImgInfo[] = []
   uploadFlag = false
-  get reverseList () {
+  get reverseList() {
     return this.files.slice().reverse()
   }
-  async getData () {
-    this.files = (await this.$$db.get<IImgInfo>({ orderBy: 'desc', limit: 5 })).data
+
+  async getData() {
+    this.files = (
+      await this.$$db.get<IImgInfo>({ orderBy: 'desc', limit: 5 })
+    ).data
   }
-  async copyTheLink (item: IImgInfo) {
+
+  async copyTheLink(item: IImgInfo) {
     this.notification.body = item.imgUrl!
     this.notification.icon = item.imgUrl!
-    const myNotification = new Notification(this.notification.title, this.notification)
-    const pasteStyle = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
+    const myNotification = new Notification(
+      this.notification.title,
+      this.notification
+    )
+    const pasteStyle =
+      (await this.getConfig<IPasteStyle>('settings.pasteStyle')) ||
+      IPasteStyle.MARKDOWN
     const customLink = await this.getConfig<string>('settings.customLink')
     clipboard.writeText(pasteTemplate(pasteStyle, item, customLink))
     myNotification.onclick = () => {
       return true
     }
   }
-  calcHeight (width: number, height: number): number {
-    return height * 160 / width
+
+  calcHeight(width: number, height: number): number {
+    return (height * 160) / width
   }
-  disableDragFile () {
-    window.addEventListener('dragover', (e) => {
-      e = e || event
-      e.preventDefault()
-    }, false)
-    window.addEventListener('drop', (e) => {
-      e = e || event
-      e.preventDefault()
-    }, false)
+
+  disableDragFile() {
+    window.addEventListener(
+      'dragover',
+      (e) => {
+        e = e || event
+        e.preventDefault()
+      },
+      false
+    )
+    window.addEventListener(
+      'drop',
+      (e) => {
+        e = e || event
+        e.preventDefault()
+      },
+      false
+    )
   }
-  uploadClipboardFiles () {
+
+  uploadClipboardFiles() {
     if (this.uploadFlag) {
       return
     }
     this.uploadFlag = true
     ipcRenderer.send('uploadClipboardFiles')
   }
-  mounted () {
+
+  mounted() {
     this.disableDragFile()
     this.getData()
     ipcRenderer.on('dragFiles', async (event: Event, files: string[]) => {
@@ -92,13 +119,17 @@ export default class extends Vue {
         const item = files[i]
         await this.$$db.insert(item)
       }
-      this.files = (await this.$$db.get<IImgInfo>({ orderBy: 'desc', limit: 5 })).data
+      this.files = (
+        await this.$$db.get<IImgInfo>({ orderBy: 'desc', limit: 5 })
+      ).data
     })
     ipcRenderer.on('clipboardFiles', (event: Event, files: IImgInfo[]) => {
       this.clipboardFiles = files
     })
     ipcRenderer.on('uploadFiles', async (event: Event) => {
-      this.files = (await this.$$db.get<IImgInfo>({ orderBy: 'desc', limit: 5 })).data
+      this.files = (
+        await this.$$db.get<IImgInfo>({ orderBy: 'desc', limit: 5 })
+      ).data
       console.log(this.files)
       this.uploadFlag = false
     })
@@ -106,7 +137,8 @@ export default class extends Vue {
       this.getData()
     })
   }
-  beforeDestroy () {
+
+  beforeDestroy() {
     ipcRenderer.removeAllListeners('dragFiles')
     ipcRenderer.removeAllListeners('clipboardFiles')
     ipcRenderer.removeAllListeners('uploadClipboardFiles')

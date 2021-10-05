@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import {
-  TALKING_DATA_APPID, TALKING_DATA_EVENT
+  TALKING_DATA_APPID,
+  TALKING_DATA_EVENT
 } from '~/universal/events/constants'
 import pkg from 'root/package.json'
 import { ipcRenderer } from 'electron'

@@ -1,30 +1,17 @@
 <template>
   <div id="shortcut-page">
-    <div class="view-title">
-      快捷键设置
-    </div>
+    <div class="view-title">快捷键设置</div>
     <el-row>
       <el-col :span="20" :offset="2">
-        <el-table
-          :data="list"
-          size="mini"
-        >
-          <el-table-column
-            label="快捷键名称"
-          >
+        <el-table :data="list" size="mini">
+          <el-table-column label="快捷键名称">
             <template slot-scope="scope">
               {{ scope.row.label ? scope.row.label : scope.row.name }}
             </template>
           </el-table-column>
-          <el-table-column
-            width="160px"
-            label="快捷键绑定"
-            prop="key"
-          >
+          <el-table-column width="160px" label="快捷键绑定" prop="key">
           </el-table-column>
-          <el-table-column
-            label="状态"
-          >
+          <el-table-column label="状态">
             <template slot-scope="scope">
               <el-tag
                 size="mini"
@@ -34,17 +21,12 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column
-            label="来源"
-            width="100px"
-          >
+          <el-table-column label="来源" width="100px">
             <template slot-scope="scope">
               {{ calcOriginShowName(scope.row.from) }}
             </template>
           </el-table-column>
-          <el-table-column
-            label="操作"
-          >
+          <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button
                 @click="toggleEnable(scope.row)"
@@ -52,14 +34,16 @@
                 :class="{
                   disabled: scope.row.enable
                 }"
-                type="text">
+                type="text"
+              >
                 {{ scope.row.enable ? '禁用' : '启用' }}
               </el-button>
               <el-button
                 class="edit"
                 size="mini"
                 @click="openKeyBindingDialog(scope.row, scope.$index)"
-                type="text">
+                type="text"
+              >
                 编辑
               </el-button>
             </template>
@@ -72,13 +56,8 @@
       :visible.sync="keyBindingVisible"
       :modal-append-to-body="false"
     >
-      <el-form
-        label-position="top"
-        label-width="80px"
-      >
-        <el-form-item
-          label="快捷上传"
-        >
+      <el-form label-position="top" label-width="80px">
+        <el-form-item label="快捷上传">
           <el-input
             class="align-center"
             @keydown.native.prevent="keyDetect($event)"
@@ -89,7 +68,9 @@
       </el-form>
       <span slot="footer">
         <el-button @click="cancelKeyBinding" round>取消</el-button>
-        <el-button type="primary" @click="confirmKeyBinding" round>确定</el-button>
+        <el-button type="primary" @click="confirmKeyBinding" round
+          >确定</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -109,62 +90,81 @@ export default class extends Vue {
   command = ''
   shortKey = ''
   currentIndex = 0
-  async created () {
-    const shortKeyConfig = (await this.getConfig<IShortKeyConfigs>('settings.shortKey'))!
-    this.list = Object.keys(shortKeyConfig).map(item => {
+  async created() {
+    const shortKeyConfig = (await this.getConfig<IShortKeyConfigs>(
+      'settings.shortKey'
+    ))!
+    this.list = Object.keys(shortKeyConfig).map((item) => {
       return {
         ...shortKeyConfig[item],
         from: this.calcOrigin(item)
       }
     })
   }
+
   @Watch('keyBindingVisible')
-  onKeyBindingVisibleChange (val: boolean) {
+  onKeyBindingVisibleChange(val: boolean) {
     ipcRenderer.send(TOGGLE_SHORTKEY_MODIFIED_MODE, val)
   }
-  calcOrigin (item: string) {
+
+  calcOrigin(item: string) {
     const [origin] = item.split(':')
     return origin
   }
-  calcOriginShowName (item: string) {
+
+  calcOriginShowName(item: string) {
     return item.replace('picgo-plugin-', '')
   }
-  toggleEnable (item: IShortKeyConfig) {
+
+  toggleEnable(item: IShortKeyConfig) {
     const status = !item.enable
     item.enable = status
     ipcRenderer.send('bindOrUnbindShortKey', item, item.from)
   }
-  keyDetect (event: KeyboardEvent) {
+
+  keyDetect(event: KeyboardEvent) {
     this.shortKey = keyDetect(event).join('+')
   }
-  async openKeyBindingDialog (config: IShortKeyConfig, index: number) {
+
+  async openKeyBindingDialog(config: IShortKeyConfig, index: number) {
     this.command = `${config.from}:${config.name}`
-    this.shortKey = await this.getConfig(`settings.shortKey.${this.command}.key`) || ''
+    this.shortKey =
+      (await this.getConfig(`settings.shortKey.${this.command}.key`)) || ''
     this.currentIndex = index
     this.keyBindingVisible = true
   }
-  async cancelKeyBinding () {
+
+  async cancelKeyBinding() {
     this.keyBindingVisible = false
-    this.shortKey = await this.getConfig<string>(`settings.shortKey.${this.command}.key`) || ''
+    this.shortKey =
+      (await this.getConfig<string>(`settings.shortKey.${this.command}.key`)) ||
+      ''
   }
-  async confirmKeyBinding () {
-    const oldKey = await this.getConfig<string>(`settings.shortKey.${this.command}.key`)
+
+  async confirmKeyBinding() {
+    const oldKey = await this.getConfig<string>(
+      `settings.shortKey.${this.command}.key`
+    )
     const config = Object.assign({}, this.list[this.currentIndex])
     config.key = this.shortKey
     ipcRenderer.send('updateShortKey', config, oldKey, config.from)
-    ipcRenderer.once('updateShortKeyResponse', (evt: IpcRendererEvent, result) => {
-      if (result) {
-        this.keyBindingVisible = false
-        this.list[this.currentIndex].key = this.shortKey
+    ipcRenderer.once(
+      'updateShortKeyResponse',
+      (evt: IpcRendererEvent, result) => {
+        if (result) {
+          this.keyBindingVisible = false
+          this.list[this.currentIndex].key = this.shortKey
+        }
       }
-    })
+    )
   }
-  beforeDestroy () {
+
+  beforeDestroy() {
     ipcRenderer.send(TOGGLE_SHORTKEY_MODIFIED_MODE, false)
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 #shortcut-page
   .el-dialog__body
     padding 10px 20px

@@ -1,9 +1,4 @@
-import {
-  app,
-  ipcMain,
-  Notification,
-  IpcMainEvent
-} from 'electron'
+import { app, ipcMain, Notification, IpcMainEvent } from 'electron'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
 import uploader from 'apis/app/uploader'
@@ -25,7 +20,7 @@ import picgoCoreIPC from './picgoCoreIPC'
 import { handleCopyUrl } from '~/main/utils/common'
 
 export default {
-  listen () {
+  listen() {
     picgoCoreIPC.listen()
     // from macOS tray
     ipcMain.on('uploadClipboardFiles', async () => {
@@ -33,7 +28,9 @@ export default {
       const img = await uploader.setWebContents(trayWindow.webContents).upload()
       if (img !== false) {
         const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
-        handleCopyUrl(pasteTemplate(pasteStyle, img[0], db.get('settings.customLink')))
+        handleCopyUrl(
+          pasteTemplate(pasteStyle, img[0], db.get('settings.customLink'))
+        )
         const notification = new Notification({
           title: '上传成功',
           body: img[0].imgUrl!,
@@ -44,7 +41,9 @@ export default {
         await GalleryDB.getInstance().insert(img[0])
         trayWindow.webContents.send('clipboardFiles', [])
         if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-          windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('updateGallery')
+          windowManager
+            .get(IWindowList.SETTING_WINDOW)!
+            .webContents.send('updateGallery')
         }
       }
       trayWindow.webContents.send('uploadFiles')
@@ -54,44 +53,58 @@ export default {
       uploadClipboardFiles()
     })
 
-    ipcMain.on('uploadChoosedFiles', async (evt: IpcMainEvent, files: IFileWithPath[]) => {
-      return uploadChosenFiles(evt.sender, files)
-    })
-
-    ipcMain.on('updateShortKey', (evt: IpcMainEvent, item: IShortKeyConfig, oldKey: string, from: string) => {
-      const result = shortKeyHandler.updateShortKey(item, oldKey, from)
-      evt.sender.send('updateShortKeyResponse', result)
-      if (result) {
-        const notification = new Notification({
-          title: '操作成功',
-          body: '你的快捷键已经修改成功'
-        })
-        notification.show()
-      } else {
-        const notification = new Notification({
-          title: '操作失败',
-          body: '快捷键冲突，请重新设置'
-        })
-        notification.show()
+    ipcMain.on(
+      'uploadChoosedFiles',
+      async (evt: IpcMainEvent, files: IFileWithPath[]) => {
+        return uploadChosenFiles(evt.sender, files)
       }
-    })
+    )
 
-    ipcMain.on('bindOrUnbindShortKey', (evt: IpcMainEvent, item: IShortKeyConfig, from: string) => {
-      const result = shortKeyHandler.bindOrUnbindShortKey(item, from)
-      if (result) {
-        const notification = new Notification({
-          title: '操作成功',
-          body: '你的快捷键已经修改成功'
-        })
-        notification.show()
-      } else {
-        const notification = new Notification({
-          title: '操作失败',
-          body: '快捷键冲突，请重新设置'
-        })
-        notification.show()
+    ipcMain.on(
+      'updateShortKey',
+      (
+        evt: IpcMainEvent,
+        item: IShortKeyConfig,
+        oldKey: string,
+        from: string
+      ) => {
+        const result = shortKeyHandler.updateShortKey(item, oldKey, from)
+        evt.sender.send('updateShortKeyResponse', result)
+        if (result) {
+          const notification = new Notification({
+            title: '操作成功',
+            body: '你的快捷键已经修改成功'
+          })
+          notification.show()
+        } else {
+          const notification = new Notification({
+            title: '操作失败',
+            body: '快捷键冲突，请重新设置'
+          })
+          notification.show()
+        }
       }
-    })
+    )
+
+    ipcMain.on(
+      'bindOrUnbindShortKey',
+      (evt: IpcMainEvent, item: IShortKeyConfig, from: string) => {
+        const result = shortKeyHandler.bindOrUnbindShortKey(item, from)
+        if (result) {
+          const notification = new Notification({
+            title: '操作成功',
+            body: '你的快捷键已经修改成功'
+          })
+          notification.show()
+        } else {
+          const notification = new Notification({
+            title: '操作失败',
+            body: '快捷键冲突，请重新设置'
+          })
+          notification.show()
+        }
+      }
+    )
 
     ipcMain.on('updateCustomLink', () => {
       const notification = new Notification({
@@ -125,7 +138,9 @@ export default {
     //  from mini window
     ipcMain.on('syncPicBed', () => {
       if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-        windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('syncPicBed')
+        windowManager
+          .get(IWindowList.SETTING_WINDOW)!
+          .webContents.send('syncPicBed')
       }
     })
 
@@ -135,9 +150,12 @@ export default {
       evt.returnValue = picBeds
     })
 
-    ipcMain.on(TOGGLE_SHORTKEY_MODIFIED_MODE, (evt: IpcMainEvent, val: boolean) => {
-      bus.emit(TOGGLE_SHORTKEY_MODIFIED_MODE, val)
-    })
+    ipcMain.on(
+      TOGGLE_SHORTKEY_MODIFIED_MODE,
+      (evt: IpcMainEvent, val: boolean) => {
+        bus.emit(TOGGLE_SHORTKEY_MODIFIED_MODE, val)
+      }
+    )
 
     ipcMain.on('updateServer', () => {
       server.restart()
@@ -146,5 +164,5 @@ export default {
       event.sender.openDevTools()
     })
   },
-  dispose () {}
+  dispose() {}
 }

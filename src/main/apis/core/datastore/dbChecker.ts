@@ -19,7 +19,7 @@ const errorMsg = {
 /** ensure notification list */
 if (!global.notificationList) global.notificationList = []
 
-function dbChecker () {
+function dbChecker() {
   if (process.type !== 'renderer') {
     // db save bak
     try {
@@ -36,7 +36,7 @@ function dbChecker () {
       return
     }
     let configFile: string = '{}'
-    let optionsTpl = {
+    const optionsTpl = {
       title: '注意',
       body: ''
     }
@@ -48,11 +48,15 @@ function dbChecker () {
       fs.unlinkSync(configFilePath)
       if (fs.existsSync(configFileBackupPath)) {
         try {
-          configFile = fs.readFileSync(configFileBackupPath, { encoding: 'utf-8' })
+          configFile = fs.readFileSync(configFileBackupPath, {
+            encoding: 'utf-8'
+          })
           JSON.parse(configFile)
           fs.writeFileSync(configFilePath, configFile, { encoding: 'utf-8' })
           const stats = fs.statSync(configFileBackupPath)
-          optionsTpl.body = `${errorMsg.brokenButBackup}\n备份文件版本：${dayjs(stats.mtime).format('YYYY-MM-DD HH:mm:ss')}`
+          optionsTpl.body = `${errorMsg.brokenButBackup}\n备份文件版本：${dayjs(
+            stats.mtime
+          ).format('YYYY-MM-DD HH:mm:ss')}`
           global.notificationList?.push(optionsTpl)
           return
         } catch (e) {
@@ -72,7 +76,7 @@ function dbChecker () {
 /**
  * Get config path
  */
-function dbPathChecker (): string {
+function dbPathChecker(): string {
   if (_configFilePath) {
     return _configFilePath
   }
@@ -84,7 +88,9 @@ function dbPathChecker (): string {
     return _configFilePath
   }
   try {
-    const configString = fs.readFileSync(defaultConfigPath, { encoding: 'utf-8' })
+    const configString = fs.readFileSync(defaultConfigPath, {
+      encoding: 'utf-8'
+    })
     const config = JSON.parse(configString)
     const userConfigPath: string = config.configPath || ''
     if (userConfigPath) {
@@ -98,7 +104,7 @@ function dbPathChecker (): string {
     const picgoLogPath = path.join(defaultConfigPath, 'picgo.log')
     const logger = getLogger(picgoLogPath)
     if (!hasCheckPath) {
-      let optionsTpl = {
+      const optionsTpl = {
         title: '注意',
         body: '自定义文件解析出错，请检查路径内容是否正确'
       }
@@ -112,11 +118,11 @@ function dbPathChecker (): string {
   }
 }
 
-function dbPathDir () {
+function dbPathDir() {
   return path.dirname(dbPathChecker())
 }
 
-function getGalleryDBPath (): {
+function getGalleryDBPath(): {
   dbPath: string
   dbBackupPath: string
 } {
@@ -129,9 +135,4 @@ function getGalleryDBPath (): {
   }
 }
 
-export {
-  dbChecker,
-  dbPathChecker,
-  dbPathDir,
-  getGalleryDBPath
-}
+export { dbChecker, dbPathChecker, dbPathDir, getGalleryDBPath }

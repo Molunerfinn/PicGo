@@ -16,7 +16,7 @@ const windowList = new Map<IWindowList, IWindowListItem>()
 windowList.set(IWindowList.TRAY_WINDOW, {
   isValid: process.platform !== 'linux',
   multiple: false,
-  options () {
+  options() {
     return {
       height: 350,
       width: 196, // 196
@@ -33,7 +33,7 @@ windowList.set(IWindowList.TRAY_WINDOW, {
       }
     }
   },
-  callback (window) {
+  callback(window) {
     window.loadURL(TRAY_WINDOW_URL)
     window.on('blur', () => {
       window.hide()
@@ -44,7 +44,7 @@ windowList.set(IWindowList.TRAY_WINDOW, {
 windowList.set(IWindowList.SETTING_WINDOW, {
   isValid: true,
   multiple: false,
-  options () {
+  options() {
     const options: IBrowserWindowOptions = {
       height: 450,
       width: 800,
@@ -73,7 +73,7 @@ windowList.set(IWindowList.SETTING_WINDOW, {
     }
     return options
   },
-  callback (window, windowManager) {
+  callback(window, windowManager) {
     window.loadURL(SETTING_WINDOW_URL)
     window.on('closed', () => {
       bus.emit(TOGGLE_SHORTKEY_MODIFIED_MODE, false)
@@ -91,8 +91,8 @@ windowList.set(IWindowList.SETTING_WINDOW, {
 windowList.set(IWindowList.MINI_WINDOW, {
   isValid: process.platform !== 'darwin',
   multiple: false,
-  options () {
-    let obj: IBrowserWindowOptions = {
+  options() {
+    const obj: IBrowserWindowOptions = {
       height: 64,
       width: 64,
       show: process.platform === 'linux',
@@ -114,7 +114,7 @@ windowList.set(IWindowList.MINI_WINDOW, {
     }
     return obj
   },
-  callback (window) {
+  callback(window) {
     window.loadURL(MINI_WINDOW_URL)
   }
 })
@@ -122,8 +122,8 @@ windowList.set(IWindowList.MINI_WINDOW, {
 windowList.set(IWindowList.RENAME_WINDOW, {
   isValid: true,
   multiple: true,
-  options () {
-    let options: IBrowserWindowOptions = {
+  options() {
+    const options: IBrowserWindowOptions = {
       height: 175,
       width: 300,
       show: true,
@@ -144,7 +144,7 @@ windowList.set(IWindowList.RENAME_WINDOW, {
     }
     return options
   },
-  async callback (window, windowManager) {
+  async callback(window, windowManager) {
     window.loadURL(RENAME_WINDOW_URL)
     const currentWindow = windowManager.getAvailableWindow()
     if (currentWindow && currentWindow.isVisible()) {
@@ -155,7 +155,8 @@ windowList.set(IWindowList.RENAME_WINDOW, {
       // if is the settingWindow
       if (bounds.height > 400) {
         positionY = bounds.y + bounds.height / 2 - 88
-      } else { // if is the miniWindow
+      } else {
+        // if is the miniWindow
         positionY = bounds.y + bounds.height / 2
       }
       window.setPosition(positionX, positionY, false)

@@ -4,8 +4,10 @@ import axios from 'axios'
 import pkg from 'root/package.json'
 import { lt } from 'semver'
 const version = pkg.version
-const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
-const releaseUrlBackup = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'
+const releaseUrl =
+  'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
+const releaseUrlBackup =
+  'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'
 const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
 
 const checkVersion = async () => {
@@ -28,19 +30,22 @@ const checkVersion = async () => {
       const latest = res.data.version || res.data.name
       const result = compareVersion2Update(version, latest)
       if (result) {
-        dialog.showMessageBox({
-          type: 'info',
-          title: '发现新版本',
-          buttons: ['Yes', 'No'],
-          message: `发现新版本${latest}，更新了很多功能，是否去下载最新的版本？`,
-          checkboxLabel: '以后不再提醒',
-          checkboxChecked: false
-        }).then(res => {
-          if (res.response === 0) { // if selected yes
-            shell.openExternal(downloadUrl)
-          }
-          db.set('settings.showUpdateTip', !res.checkboxChecked)
-        })
+        dialog
+          .showMessageBox({
+            type: 'info',
+            title: '发现新版本',
+            buttons: ['Yes', 'No'],
+            message: `发现新版本${latest}，更新了很多功能，是否去下载最新的版本？`,
+            checkboxLabel: '以后不再提醒',
+            checkboxChecked: false
+          })
+          .then((res) => {
+            if (res.response === 0) {
+              // if selected yes
+              shell.openExternal(downloadUrl)
+            }
+            db.set('settings.showUpdateTip', !res.checkboxChecked)
+          })
       }
     } else {
       return false

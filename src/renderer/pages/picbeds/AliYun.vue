@@ -2,66 +2,106 @@
   <div id="aliyun-view">
     <el-row :gutter="16">
       <el-col :span="16" :offset="4">
-        <div class="view-title">
-          阿里云OSS设置
-        </div>
+        <div class="view-title">阿里云OSS设置</div>
         <el-form
           ref="aliyun"
           label-position="right"
           label-width="120px"
           :model="form"
-          size="mini">
+          size="mini"
+        >
           <el-form-item
             label="设定KeyId"
             prop="accessKeyId"
             :rules="{
-              required: true, message: 'AccessKeyId不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.accessKeyId" placeholder="AccessKeyId" @keyup.native.enter="confirm"></el-input>
+              required: true,
+              message: 'AccessKeyId不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.accessKeyId"
+              placeholder="AccessKeyId"
+              @keyup.native.enter="confirm"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定KeySecret"
             prop="accessKeySecret"
             :rules="{
-              required: true, message: 'AccessKeySecret不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.accessKeySecret" type="password" @keyup.native.enter="confirm" placeholder="AccessKeySecret"></el-input>
+              required: true,
+              message: 'AccessKeySecret不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.accessKeySecret"
+              type="password"
+              @keyup.native.enter="confirm"
+              placeholder="AccessKeySecret"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定存储空间名"
             prop="bucket"
             :rules="{
-              required: true, message: 'Bucket不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.bucket" @keyup.native.enter="confirm" placeholder="Bucket"></el-input>
+              required: true,
+              message: 'Bucket不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.bucket"
+              @keyup.native.enter="confirm"
+              placeholder="Bucket"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="确认存储区域"
             prop="area"
             :rules="{
-              required: true, message: '区域代码不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.area" @keyup.native.enter="confirm" placeholder="例如oss-cn-beijing"></el-input>
+              required: true,
+              message: '区域代码不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.area"
+              @keyup.native.enter="confirm"
+              placeholder="例如oss-cn-beijing"
+            ></el-input>
           </el-form-item>
-          <el-form-item
-            label="指定存储路径"
-            >
-            <el-input v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/"></el-input>
+          <el-form-item label="指定存储路径">
+            <el-input
+              v-model="form.path"
+              @keyup.native.enter="confirm"
+              placeholder="例如img/"
+            ></el-input>
           </el-form-item>
-          <el-form-item
-            label="设定网址后缀"
-            >
-            <el-input v-model="form.options" @keyup.native.enter="confirm" placeholder="例如?x-oss-process=xxx"></el-input>
+          <el-form-item label="设定网址后缀">
+            <el-input
+              v-model="form.options"
+              @keyup.native.enter="confirm"
+              placeholder="例如?x-oss-process=xxx"
+            ></el-input>
           </el-form-item>
-          <el-form-item
-            label="设定自定义域名"
-            >
-            <el-input v-model="form.customUrl" @keyup.native.enter="confirm" placeholder="例如https://xxxx.com"></el-input>
+          <el-form-item label="设定自定义域名">
+            <el-input
+              v-model="form.customUrl"
+              @keyup.native.enter="confirm"
+              placeholder="例如https://xxxx.com"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
-              <el-button type="success" @click="setDefaultPicBed('aliyun')" round :disabled="defaultPicBed === 'aliyun'">设为默认图床</el-button>
+              <el-button
+                type="success"
+                @click="setDefaultPicBed('aliyun')"
+                round
+                :disabled="defaultPicBed === 'aliyun'"
+                >设为默认图床</el-button
+              >
             </el-button-group>
           </el-form-item>
         </el-form>
@@ -87,13 +127,15 @@ export default class extends Vue {
     customUrl: '',
     options: ''
   }
-  async created () {
+
+  async created() {
     const config = await this.getConfig<IAliYunConfig>('picBed.aliyun')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
-  confirm () {
+
+  confirm() {
     // @ts-ignore
     this.$refs.aliyun.validate((valid) => {
       if (valid) {
@@ -113,7 +155,7 @@ export default class extends Vue {
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 #aliyun-view
   .el-form
     label

@@ -2,33 +2,46 @@
   <div id="imgur-view">
     <el-row :gutter="16">
       <el-col :span="16" :offset="4">
-        <div class="view-title">
-          Imgur图床设置
-        </div>
+        <div class="view-title">Imgur图床设置</div>
         <el-form
           ref="imgur"
           label-position="right"
           label-width="120px"
           :model="form"
-          size="mini">
+          size="mini"
+        >
           <el-form-item
             label="设定ClientId"
             prop="clientId"
             :rules="{
-              required: true, message: 'ClientId不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.clientId" placeholder="ClientId" @keyup.native.enter="confirm"></el-input>
+              required: true,
+              message: 'ClientId不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.clientId"
+              placeholder="ClientId"
+              @keyup.native.enter="confirm"
+            ></el-input>
           </el-form-item>
-          <el-form-item
-            label="设定代理"
-            prop="proxy"
-            >
-            <el-input v-model="form.proxy" placeholder="例如：http://127.0.0.1:1080" @keyup.native.enter="confirm"></el-input>
+          <el-form-item label="设定代理" prop="proxy">
+            <el-input
+              v-model="form.proxy"
+              placeholder="例如：http://127.0.0.1:1080"
+              @keyup.native.enter="confirm"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
-              <el-button type="success" @click="setDefaultPicBed('imgur')" round :disabled="defaultPicBed === 'imgur'">设为默认图床</el-button>
+              <el-button
+                type="success"
+                @click="setDefaultPicBed('imgur')"
+                round
+                :disabled="defaultPicBed === 'imgur'"
+                >设为默认图床</el-button
+              >
             </el-button-group>
           </el-form-item>
         </el-form>
@@ -49,13 +62,15 @@ export default class extends Vue {
     clientId: '',
     proxy: ''
   }
-  async created () {
+
+  async created() {
     const config = await this.getConfig<IImgurConfig>('picBed.imgur')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
-  confirm () {
+
+  confirm() {
     // @ts-ignore
     this.$refs.imgur.validate((valid) => {
       if (valid) {
@@ -75,7 +90,7 @@ export default class extends Vue {
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 #imgur-view
   .el-form
     label

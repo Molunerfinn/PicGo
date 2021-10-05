@@ -2,68 +2,109 @@
   <div id="qiniu-view">
     <el-row :gutter="16">
       <el-col :span="16" :offset="4">
-        <div class="view-title">
-          七牛图床设置
-        </div>
+        <div class="view-title">七牛图床设置</div>
         <el-form
           ref="qiniu"
           label-position="right"
           label-width="120px"
           :model="form"
-          size="mini">
+          size="mini"
+        >
           <el-form-item
             label="设定AccessKey"
             prop="accessKey"
             :rules="{
-              required: true, message: 'AccessKey不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.accessKey" placeholder="AccessKey" @keyup.native.enter="confirm"></el-input>
+              required: true,
+              message: 'AccessKey不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.accessKey"
+              placeholder="AccessKey"
+              @keyup.native.enter="confirm"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定SecretKey"
             prop="secretKey"
             :rules="{
-              required: true, message: 'SecretKey不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.secretKey" type="password" @keyup.native.enter="confirm" placeholder="SecretKey"></el-input>
+              required: true,
+              message: 'SecretKey不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.secretKey"
+              type="password"
+              @keyup.native.enter="confirm"
+              placeholder="SecretKey"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定存储空间名"
             prop="bucket"
             :rules="{
-              required: true, message: 'Bucket不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.bucket" @keyup.native.enter="confirm" placeholder="Bucket"></el-input>
+              required: true,
+              message: 'Bucket不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.bucket"
+              @keyup.native.enter="confirm"
+              placeholder="Bucket"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="设定访问网址"
             prop="url"
             :rules="{
-              required: true, message: '网址不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="form.url" @keyup.native.enter="confirm" placeholder="例如：http://xxx.yyy.glb.clouddn.com"></el-input>
+              required: true,
+              message: '网址不能为空',
+              trigger: 'blur'
+            }"
+          >
+            <el-input
+              v-model="form.url"
+              @keyup.native.enter="confirm"
+              placeholder="例如：http://xxx.yyy.glb.clouddn.com"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="确认存储区域"
             :rules="{
-              required: true, message: '区域代码不能为空', trigger: 'blur'
-            }">
+              required: true,
+              message: '区域代码不能为空',
+              trigger: 'blur'
+            }"
+          >
             <el-input v-model="form.area" placeholder="例如z0"></el-input>
           </el-form-item>
-          <el-form-item
-            label="设定网址后缀"
-            >
-            <el-input v-model="form.options" @keyup.native.enter="confirm" placeholder="例如?imageslim"></el-input>
+          <el-form-item label="设定网址后缀">
+            <el-input
+              v-model="form.options"
+              @keyup.native.enter="confirm"
+              placeholder="例如?imageslim"
+            ></el-input>
           </el-form-item>
-          <el-form-item
-            label="指定存储路径"
-            >
-            <el-input v-model="form.path" @keyup.native.enter="confirm" placeholder="例如img/"></el-input>
+          <el-form-item label="指定存储路径">
+            <el-input
+              v-model="form.path"
+              @keyup.native.enter="confirm"
+              placeholder="例如img/"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
-              <el-button type="success" @click="setDefaultPicBed('qiniu')" round :disabled="defaultPicBed === 'qiniu'">设为默认图床</el-button>
+              <el-button
+                type="success"
+                @click="setDefaultPicBed('qiniu')"
+                round
+                :disabled="defaultPicBed === 'qiniu'"
+                >设为默认图床</el-button
+              >
             </el-button-group>
           </el-form-item>
         </el-form>
@@ -89,13 +130,15 @@ export default class extends Vue {
     options: '',
     path: ''
   }
-  async created () {
+
+  async created() {
     const config = await this.getConfig<IQiniuConfig>('picBed.qiniu')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
-  confirm () {
+
+  confirm() {
     // @ts-ignore
     this.$refs.qiniu.validate((valid) => {
       if (valid) {
@@ -115,7 +158,7 @@ export default class extends Vue {
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 #qiniu-view
   .el-form
     label

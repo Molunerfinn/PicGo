@@ -1,22 +1,15 @@
-import {
-  dialog,
-  BrowserWindow,
-  Notification,
-  ipcMain
-} from 'electron'
-import path from 'path'
+import { dialog, BrowserWindow, Notification, ipcMain } from 'electron'
 import db, { GalleryDB } from 'apis/core/datastore'
-import { dbPathChecker, defaultConfigPath, getGalleryDBPath } from 'apis/core/datastore/dbChecker'
+import {
+  dbPathChecker,
+  defaultConfigPath,
+  getGalleryDBPath
+} from 'apis/core/datastore/dbChecker'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '#/utils/pasteTemplate'
 import { handleCopyUrl } from '~/main/utils/common'
-import {
-  getWindowId,
-  getSettingWindowId
-} from '@core/bus/apis'
-import {
-  SHOW_INPUT_BOX
-} from '~/universal/events/constants'
+import { getWindowId, getSettingWindowId } from '@core/bus/apis'
+import { SHOW_INPUT_BOX } from '~/universal/events/constants'
 import { DBStore } from '@picgo/store'
 
 // Cross-process support may be required in the future
@@ -24,16 +17,18 @@ class GuiApi implements IGuiApi {
   private static instance: GuiApi
   private windowId: number = -1
   private settingWindowId: number = -1
-  private constructor () {
+  private constructor() {
     console.log('init guiapi')
   }
-  public static getInstance (): GuiApi {
+
+  public static getInstance(): GuiApi {
     if (!GuiApi.instance) {
       GuiApi.instance = new GuiApi()
     }
     return GuiApi.instance
   }
-  private async showSettingWindow () {
+
+  private async showSettingWindow() {
     this.settingWindowId = await getSettingWindowId()
     const settingWindow = BrowserWindow.fromId(this.settingWindowId)
     if (settingWindow.isVisible()) {
@@ -47,17 +42,21 @@ class GuiApi implements IGuiApi {
     })
   }
 
-  private getWebcontentsByWindowId (id: number) {
+  private getWebcontentsByWindowId(id: number) {
     return BrowserWindow.fromId(id).webContents
   }
 
-  async showInputBox (options: IShowInputBoxOption = {
-    title: '',
-    placeholder: ''
-  }) {
+  async showInputBox(
+    options: IShowInputBoxOption = {
+      title: '',
+      placeholder: ''
+    }
+  ) {
     await this.showSettingWindow()
-    this.getWebcontentsByWindowId(this.settingWindowId)
-      .send(SHOW_INPUT_BOX, options)
+    this.getWebcontentsByWindowId(this.settingWindowId).send(
+      SHOW_INPUT_BOX,
+      options
+    )
     return new Promise<string>((resolve, reject) => {
       ipcMain.once(SHOW_INPUT_BOX, (event: Event, value: string) => {
         resolve(value)
@@ -65,16 +64,20 @@ class GuiApi implements IGuiApi {
     })
   }
 
-  showFileExplorer (options: IShowFileExplorerOption = {}) {
+  showFileExplorer(options: IShowFileExplorerOption = {}) {
     return new Promise<string>(async (resolve, reject) => {
       this.windowId = await getWindowId()
-      dialog.showOpenDialog(BrowserWindow.fromId(this.windowId), options, (filename: string) => {
-        resolve(filename)
-      })
+      dialog.showOpenDialog(
+        BrowserWindow.fromId(this.windowId),
+        options,
+        (filename: string) => {
+          resolve(filename)
+        }
+      )
     })
   }
 
-  async upload (input: IUploadOption) {
+  async upload(input: IUploadOption) {
     this.windowId = await getWindowId()
     const webContents = this.getWebcontentsByWindowId(this.windowId)
     const imgs = await uploader.setWebContents(webContents).upload(input)
@@ -82,7 +85,9 @@ class GuiApi implements IGuiApi {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       const pasteText: string[] = []
       for (let i = 0; i < imgs.length; i++) {
-        pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
+        pasteText.push(
+          pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink'))
+        )
         const notification = new Notification({
           title: '上传成功',
           body: imgs[i].imgUrl as string,
@@ -101,10 +106,12 @@ class GuiApi implements IGuiApi {
     return []
   }
 
-  showNotification (options: IShowNotificationOption = {
-    title: '',
-    body: ''
-  }) {
+  showNotification(
+    options: IShowNotificationOption = {
+      title: '',
+      body: ''
+    }
+  ) {
     const notification = new Notification({
       title: options.title,
       body: options.body
@@ -112,30 +119,31 @@ class GuiApi implements IGuiApi {
     notification.show()
   }
 
-  showMessageBox (options: IShowMessageBoxOption = {
-    title: '',
-    message: '',
-    type: 'info',
-    buttons: ['Yes', 'No']
-  }) {
+  showMessageBox(
+    options: IShowMessageBoxOption = {
+      title: '',
+      message: '',
+      type: 'info',
+      buttons: ['Yes', 'No']
+    }
+  ) {
     return new Promise<IShowMessageBoxResult>(async (resolve, reject) => {
       this.windowId = await getWindowId()
-      dialog.showMessageBox(
-        BrowserWindow.fromId(this.windowId),
-        options
-      ).then((res) => {
-        resolve({
-          result: res.response,
-          checkboxChecked: res.checkboxChecked
+      dialog
+        .showMessageBox(BrowserWindow.fromId(this.windowId), options)
+        .then((res) => {
+          resolve({
+            result: res.response,
+            checkboxChecked: res.checkboxChecked
+          })
         })
-      })
     })
   }
 
   /**
    * get picgo config/data path
    */
-  async getConfigPath () {
+  async getConfigPath() {
     const currentConfigPath = dbPathChecker()
     const galleryDBPath = getGalleryDBPath().dbPath
     return {
@@ -145,26 +153,28 @@ class GuiApi implements IGuiApi {
     }
   }
 
-  get galleryDB (): DBStore {
+  get galleryDB(): DBStore {
     return new Proxy<DBStore>(GalleryDB.getInstance(), {
-      get (target, prop: keyof DBStore) {
+      get(target, prop: keyof DBStore) {
         if (prop === 'removeById') {
           return new Proxy(GalleryDB.getInstance().removeById, {
-            apply (target, ctx, args) {
+            apply(target, ctx, args) {
               return new Promise((resolve) => {
                 const guiApi = GuiApi.getInstance()
-                guiApi.showMessageBox({
-                  title: '警告',
-                  message: '有插件正在试图删除一些相册图片，是否继续',
-                  type: 'info',
-                  buttons: ['Yes', 'No']
-                }).then(res => {
-                  if (res.result === 0) {
-                    resolve(Reflect.apply(target, ctx, args))
-                  } else {
-                    resolve(undefined)
-                  }
-                })
+                guiApi
+                  .showMessageBox({
+                    title: '警告',
+                    message: '有插件正在试图删除一些相册图片，是否继续',
+                    type: 'info',
+                    buttons: ['Yes', 'No']
+                  })
+                  .then((res) => {
+                    if (res.result === 0) {
+                      resolve(Reflect.apply(target, ctx, args))
+                    } else {
+                      resolve(undefined)
+                    }
+                  })
               })
             }
           })

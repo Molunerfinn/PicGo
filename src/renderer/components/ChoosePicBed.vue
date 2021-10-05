@@ -1,11 +1,7 @@
 <template>
   <div id="choose-pic-bed">
     <span>选择 {{ label }} 作为你默认图床：</span>
-    <el-switch
-      v-model="value"
-      @change="choosePicBed"
-    >
-    </el-switch>
+    <el-switch v-model="value" @change="choosePicBed"> </el-switch>
   </div>
 </template>
 <script lang="ts">
@@ -17,13 +13,14 @@ export default class extends Vue {
   value = false
   @Prop() type!: string
   @Prop() label!: string
-  async created () {
+  async created() {
     const current = await this.getConfig<string>('picBed.current')
     if (this.type === current) {
       this.value = true
     }
   }
-  choosePicBed (val: string) {
+
+  choosePicBed(val: string) {
     this.saveConfig({
       'picBed.current': this.type,
       'picBed.uploader': this.type
@@ -32,5 +29,4 @@ export default class extends Vue {
   }
 }
 </script>
-<style lang='stylus'>
-</style>
+<style lang="stylus"></style>

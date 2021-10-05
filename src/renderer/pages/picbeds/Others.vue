@@ -2,9 +2,7 @@
   <div id="others-view">
     <el-row :gutter="16" class="setting-list">
       <el-col :span="16" :offset="4">
-        <div class="view-title">
-          {{ picBedName }}设置
-        </div>
+        <div class="view-title">{{ picBedName }}设置</div>
         <config-form
           v-if="config.length > 0"
           :config="config"
@@ -14,14 +12,29 @@
         >
           <el-form-item>
             <el-button-group>
-              <el-button type="primary" @click="handleConfirm" round>确定</el-button>
-              <el-button type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type">设为默认图床</el-button>
+              <el-button type="primary" @click="handleConfirm" round
+                >确定</el-button
+              >
+              <el-button
+                type="success"
+                @click="setDefaultPicBed(type)"
+                round
+                :disabled="defaultPicBed === type"
+                >设为默认图床</el-button
+              >
             </el-button-group>
           </el-form-item>
         </config-form>
         <div v-else class="single">
           <div class="notice">暂无配置项</div>
-          <el-button type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type" size="mini">设为默认图床</el-button>
+          <el-button
+            type="success"
+            @click="setDefaultPicBed(type)"
+            round
+            :disabled="defaultPicBed === type"
+            size="mini"
+            >设为默认图床</el-button
+          >
         </div>
       </el-col>
     </el-row>
@@ -31,10 +44,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import ConfigForm from '@/components/ConfigForm.vue'
 import mixin from '@/utils/ConfirmButtonMixin'
-import {
-  ipcRenderer,
-  IpcRendererEvent
-} from 'electron'
+import { ipcRenderer, IpcRendererEvent } from 'electron'
 
 @Component({
   name: 'OtherPicBed',
@@ -47,12 +57,13 @@ export default class extends Vue {
   type: string = ''
   config: any[] = []
   picBedName: string = ''
-  created () {
+  created() {
     this.type = this.$route.params.type
     ipcRenderer.send('getPicBedConfig', this.$route.params.type)
     ipcRenderer.on('getPicBedConfig', this.getPicBeds)
   }
-  async handleConfirm () {
+
+  async handleConfirm() {
     // @ts-ignore
     const result = await this.$refs.configForm.validate()
     if (result !== false) {
@@ -67,7 +78,8 @@ export default class extends Vue {
       }
     }
   }
-  setDefaultPicBed (type: string) {
+
+  setDefaultPicBed(type: string) {
     this.saveConfig({
       'picBed.current': type,
       'picBed.uploader': type
@@ -81,16 +93,18 @@ export default class extends Vue {
       return true
     }
   }
-  getPicBeds (event: IpcRendererEvent, config: any[], name: string) {
+
+  getPicBeds(event: IpcRendererEvent, config: any[], name: string) {
     this.config = config
     this.picBedName = name
   }
-  beforeDestroy () {
+
+  beforeDestroy() {
     ipcRenderer.removeListener('getPicBedConfig', this.getPicBeds)
   }
 }
 </script>
-<style lang='stylus'>
+<style lang="stylus">
 #others-view
   .setting-list
     height 425px
