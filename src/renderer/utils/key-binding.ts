@@ -14,16 +14,16 @@ const isSpecialKey = (keyCode: number) => {
 
 const keyDetect = (event: KeyboardEvent) => {
   const meta = process.platform === 'darwin' ? 'Cmd' : 'Super'
-  let specialKey = {
+  const specialKey = {
     Ctrl: event.ctrlKey,
     Shift: event.shiftKey,
     Alt: event.altKey,
     [meta]: event.metaKey
   }
 
-  let pressKey = []
+  const pressKey = []
 
-  for (let i in specialKey) {
+  for (const i in specialKey) {
     if (specialKey[i]) {
       pressKey.push(i)
     }

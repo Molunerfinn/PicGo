@@ -148,29 +148,18 @@ import { Component, Vue, Watch } from 'vue-property-decorator'
 import QrcodeVue from 'qrcode.vue'
 import pick from 'lodash/pick'
 import pkg from 'root/package.json'
-import keyDetect from '@/utils/key-binding'
 import {
-  remote,
   ipcRenderer,
   IpcRendererEvent,
   clipboard
 } from 'electron'
-// import db from '#/datastore'
 import mixin from '@/utils/mixin'
 import InputBoxDialog from '@/components/InputBoxDialog.vue'
 import {
-  SHOW_PRIVACY_MESSAGE,
-  OPEN_DEVTOOLS
+  MINIMIZE_WINDOW,
+  CLOSE_WINDOW,
+  SHOW_MAIN_PAGE_MENU
 } from '~/universal/events/constants'
-import { IConfig } from 'picgo/dist/src/types/index'
-const { Menu, dialog, BrowserWindow } = remote
-const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
-  if (!/\$url/.test(value)) {
-    return callback(new Error('必须含有$url'))
-  } else {
-    return callback()
-  }
-}
 @Component({
   name: 'main-page',
   mixins: [mixin],
@@ -182,7 +171,6 @@ const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) =>
 export default class extends Vue {
   version = process.env.NODE_ENV === 'production' ? pkg.version : 'Dev'
   defaultActive = 'upload'
-  menu: Electron.Menu | null = null
   visible = false
   keyBindingVisible = false
   customLinkVisible = false
@@ -193,13 +181,13 @@ export default class extends Vue {
   choosedPicBedForQRCode: string[] = []
   created () {
     this.os = process.platform
-    this.buildMenu()
+    ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
     this.handleGetPicPeds()
   }
 
   @Watch('choosedPicBedForQRCode')
-  choosedPicBedForQRCodeChange (val: string[], oldVal: string[]) {
+  choosedPicBedForQRCodeChange (val: string[]) {
     if (val.length > 0) {
       this.$nextTick(async () => {
         const picBedConfig = await this.getConfig('picBed')
@@ -235,77 +223,38 @@ export default class extends Vue {
       }
     }
   }
+
   minimizeWindow () {
-    const window = BrowserWindow.getFocusedWindow()
-    window!.minimize()
+    ipcRenderer.send(MINIMIZE_WINDOW)
   }
+
   closeWindow () {
-    const window = BrowserWindow.getFocusedWindow()
-    if (process.platform === 'linux') {
-      window!.hide()
-    } else {
-      window!.close()
-    }
+    ipcRenderer.send(CLOSE_WINDOW)
   }
-  buildMenu () {
-    const _this = this
-    const template = [
-      {
-        label: '关于',
-        click () {
-          dialog.showMessageBox({
-            title: 'PicGo',
-            message: 'PicGo',
-            detail: `Version: ${pkg.version}\nAuthor: Molunerfinn\nGithub: https://github.com/Molunerfinn/PicGo`
-          })
-        }
-      },
-      {
-        label: '赞助PicGo',
-        click () {
-          _this.visible = true
-        }
-      },
-      {
-        label: '生成图床配置二维码',
-        click () {
-          _this.qrcodeVisible = true
-        }
-      },
-      {
-        label: '隐私协议',
-        click () {
-          ipcRenderer.send(SHOW_PRIVACY_MESSAGE)
-        }
-      },
-      {
-        label: '打开调试器',
-        click () {
-          ipcRenderer.send(OPEN_DEVTOOLS)
-        }
-      }
-    ]
-    this.menu = Menu.buildFromTemplate(template)
-  }
+
   openDialog () {
-    // this.menu!.popup(remote.getCurrentWindow())
-    this.menu!.popup()
+    ipcRenderer.send(SHOW_MAIN_PAGE_MENU)
   }
+
   openMiniWindow () {
     ipcRenderer.send('openMiniWindow')
   }
+
   handleCopyPicBedConfig () {
     clipboard.writeText(this.picBedConfigString)
     this.$message.success('图床配置复制成功')
   }
+
   getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
   }
-  beforeRouteEnter (to: any, from: any, next: any) {
+
+  beforeRouteEnter (to: any, next: any) {
     next((vm: this) => {
       vm.defaultActive = to.name
     })
   }
+
   beforeDestroy () {
     ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
   }

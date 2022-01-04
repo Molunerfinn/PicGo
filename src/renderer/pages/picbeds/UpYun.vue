@@ -79,12 +79,14 @@ export default class extends Vue {
     options: '',
     path: ''
   }
+
   async created () {
     const config = await this.getConfig<IUpYunConfig>('picBed.upyun')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
+
   confirm () {
     // @ts-ignore
     this.$refs.tcyun.validate((valid) => {

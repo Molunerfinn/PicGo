@@ -39,7 +39,7 @@ const getUploadFiles = (argv = process.argv, cwd = process.cwd(), logger: Logger
             path: item
           }
         } else {
-          let tempPath = path.join(cwd, item)
+          const tempPath = path.join(cwd, item)
           if (fs.existsSync(tempPath)) {
             return {
               path: tempPath

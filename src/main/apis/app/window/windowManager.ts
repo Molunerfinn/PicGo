@@ -34,6 +34,7 @@ class WindowManager implements IWindowManager {
       return null
     }
   }
+
   get (name: IWindowList) {
     if (this.has(name)) {
       return this.windowMap.get(name)!
@@ -42,9 +43,11 @@ class WindowManager implements IWindowManager {
       return window
     }
   }
+
   has (name: IWindowList) {
     return this.windowMap.has(name)
   }
+
   // useless
   // delete (name: IWindowList) {
   //   const window = this.windowMap.get(name)
@@ -60,6 +63,7 @@ class WindowManager implements IWindowManager {
       this.windowIdMap.delete(id)
     }
   }
+
   getAvailableWindow () {
     const miniWindow = this.windowMap.get(IWindowList.MINI_WINDOW)
     if (miniWindow && miniWindow.isVisible()) {

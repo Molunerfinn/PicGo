@@ -20,10 +20,9 @@ import mixin from '@/utils/mixin'
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import {
   ipcRenderer,
-  IpcRendererEvent,
-  remote
+  IpcRendererEvent
 } from 'electron'
-import { SHOW_PRIVACY_MESSAGE, OPEN_DEVTOOLS } from '~/universal/events/constants'
+import { SHOW_MINI_PAGE_MENU } from '~/universal/events/constants'
 @Component({
   name: 'mini-page',
   mixins: [mixin]
@@ -55,6 +54,7 @@ export default class extends Vue {
     })
     this.getPicBeds()
   }
+
   mounted () {
     window.addEventListener('mousedown', this.handleMouseDown, false)
     window.addEventListener('mousemove', this.handleMouseMove, false)
@@ -73,27 +73,31 @@ export default class extends Vue {
       }, 1200)
     }
   }
+
   getPicBeds () {
     this.picBed = ipcRenderer.sendSync('getPicBeds')
-    this.buildMenu()
   }
+
   onDrop (e: DragEvent) {
     this.dragover = false
     this.ipcSendFiles(e.dataTransfer!.files)
   }
+
   openUploadWindow () {
     // @ts-ignore
     document.getElementById('file-uploader').click()
   }
+
   onChange (e: any) {
     this.ipcSendFiles(e.target.files)
     // @ts-ignore
     document.getElementById('file-uploader').value = ''
   }
+
   ipcSendFiles (files: FileList) {
-    let sendFiles: IFileWithPath[] = []
-    Array.from(files).forEach((item, index) => {
-      let obj = {
+    const sendFiles: IFileWithPath[] = []
+    Array.from(files).forEach((item) => {
+      const obj = {
         name: item.name,
         path: item.path
       }
@@ -101,6 +105,7 @@ export default class extends Vue {
     })
     ipcRenderer.send('uploadChoosedFiles', sendFiles)
   }
+
   handleMouseDown (e: MouseEvent) {
     this.dragging = true
     this.wX = e.pageX
@@ -108,20 +113,23 @@ export default class extends Vue {
     this.screenX = e.screenX
     this.screenY = e.screenY
   }
+
   handleMouseMove (e: MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
     if (this.dragging) {
-      const xLoc = e.screenX - this.wX
-      const yLoc = e.screenY - this.wY
-      remote.BrowserWindow.getFocusedWindow()!.setBounds({
-        x: xLoc,
-        y: yLoc,
-        width: 64,
-        height: 64
-      })
+      // const xLoc = e.screenX - this.wX
+      // const yLoc = e.screenY - this.wY
+      // FIXME: drag
+      // remote.BrowserWindow.getFocusedWindow()!.setBounds({
+      //   x: xLoc,
+      //   y: yLoc,
+      //   width: 64,
+      //   height: 64
+      // })
     }
   }
+
   handleMouseUp (e: MouseEvent) {
     this.dragging = false
     if (this.screenX === e.screenX && this.screenY === e.screenY) {
@@ -133,77 +141,11 @@ export default class extends Vue {
       }
     }
   }
+
   openContextMenu () {
-    this.menu!.popup()
+    ipcRenderer.send(SHOW_MINI_PAGE_MENU)
   }
-  async buildMenu () {
-    const _this = this
-    const current = await this.getConfig('picBed.current')
-    const submenu = this.picBed.filter(item => item.visible).map(item => {
-      return {
-        label: item.name,
-        type: 'radio',
-        checked: current === item.type,
-        click () {
-          _this.saveConfig({
-            'picBed.current': item.type,
-            'picBed.uploader': item.type
-          })
-          ipcRenderer.send('syncPicBed')
-        }
-      }
-    })
-    const template = [
-      {
-        label: '打开详细窗口',
-        click () {
-          ipcRenderer.send('openSettingWindow')
-        }
-      },
-      {
-        label: '选择默认图床',
-        type: 'submenu',
-        submenu
-      },
-      {
-        label: '剪贴板图片上传',
-        click () {
-          ipcRenderer.send('uploadClipboardFilesFromUploadPage')
-        }
-      },
-      {
-        label: '隐藏窗口',
-        click () {
-          remote.BrowserWindow.getFocusedWindow()!.hide()
-        }
-      },
-      {
-        label: '隐私协议',
-        click () {
-          ipcRenderer.send(SHOW_PRIVACY_MESSAGE)
-        }
-      },
-      {
-        label: '重启应用',
-        click () {
-          remote.app.relaunch()
-          remote.app.exit(0)
-        }
-      },
-      {
-        label: '打开调试器',
-        click () {
-          ipcRenderer.send(OPEN_DEVTOOLS)
-        }
-      },
-      {
-        role: 'quit',
-        label: '退出'
-      }
-    ]
-    // @ts-ignore
-    this.menu = remote.Menu.buildFromTemplate(template)
-  }
+
   beforeDestroy () {
     ipcRenderer.removeAllListeners('uploadProgress')
     ipcRenderer.removeListener('getPicBeds', this.getPicBeds)

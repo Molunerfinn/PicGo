@@ -1,13 +1,15 @@
 import {
   app,
   ipcMain,
+  shell,
   Notification,
-  IpcMainEvent
+  IpcMainEvent,
+  BrowserWindow
 } from 'electron'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import uploader from 'apis/app/uploader'
-import pasteTemplate from '#/utils/pasteTemplate'
+import pasteTemplate from '~/main/utils/pasteTemplate'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
 import server from '~/main/server'
 import getPicBeds from '~/main/utils/getPicBeds'
@@ -15,7 +17,16 @@ import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import bus from '@core/bus'
 import {
   TOGGLE_SHORTKEY_MODIFIED_MODE,
-  OPEN_DEVTOOLS
+  OPEN_DEVTOOLS,
+  SHOW_MINI_PAGE_MENU,
+  MINIMIZE_WINDOW,
+  CLOSE_WINDOW,
+  SHOW_MAIN_PAGE_MENU,
+  SHOW_UPLOAD_PAGE_MENU,
+  OPEN_USER_STORE_FILE,
+  OPEN_URL,
+  RELOAD_APP,
+  SHOW_PLUGIN_PAGE_MENU
 } from '#/events/constants'
 import {
   uploadClipboardFiles,
@@ -23,6 +34,10 @@ import {
 } from '~/main/apis/app/uploader/apis'
 import picgoCoreIPC from './picgoCoreIPC'
 import { handleCopyUrl } from '~/main/utils/common'
+import { buildMainPageMenu, buildMiniPageMenu, buildPluginPageMenu, buildUploadPageMenu } from './remotes/menu'
+import path from 'path'
+
+const STORE_PATH = app.getPath('userData')
 
 export default {
   listen () {
@@ -144,6 +159,58 @@ export default {
     })
     ipcMain.on(OPEN_DEVTOOLS, (event: IpcMainEvent) => {
       event.sender.openDevTools()
+    })
+    // menu & window methods
+    ipcMain.on(SHOW_MINI_PAGE_MENU, () => {
+      const window = windowManager.get(IWindowList.MINI_WINDOW)!
+      const menu = buildMiniPageMenu()
+      menu.popup({
+        window
+      })
+    })
+    ipcMain.on(SHOW_MAIN_PAGE_MENU, () => {
+      const window = windowManager.get(IWindowList.SETTING_WINDOW)!
+      const menu = buildMainPageMenu()
+      menu.popup({
+        window
+      })
+    })
+    ipcMain.on(SHOW_UPLOAD_PAGE_MENU, () => {
+      const window = windowManager.get(IWindowList.SETTING_WINDOW)!
+      const menu = buildUploadPageMenu()
+      menu.popup({
+        window
+      })
+    })
+    ipcMain.on(SHOW_PLUGIN_PAGE_MENU, (evt: IpcMainEvent, plugin: IPicGoPlugin) => {
+      const window = windowManager.get(IWindowList.SETTING_WINDOW)!
+      const menu = buildPluginPageMenu(plugin)
+      menu.popup({
+        window
+      })
+    })
+    ipcMain.on(MINIMIZE_WINDOW, () => {
+      const window = BrowserWindow.getFocusedWindow()
+      window?.minimize()
+    })
+    ipcMain.on(CLOSE_WINDOW, () => {
+      const window = BrowserWindow.getFocusedWindow()
+      if (process.platform === 'linux') {
+        window?.hide()
+      } else {
+        window?.close()
+      }
+    })
+    ipcMain.on(OPEN_USER_STORE_FILE, (evt: IpcMainEvent, filePath: string) => {
+      const abFilePath = path.join(STORE_PATH, filePath)
+      shell.openPath(abFilePath)
+    })
+    ipcMain.on(OPEN_URL, (evt: IpcMainEvent, url: string) => {
+      shell.openExternal(url)
+    })
+    ipcMain.on(RELOAD_APP, () => {
+      app.relaunch()
+      app.exit(0)
     })
   },
   dispose () {}

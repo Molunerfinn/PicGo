@@ -28,10 +28,9 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/mixin'
-import pasteTemplate from '#/utils/pasteTemplate'
-import { ipcRenderer, clipboard } from 'electron'
-import { IPasteStyle } from '#/types/enum'
+import { ipcRenderer } from 'electron'
 import { IResult } from '@picgo/store/dist/types'
+import { PASTE_TEXT } from '#/events/constants'
 
 @Component({
   name: 'tray-page',
@@ -44,28 +43,31 @@ export default class extends Vue {
     body: '',
     icon: ''
   }
+
   clipboardFiles: ImgInfo[] = []
   uploadFlag = false
   get reverseList () {
     return this.files.slice().reverse()
   }
+
   async getData () {
     this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
   }
+
   async copyTheLink (item: ImgInfo) {
     this.notification.body = item.imgUrl!
     this.notification.icon = item.imgUrl!
     const myNotification = new Notification(this.notification.title, this.notification)
-    const pasteStyle = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
-    const customLink = await this.getConfig<string>('settings.customLink')
-    clipboard.writeText(pasteTemplate(pasteStyle, item, customLink))
+    ipcRenderer.invoke(PASTE_TEXT, item)
     myNotification.onclick = () => {
       return true
     }
   }
+
   calcHeight (width: number, height: number): number {
     return height * 160 / width
   }
+
   disableDragFile () {
     window.addEventListener('dragover', (e) => {
       e = e || event
@@ -76,6 +78,7 @@ export default class extends Vue {
       e.preventDefault()
     }, false)
   }
+
   uploadClipboardFiles () {
     if (this.uploadFlag) {
       return
@@ -83,6 +86,7 @@ export default class extends Vue {
     this.uploadFlag = true
     ipcRenderer.send('uploadClipboardFiles')
   }
+
   mounted () {
     this.disableDragFile()
     this.getData()
@@ -96,15 +100,16 @@ export default class extends Vue {
     ipcRenderer.on('clipboardFiles', (event: Event, files: ImgInfo[]) => {
       this.clipboardFiles = files
     })
-    ipcRenderer.on('uploadFiles', async (event: Event) => {
+    ipcRenderer.on('uploadFiles', async () => {
       this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
       console.log(this.files)
       this.uploadFlag = false
     })
-    ipcRenderer.on('updateFiles', (event: Event) => {
+    ipcRenderer.on('updateFiles', () => {
       this.getData()
     })
   }
+
   beforeDestroy () {
     ipcRenderer.removeAllListeners('dragFiles')
     ipcRenderer.removeAllListeners('clipboardFiles')

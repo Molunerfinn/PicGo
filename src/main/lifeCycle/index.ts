@@ -66,6 +66,7 @@ class LifeCycle {
     updateShortKeyFromVersion212(db, db.get('settings.shortKey'))
     await migrateGalleryFromVersion230(db, GalleryDB.getInstance(), picgo)
   }
+
   private onReady () {
     const readyFunction = async () => {
       console.log('on ready')
@@ -74,7 +75,7 @@ class LifeCycle {
         // Install Vue Devtools
         try {
           await installExtension(VUEJS_DEVTOOLS)
-        } catch (e) {
+        } catch (e: any) {
           console.error('Vue Devtools failed to install:', e.toString())
         }
       }
@@ -110,6 +111,7 @@ class LifeCycle {
       readyFunction()
     }
   }
+
   private onRunning () {
     app.on('second-instance', (event, commandLine, workingDirectory) => {
       logger.info('detect second instance')
@@ -144,6 +146,7 @@ class LifeCycle {
       process.env.XDG_CURRENT_DESKTOP = 'Unity'
     }
   }
+
   private onQuit () {
     app.on('window-all-closed', () => {
       if (process.platform !== 'darwin') {
@@ -171,6 +174,7 @@ class LifeCycle {
       }
     }
   }
+
   async launchApp () {
     const gotTheLock = app.requestSingleInstanceLock()
     if (!gotTheLock) {

@@ -86,12 +86,14 @@ export default class extends Vue {
     customUrl: '',
     options: ''
   }
+
   async created () {
     const config = await this.getConfig<IAliYunConfig>('picBed.aliyun')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
+
   confirm () {
     // @ts-ignore
     this.$refs.aliyun.validate((valid) => {

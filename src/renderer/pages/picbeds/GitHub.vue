@@ -71,12 +71,14 @@ export default class extends Vue {
     customUrl: '',
     branch: ''
   }
+
   async created () {
     const config = await this.getConfig<IGitHubConfig>('picBed.github')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
+
   confirm () {
     // @ts-ignore
     this.$refs.github.validate((valid) => {

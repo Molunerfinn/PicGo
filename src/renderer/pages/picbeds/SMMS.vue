@@ -41,12 +41,14 @@ export default class extends Vue {
   form: ISMMSConfig = {
     token: ''
   }
+
   async created () {
     const config = await this.getConfig<string | boolean>('picBed.smms.token')
     if (typeof config !== 'boolean') {
       this.form.token = config || ''
     }
   }
+
   confirm () {
     // @ts-ignore
     this.$refs.smms.validate((valid) => {

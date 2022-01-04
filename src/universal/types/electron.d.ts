@@ -23,11 +23,7 @@ declare interface IWindowManager {
 
 // https://stackoverflow.com/questions/35074713/extending-typescript-global-object-in-node-js/44387594#44387594
 declare global {
-  namespace NodeJS {
-    interface Global {
-      PICGO_GUI_VERSION: string
-      PICGO_CORE_VERSION: string
-      notificationList?: IAppNotification[]
-    }
-  }
+  var PICGO_GUI_VERSION: string
+  var PICGO_CORE_VERSION: string
+  var notificationList: IAppNotification[]
 }

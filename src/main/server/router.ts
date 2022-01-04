@@ -4,6 +4,7 @@ class Router {
   get (url: string, callback: routeHandler): void {
     this.router.set(url, callback)
   }
+
   post (url: string, callback: routeHandler): void {
     this.router.set(url, callback)
   }

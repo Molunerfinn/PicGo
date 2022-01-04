@@ -48,12 +48,14 @@ export default class extends Vue {
     clientId: '',
     proxy: ''
   }
+
   async created () {
     const config = await this.getConfig<IImgurConfig>('picBed.imgur')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
+
   confirm () {
     // @ts-ignore
     this.$refs.imgur.validate((valid) => {

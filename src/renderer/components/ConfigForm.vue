@@ -83,8 +83,9 @@ export default class extends Vue {
   handleConfigChange (val: any) {
     this.handleConfig(val)
   }
+
   async validate () {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       // @ts-ignore
       this.$refs.form.validate((valid: boolean) => {
         if (valid) {
@@ -109,7 +110,7 @@ export default class extends Vue {
         return `transformer.${this.id}`
       }
       default:
-        return `unknown`
+        return 'unknown'
     }
   }
 
@@ -119,8 +120,10 @@ export default class extends Vue {
     if (val.length > 0) {
       this.configList = cloneDeep(val).map((item: any) => {
         let defaultValue = item.default !== undefined
-          ? item.default : item.type === 'checkbox'
-            ? [] : null
+          ? item.default
+          : item.type === 'checkbox'
+            ? []
+            : null
         if (item.type === 'checkbox') {
           const defaults = item.choices.filter((i: any) => {
             return i.checked

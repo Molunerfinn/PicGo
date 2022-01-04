@@ -12,7 +12,6 @@ import { initTalkingData } from './renderer/utils/analytics'
 import db from './renderer/utils/db'
 
 webFrame.setVisualZoomLevelLimits(1, 1)
-webFrame.setLayoutZoomLevelLimits(0, 0)
 
 Vue.config.productionTip = false
 Vue.prototype.$builtInPicBed = [

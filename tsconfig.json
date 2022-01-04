@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es2019", // https://github.com/TypeStrong/ts-loader/issues/1061
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",

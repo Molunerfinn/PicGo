@@ -109,11 +109,17 @@ import ConfigForm from '@/components/ConfigForm.vue'
 import { debounce } from 'lodash'
 import {
   ipcRenderer,
-  remote,
   IpcRendererEvent
 } from 'electron'
 import { handleStreamlinePluginName } from '~/universal/utils/common'
-const { Menu } = remote
+import {
+  OPEN_URL,
+  RELOAD_APP,
+  PICGO_CONFIG_PLUGIN,
+  PICGO_HANDLE_PLUGIN_ING,
+  PICGO_TOGGLE_PLUGIN,
+  SHOW_PLUGIN_PAGE_MENU
+} from '#/events/constants'
 
 @Component({
   name: 'plugin',
@@ -144,6 +150,7 @@ export default class extends Vue {
         ? `picgo-plugin-${this.searchText}`
         : this.searchText
   }
+
   @Watch('npmSearchText')
   onNpmSearchTextChange (val: string) {
     if (val) {
@@ -154,6 +161,7 @@ export default class extends Vue {
       this.getPluginList()
     }
   }
+
   @Watch('dialogVisible')
   onDialogVisible (val: boolean) {
     if (val) {
@@ -164,6 +172,7 @@ export default class extends Vue {
       document.querySelector('.main-content.el-row').style.zIndex = 10
     }
   }
+
   async created () {
     this.os = process.platform
     ipcRenderer.on('hideLoading', () => {
@@ -214,105 +223,45 @@ export default class extends Vue {
       })
       this.pluginNameList = this.pluginNameList.filter(item => item !== plugin)
     })
+    ipcRenderer.on(PICGO_CONFIG_PLUGIN, (evt: IpcRendererEvent, currentType: string, configName: string, config: any) => {
+      this.currentType = currentType
+      this.configName = configName
+      this.dialogVisible = true
+      this.config = config
+    })
+    ipcRenderer.on(PICGO_HANDLE_PLUGIN_ING, (evt: IpcRendererEvent, fullName: string) => {
+      this.pluginList.forEach(item => {
+        if (item.fullName === fullName || (item.name === fullName)) {
+          item.ing = true
+        }
+      })
+      this.loading = true
+    })
+    ipcRenderer.on(PICGO_TOGGLE_PLUGIN, (evt: IpcRendererEvent, fullName: string, enabled: boolean) => {
+      const plugin = this.pluginList.find(item => item.fullName === fullName)
+      if (plugin) {
+        plugin.enabled = enabled
+        this.getPicBeds()
+        this.needReload = true
+      }
+    })
     this.getPluginList()
     this.getSearchResult = debounce(this.getSearchResult, 50)
     this.needReload = await this.getConfig<boolean>('needReload') || false
   }
+
   async buildContextMenu (plugin: IPicGoPlugin) {
-    const _this = this
-    let menu = [{
-      label: '启用插件',
-      enabled: !plugin.enabled,
-      click () {
-        _this.saveConfig({
-          [`picgoPlugins.${plugin.fullName}`]: true
-        })
-        plugin.enabled = true
-        _this.getPicBeds()
-        _this.needReload = true
-      }
-    }, {
-      label: '禁用插件',
-      enabled: plugin.enabled,
-      click () {
-        _this.saveConfig({
-          [`picgoPlugins.${plugin.fullName}`]: false
-        })
-        plugin.enabled = false
-        _this.getPicBeds()
-        if (plugin.config.transformer.name) {
-          _this.handleRestoreState('transformer', plugin.config.transformer.name)
-        }
-        if (plugin.config.uploader.name) {
-          _this.handleRestoreState('uploader', plugin.config.uploader.name)
-        }
-        _this.needReload = true
-      }
-    }, {
-      label: '卸载插件',
-      click () {
-        _this.uninstallPlugin(plugin.fullName)
-      }
-    }, {
-      label: '更新插件',
-      click () {
-        _this.updatePlugin(plugin.fullName)
-      }
-    }]
-    for (let i in plugin.config) {
-      if (plugin.config[i].config.length > 0) {
-        const obj = {
-          label: `配置${i} - ${plugin.config[i].fullName || plugin.config[i].name}`,
-          click () {
-            _this.currentType = i
-            _this.configName = plugin.config[i].fullName || plugin.config[i].name
-            _this.dialogVisible = true
-            _this.config = plugin.config[i].config
-          },
-          enabled: plugin.enabled
-        }
-        menu.push(obj)
-      }
-    }
-
-    // handle transformer
-    if (plugin.config.transformer.name) {
-      let currentTransformer = await this.getConfig<string>('picBed.transformer') || 'path'
-      let pluginTransformer = plugin.config.transformer.name
-      const obj = {
-        label: `${currentTransformer === pluginTransformer ? '禁用' : '启用'}transformer - ${plugin.config.transformer.name}`,
-        click () {
-          _this.toggleTransformer(plugin.config.transformer.name)
-        }
-      }
-      menu.push(obj)
-    }
-
-    // plugin custom menus
-    if (plugin.guiMenu) {
-      menu.push({
-        // @ts-ignore
-        type: 'separator'
-      })
-      for (let i of plugin.guiMenu) {
-        menu.push({
-          label: i.label,
-          click () {
-            ipcRenderer.send('pluginActions', plugin.fullName, i.label)
-          }
-        })
-      }
-    }
-
-    this.menu = Menu.buildFromTemplate(menu)
-    this.menu.popup()
+    ipcRenderer.send(SHOW_PLUGIN_PAGE_MENU, plugin)
   }
+
   getPluginList () {
     ipcRenderer.send('getPluginList')
   }
+
   getPicBeds () {
     ipcRenderer.send('getPicBeds')
   }
+
   installPlugin (item: IPicGoPlugin) {
     if (!item.gui) {
       this.$confirm('该插件未对可视化界面进行优化, 是否继续安装?', '提示', {
@@ -330,6 +279,7 @@ export default class extends Vue {
       ipcRenderer.send('installPlugin', item.fullName)
     }
   }
+
   uninstallPlugin (val: string) {
     this.pluginList.forEach(item => {
       if (item.name === val) {
@@ -339,6 +289,7 @@ export default class extends Vue {
     this.loading = true
     ipcRenderer.send('uninstallPlugin', val)
   }
+
   updatePlugin (val: string) {
     this.pluginList.forEach(item => {
       if (item.fullName === val) {
@@ -348,10 +299,11 @@ export default class extends Vue {
     this.loading = true
     ipcRenderer.send('updatePlugin', val)
   }
+
   reloadApp () {
-    remote.app.relaunch()
-    remote.app.exit(0)
+    ipcRenderer.send(RELOAD_APP)
   }
+
   async handleReload () {
     this.saveConfig({
       needReload: true
@@ -364,21 +316,11 @@ export default class extends Vue {
       this.reloadApp()
     }
   }
+
   cleanSearch () {
     this.searchText = ''
   }
-  async toggleTransformer (transformer: string) {
-    let currentTransformer = await this.getConfig<string>('picBed.transformer') || 'path'
-    if (currentTransformer === transformer) {
-      this.saveConfig({
-        'picBed.transformer': 'path'
-      })
-    } else {
-      this.saveConfig({
-        'picBed.transformer': transformer
-      })
-    }
-  }
+
   async handleConfirmConfig () {
     // @ts-ignore
     const result = await this.$refs.configForm.validate()
@@ -410,6 +352,7 @@ export default class extends Vue {
       this.getPluginList()
     }
   }
+
   getSearchResult (val: string) {
     // this.$http.get(`https://api.npms.io/v2/search?q=${val}`)
     this.$http.get(`https://registry.npmjs.com/-/v1/search?text=${val}`)
@@ -428,6 +371,7 @@ export default class extends Vue {
         this.loading = false
       })
   }
+
   handleSearchResult (item: INPMSearchResultObject) {
     const name = handleStreamlinePluginName(item.package.name)
     let gui = false
@@ -450,6 +394,7 @@ export default class extends Vue {
       ing: false // installing or uninstalling
     }
   }
+
   // restore Uploader & Transformer
   async handleRestoreState (item: string, name: string) {
     if (item === 'uploader') {
@@ -470,18 +415,26 @@ export default class extends Vue {
       }
     }
   }
+
   openHomepage (url: string) {
     if (url) {
-      remote.shell.openExternal(url)
+      ipcRenderer.send(OPEN_URL, url)
     }
   }
+
   goAwesomeList () {
-    remote.shell.openExternal('https://github.com/PicGo/Awesome-PicGo')
+    ipcRenderer.send(OPEN_URL, 'https://github.com/PicGo/Awesome-PicGo')
   }
+
+  saveConfig (data: IObj) {
+    ipcRenderer.send('picgoSaveData', data)
+  }
+
   handleImportLocalPlugin () {
     ipcRenderer.send('importLocalPlugin')
     this.loading = true
   }
+
   beforeDestroy () {
     ipcRenderer.removeAllListeners('pluginList')
     ipcRenderer.removeAllListeners('installPlugin')

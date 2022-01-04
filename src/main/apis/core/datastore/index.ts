@@ -42,33 +42,42 @@ class ConfigStore {
       }).write()
     }
   }
+
   read () {
     return this.db.read()
   }
+
   get (key = '') {
     return this.read().get(key).value()
   }
+
   set (key: string, value: any) {
     return this.read().set(key, value).write()
   }
+
   has (key: string) {
     return this.read().has(key).value()
   }
+
   insert (key: string, value: any): void {
     // @ts-ignore
     return this.read().get(key).insert(value).write()
   }
+
   unset (key: string, value: any): boolean {
     return this.read().get(key).unset(value).value()
   }
+
   getById (key: string, id: string) {
     // @ts-ignore
     return this.read().get(key).getById(id).value()
   }
+
   removeById (key: string, id: string) {
     // @ts-ignore
     return this.read().get(key).removeById(id).write()
   }
+
   getConfigPath () {
     return CONFIG_PATH
   }
@@ -82,6 +91,7 @@ class GalleryDB {
   private constructor () {
     console.log('init gallery db')
   }
+
   public static getInstance (): DBStore {
     if (!GalleryDB.instance) {
       GalleryDB.instance = new DBStore(DB_PATH, 'gallery')

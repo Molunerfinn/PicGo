@@ -28,7 +28,8 @@ windowList.set(IWindowList.TRAY_WINDOW, {
       transparent: true,
       vibrancy: 'ultra-dark',
       webPreferences: {
-        nodeIntegration: true,
+        nodeIntegration: !!process.env.ELECTRON_NODE_INTEGRATION,
+        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
         nodeIntegrationInWorker: true,
         backgroundThrottling: false
       }
@@ -60,7 +61,8 @@ windowList.set(IWindowList.SETTING_WINDOW, {
       titleBarStyle: 'hidden',
       webPreferences: {
         backgroundThrottling: false,
-        nodeIntegration: true,
+        nodeIntegration: !!process.env.ELECTRON_NODE_INTEGRATION,
+        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
         nodeIntegrationInWorker: true,
         webSecurity: false
       }
@@ -93,7 +95,7 @@ windowList.set(IWindowList.MINI_WINDOW, {
   isValid: process.platform !== 'darwin',
   multiple: false,
   options () {
-    let obj: IBrowserWindowOptions = {
+    const obj: IBrowserWindowOptions = {
       height: 64,
       width: 64,
       show: process.platform === 'linux',
@@ -105,7 +107,8 @@ windowList.set(IWindowList.MINI_WINDOW, {
       icon: `${__static}/logo.png`,
       webPreferences: {
         backgroundThrottling: false,
-        nodeIntegration: true,
+        nodeIntegration: !!process.env.ELECTRON_NODE_INTEGRATION,
+        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
         nodeIntegrationInWorker: true
       }
     }
@@ -124,7 +127,7 @@ windowList.set(IWindowList.RENAME_WINDOW, {
   isValid: true,
   multiple: true,
   options () {
-    let options: IBrowserWindowOptions = {
+    const options: IBrowserWindowOptions = {
       height: 175,
       width: 300,
       show: true,
@@ -132,7 +135,8 @@ windowList.set(IWindowList.RENAME_WINDOW, {
       resizable: false,
       vibrancy: 'ultra-dark',
       webPreferences: {
-        nodeIntegration: true,
+        nodeIntegration: !!process.env.ELECTRON_NODE_INTEGRATION,
+        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
         nodeIntegrationInWorker: true,
         backgroundThrottling: false
       }

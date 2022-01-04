@@ -8,7 +8,7 @@ import path from 'path'
 import db, { GalleryDB } from 'apis/core/datastore'
 import { dbPathChecker, defaultConfigPath, getGalleryDBPath } from 'apis/core/datastore/dbChecker'
 import uploader from 'apis/app/uploader'
-import pasteTemplate from '#/utils/pasteTemplate'
+import pasteTemplate from '~/main/utils/pasteTemplate'
 import { handleCopyUrl } from '~/main/utils/common'
 import {
   getWindowId,
@@ -28,20 +28,22 @@ class GuiApi implements IGuiApi {
   private constructor () {
     console.log('init guiapi')
   }
+
   public static getInstance (): GuiApi {
     if (!GuiApi.instance) {
       GuiApi.instance = new GuiApi()
     }
     return GuiApi.instance
   }
+
   private async showSettingWindow () {
     this.settingWindowId = await getSettingWindowId()
     const settingWindow = BrowserWindow.fromId(this.settingWindowId)
-    if (settingWindow.isVisible()) {
+    if (settingWindow?.isVisible()) {
       return true
     }
-    settingWindow.show()
-    return new Promise<void>((resolve, reject) => {
+    settingWindow?.show()
+    return new Promise<void>((resolve) => {
       setTimeout(() => {
         resolve()
       }, 1000) // TODO: a better way to wait page loaded.
@@ -49,7 +51,7 @@ class GuiApi implements IGuiApi {
   }
 
   private getWebcontentsByWindowId (id: number) {
-    return BrowserWindow.fromId(id).webContents
+    return BrowserWindow.fromId(id)?.webContents
   }
 
   async showInputBox (options: IShowInputBoxOption = {
@@ -57,28 +59,24 @@ class GuiApi implements IGuiApi {
     placeholder: ''
   }) {
     await this.showSettingWindow()
-    this.getWebcontentsByWindowId(this.settingWindowId)
-      .send(SHOW_INPUT_BOX, options)
-    return new Promise<string>((resolve, reject) => {
+    this.getWebcontentsByWindowId(this.settingWindowId)?.send(SHOW_INPUT_BOX, options)
+    return new Promise<string>((resolve) => {
       ipcMain.once(SHOW_INPUT_BOX, (event: Event, value: string) => {
         resolve(value)
       })
     })
   }
 
-  showFileExplorer (options: IShowFileExplorerOption = {}) {
-    return new Promise<string>(async (resolve, reject) => {
-      this.windowId = await getWindowId()
-      dialog.showOpenDialog(BrowserWindow.fromId(this.windowId), options, (filename: string) => {
-        resolve(filename)
-      })
-    })
+  async showFileExplorer (options: IShowFileExplorerOption = {}) {
+    this.windowId = await getWindowId()
+    const res = await dialog.showOpenDialog(BrowserWindow.fromId(this.windowId)!, options)
+    return res.filePaths?.[0]
   }
 
   async upload (input: IUploadOption) {
     this.windowId = await getWindowId()
     const webContents = this.getWebcontentsByWindowId(this.windowId)
-    const imgs = await uploader.setWebContents(webContents).upload(input)
+    const imgs = await uploader.setWebContents(webContents!).upload(input)
     if (imgs !== false) {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       const pasteText: string[] = []
@@ -95,8 +93,8 @@ class GuiApi implements IGuiApi {
         await GalleryDB.getInstance().insert(imgs[i])
       }
       handleCopyUrl(pasteText.join('\n'))
-      webContents.send('uploadFiles', imgs)
-      webContents.send('updateGallery')
+      webContents?.send('uploadFiles', imgs)
+      webContents?.send('updateGallery')
       return imgs
     }
     return []
@@ -119,10 +117,10 @@ class GuiApi implements IGuiApi {
     type: 'info',
     buttons: ['Yes', 'No']
   }) {
-    return new Promise<IShowMessageBoxResult>(async (resolve, reject) => {
+    return new Promise<IShowMessageBoxResult>(async (resolve) => {
       this.windowId = await getWindowId()
       dialog.showMessageBox(
-        BrowserWindow.fromId(this.windowId),
+        BrowserWindow.fromId(this.windowId)!,
         options
       ).then((res) => {
         resolve({

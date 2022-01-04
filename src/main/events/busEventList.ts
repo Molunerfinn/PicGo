@@ -28,7 +28,7 @@ function initEventCenter () {
     [GET_SETTING_WINDOW_ID]: busCallGetSettingWindowId,
     [CREATE_APP_MENU]: createMenu
   }
-  for (let i in eventList) {
+  for (const i in eventList) {
     bus.on(i, eventList[i])
   }
 }

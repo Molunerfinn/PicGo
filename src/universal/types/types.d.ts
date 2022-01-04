@@ -15,7 +15,7 @@ declare interface ErrnoException extends Error {
   stack?: string;
 }
 
-declare var __static: string
+declare let __static: string
 
 declare type ILogType = 'success' | 'info' | 'warn' | 'error'
 
@@ -94,6 +94,7 @@ interface IBrowserWindowOptions {
   webPreferences: {
     nodeIntegration: boolean,
     nodeIntegrationInWorker: boolean,
+    contextIsolation: boolean,
     backgroundThrottling: boolean
     webSecurity?: boolean
   },

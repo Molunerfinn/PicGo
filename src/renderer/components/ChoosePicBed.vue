@@ -23,7 +23,8 @@ export default class extends Vue {
       this.value = true
     }
   }
-  choosePicBed (val: string) {
+
+  choosePicBed () {
     this.saveConfig({
       'picBed.current': this.type,
       'picBed.uploader': this.type

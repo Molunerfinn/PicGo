@@ -339,10 +339,9 @@
 import keyDetect from '@/utils/key-binding'
 import pkg from 'root/package.json'
 import { IConfig } from 'picgo/dist/src/types/index'
-import { PICGO_OPEN_FILE } from '#/events/constants'
+import { PICGO_OPEN_FILE, OPEN_URL } from '#/events/constants'
 import {
-  ipcRenderer,
-  remote
+  ipcRenderer
 } from 'electron'
 import { Component, Vue } from 'vue-property-decorator'
 // import db from '#/datastore'
@@ -373,6 +372,7 @@ export default class extends Vue {
     autoCopyUrl: true,
     checkBetaUpdate: true
   }
+
   picBed: IPicBedType[] = []
   logFileVisible = false
   keyBindingVisible = false
@@ -383,9 +383,11 @@ export default class extends Vue {
   customLink = {
     value: '$url'
   }
+
   shortKey: IShortKeyMap = {
     upload: ''
   }
+
   proxy = ''
   npmRegistry = ''
   npmProxy = ''
@@ -394,6 +396,7 @@ export default class extends Vue {
       { validator: customLinkRule, trigger: 'blur' }
     ]
   }
+
   logLevel = {
     all: '全部-All',
     success: '成功-Success',
@@ -402,11 +405,13 @@ export default class extends Vue {
     warn: '提醒-Warn',
     none: '不记录日志-None'
   }
+
   server = {
     port: 36677,
     host: '127.0.0.1',
     enable: true
   }
+
   version = pkg.version
   latestVersion = ''
   os = ''
@@ -418,12 +423,14 @@ export default class extends Vue {
       return false
     }
   }
+
   created () {
     this.os = process.platform
     ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
     this.initData()
   }
+
   async initData () {
     const config = (await this.getConfig<IConfig>())!
     if (config !== undefined) {
@@ -469,21 +476,27 @@ export default class extends Vue {
       if (item.visible) {
         return item.name
       }
-    }) as string[]
+      return null
+    }).filter(item => item) as string[]
   }
+
   openFile (file: string) {
     ipcRenderer.send(PICGO_OPEN_FILE, file)
   }
+
   openLogSetting () {
     this.logFileVisible = true
   }
+
   keyDetect (type: string, event: KeyboardEvent) {
     this.shortKey[type] = keyDetect(event).join('+')
   }
+
   async cancelCustomLink () {
     this.customLinkVisible = false
     this.customLink.value = await this.getConfig<string>('settings.customLink') || '$url'
   }
+
   confirmCustomLink () {
     // @ts-ignore
     this.$refs.customLink.validate((valid: boolean) => {
@@ -496,10 +509,12 @@ export default class extends Vue {
       }
     })
   }
+
   async cancelProxy () {
     this.proxyVisible = false
     this.proxy = await this.getConfig<string>('picBed.proxy') || ''
   }
+
   confirmProxy () {
     this.proxyVisible = false
     this.saveConfig({
@@ -514,12 +529,15 @@ export default class extends Vue {
       return true
     }
   }
+
   updateHelperChange (val: boolean) {
     this.saveConfig('settings.showUpdateTip', val)
   }
+
   checkBetaUpdateChange (val: boolean) {
     this.saveConfig('settings.checkBetaUpdate', val)
   }
+
   handleShowPicBedListChange (val: string[]) {
     const list = this.picBed.map(item => {
       if (!val.includes(item.name)) {
@@ -534,20 +552,24 @@ export default class extends Vue {
     })
     ipcRenderer.send('getPicBeds')
   }
+
   handleAutoStartChange (val: boolean) {
     this.saveConfig('settings.autoStart', val)
     ipcRenderer.send('autoStart', val)
   }
+
   handleRename (val: boolean) {
     this.saveConfig({
       'settings.rename': val
     })
   }
+
   handleAutoRename (val: boolean) {
     this.saveConfig({
       'settings.autoRename': val
     })
   }
+
   compareVersion2Update (current: string, latest: string) {
     const currentVersion = current.split('.').map(item => parseInt(item))
     const latestVersion = latest.split('.').map(item => parseInt(item))
@@ -562,6 +584,7 @@ export default class extends Vue {
     }
     return false
   }
+
   checkUpdate () {
     this.checkUpdateVisible = true
     this.$http.get(releaseUrl)
@@ -576,24 +599,29 @@ export default class extends Vue {
           })
       })
   }
+
   confirmCheckVersion () {
     if (this.needUpdate) {
-      remote.shell.openExternal(downloadUrl)
+      ipcRenderer.send(OPEN_URL, downloadUrl)
     }
     this.checkUpdateVisible = false
   }
+
   cancelCheckVersion () {
     this.checkUpdateVisible = false
   }
+
   handleUploadNotification (val: boolean) {
     this.saveConfig({
       'settings.uploadNotification': val
     })
   }
+
   handleMiniWindowOntop (val: boolean) {
     this.saveConfig('settings.miniWindowOntop', val)
     this.$message.info('需要重启生效')
   }
+
   handleAutoCopyUrl (val: boolean) {
     this.saveConfig('settings.autoCopy', val)
     const successNotification = new Notification('设置自动复制链接', {
@@ -603,6 +631,7 @@ export default class extends Vue {
       return true
     }
   }
+
   confirmLogLevelSetting () {
     if (this.form.logLevel.length === 0) {
       return this.$message.error('请选择日志记录等级')
@@ -618,6 +647,7 @@ export default class extends Vue {
     }
     this.logFileVisible = false
   }
+
   async cancelLogLevelSetting () {
     this.logFileVisible = false
     let logLevel = await this.getConfig<string | string[]>('settings.logLevel')
@@ -630,6 +660,7 @@ export default class extends Vue {
     }
     this.form.logLevel = logLevel
   }
+
   confirmServerSetting () {
     // @ts-ignore
     this.server.port = parseInt(this.server.port, 10)
@@ -645,6 +676,7 @@ export default class extends Vue {
     this.serverVisible = false
     ipcRenderer.send('updateServer')
   }
+
   async cancelServerSetting () {
     this.serverVisible = false
     this.server = await this.getConfig('settings.server') || {
@@ -653,10 +685,11 @@ export default class extends Vue {
       enable: true
     }
   }
+
   handleLevelDisabled (val: string) {
-    let currentLevel = val
+    const currentLevel = val
     let flagLevel
-    let result = this.form.logLevel.some(item => {
+    const result = this.form.logLevel.some(item => {
       if (item === 'all' || item === 'none') {
         flagLevel = item
       }
@@ -673,12 +706,15 @@ export default class extends Vue {
     }
     return false
   }
+
   goConfigPage () {
-    remote.shell.openExternal('https://picgo.github.io/PicGo-Doc/zh/guide/config.html#picgo设置')
+    ipcRenderer.send(OPEN_URL, 'https://picgo.github.io/PicGo-Doc/zh/guide/config.html#picgo设置')
   }
+
   goShortCutPage () {
     this.$router.push('shortKey')
   }
+
   beforeDestroy () {
     ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
   }

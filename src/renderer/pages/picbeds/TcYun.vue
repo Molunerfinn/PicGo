@@ -86,9 +86,10 @@
   </div>
 </template>
 <script lang="ts">
+import { ipcRenderer } from 'electron'
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
-import { remote } from 'electron'
+import { OPEN_URL } from '#/events/constants'
 @Component({
   name: 'tcyun',
   mixins: [mixin]
@@ -104,12 +105,14 @@ export default class extends Vue {
     customUrl: '',
     version: 'v4'
   }
+
   async created () {
     const config = await this.getConfig<ITcYunConfig>('picBed.tcyun')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
+
   confirm () {
     // @ts-ignore
     this.$refs.tcyun.validate((valid) => {
@@ -128,8 +131,9 @@ export default class extends Vue {
       }
     })
   }
+
   openWiki () {
-    remote.shell.openExternal('https://github.com/Molunerfinn/PicGo/wiki/%E8%AF%A6%E7%BB%86%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BD%BF%E7%94%A8#腾讯云cos')
+    ipcRenderer.send(OPEN_URL, 'https://picgo.github.io/PicGo-Doc/zh/guide/config.html#%E8%85%BE%E8%AE%AF%E4%BA%91cos')
   }
 }
 </script>

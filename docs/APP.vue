@@ -22,7 +22,7 @@
           .col-xs-10.col-xs-offset-1.col-md-7.col-md-offset-0
             img(:src="item.url")
           .col-xs-10.col-xs-offset-1.col-md-5.col-md-offset-0.display-list__content
-            .display-list__title {{ item.title }} 
+            .display-list__title {{ item.title }}
             .display-list__desc {{ item.desc }}
       .row.ex-width.info
         .col-xs-10.col-xs-offset-1
@@ -94,7 +94,7 @@ html,
 h1
   margin 0
   padding 0
-  font-family "Source Sans Pro","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif  
+  font-family "Source Sans Pro","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif
 #app
   position relative
 .mask

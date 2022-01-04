@@ -88,12 +88,14 @@ export default class extends Vue {
     options: '',
     path: ''
   }
+
   async created () {
     const config = await this.getConfig<IQiniuConfig>('picBed.qiniu')
     if (config) {
       this.form = Object.assign({}, config)
     }
   }
+
   confirm () {
     // @ts-ignore
     this.$refs.qiniu.validate((valid) => {

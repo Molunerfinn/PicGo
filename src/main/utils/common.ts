@@ -34,7 +34,7 @@ export const showNotification = (options: IPrivateShowNotificationOption = {
 }
 
 export const showMessageBox = (options: any) => {
-  return new Promise<IShowMessageBoxResult>(async (resolve, reject) => {
+  return new Promise<IShowMessageBoxResult>(async (resolve) => {
     dialog.showMessageBox(
       options
     ).then((res) => {

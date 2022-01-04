@@ -29,6 +29,7 @@ class Server {
     }
     this.httpServer = http.createServer(this.handleRequest)
   }
+
   private checkIfConfigIsValid (config: IObj | undefined) {
     if (config && config.port && config.host && (config.enable !== undefined)) {
       return true
@@ -36,6 +37,7 @@ class Server {
       return false
     }
   }
+
   private handleRequest = (request: http.IncomingMessage, response: http.ServerResponse) => {
     if (request.method === 'POST') {
       if (!routers.getHandler(request.url!)) {
@@ -57,8 +59,8 @@ class Server {
         request.on('end', () => {
           try {
             postObj = (body === '') ? {} : JSON.parse(body)
-          } catch (err) {
-            logger.error(`[PicGo Server]`, err)
+          } catch (err: any) {
+            logger.error('[PicGo Server]', err)
             return handleResponse({
               response,
               body: {
@@ -67,7 +69,7 @@ class Server {
               }
             })
           }
-          logger.info(`[PicGo Server] get the request`, body)
+          logger.info('[PicGo Server] get the request', body)
           const handler = routers.getHandler(request.url!)
           handler!({
             ...postObj,
@@ -81,6 +83,7 @@ class Server {
       response.end()
     }
   }
+
   // port as string is a bug
   private listen = (port: number | string) => {
     logger.info(`[PicGo Server] is listening at ${port}`)
@@ -102,18 +105,21 @@ class Server {
       }
     })
   }
+
   startup () {
     console.log('startup', this.config.enable)
     if (this.config.enable) {
       this.listen(this.config.port)
     }
   }
+
   shutdown (hasStarted?: boolean) {
     this.httpServer.close()
     if (!hasStarted) {
       logger.info('[PicGo Server] shutdown')
     }
   }
+
   restart () {
     this.config = picgo.getConfig('settings.server')
     this.shutdown()

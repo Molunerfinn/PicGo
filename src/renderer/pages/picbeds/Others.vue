@@ -52,6 +52,7 @@ export default class extends Vue {
     ipcRenderer.send('getPicBedConfig', this.$route.params.type)
     ipcRenderer.on('getPicBedConfig', this.getPicBeds)
   }
+
   async handleConfirm () {
     // @ts-ignore
     const result = await this.$refs.configForm.validate()
@@ -67,6 +68,7 @@ export default class extends Vue {
       }
     }
   }
+
   setDefaultPicBed (type: string) {
     this.saveConfig({
       'picBed.current': type,
@@ -81,10 +83,12 @@ export default class extends Vue {
       return true
     }
   }
+
   getPicBeds (event: IpcRendererEvent, config: any[], name: string) {
     this.config = config
     this.picBedName = name
   }
+
   beforeDestroy () {
     ipcRenderer.removeListener('getPicBedConfig', this.getPicBeds)
   }

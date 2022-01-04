@@ -5,13 +5,13 @@ import {
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import uploader from '.'
-import pasteTemplate from '#/utils/pasteTemplate'
+import pasteTemplate from '~/main/utils/pasteTemplate'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
 import { handleCopyUrl } from '~/main/utils/common'
 import { handleUrlEncode } from '#/utils/common'
 export const uploadClipboardFiles = async (): Promise<string> => {
   const win = windowManager.getAvailableWindow()
-  let img = await uploader.setWebContents(win!.webContents).upload()
+  const img = await uploader.setWebContents(win!.webContents).upload()
   if (img !== false) {
     if (img.length > 0) {
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)

@@ -60,17 +60,16 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import {
   ipcRenderer,
-  IpcRendererEvent,
-  remote
+  IpcRendererEvent
 } from 'electron'
 import {
   SHOW_INPUT_BOX,
-  SHOW_INPUT_BOX_RESPONSE
+  SHOW_INPUT_BOX_RESPONSE,
+  SHOW_UPLOAD_PAGE_MENU
 } from '~/universal/events/constants'
 import {
   isUrl
 } from '~/universal/utils/common'
-const { Menu } = remote
 @Component({
   name: 'upload'
 })
@@ -82,7 +81,6 @@ export default class extends Vue {
   pasteStyle = ''
   picBed: IPicBedType[] = []
   picBedName = ''
-  menu: Electron.Menu | null= null
   mounted () {
     ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, progress: number) => {
       if (progress !== -1) {
@@ -102,6 +100,7 @@ export default class extends Vue {
     ipcRenderer.on('getPicBeds', this.getPicBeds)
     this.$bus.$on(SHOW_INPUT_BOX_RESPONSE, this.handleInputBoxValue)
   }
+
   @Watch('progress')
   onProgressChange (val: number) {
     if (val === 100) {
@@ -114,12 +113,14 @@ export default class extends Vue {
       }, 1200)
     }
   }
+
   beforeDestroy () {
     this.$bus.$off(SHOW_INPUT_BOX_RESPONSE)
     ipcRenderer.removeAllListeners('uploadProgress')
     ipcRenderer.removeAllListeners('syncPicBed')
     ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
   }
+
   onDrop (e: DragEvent) {
     this.dragover = false
     const items = e.dataTransfer!.items
@@ -136,6 +137,7 @@ export default class extends Vue {
       this.ipcSendFiles(e.dataTransfer!.files)
     }
   }
+
   handleURLDrag (items: DataTransferItemList, dataTransfer: DataTransfer) {
     // text/html
     // Use this data to get a more precise URL
@@ -151,17 +153,20 @@ export default class extends Vue {
       this.$message.error('请拖入合法的图片文件或者图片URL地址')
     }
   }
+
   openUplodWindow () {
     document.getElementById('file-uploader')!.click()
   }
+
   onChange (e: any) {
     this.ipcSendFiles(e.target.files);
     (document.getElementById('file-uploader') as HTMLInputElement).value = ''
   }
+
   ipcSendFiles (files: FileList) {
-    let sendFiles: IFileWithPath[] = []
-    Array.from(files).forEach((item, index) => {
-      let obj = {
+    const sendFiles: IFileWithPath[] = []
+    Array.from(files).forEach((item) => {
+      const obj = {
         name: item.name,
         path: item.path
       }
@@ -169,17 +174,21 @@ export default class extends Vue {
     })
     ipcRenderer.send('uploadChoosedFiles', sendFiles)
   }
+
   async getPasteStyle () {
     this.pasteStyle = await this.getConfig('settings.pasteStyle') || 'markdown'
   }
+
   handlePasteStyleChange (val: string) {
     this.saveConfig({
       'settings.pasteStyle': val
     })
   }
+
   uploadClipboardFiles () {
     ipcRenderer.send('uploadClipboardFilesFromUploadPage')
   }
+
   async uploadURLFiles () {
     const str = await navigator.clipboard.readText()
     this.$bus.$emit(SHOW_INPUT_BOX, {
@@ -188,6 +197,7 @@ export default class extends Vue {
       placeholder: 'http://或者https://开头'
     })
   }
+
   handleInputBoxValue (val: string) {
     if (val === '') return false
     if (isUrl(val)) {
@@ -198,6 +208,7 @@ export default class extends Vue {
       this.$message.error('请输入合法的URL')
     }
   }
+
   async getDefaultPicBed () {
     const currentPicBed = await this.getConfig<string>('picBed.current')
     this.picBed.forEach(item => {
@@ -206,34 +217,14 @@ export default class extends Vue {
       }
     })
   }
+
   getPicBeds (event: Event, picBeds: IPicBedType[]) {
     this.picBed = picBeds
     this.getDefaultPicBed()
   }
+
   async handleChangePicBed () {
-    await this.buildMenu()
-    // this.menu.popup(remote.getCurrentWindow())
-    this.menu!.popup()
-  }
-  async buildMenu () {
-    const _this = this
-    const currentPicBed = await this.getConfig<string>('picBed.current')
-    const submenu = this.picBed.filter(item => item.visible).map(item => {
-      return {
-        label: item.name,
-        type: 'radio',
-        checked: currentPicBed === item.type,
-        click () {
-          _this.saveConfig({
-            'picBed.current': item.type,
-            'picBed.uploader': item.type
-          })
-          ipcRenderer.send('syncPicBed')
-        }
-      }
-    })
-    // @ts-ignore
-    this.menu = Menu.buildFromTemplate(submenu)
+    ipcRenderer.send(SHOW_UPLOAD_PAGE_MENU)
   }
 }
 </script>

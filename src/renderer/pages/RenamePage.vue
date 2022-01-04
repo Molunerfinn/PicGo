@@ -41,12 +41,15 @@ export default class extends Vue {
       this.id = id
     })
   }
+
   confirmName () {
     ipcRenderer.send(`rename${this.id}`, this.fileName)
   }
+
   cancel () {
     ipcRenderer.send(`rename${this.id}`, null)
   }
+
   beforeDestroy () {
     ipcRenderer.removeAllListeners('rename')
   }

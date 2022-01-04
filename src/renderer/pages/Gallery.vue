@@ -110,10 +110,9 @@
 <script lang="ts">
 // @ts-ignore
 import gallerys from 'vue-gallery'
-import pasteStyle from '#/utils/pasteTemplate'
-import { IPasteStyle } from '#/types/enum'
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { IResult } from '@picgo/store/dist/types'
+import { PASTE_TEXT } from '#/events/constants'
 import {
   ipcRenderer,
   clipboard,
@@ -133,11 +132,13 @@ export default class extends Vue {
     urlProperty: 'imgUrl',
     closeOnSlideClick: true
   }
+
   dialogVisible = false
   imgInfo = {
     id: '',
     imgUrl: ''
   }
+
   choosedList: IObjT<boolean> = {}
   choosedPicBed: string[] = []
   lastChoosed: number = -1
@@ -152,6 +153,7 @@ export default class extends Vue {
     UBB: 'UBB',
     Custom: 'Custom'
   }
+
   picBed: IPicBedType[] = []
   @Watch('$route')
   handleRouteUpdate (to: any, from: any) {
@@ -163,8 +165,9 @@ export default class extends Vue {
       this.updateGallery()
     }
   }
+
   async created () {
-    ipcRenderer.on('updateGallery', (event: IpcRendererEvent) => {
+    ipcRenderer.on('updateGallery', () => {
       this.$nextTick(async () => {
         this.updateGallery()
       })
@@ -173,10 +176,12 @@ export default class extends Vue {
     ipcRenderer.on('getPicBeds', this.getPicBeds)
     this.updateGallery()
   }
+
   mounted () {
     document.addEventListener('keydown', this.handleDetectShiftKey)
     document.addEventListener('keyup', this.handleDetectShiftKey)
   }
+
   handleDetectShiftKey (event: KeyboardEvent) {
     if (event.key === 'Shift') {
       if (event.type === 'keydown') {
@@ -186,9 +191,11 @@ export default class extends Vue {
       }
     }
   }
+
   get filterList () {
     return this.getGallery()
   }
+
   get isAllSelected () {
     const values = Object.values(this.choosedList)
     if (values.length === 0) {
@@ -199,9 +206,11 @@ export default class extends Vue {
       })
     }
   }
+
   getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
     this.picBed = picBeds
   }
+
   getGallery (): ImgInfo[] {
     if (this.searchText || this.choosedPicBed.length > 0) {
       return this.images
@@ -220,6 +229,7 @@ export default class extends Vue {
       return this.images
     }
   }
+
   async updateGallery () {
     this.images = (await this.$$db.get({ orderBy: 'desc' })).data
   }
@@ -228,12 +238,13 @@ export default class extends Vue {
   handleFilterListChange () {
     this.clearChoosedList()
   }
+
   handleChooseImage (val: boolean, index: number) {
     if (val === true) {
       this.handleBarActive = true
       if (this.lastChoosed !== -1 && this.isShiftKeyPress) {
-        let min = Math.min(this.lastChoosed, index)
-        let max = Math.max(this.lastChoosed, index)
+        const min = Math.min(this.lastChoosed, index)
+        const max = Math.max(this.lastChoosed, index)
         for (let i = min + 1; i < max; i++) {
           const id = this.filterList[i].id!
           this.$set(this.choosedList, id, true)
@@ -242,6 +253,7 @@ export default class extends Vue {
       this.lastChoosed = index
     }
   }
+
   clearChoosedList () {
     this.isShiftKeyPress = false
     Object.keys(this.choosedList).forEach(key => {
@@ -249,10 +261,12 @@ export default class extends Vue {
     })
     this.lastChoosed = -1
   }
+
   zoomImage (index: number) {
     this.idx = index
     this.changeZIndexForGallery(true)
   }
+
   changeZIndexForGallery (isOpen: boolean) {
     if (isOpen) {
       // @ts-ignore
@@ -262,25 +276,25 @@ export default class extends Vue {
       document.querySelector('.main-content.el-row').style.zIndex = 10
     }
   }
+
   handleClose () {
     this.idx = null
     this.changeZIndexForGallery(false)
   }
+
   async copy (item: ImgInfo) {
-    const style = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
-    const customLink = await this.getConfig<string>('settings.customLink')
-    const copyLink = pasteStyle(style, item, customLink)
+    const copyLink = await ipcRenderer.invoke(PASTE_TEXT, item)
     const obj = {
       title: '复制链接成功',
       body: copyLink,
       icon: item.url || item.imgUrl
     }
     const myNotification = new Notification(obj.title, obj)
-    clipboard.writeText(copyLink)
     myNotification.onclick = () => {
       return true
     }
   }
+
   remove (id: string) {
     this.$confirm('此操作将把该图片移出相册, 是否继续?', '提示', {
       confirmButtonText: '确定',
@@ -304,11 +318,13 @@ export default class extends Vue {
       return true
     })
   }
+
   openDialog (item: ImgInfo) {
     this.imgInfo.id = item.id!
     this.imgInfo.imgUrl = item.imgUrl as string
     this.dialogVisible = true
   }
+
   async confirmModify () {
     await this.$$db.updateById(this.imgInfo.id, {
       imgUrl: this.imgInfo.imgUrl
@@ -325,26 +341,31 @@ export default class extends Vue {
     this.dialogVisible = false
     this.updateGallery()
   }
+
   choosePicBed (type: string) {
-    let idx = this.choosedPicBed.indexOf(type)
+    const idx = this.choosedPicBed.indexOf(type)
     if (idx !== -1) {
       this.choosedPicBed.splice(idx, 1)
     } else {
       this.choosedPicBed.push(type)
     }
   }
+
   cleanSearch () {
     this.searchText = ''
   }
+
   isMultiple (obj: IObj) {
     return Object.values(obj).some(item => item)
   }
+
   toggleSelectAll () {
     const result = !this.isAllSelected
     this.filterList.forEach(item => {
       this.$set(this.choosedList, item.id!, result)
     })
   }
+
   multiRemove () {
     // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
     const multiRemoveNumber = Object.values(this.choosedList).filter(item => item).length
@@ -354,7 +375,7 @@ export default class extends Vue {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        let files: IResult<ImgInfo>[] = []
+        const files: IResult<ImgInfo>[] = []
         const imageIDList = Object.keys(this.choosedList)
         for (let i = 0; i < imageIDList.length; i++) {
           const key = imageIDList[i]
@@ -383,11 +404,10 @@ export default class extends Vue {
       })
     }
   }
+
   async multiCopy () {
     if (Object.values(this.choosedList).some(item => item)) {
       const copyString: string[] = []
-      const style = await this.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
-      const customLink = await this.getConfig<string>('settings.customLink')
       // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
       const imageIDList = Object.keys(this.choosedList)
       for (let i = 0; i < imageIDList.length; i++) {
@@ -395,7 +415,8 @@ export default class extends Vue {
         if (this.choosedList[key]) {
           const item = await this.$$db.getById<ImgInfo>(key)
           if (item) {
-            copyString.push(pasteStyle(style, item, customLink))
+            const txt = await ipcRenderer.invoke(PASTE_TEXT, item)
+            copyString.push(txt)
             this.choosedList[key] = false
           }
         }
@@ -411,9 +432,11 @@ export default class extends Vue {
       }
     }
   }
+
   toggleHandleBar () {
     this.handleBarActive = !this.handleBarActive
   }
+
   // getPasteStyle () {
   //   this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
   // }
@@ -421,6 +444,7 @@ export default class extends Vue {
     this.saveConfig('settings.pasteStyle', val)
     this.pasteStyle = val
   }
+
   beforeDestroy () {
     ipcRenderer.removeAllListeners('updateGallery')
     ipcRenderer.removeListener('getPicBeds', this.getPicBeds)

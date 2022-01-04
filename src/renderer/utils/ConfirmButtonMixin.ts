@@ -1,5 +1,4 @@
 import { Component, Vue } from 'vue-property-decorator'
-import { ipcRenderer } from 'electron'
 import { IConfig } from 'picgo/dist/src/types'
 @Component
 export default class extends Vue {
@@ -10,6 +9,7 @@ export default class extends Vue {
       this.defaultPicBed = config?.picBed?.uploader || config?.picBed?.current || 'smms'
     }
   }
+
   setDefaultPicBed (type: string) {
     this.saveConfig({
       'picBed.current': type,

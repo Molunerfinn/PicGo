@@ -118,35 +118,43 @@ export default class extends Vue {
       }
     })
   }
+
   @Watch('keyBindingVisible')
   onKeyBindingVisibleChange (val: boolean) {
     ipcRenderer.send(TOGGLE_SHORTKEY_MODIFIED_MODE, val)
   }
+
   calcOrigin (item: string) {
     const [origin] = item.split(':')
     return origin
   }
+
   calcOriginShowName (item: string) {
     return item.replace('picgo-plugin-', '')
   }
+
   toggleEnable (item: IShortKeyConfig) {
     const status = !item.enable
     item.enable = status
     ipcRenderer.send('bindOrUnbindShortKey', item, item.from)
   }
+
   keyDetect (event: KeyboardEvent) {
     this.shortKey = keyDetect(event).join('+')
   }
+
   async openKeyBindingDialog (config: IShortKeyConfig, index: number) {
     this.command = `${config.from}:${config.name}`
     this.shortKey = await this.getConfig(`settings.shortKey.${this.command}.key`) || ''
     this.currentIndex = index
     this.keyBindingVisible = true
   }
+
   async cancelKeyBinding () {
     this.keyBindingVisible = false
     this.shortKey = await this.getConfig<string>(`settings.shortKey.${this.command}.key`) || ''
   }
+
   async confirmKeyBinding () {
     const oldKey = await this.getConfig<string>(`settings.shortKey.${this.command}.key`)
     const config = Object.assign({}, this.list[this.currentIndex])
@@ -159,6 +167,7 @@ export default class extends Vue {
       }
     })
   }
+
   beforeDestroy () {
     ipcRenderer.send(TOGGLE_SHORTKEY_MODIFIED_MODE, false)
   }

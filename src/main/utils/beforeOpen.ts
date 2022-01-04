@@ -33,7 +33,7 @@ function resolveMacWorkFlow () {
  * 初始化剪贴板生成图片的脚本
  */
 function resolveClipboardImageGenerator () {
-  let clipboardFiles = getClipboardFiles()
+  const clipboardFiles = getClipboardFiles()
   if (!fs.pathExistsSync(path.join(CONFIG_DIR, 'windows10.ps1'))) {
     clipboardFiles.forEach(item => {
       fs.copyFileSync(item.origin, item.dest)
@@ -46,8 +46,8 @@ function resolveClipboardImageGenerator () {
 
   function diffFilesAndUpdate (filePath1: string, filePath2: string) {
     try {
-      let file1 = fs.existsSync(filePath1) && fs.readFileSync(filePath1)
-      let file2 = fs.existsSync(filePath1) && fs.readFileSync(filePath2)
+      const file1 = fs.existsSync(filePath1) && fs.readFileSync(filePath1)
+      const file2 = fs.existsSync(filePath1) && fs.readFileSync(filePath2)
 
       if (!file1 || !file2 || !file1.equals(file2)) {
         fs.copyFileSync(filePath1, filePath2)
@@ -59,7 +59,7 @@ function resolveClipboardImageGenerator () {
   }
 
   function getClipboardFiles () {
-    let files = [
+    const files = [
       '/linux.sh',
       '/mac.applescript',
       '/windows.ps1',

@@ -1,9 +1,8 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { remote, app } from 'electron'
-import dayjs from 'dayjs'
+import { app as APP } from 'electron'
 import { getLogger } from '@core/utils/localLogger'
-const APP = process.type === 'renderer' ? remote.app : app
+import dayjs from 'dayjs'
 const STORE_PATH = APP.getPath('userData')
 const configFilePath = path.join(STORE_PATH, 'data.json')
 const configFileBackupPath = path.join(STORE_PATH, 'data.bak.json')
@@ -36,7 +35,7 @@ function dbChecker () {
       return
     }
     let configFile: string = '{}'
-    let optionsTpl = {
+    const optionsTpl = {
       title: '注意',
       body: ''
     }
@@ -98,7 +97,7 @@ function dbPathChecker (): string {
     const picgoLogPath = path.join(defaultConfigPath, 'picgo.log')
     const logger = getLogger(picgoLogPath)
     if (!hasCheckPath) {
-      let optionsTpl = {
+      const optionsTpl = {
         title: '注意',
         body: '自定义文件解析出错，请检查路径内容是否正确'
       }

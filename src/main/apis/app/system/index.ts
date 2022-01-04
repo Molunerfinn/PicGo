@@ -13,7 +13,7 @@ import db, { GalleryDB } from '~/main/apis/core/datastore'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from 'apis/app/window/constants'
 import picgo from '@core/picgo'
-import pasteTemplate from '#/utils/pasteTemplate'
+import pasteTemplate from '~/main/utils/pasteTemplate'
 import pkg from 'root/package.json'
 import { handleCopyUrl } from '~/main/utils/common'
 import { privacyManager } from '~/main/utils/privacyManager'
@@ -162,8 +162,8 @@ export function createTray () {
       if (process.platform === 'darwin') {
         toggleWindow(bounds)
         setTimeout(() => {
-          let img = clipboard.readImage()
-          let obj: ImgInfo[] = []
+          const img = clipboard.readImage()
+          const obj: ImgInfo[] = []
           if (!img.isEmpty()) {
             // 从剪贴板来的图片默认转为png
             // @ts-ignore

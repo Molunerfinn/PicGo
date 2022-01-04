@@ -16,7 +16,7 @@ import { TALKING_DATA_EVENT } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
 
 const waitForShow = (webcontent: WebContents) => {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void>((resolve) => {
     webcontent.on('did-finish-load', () => {
       resolve()
     })
@@ -24,7 +24,7 @@ const waitForShow = (webcontent: WebContents) => {
 }
 
 const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const windowId = window.id
     ipcMain.once(`rename${id}`, (evt: Event, newName: string) => {
       resolve(newName)
@@ -68,7 +68,7 @@ class Uploader {
     picgo.on('uploadProgress', progress => {
       this.webContents?.send('uploadProgress', progress)
     })
-    picgo.on('beforeTransform', ctx => {
+    picgo.on('beforeTransform', () => {
       if (db.get('settings.uploadNotification')) {
         const notification = new Notification({
           title: '上传进度',
@@ -125,7 +125,7 @@ class Uploader {
       } else {
         return false
       }
-    } catch (e) {
+    } catch (e: any) {
       logger.error(e)
       setTimeout(() => {
         showNotification({

@@ -69,7 +69,7 @@ router.post('/upload', async ({
         })
       }
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(err)
     handleResponse({
       response,

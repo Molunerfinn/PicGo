@@ -23,6 +23,7 @@ const config = {
   },
   pluginOptions: {
     electronBuilder: {
+      nodeIntegration: true, // will remove in the future
       customFileProtocol: 'picgo://./',
       externals: ['picgo'],
       chainWebpackMainProcess: config => {

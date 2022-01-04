@@ -6,7 +6,7 @@ The lowest level APIs that are not dependent on each other. The upper APIs depen
 
 ## app
 
-Provide key API interfaces for PicGo application, including uploader, window management, shortcut key system, etc
+Provide key API interfaces for PicGo application, including uploader, window management, shortcut key system, remotes handler, etc
 
 ## gui
 

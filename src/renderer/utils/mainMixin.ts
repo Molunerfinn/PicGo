@@ -13,6 +13,7 @@ export default class extends Vue {
     }
     ipcRenderer.send(PICGO_SAVE_CONFIG, config)
   }
+
   getConfig<T> (key?: string): Promise<T | undefined> {
     return new Promise((resolve) => {
       const callbackId = uuid()
