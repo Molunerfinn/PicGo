@@ -26,7 +26,6 @@ install:
 
 build_script:
   #- yarn test
-  - yarn build --win --ia32
   - yarn release
 
 test: false

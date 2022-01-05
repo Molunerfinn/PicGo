@@ -3,9 +3,6 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
-const arch = process.argv.includes('--ia32') ? 'ia32' : 'x64'
-const macArch = process.argv.includes('--arm64') ? 'arm64' : 'x64'
-
 const config = {
   configureWebpack: {
     devtool: 'nosources-source-map'
@@ -69,18 +66,23 @@ const config = {
           },
           target: [{
             target: 'dmg',
-            arch: macArch
+            arch: [
+              'x64',
+              'arm64'
+            ]
           }],
-          artifactName: `PicGo-\${version}-${macArch}.dmg`
+          // eslint-disable-next-line no-template-curly-in-string
+          artifactName: 'PicGo-${version}-${arch}.dmg'
         },
         win: {
           icon: 'build/icons/icon.ico',
           // eslint-disable-next-line no-template-curly-in-string
-          artifactName: `PicGo Setup \${version}-${arch}.exe`,
+          artifactName: 'PicGo Setup ${version}-${arch}.exe',
           target: [{
             target: 'nsis',
             arch: [
-              arch
+              'x64',
+              'ia32'
             ]
           }]
         },
