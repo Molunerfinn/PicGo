@@ -333,3 +333,5 @@ interface IMiniWindowPos {
   height: number,
   width: number
 }
+
+type PromiseResType<T> = T extends Promise<infer R> ? R : T

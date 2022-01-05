@@ -4,6 +4,7 @@ function resolve (dir) {
 }
 
 const arch = process.argv.includes('--ia32') ? 'ia32' : 'x64'
+const macArch = process.argv.includes('--arm64') ? 'arm64' : 'x64'
 
 const config = {
   configureWebpack: {
@@ -65,7 +66,12 @@ const config = {
           icon: 'build/icons/icon.icns',
           extendInfo: {
             LSUIElement: 1
-          }
+          },
+          target: [{
+            target: 'dmg',
+            arch: macArch
+          }],
+          artifactName: `PicGo-\${version}-${macArch}.dmg`
         },
         win: {
           icon: 'build/icons/icon.ico',

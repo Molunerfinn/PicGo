@@ -4,7 +4,6 @@ import {
   Notification,
   ipcMain
 } from 'electron'
-import path from 'path'
 import db, { GalleryDB } from 'apis/core/datastore'
 import { dbPathChecker, defaultConfigPath, getGalleryDBPath } from 'apis/core/datastore/dbChecker'
 import uploader from 'apis/app/uploader'
@@ -18,7 +17,6 @@ import {
   SHOW_INPUT_BOX
 } from '~/universal/events/constants'
 import { DBStore } from '@picgo/store'
-type PromiseResType<T> = T extends Promise<infer R> ? R : T
 
 // Cross-process support may be required in the future
 class GuiApi implements IGuiApi {

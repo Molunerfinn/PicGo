@@ -29,4 +29,4 @@ build_script:
   - yarn build --win --ia32
   - yarn release
 
-test: off
+test: false
