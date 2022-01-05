@@ -1,3 +1,18 @@
+## :tada: 2.3.1-beta.0 (2022-01-05)
+
+
+### :bug: Bug Fixes
+
+* mini window drag bug ([34b3656](https://github.com/Molunerfinn/PicGo/commit/34b3656))
+
+
+### :package: Chore
+
+* add mac-arm64 build support ([f2a4197](https://github.com/Molunerfinn/PicGo/commit/f2a4197))
+* update electron from v6 -> v16 ([ea20d3b](https://github.com/Molunerfinn/PicGo/commit/ea20d3b))
+
+
+
 # :tada: 2.3.0 (2021-09-11)
 
 
