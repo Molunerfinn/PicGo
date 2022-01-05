@@ -1,3 +1,12 @@
+## :tada: 2.3.1-beta.1 (2022-01-05)
+
+
+### :package: Chore
+
+* update ci build scripts ([56e814a](https://github.com/Molunerfinn/PicGo/commit/56e814a))
+
+
+
 ## :tada: 2.3.1-beta.0 (2022-01-05)
 
 
