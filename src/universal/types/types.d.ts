@@ -326,3 +326,10 @@ interface IStringKeyMap {
 type ILogArgvType = string | number
 
 type ILogArgvTypeWithError = ILogArgvType | Error
+
+interface IMiniWindowPos {
+  x: number,
+  y: number,
+  height: number,
+  width: number
+}

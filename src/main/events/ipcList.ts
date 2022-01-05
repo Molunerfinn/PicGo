@@ -26,7 +26,8 @@ import {
   OPEN_USER_STORE_FILE,
   OPEN_URL,
   RELOAD_APP,
-  SHOW_PLUGIN_PAGE_MENU
+  SHOW_PLUGIN_PAGE_MENU,
+  SET_MINI_WINDOW_POS
 } from '#/events/constants'
 import {
   uploadClipboardFiles,
@@ -211,6 +212,10 @@ export default {
     ipcMain.on(RELOAD_APP, () => {
       app.relaunch()
       app.exit(0)
+    })
+    ipcMain.on(SET_MINI_WINDOW_POS, (evt: IpcMainEvent, pos: IMiniWindowPos) => {
+      const window = BrowserWindow.getFocusedWindow()
+      window?.setBounds(pos)
     })
   },
   dispose () {}

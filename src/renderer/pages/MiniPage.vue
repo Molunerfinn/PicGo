@@ -22,7 +22,7 @@ import {
   ipcRenderer,
   IpcRendererEvent
 } from 'electron'
-import { SHOW_MINI_PAGE_MENU } from '~/universal/events/constants'
+import { SHOW_MINI_PAGE_MENU, SET_MINI_WINDOW_POS } from '~/universal/events/constants'
 @Component({
   name: 'mini-page',
   mixins: [mixin]
@@ -118,9 +118,14 @@ export default class extends Vue {
     e.preventDefault()
     e.stopPropagation()
     if (this.dragging) {
-      // const xLoc = e.screenX - this.wX
-      // const yLoc = e.screenY - this.wY
-      // FIXME: drag
+      const xLoc = e.screenX - this.wX
+      const yLoc = e.screenY - this.wY
+      ipcRenderer.send(SET_MINI_WINDOW_POS, {
+        x: xLoc,
+        y: yLoc,
+        width: 64,
+        height: 64
+      })
       // remote.BrowserWindow.getFocusedWindow()!.setBounds({
       //   x: xLoc,
       //   y: yLoc,
