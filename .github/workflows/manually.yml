@@ -49,6 +49,8 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           yarn release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Build & release app mac
         if: matrix.os == 'macos-11'
         run: |
