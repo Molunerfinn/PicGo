@@ -4,10 +4,7 @@
 name: Build
 
 # Workflow's trigger
-on:
-  push:
-    branches:
-      - master
+on: workflow_dispatch
 
 # Workflow's jobs
 jobs:
