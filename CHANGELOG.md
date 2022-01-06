@@ -1,3 +1,13 @@
+## :tada: 2.3.1-beta.2 (2022-01-06)
+
+
+### :bug: Bug Fixes
+
+* electron builder actions bug ([5dd6e72](https://github.com/Molunerfinn/PicGo/commit/5dd6e72))
+* linux github actions workflow bug ([5cb8151](https://github.com/Molunerfinn/PicGo/commit/5cb8151))
+
+
+
 ## :tada: 2.3.1-beta.1 (2022-01-05)
 
 
