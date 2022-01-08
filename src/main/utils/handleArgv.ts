@@ -1,6 +1,6 @@
 import path from 'path'
 import fs from 'fs-extra'
-import Logger from 'picgo/dist/src/lib/Logger'
+import { Logger } from 'picgo'
 interface IResultFileObject {
   path: string
 }

@@ -20,3 +20,10 @@ export enum IPasteStyle {
   UBB = 'UBB',
   CUSTOM = 'Custom'
 }
+
+export enum IWindowList {
+  SETTING_WINDOW = 'SETTING_WINDOW',
+  TRAY_WINDOW = 'TRAY_WINDOW',
+  MINI_WINDOW = 'MINI_WINDOW',
+  RENAME_WINDOW = 'RENAME_WINDOW'
+}

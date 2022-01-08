@@ -13,7 +13,7 @@ import beforeOpen from '~/main/utils/beforeOpen'
 import fixPath from 'fix-path'
 import ipcList from '~/main/events/ipcList'
 import busEventList from '~/main/events/busEventList'
-import { IWindowList } from 'apis/app/window/constants'
+import { IWindowList } from '#/types/enum'
 import windowManager from 'apis/app/window/windowManager'
 import {
   updateShortKeyFromVersion212,

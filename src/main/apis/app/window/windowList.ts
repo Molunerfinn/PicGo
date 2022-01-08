@@ -1,11 +1,10 @@
 import {
-  IWindowList,
   SETTING_WINDOW_URL,
   TRAY_WINDOW_URL,
   MINI_WINDOW_URL,
   RENAME_WINDOW_URL
 } from './constants'
-import { IWindowListItem } from '#/types/electron'
+import { IWindowList } from '#/types/enum'
 import bus from '@core/bus'
 import { CREATE_APP_MENU } from '@core/bus/constants'
 import db from '~/main/apis/core/datastore'

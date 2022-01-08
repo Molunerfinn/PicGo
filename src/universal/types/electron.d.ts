@@ -1,9 +1,6 @@
-import {
-  BrowserWindow
-} from 'electron'
-import {
-  IWindowList
-} from 'apis/app/window/constants'
+// https://stackoverflow.com/questions/45420448/how-to-import-external-type-into-global-d-ts-file
+declare type BrowserWindow = import('electron').BrowserWindow
+declare type IWindowList = import('./enum').IWindowList
 
 declare interface IWindowListItem {
   isValid: boolean
@@ -19,11 +16,4 @@ declare interface IWindowManager {
   // delete: (name: IWindowList) => void
   deleteById: (id: number) => void
   getAvailableWindow: () => BrowserWindow
-}
-
-// https://stackoverflow.com/questions/35074713/extending-typescript-global-object-in-node-js/44387594#44387594
-declare global {
-  var PICGO_GUI_VERSION: string
-  var PICGO_CORE_VERSION: string
-  var notificationList: IAppNotification[]
 }

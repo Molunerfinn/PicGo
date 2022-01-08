@@ -6,7 +6,7 @@ import {
 import {
   createMenu
 } from 'apis/app/system'
-import { IWindowList } from 'apis/app/window/constants'
+import { IWindowList } from '#/types/enum'
 import windowManager from 'apis/app/window/windowManager'
 import {
   UPLOAD_WITH_FILES,

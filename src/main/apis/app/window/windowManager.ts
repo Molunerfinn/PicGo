@@ -1,11 +1,8 @@
 import {
   BrowserWindow
 } from 'electron'
-import { IWindowManager, IWindowListItem } from '#/types/electron'
 import windowList from './windowList'
-import {
-  IWindowList
-} from './constants'
+import { IWindowList } from '#/types/enum'
 
 class WindowManager implements IWindowManager {
   private windowMap: Map<IWindowList | string, BrowserWindow> = new Map()

@@ -3,7 +3,7 @@ import {
   WebContents
 } from 'electron'
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from 'apis/app/window/constants'
+import { IWindowList } from '#/types/enum'
 import uploader from '.'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import db, { GalleryDB } from '~/main/apis/core/datastore'

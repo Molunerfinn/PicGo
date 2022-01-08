@@ -338,7 +338,7 @@
 <script lang="ts">
 import keyDetect from '@/utils/key-binding'
 import pkg from 'root/package.json'
-import { IConfig } from 'picgo/dist/src/types/index'
+import { IConfig } from 'picgo'
 import { PICGO_OPEN_FILE, OPEN_URL } from '#/events/constants'
 import {
   ipcRenderer

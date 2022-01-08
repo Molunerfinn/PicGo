@@ -7,14 +7,12 @@ import {
   ipcMain,
   clipboard
 } from 'electron'
-import PicGoCore from '~/universal/types/picgo'
-import { IPasteStyle, IPicGoHelperType } from '#/types/enum'
+import { IPasteStyle, IPicGoHelperType, IWindowList } from '#/types/enum'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import picgo from '@core/picgo'
 import { handleStreamlinePluginName } from '~/universal/utils/common'
-import { IGuiMenuItem } from 'picgo/dist/src/types'
+import { IGuiMenuItem, PicGo as PicGoCore } from 'picgo'
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from 'apis/app/window/constants'
 import { showNotification } from '~/main/utils/common'
 import { dbPathChecker } from 'apis/core/datastore/dbChecker'
 import {
@@ -36,7 +34,7 @@ import pasteTemplate from '../utils/pasteTemplate'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
-// const PluginHandler = requireFunc('picgo/dist/lib/PluginHandler').default
+// const PluginHandler = requireFunc('picgo/lib/PluginHandler').default
 const STORE_PATH = path.dirname(dbPathChecker())
 // const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
 
@@ -209,7 +207,8 @@ const handleGetPicBedConfig = () => {
   ipcMain.on('getPicBedConfig', (event: IpcMainEvent, type: string) => {
     const name = picgo.helper.uploader.get(type)?.name || type
     if (picgo.helper.uploader.get(type)?.config) {
-      const config = handleConfigWithFunction(picgo.helper.uploader.get(type)!.config(picgo))
+      const _config = picgo.helper.uploader.get(type)!.config!(picgo)
+      const config = handleConfigWithFunction(_config)
       event.sender.send('getPicBedConfig', config, name)
     } else {
       event.sender.send('getPicBedConfig', [], name)

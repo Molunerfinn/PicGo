@@ -122,7 +122,7 @@ interface IBounds {
 }
 
 // PicGo Types
-type ICtx = import('picgo')
+type ICtx = import('picgo').PicGo
 interface IPicGoPlugin {
   name: string
   fullName: string

@@ -8,9 +8,9 @@ import dayjs from 'dayjs'
 import picgo from '@core/picgo'
 import db from '~/main/apis/core/datastore'
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from 'apis/app/window/constants'
+import { IWindowList } from '#/types/enum'
 import util from 'util'
-import { IPicGo } from 'picgo/dist/src/types'
+import { IPicGo } from 'picgo'
 import { showNotification, calcDurationRange } from '~/main/utils/common'
 import { TALKING_DATA_EVENT } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
@@ -60,12 +60,12 @@ class Uploader {
   }
 
   init () {
-    picgo.on('notification', message => {
+    picgo.on('notification', (message: Electron.NotificationConstructorOptions | undefined) => {
       const notification = new Notification(message)
       notification.show()
     })
 
-    picgo.on('uploadProgress', progress => {
+    picgo.on('uploadProgress', (progress: any) => {
       this.webContents?.send('uploadProgress', progress)
     })
     picgo.on('beforeTransform', () => {

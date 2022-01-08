@@ -1,5 +1,5 @@
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from 'apis/app/window/constants'
+import { IWindowList } from '#/types/enum'
 import { Menu, BrowserWindow, app, dialog } from 'electron'
 import getPicBeds from '~/main/utils/getPicBeds'
 import picgo from '@core/picgo'
@@ -9,9 +9,9 @@ import {
 import { privacyManager } from '~/main/utils/privacyManager'
 import pkg from 'root/package.json'
 import GuiApi from 'apis/gui'
-import PicGoCore from '~/universal/types/picgo'
 import { PICGO_CONFIG_PLUGIN, PICGO_HANDLE_PLUGIN_ING, PICGO_TOGGLE_PLUGIN } from '~/universal/events/constants'
 import picgoCoreIPC from '~/main/events/picgoCoreIPC'
+import { PicGo as PicGoCore } from 'picgo'
 
 interface GuiMenuItem {
   label: string
