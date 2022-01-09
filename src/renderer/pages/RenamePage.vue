@@ -22,6 +22,7 @@
   </div>
 </template>
 <script lang="ts">
+import { RENAME_FILE_NAME } from '#/events/constants'
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/mixin'
 import {
@@ -34,20 +35,23 @@ import {
 })
 export default class extends Vue {
   fileName: string = ''
+  originName: string = ''
   id: string | null = null
   created () {
-    ipcRenderer.on('rename', (event: IpcRendererEvent, name: string, id: string) => {
-      this.fileName = name
+    ipcRenderer.on(RENAME_FILE_NAME, (event: IpcRendererEvent, newName: string, originName: string, id: string) => {
+      this.fileName = newName
+      this.originName = originName
       this.id = id
     })
   }
 
   confirmName () {
-    ipcRenderer.send(`rename${this.id}`, this.fileName)
+    ipcRenderer.send(`${RENAME_FILE_NAME}${this.id}`, this.fileName)
   }
 
   cancel () {
-    ipcRenderer.send(`rename${this.id}`, null)
+    // if cancel, use origin file name
+    ipcRenderer.send(`${RENAME_FILE_NAME}${this.id}`, this.originName)
   }
 
   beforeDestroy () {

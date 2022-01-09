@@ -12,7 +12,7 @@ import { IWindowList } from '#/types/enum'
 import util from 'util'
 import { IPicGo } from 'picgo'
 import { showNotification, calcDurationRange } from '~/main/utils/common'
-import { TALKING_DATA_EVENT } from '~/universal/events/constants'
+import { RENAME_FILE_NAME, TALKING_DATA_EVENT } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
 
 const waitForShow = (webcontent: WebContents) => {
@@ -26,13 +26,13 @@ const waitForShow = (webcontent: WebContents) => {
 const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> => {
   return new Promise((resolve) => {
     const windowId = window.id
-    ipcMain.once(`rename${id}`, (evt: Event, newName: string) => {
+    ipcMain.once(`${RENAME_FILE_NAME}${id}`, (evt: Event, newName: string) => {
       resolve(newName)
       window.close()
     })
     window.on('close', () => {
       resolve(null)
-      ipcMain.removeAllListeners(`rename${id}`)
+      ipcMain.removeAllListeners(`${RENAME_FILE_NAME}${id}`)
       windowManager.deleteById(windowId)
     })
   })
@@ -93,7 +93,7 @@ class Uploader {
             if (rename) {
               const window = windowManager.create(IWindowList.RENAME_WINDOW)!
               await waitForShow(window.webContents)
-              window.webContents.send('rename', fileName, window.webContents.id)
+              window.webContents.send(RENAME_FILE_NAME, fileName, item.fileName, window.webContents.id)
               name = await waitForRename(window, window.webContents.id)
             }
             item.fileName = name || fileName
