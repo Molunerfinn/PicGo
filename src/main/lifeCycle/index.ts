@@ -10,7 +10,6 @@ import {
 } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import beforeOpen from '~/main/utils/beforeOpen'
-import fixPath from 'fix-path'
 import ipcList from '~/main/events/ipcList'
 import busEventList from '~/main/events/busEventList'
 import { IWindowList } from '#/types/enum'
@@ -58,7 +57,9 @@ const handleStartUpFiles = (argv: string[], cwd: string) => {
 class LifeCycle {
   private async beforeReady () {
     protocol.registerSchemesAsPrivileged([{ scheme: 'picgo', privileges: { secure: true, standard: true } }])
-    // fix the $PATH in macOS
+    // https://stackoverflow.com/questions/56691391/dynamic-loading-of-external-modules-in-webpack-fails
+    const fixPath = (await import(/* webpackIgnore: true */ 'fix-path')).default
+    // fix the $PATH in macOS & linux
     fixPath()
     beforeOpen()
     ipcList.listen()
