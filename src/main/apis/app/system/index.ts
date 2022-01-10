@@ -17,6 +17,7 @@ import pasteTemplate from '~/main/utils/pasteTemplate'
 import pkg from 'root/package.json'
 import { handleCopyUrl } from '~/main/utils/common'
 import { privacyManager } from '~/main/utils/privacyManager'
+import { T } from '#/i18n'
 let contextMenu: Menu | null
 let menu: Menu | null
 let tray: Tray | null
@@ -41,7 +42,7 @@ export function createContextMenu () {
     })
     contextMenu = Menu.buildFromTemplate([
       {
-        label: '关于',
+        label: T('ABOUT'),
         click () {
           dialog.showMessageBox({
             title: 'PicGo',
@@ -51,7 +52,7 @@ export function createContextMenu () {
         }
       },
       {
-        label: '打开详细窗口',
+        label: T('OPEN_MAIN_WINDOW'),
         click () {
           const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)
           settingWindow!.show()
@@ -62,14 +63,14 @@ export function createContextMenu () {
         }
       },
       {
-        label: '选择默认图床',
+        label: T('CHOOSE_DEFAULT_PICBED'),
         type: 'submenu',
         // @ts-ignore
         submenu
       },
       // @ts-ignore
       {
-        label: '打开更新助手',
+        label: T('OPEN_UPDATE_HELPER'),
         type: 'checkbox',
         checked: db.get('settings.showUpdateTip'),
         click () {
@@ -78,13 +79,13 @@ export function createContextMenu () {
         }
       },
       {
-        label: '隐私协议',
+        label: T('PRIVACY_AGREEMENT'),
         click () {
           privacyManager.show(false)
         }
       },
       {
-        label: '重启应用',
+        label: T('RELOAD_APP'),
         click () {
           app.relaunch()
           app.exit(0)
@@ -93,7 +94,7 @@ export function createContextMenu () {
       // @ts-ignore
       {
         role: 'quit',
-        label: '退出'
+        label: T('QUIT')
       }
     ])
   } else if (process.platform === 'linux') {
@@ -106,7 +107,7 @@ export function createContextMenu () {
 
     contextMenu = Menu.buildFromTemplate([
       {
-        label: '打开详细窗口',
+        label: T('OPEN_MAIN_WINDOW'),
         click () {
           const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)
           settingWindow!.show()
@@ -118,7 +119,7 @@ export function createContextMenu () {
       },
       // @ts-ignore
       {
-        label: '打开更新助手',
+        label: T('OPEN_UPDATE_HELPER'),
         type: 'checkbox',
         checked: db.get('settings.showUpdateTip'),
         click () {
@@ -127,7 +128,7 @@ export function createContextMenu () {
         }
       },
       {
-        label: '关于应用',
+        label: T('ABOUT'),
         click () {
           dialog.showMessageBox({
             title: 'PicGo',
@@ -140,7 +141,7 @@ export function createContextMenu () {
       // @ts-ignore
       {
         role: 'quit',
-        label: '退出'
+        label: T('QUIT')
       }
     ])
   }
@@ -214,7 +215,7 @@ export function createTray () {
         for (let i = 0; i < imgs.length; i++) {
           pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
           const notification = new Notification({
-            title: '上传成功',
+            title: T('UPLOAD_SUCCESSFULLY'),
             body: imgs[i].imgUrl!,
             icon: files[i]
           })

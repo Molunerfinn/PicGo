@@ -335,3 +335,5 @@ interface IMiniWindowPos {
 }
 
 type PromiseResType<T> = T extends Promise<infer R> ? R : T
+
+type ILocalesKey = import('#/i18n/zh-CN').ILocalesKey

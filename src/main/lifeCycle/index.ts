@@ -34,6 +34,7 @@ import bus from '@core/bus'
 import { privacyManager } from '~/main/utils/privacyManager'
 import logger from 'apis/core/picgo/logger'
 import picgo from 'apis/core/picgo'
+import fixPath from './fixPath'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -57,8 +58,6 @@ const handleStartUpFiles = (argv: string[], cwd: string) => {
 class LifeCycle {
   private async beforeReady () {
     protocol.registerSchemesAsPrivileged([{ scheme: 'picgo', privileges: { secure: true, standard: true } }])
-    // https://stackoverflow.com/questions/56691391/dynamic-loading-of-external-modules-in-webpack-fails
-    const fixPath = (await import(/* webpackIgnore: true */ 'fix-path')).default
     // fix the $PATH in macOS & linux
     fixPath()
     beforeOpen()

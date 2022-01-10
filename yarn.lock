@@ -1324,6 +1324,13 @@
     husky "^1.3.1"
     ora "^3.4.0"
 
+"@picgo/i18n@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.npmmirror.com/@picgo/i18n/download/@picgo/i18n-0.0.4.tgz#018b0d0999e1d11d6a6f911ee960f7065a9e33a1"
+  integrity sha1-AYsNCZnh0R1qb5Ee6WD3BlqeM6E=
+  dependencies:
+    chalk "^4.0.0"
+
 "@picgo/store@^1.0.3":
   version "1.0.3"
   resolved "https://registry.npmjs.org/@picgo/store/-/store-1.0.3.tgz#cfe346ad30c80f378e0bc81311e7468df436bc1f"
@@ -2387,11 +2394,6 @@ ansi-regex@^5.0.1:
   version "5.0.1"
   resolved "https://registry.npmjs.org/ansi-regex/-/ansi-regex-5.0.1.tgz#082cb2c89c9fe8659a311a53bd6a4dc5301db304"
   integrity sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==
-
-ansi-regex@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.npmmirror.com/ansi-regex/download/ansi-regex-6.0.1.tgz#3183e38fae9a65d7cb5e53945cd5897d0260a06a"
-  integrity sha1-MYPjj66aZdfLXlOUXNWJfQJgoGo=
 
 ansi-styles@^2.2.1:
   version "2.2.1"
@@ -4287,6 +4289,14 @@ create-require@^1.1.0:
   resolved "https://registry.npmjs.org/create-require/-/create-require-1.1.1.tgz#c1d7e8f1e5f6cfc9ff65f9cd352d37348756c333"
   integrity sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
 
+cross-spawn@^4.0.0:
+  version "4.0.2"
+  resolved "https://registry.npmmirror.com/cross-spawn/download/cross-spawn-4.0.2.tgz#7b9247621c23adfdd3856004a823cbe397424d41"
+  integrity sha1-e5JHYhwjrf3ThWAEqCPL45dCTUE=
+  dependencies:
+    lru-cache "^4.0.1"
+    which "^1.2.9"
+
 cross-spawn@^5.0.1:
   version "5.1.0"
   resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-5.1.0.tgz#e8bd0efee58fcff6f8f94510a0a554bbfa235449"
@@ -4771,10 +4781,10 @@ default-gateway@^5.0.5:
   dependencies:
     execa "^3.3.0"
 
-default-shell@^2.0.0:
-  version "2.2.0"
-  resolved "https://registry.npmmirror.com/default-shell/download/default-shell-2.2.0.tgz#31481c19747bfe59319b486591643eaf115a1864"
-  integrity sha1-MUgcGXR7/lkxm0hlkWQ+rxFaGGQ=
+default-shell@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.npmmirror.com/default-shell/download/default-shell-1.0.1.tgz#752304bddc6174f49eb29cb988feea0b8813c8bc"
+  integrity sha1-dSMEvdxhdPSespy5iP7qC4gTyLw=
 
 default-user-agent@^1.0.0:
   version "1.0.0"
@@ -5709,6 +5719,19 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     md5.js "^1.3.4"
     safe-buffer "^5.1.1"
 
+execa@^0.5.0:
+  version "0.5.1"
+  resolved "https://registry.npmmirror.com/execa/download/execa-0.5.1.tgz?cache=0&sync_timestamp=1637147228297&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fexeca%2Fdownload%2Fexeca-0.5.1.tgz#de3fb85cb8d6e91c85bcbceb164581785cb57b36"
+  integrity sha1-3j+4XLjW6RyFvLzrFkWBeFy1ezY=
+  dependencies:
+    cross-spawn "^4.0.0"
+    get-stream "^2.2.0"
+    is-stream "^1.1.0"
+    npm-run-path "^2.0.0"
+    p-finally "^1.0.0"
+    signal-exit "^3.0.0"
+    strip-eof "^1.0.0"
+
 execa@^0.8.0:
   version "0.8.0"
   resolved "https://registry.npmjs.org/execa/-/execa-0.8.0.tgz#d8d76bbc1b55217ed190fd6dd49d3c774ecfc8da"
@@ -5751,7 +5774,7 @@ execa@^3.3.0:
     signal-exit "^3.0.2"
     strip-final-newline "^2.0.0"
 
-execa@^5.0.0, execa@^5.1.1:
+execa@^5.0.0:
   version "5.1.1"
   resolved "https://registry.npmjs.org/execa/-/execa-5.1.1.tgz#f80ad9cbf4298f7bd1d4c9555c21e93741c411dd"
   integrity sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==
@@ -6181,13 +6204,6 @@ findup-sync@^4.0.0:
     is-glob "^4.0.0"
     micromatch "^4.0.2"
     resolve-dir "^1.0.1"
-
-fix-path@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmmirror.com/fix-path/download/fix-path-4.0.0.tgz#bc1d14f038edb734ac46944a45454106952ca429"
-  integrity sha1-vB0U8DjttzSsRpRKRUVBBpUspCk=
-  dependencies:
-    shell-path "^3.0.0"
 
 flat-cache@^3.0.4:
   version "3.0.4"
@@ -11260,21 +11276,21 @@ shebang-regex@^3.0.0:
   resolved "https://registry.npmjs.org/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
 
-shell-env@^4.0.0:
-  version "4.0.1"
-  resolved "https://registry.npmmirror.com/shell-env/download/shell-env-4.0.1.tgz#883302d9426095d398a39b102a851adb306b8cb8"
-  integrity sha1-iDMC2UJgldOYo5sQKoUa2zBrjLg=
+shell-env@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.npmmirror.com/shell-env/download/shell-env-0.3.0.tgz#2250339022989165bda4eb7bf383afeaaa92dc34"
+  integrity sha1-IlAzkCKYkWW9pOt784Ov6qqS3DQ=
   dependencies:
-    default-shell "^2.0.0"
-    execa "^5.1.1"
-    strip-ansi "^7.0.1"
+    default-shell "^1.0.0"
+    execa "^0.5.0"
+    strip-ansi "^3.0.0"
 
-shell-path@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.npmmirror.com/shell-path/download/shell-path-3.0.0.tgz#5c95bc68aade43c06082a0655cb5c97586e4feb0"
-  integrity sha1-XJW8aKreQ8BggqBlXLXJdYbk/rA=
+shell-path@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmmirror.com/shell-path/download/shell-path-2.1.0.tgz#ea7d06ae1070874a1bac5c65bb9bdd62e4f67a38"
+  integrity sha1-6n0GrhBwh0obrFxlu5vdYuT2ejg=
   dependencies:
-    shell-env "^4.0.0"
+    shell-env "^0.3.0"
 
 shell-quote@^1.6.1:
   version "1.7.3"
@@ -11754,13 +11770,6 @@ strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
   dependencies:
     ansi-regex "^5.0.1"
-
-strip-ansi@^7.0.1:
-  version "7.0.1"
-  resolved "https://registry.npmmirror.com/strip-ansi/download/strip-ansi-7.0.1.tgz#61740a08ce36b61e50e65653f07060d000975fb2"
-  integrity sha1-YXQKCM42th5Q5lZT8HBg0ACXX7I=
-  dependencies:
-    ansi-regex "^6.0.1"
 
 strip-bom@4.0.0:
   version "4.0.0"
