@@ -1,7 +1,7 @@
 <template>
   <div id="gallery-view">
     <div class="view-title">
-      相册 - {{ filterList.length }} <i class="el-icon-caret-bottom" @click="toggleHandleBar" :class="{'active': handleBarActive}"></i>
+      {{ $T('GALLERY') }} - {{ filterList.length }} <i class="el-icon-caret-bottom" @click="toggleHandleBar" :class="{'active': handleBarActive}"></i>
     </div>
     <transition name="el-zoom-in-top">
       <el-row v-show="handleBarActive">
@@ -14,7 +14,7 @@
                 collapse-tags
                 size="mini"
                 style="width: 100%"
-                placeholder="请选择显示的图床">
+                :placeholder="$T('CHOOSE_SHOWED_PICBED')">
                 <el-option
                   v-for="item in picBed"
                   :key="item.type"
@@ -29,7 +29,7 @@
                 size="mini"
                 style="width: 100%"
                 @change="handlePasteStyleChange"
-                placeholder="请选择粘贴的格式">
+                :placeholder="$T('CHOOSE_PASTE_FORMAT')">
                 <el-option
                   v-for="(value, key) in pasteStyleMap"
                   :key="key"
@@ -42,7 +42,7 @@
           <el-row class="handle-bar" :gutter="16">
             <el-col :span="12">
               <el-input
-                placeholder="搜索"
+                :placeholder="$T('SEARCH')"
                 size="mini"
                 v-model="searchText">
                 <i slot="suffix" class="el-input__icon el-icon-close" v-if="searchText" @click="cleanSearch" style="cursor: pointer"></i>
@@ -50,17 +50,17 @@
             </el-col>
             <el-col :span="4">
               <div class="item-base copy round" :class="{ active: isMultiple(choosedList)}" @click="multiCopy">
-                复制
+                {{ $T('COPY') }}
               </div>
             </el-col>
             <el-col :span="4">
               <div class="item-base delete round" :class="{ active: isMultiple(choosedList)}" @click="multiRemove">
-                删除
+                {{ $T('DELETE') }}
               </div>
             </el-col>
             <el-col :span="4">
               <div class="item-base all-pick round" :class="{ active: filterList.length > 0}" @click="toggleSelectAll">
-                {{ isAllSelected ? '取消' : '全选' }}
+                {{ isAllSelected ? $T('CANCEL') : $T('SELECT_ALL') }}
               </div>
             </el-col>
           </el-row>
@@ -87,7 +87,7 @@
               <i class="el-icon-document" @click="copy(item)"></i>
               <i class="el-icon-edit-outline" @click="openDialog(item)"></i>
               <i class="el-icon-delete" @click="remove(item.id)"></i>
-              <el-checkbox v-model="choosedList[item.id]" class="pull-right" @change="(val) => handleChooseImage(val, index)"></el-checkbox>
+              <el-checkbox v-model="choosedList[item.id ? item.id : '']" class="pull-right" @change="(val) => handleChooseImage(val, index)"></el-checkbox>
             </div>
           </el-col>
         </el-row>
@@ -95,14 +95,14 @@
     </el-row>
     <el-dialog
       :visible.sync="dialogVisible"
-      title="修改图片URL"
+      :title="$T('CHANGE_IMAGE_URL')"
       width="500px"
       :modal-append-to-body="false"
     >
       <el-input v-model="imgInfo.imgUrl"></el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmModify">确 定</el-button>
+        <el-button @click="dialogVisible = false">{{ $T('CANCEL') }}</el-button>
+        <el-button type="primary" @click="confirmModify">{{ $T('CONFIRM') }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -285,7 +285,7 @@ export default class extends Vue {
   async copy (item: ImgInfo) {
     const copyLink = await ipcRenderer.invoke(PASTE_TEXT, item)
     const obj = {
-      title: '复制链接成功',
+      title: this.$T('COPY_LINK_SUCCEED'),
       body: copyLink,
       icon: item.url || item.imgUrl
     }
@@ -295,28 +295,30 @@ export default class extends Vue {
     }
   }
 
-  remove (id: string) {
-    this.$confirm('此操作将把该图片移出相册, 是否继续?', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }).then(async () => {
-      const file = await this.$$db.getById(id)
-      await this.$$db.removeById(id)
-      ipcRenderer.send('removeFiles', [file])
-      const obj = {
-        title: '操作结果',
-        body: '删除成功'
-      }
-      const myNotification = new Notification(obj.title, obj)
-      myNotification.onclick = () => {
+  remove (id?: string) {
+    if (id) {
+      this.$confirm(this.$T('TIPS_REMOVE_LINK'), this.$T('TIPS_NOTICE'), {
+        confirmButtonText: this.$T('CONFIRM'),
+        cancelButtonText: this.$T('CANCEL'),
+        type: 'warning'
+      }).then(async () => {
+        const file = await this.$$db.getById(id)
+        await this.$$db.removeById(id)
+        ipcRenderer.send('removeFiles', [file])
+        const obj = {
+          title: this.$T('OPERATION_SUCCEED'),
+          body: ''
+        }
+        const myNotification = new Notification(obj.title, obj)
+        myNotification.onclick = () => {
+          return true
+        }
+        this.updateGallery()
+      }).catch((e) => {
+        console.log(e)
         return true
-      }
-      this.updateGallery()
-    }).catch((e) => {
-      console.log(e)
-      return true
-    })
+      })
+    }
   }
 
   openDialog (item: ImgInfo) {
@@ -330,7 +332,7 @@ export default class extends Vue {
       imgUrl: this.imgInfo.imgUrl
     })
     const obj = {
-      title: '修改图片URL成功',
+      title: this.$T('CHANGE_IMAGE_URL_SUCCEED'),
       body: this.imgInfo.imgUrl,
       icon: this.imgInfo.imgUrl
     }
@@ -370,9 +372,11 @@ export default class extends Vue {
     // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
     const multiRemoveNumber = Object.values(this.choosedList).filter(item => item).length
     if (multiRemoveNumber) {
-      this.$confirm(`将在相册中移除刚才选中的 ${multiRemoveNumber} 张图片，是否继续？`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$T('TIPS_WILL_REMOVE_CHOOSED_IMAGES', {
+        m: multiRemoveNumber
+      }), this.$T('TIPS_NOTICE'), {
+        confirmButtonText: this.$T('CONFIRM'),
+        cancelButtonText: this.$T('CANCEL'),
         type: 'warning'
       }).then(async () => {
         const files: IResult<ImgInfo>[] = []
@@ -390,8 +394,8 @@ export default class extends Vue {
         this.clearChoosedList()
         this.choosedList = {} // 只有删除才能将这个置空
         const obj = {
-          title: '操作结果',
-          body: '删除成功'
+          title: this.$T('OPERATION_SUCCEED'),
+          body: ''
         }
         ipcRenderer.send('removeFiles', files)
         const myNotification = new Notification(obj.title, obj)
@@ -422,7 +426,7 @@ export default class extends Vue {
         }
       }
       const obj = {
-        title: '批量复制链接成功',
+        title: this.$T('BATCH_COPY_LINK_SUCCEED'),
         body: copyString.join('\n')
       }
       const myNotification = new Notification(obj.title, obj)

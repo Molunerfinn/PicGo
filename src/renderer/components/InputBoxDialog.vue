@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title="inputBoxOptions.title || '输入框'"
+    :title="inputBoxOptions.title || $T('INPUT')"
     :visible.sync="showInputBoxVisible"
     :modal-append-to-body="false"
   >
@@ -8,8 +8,8 @@
       v-model="inputBoxValue"
       :placeholder="inputBoxOptions.placeholder"></el-input>
     <span slot="footer">
-      <el-button @click="handleInputBoxCancel" round>取消</el-button>
-      <el-button type="primary" @click="handleInputBoxConfirm" round>确定</el-button>
+      <el-button @click="handleInputBoxCancel" round>{{ $T('CANCEL') }}</el-button>
+      <el-button type="primary" @click="handleInputBoxConfirm" round>{{ $T('CONFIRM') }}</el-button>
     </span>
   </el-dialog>
 </template>

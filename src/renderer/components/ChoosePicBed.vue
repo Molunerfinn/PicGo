@@ -1,6 +1,6 @@
 <template>
   <div id="choose-pic-bed">
-    <span>选择 {{ label }} 作为你默认图床：</span>
+    <span>{{ $T('CHOOSE_YOUR_DEFAULT_PICBED', { d: label }) }}</span>
     <el-switch
       v-model="value"
       @change="choosePicBed"

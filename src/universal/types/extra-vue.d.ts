@@ -19,6 +19,7 @@ declare module 'vue/types/vue' {
     $builtInPicBed: string[]
     $bus: Vue
     $$db: IGalleryDB
+    $T: typeof import('#/i18n/index').T
     saveConfig(data: IObj | string, value?: any): void
     getConfig<T>(key?: string): Promise<T | undefined>
   }

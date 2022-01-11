@@ -21,18 +21,18 @@
           >
           <el-menu-item index="upload">
             <i class="el-icon-upload"></i>
-            <span slot="title">上传区</span>
+            <span slot="title">{{ $T('UPLOAD_AREA') }}</span>
           </el-menu-item>
           <el-menu-item index="gallery">
             <i class="el-icon-picture"></i>
-            <span slot="title">相册</span>
+            <span slot="title">{{ $T('GALLERY') }}</span>
           </el-menu-item>
           <el-submenu
             index="sub-menu"
           >
             <template slot="title">
               <i class="el-icon-menu"></i>
-              <span>图床设置</span>
+              <span>{{ $T('PICBEDS_SETTINGS') }}</span>
             </template>
             <template
               v-for="item in picBed"
@@ -49,11 +49,11 @@
           </el-submenu>
           <el-menu-item index="setting">
             <i class="el-icon-setting"></i>
-            <span slot="title">PicGo设置</span>
+            <span slot="title">{{ $T('PICGO_SETTINGS') }}</span>
           </el-menu-item>
           <el-menu-item index="plugin">
             <i class="el-icon-share"></i>
-            <span slot="title">插件设置</span>
+            <span slot="title">{{ $T('PLUGIN_SETTINGS') }}</span>
           </el-menu-item>
         </el-menu>
         <i class="el-icon-info setting-window" @click="openDialog"></i>
@@ -66,29 +66,29 @@
         :class="{ 'darwin': os === 'darwin' }">
         <transition name="picgo-fade" mode="out-in">
           <keep-alive>
-            <router-view v-if="$route.meta.keepAlive"></router-view>
+            <router-view v-if="$route && $route.meta && $route.meta.keepAlive"></router-view>
           </keep-alive>
         </transition>
         <transition name="picgo-fade" mode="out-in">
-          <router-view :key="$route.path" v-if="!$route.meta.keepAlive"></router-view>
+          <router-view :key="$route.path" v-if="!($route && $route.meta && $route.meta.keepAlive)"></router-view>
         </transition>
       </el-col>
     </el-row>
     <el-dialog
-      title="赞助PicGo"
+      :title="$T('SPONSOR_PICGO')"
       :visible.sync="visible"
       width="70%"
       top="10vh"
     >
-      PicGo是免费开源的软件，如果你喜欢它，对你有帮助，不妨请我喝杯咖啡？
+      {{ $T('PICGO_SPONSOR_TEXT') }}
       <el-row class="support">
         <el-col :span="12">
-          <img src="https://user-images.githubusercontent.com/12621342/34188165-e7cdf372-e56f-11e7-8732-1338c88b9bb7.jpg" alt="支付宝">
-          <div class="support-title">支付宝</div>
+          <img src="https://user-images.githubusercontent.com/12621342/34188165-e7cdf372-e56f-11e7-8732-1338c88b9bb7.jpg" :alt="$T('ALIPAY')">
+          <div class="support-title">{{ $T('ALIPAY') }}</div>
         </el-col>
         <el-col :span="12">
-          <img src="https://user-images.githubusercontent.com/12621342/34188201-212cda84-e570-11e7-9b7a-abb298699d85.jpg" alt="支付宝">
-          <div class="support-title">微信</div>
+          <img src="https://user-images.githubusercontent.com/12621342/34188201-212cda84-e570-11e7-9b7a-abb298699d85.jpg" :alt="$T('WECHATPAY')">
+          <div class="support-title">{{ $T('WECHATPAY') }}</div>
         </el-col>
       </el-row>
     </el-dialog>
@@ -96,7 +96,7 @@
       class="qrcode-dialog"
       top="3vh"
       width="60%"
-      title="图床配置二维码"
+      :title="$T('PICBED_QRCODE')"
       :visible.sync="qrcodeVisible"
       :modal-append-to-body="false"
       lock-scroll
@@ -107,7 +107,7 @@
         size="mini"
       >
         <el-form-item
-          label="选择图床"
+          :label="$T('CHOOSE_PICBED')"
         >
           <el-select
             v-model="choosedPicBedForQRCode"
@@ -128,7 +128,7 @@
             class="copy-picbed-config"
             @click="handleCopyPicBedConfig"
           >
-            复制图床配置
+            {{ $T('COPY_PICBED_CONFIG') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -242,7 +242,7 @@ export default class extends Vue {
 
   handleCopyPicBedConfig () {
     clipboard.writeText(this.picBedConfigString)
-    this.$message.success('图床配置复制成功')
+    this.$message.success(this.$T('COPY_PICBED_CONFIG_SUCCEED'))
   }
 
   getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {

@@ -10,6 +10,7 @@ import mainMixin from './renderer/utils/mainMixin'
 import bus from '@/utils/bus'
 import { initTalkingData } from './renderer/utils/analytics'
 import db from './renderer/utils/db'
+import { T } from '#/i18n/index'
 
 webFrame.setVisualZoomLevelLimits(1, 1)
 
@@ -26,6 +27,7 @@ Vue.prototype.$builtInPicBed = [
 Vue.prototype.$$db = db
 Vue.prototype.$http = axios
 Vue.prototype.$bus = bus
+Vue.prototype.$T = T
 
 Vue.use(ElementUI)
 Vue.use(VueLazyLoad)
