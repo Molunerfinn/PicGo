@@ -12,6 +12,7 @@ import GuiApi from 'apis/gui'
 import { PICGO_CONFIG_PLUGIN, PICGO_HANDLE_PLUGIN_ING, PICGO_TOGGLE_PLUGIN } from '~/universal/events/constants'
 import picgoCoreIPC from '~/main/events/picgoCoreIPC'
 import { PicGo as PicGoCore } from 'picgo'
+import { T } from '~/universal/i18n'
 
 interface GuiMenuItem {
   label: string
@@ -39,7 +40,7 @@ const buildMiniPageMenu = () => {
   })
   const template = [
     {
-      label: '打开详细窗口',
+      label: T('OPEN_MAIN_WINDOW'),
       click () {
         windowManager.get(IWindowList.SETTING_WINDOW)!.show()
         if (windowManager.has(IWindowList.MINI_WINDOW)) {
@@ -48,30 +49,30 @@ const buildMiniPageMenu = () => {
       }
     },
     {
-      label: '选择默认图床',
+      label: T('CHOOSE_DEFAULT_PICBED'),
       type: 'submenu',
       submenu
     },
     {
-      label: '剪贴板图片上传',
+      label: T('UPLOAD_BY_CLIPBOARD'),
       click () {
         uploadClipboardFiles()
       }
     },
     {
-      label: '隐藏窗口',
+      label: T('HIDE_WINDOW'),
       click () {
         BrowserWindow.getFocusedWindow()!.hide()
       }
     },
     {
-      label: '隐私协议',
+      label: T('PRIVACY_AGREEMENT'),
       click () {
         privacyManager.show(false)
       }
     },
     {
-      label: '重启应用',
+      label: T('RELOAD_APP'),
       click () {
         app.relaunch()
         app.exit(0)
@@ -79,7 +80,7 @@ const buildMiniPageMenu = () => {
     },
     {
       role: 'quit',
-      label: '退出'
+      label: T('QUIT')
     }
   ]
   // @ts-ignore
@@ -89,7 +90,7 @@ const buildMiniPageMenu = () => {
 const buildMainPageMenu = () => {
   const template = [
     {
-      label: '关于',
+      label: T('ABOUT'),
       click () {
         dialog.showMessageBox({
           title: 'PicGo',
@@ -99,20 +100,20 @@ const buildMainPageMenu = () => {
       }
     },
     {
-      label: '赞助PicGo',
+      label: T('SPONSOR_PICGO'),
       click () {
         // TODO: show donation
       }
     },
     {
-      label: '生成图床配置二维码',
+      label: T('SHOW_PICBED_QRCODE'),
       click () {
         // TODO: qrcode
         // _this.qrcodeVisible = true
       }
     },
     {
-      label: '隐私协议',
+      label: T('PRIVACY_AGREEMENT'),
       click () {
         privacyManager.show(false)
       }
@@ -169,7 +170,7 @@ const handleRestoreState = (item: string, name: string): void => {
 
 const buildPluginPageMenu = (plugin: IPicGoPlugin) => {
   const menu = [{
-    label: '启用插件',
+    label: T('ENABLE_PLUGIN'),
     enabled: !plugin.enabled,
     click () {
       picgo.saveConfig({
@@ -179,7 +180,7 @@ const buildPluginPageMenu = (plugin: IPicGoPlugin) => {
       window.webContents.send(PICGO_TOGGLE_PLUGIN, plugin.fullName, true)
     }
   }, {
-    label: '禁用插件',
+    label: T('DISABLE_PLUGIN'),
     enabled: plugin.enabled,
     click () {
       picgo.saveConfig({
@@ -196,14 +197,14 @@ const buildPluginPageMenu = (plugin: IPicGoPlugin) => {
       }
     }
   }, {
-    label: '卸载插件',
+    label: T('UNINSTALL_PLUGIN'),
     click () {
       const window = windowManager.get(IWindowList.SETTING_WINDOW)!
       window.webContents.send(PICGO_HANDLE_PLUGIN_ING, plugin.fullName)
       picgoCoreIPC.handlePluginUninstall(plugin.fullName)
     }
   }, {
-    label: '更新插件',
+    label: T('UPDATE_PLUGIN'),
     click () {
       const window = windowManager.get(IWindowList.SETTING_WINDOW)!
       window.webContents.send(PICGO_HANDLE_PLUGIN_ING, plugin.fullName)
@@ -213,7 +214,9 @@ const buildPluginPageMenu = (plugin: IPicGoPlugin) => {
   for (const i in plugin.config) {
     if (plugin.config[i].config.length > 0) {
       const obj = {
-        label: `配置${i} - ${plugin.config[i].fullName || plugin.config[i].name}`,
+        label: T('CONFIG_THING', {
+          c: `${i} - ${plugin.config[i].fullName || plugin.config[i].name}`
+        }),
         click () {
           const window = windowManager.get(IWindowList.SETTING_WINDOW)!
           const currentType = i
@@ -231,7 +234,7 @@ const buildPluginPageMenu = (plugin: IPicGoPlugin) => {
     const currentTransformer = picgo.getConfig<string>('picBed.transformer') || 'path'
     const pluginTransformer = plugin.config.transformer.name
     const obj = {
-      label: `${currentTransformer === pluginTransformer ? '禁用' : '启用'}transformer - ${plugin.config.transformer.name}`,
+      label: `${currentTransformer === pluginTransformer ? T('DISABLE') : T('ENABLE')}transformer - ${plugin.config.transformer.name}`,
       click () {
         const transformer = plugin.config.transformer.name
         const currentTransformer = picgo.getConfig<string>('picBed.transformer') || 'path'

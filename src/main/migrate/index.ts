@@ -3,6 +3,7 @@ import ConfigStore from '~/main/apis/core/datastore'
 import path from 'path'
 import fse from 'fs-extra'
 import { PicGo as PicGoCore } from 'picgo'
+import { T } from '~/universal/i18n'
 // from v2.1.2
 const updateShortKeyFromVersion212 = (db: typeof ConfigStore, shortKeyConfig: IShortKeyConfigs | IOldShortKeyConfigs) => {
   // #557 极端情况可能会出现配置不存在，需要重新写入
@@ -11,7 +12,7 @@ const updateShortKeyFromVersion212 = (db: typeof ConfigStore, shortKeyConfig: IS
       enable: true,
       key: 'CommandOrControl+Shift+P',
       name: 'upload',
-      label: '快捷上传'
+      label: T('QUICK_UPLOAD')
     }
     db.set('settings.shortKey[picgo:upload]', defaultShortKeyConfig)
     return true
@@ -22,7 +23,7 @@ const updateShortKeyFromVersion212 = (db: typeof ConfigStore, shortKeyConfig: IS
       enable: true,
       key: shortKeyConfig.upload,
       name: 'upload',
-      label: '快捷上传'
+      label: T('QUICK_UPLOAD')
     }
     // @ts-ignore
     delete shortKeyConfig.upload

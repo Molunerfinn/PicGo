@@ -2,6 +2,7 @@ import db from '~/main/apis/core/datastore'
 import { ipcMain } from 'electron'
 import { showMessageBox } from '~/main/utils/common'
 import { SHOW_PRIVACY_MESSAGE } from '~/universal/events/constants'
+import { T } from '~/universal/i18n'
 
 class PrivacyManager {
   async init () {
@@ -25,7 +26,7 @@ class PrivacyManager {
     const res = await showMessageBox({
       type: 'info',
       buttons: showCancel ? ['Yes', 'No'] : ['Yes'],
-      title: '隐私协议',
+      title: T('PRIVACY_AGREEMENT'),
       message: `
       本软件尊重并保护所有使用服务用户的个人隐私权。为了给您提供更准确、更优质的服务，本软件会按照本隐私权政策的规定使用和收集您的一些行为信息。您在同意本软件服务使用协议之时，即视为您已经同意本隐私权政策全部内容。本隐私权政策属于本软件服务使用协议不可分割的一部分，如果不同意将无法使用。本协议会定期更新。
 

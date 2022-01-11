@@ -14,6 +14,7 @@ import { IPicGo } from 'picgo'
 import { showNotification, calcDurationRange } from '~/main/utils/common'
 import { RENAME_FILE_NAME, TALKING_DATA_EVENT } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
+import { T } from '~/universal/i18n'
 
 const waitForShow = (webcontent: WebContents) => {
   return new Promise<void>((resolve) => {
@@ -71,8 +72,8 @@ class Uploader {
     picgo.on('beforeTransform', () => {
       if (db.get('settings.uploadNotification')) {
         const notification = new Notification({
-          title: '上传进度',
-          body: '正在上传'
+          title: T('UPLOAD_PROGRESS'),
+          body: T('UPLOADING')
         })
         notification.show()
       }
@@ -129,7 +130,7 @@ class Uploader {
       logger.error(e)
       setTimeout(() => {
         showNotification({
-          title: '上传失败',
+          title: T('UPLOAD_FAILED'),
           body: util.format(e.stack),
           clickToCopy: true
         })

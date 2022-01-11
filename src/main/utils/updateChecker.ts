@@ -3,6 +3,7 @@ import db from '~/main/apis/core/datastore'
 import axios from 'axios'
 import pkg from 'root/package.json'
 import { lt } from 'semver'
+import { T } from '~/universal/i18n'
 const version = pkg.version
 const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
 const releaseUrlBackup = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'
@@ -30,10 +31,12 @@ const checkVersion = async () => {
       if (result) {
         dialog.showMessageBox({
           type: 'info',
-          title: '发现新版本',
+          title: T('FIND_NEW_VERSION'),
           buttons: ['Yes', 'No'],
-          message: `发现新版本${latest}，更新了很多功能，是否去下载最新的版本？`,
-          checkboxLabel: '以后不再提醒',
+          message: T('TIPS_FIND_NEW_VERSION', {
+            v: latest
+          }),
+          checkboxLabel: T('NO_MORE_NOTICE'),
           checkboxChecked: false
         }).then(res => {
           if (res.response === 0) { // if selected yes

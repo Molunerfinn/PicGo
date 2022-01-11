@@ -37,6 +37,7 @@ import picgoCoreIPC from './picgoCoreIPC'
 import { handleCopyUrl } from '~/main/utils/common'
 import { buildMainPageMenu, buildMiniPageMenu, buildPluginPageMenu, buildUploadPageMenu } from './remotes/menu'
 import path from 'path'
+import { T } from '~/universal/i18n'
 
 const STORE_PATH = app.getPath('userData')
 
@@ -51,7 +52,7 @@ export default {
         const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
         handleCopyUrl(pasteTemplate(pasteStyle, img[0], db.get('settings.customLink')))
         const notification = new Notification({
-          title: '上传成功',
+          title: T('UPLOAD_SUCCEED'),
           body: img[0].imgUrl!,
           // icon: file[0]
           icon: img[0].imgUrl
@@ -79,14 +80,14 @@ export default {
       evt.sender.send('updateShortKeyResponse', result)
       if (result) {
         const notification = new Notification({
-          title: '操作成功',
-          body: '你的快捷键已经修改成功'
+          title: T('OPERATION_SUCCEED'),
+          body: T('TIPS_SHORTCUT_MODIFIED_SUCCEED')
         })
         notification.show()
       } else {
         const notification = new Notification({
-          title: '操作失败',
-          body: '快捷键冲突，请重新设置'
+          title: T('OPERATION_FAILED'),
+          body: T('TIPS_SHORTCUT_MODIFIED_CONFLICT')
         })
         notification.show()
       }
@@ -96,14 +97,14 @@ export default {
       const result = shortKeyHandler.bindOrUnbindShortKey(item, from)
       if (result) {
         const notification = new Notification({
-          title: '操作成功',
-          body: '你的快捷键已经修改成功'
+          title: T('OPERATION_SUCCEED'),
+          body: T('TIPS_SHORTCUT_MODIFIED_SUCCEED')
         })
         notification.show()
       } else {
         const notification = new Notification({
-          title: '操作失败',
-          body: '快捷键冲突，请重新设置'
+          title: T('OPERATION_FAILED'),
+          body: T('TIPS_SHORTCUT_MODIFIED_CONFLICT')
         })
         notification.show()
       }
@@ -111,8 +112,8 @@ export default {
 
     ipcMain.on('updateCustomLink', () => {
       const notification = new Notification({
-        title: '操作成功',
-        body: '你的自定义链接格式已经修改成功'
+        title: T('OPERATION_SUCCEED'),
+        body: T('TIPS_CUSTOM_LINK_STYLE_MODIFIED_SUCCEED')
       })
       notification.show()
     })

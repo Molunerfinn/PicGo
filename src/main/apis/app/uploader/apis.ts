@@ -9,6 +9,7 @@ import pasteTemplate from '~/main/utils/pasteTemplate'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
 import { handleCopyUrl } from '~/main/utils/common'
 import { handleUrlEncode } from '#/utils/common'
+import { T } from '#/i18n/index'
 export const uploadClipboardFiles = async (): Promise<string> => {
   const win = windowManager.getAvailableWindow()
   const img = await uploader.setWebContents(win!.webContents).upload()
@@ -18,7 +19,7 @@ export const uploadClipboardFiles = async (): Promise<string> => {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       handleCopyUrl(pasteTemplate(pasteStyle, img[0], db.get('settings.customLink')))
       const notification = new Notification({
-        title: '上传成功',
+        title: T('UPLOAD_SUCCEED'),
         body: img[0].imgUrl!,
         icon: img[0].imgUrl
       })
@@ -33,8 +34,8 @@ export const uploadClipboardFiles = async (): Promise<string> => {
       return handleUrlEncode(img[0].imgUrl as string)
     } else {
       const notification = new Notification({
-        title: '上传不成功',
-        body: '你剪贴板最新的一条记录不是图片哦'
+        title: T('UPLOAD_FAILED'),
+        body: T('TIPS_UPLOAD_NOT_PICTURES')
       })
       notification.show()
       return ''
@@ -54,7 +55,7 @@ export const uploadChoosedFiles = async (webContents: WebContents, files: IFileW
     for (let i = 0; i < imgs.length; i++) {
       pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
       const notification = new Notification({
-        title: '上传成功',
+        title: T('UPLOAD_SUCCEED'),
         body: imgs[i].imgUrl!,
         icon: files[i].path
       })

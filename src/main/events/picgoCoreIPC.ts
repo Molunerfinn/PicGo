@@ -31,6 +31,7 @@ import {
 import { GalleryDB } from 'apis/core/datastore'
 import { IObject, IFilter } from '@picgo/store/dist/types'
 import pasteTemplate from '../utils/pasteTemplate'
+import { T } from '~/universal/i18n'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -143,7 +144,7 @@ const handlePluginInstall = () => {
       shortKeyHandler.registerPluginShortKey(res.body[0])
     } else {
       showNotification({
-        title: '插件安装失败',
+        title: T('PLUGIN_INSTALL_FAILED'),
         body: res.body as string
       })
     }
@@ -161,7 +162,7 @@ const handlePluginUninstall = async (fullName: string) => {
     shortKeyHandler.unregisterPluginShortKey(res.body[0])
   } else {
     showNotification({
-      title: '插件卸载失败',
+      title: T('PLUGIN_UNINSTALL_FAILED'),
       body: res.body as string
     })
   }
@@ -177,7 +178,7 @@ const handlePluginUpdate = async (fullName: string) => {
     window.webContents.send('updateSuccess', res.body[0])
   } else {
     showNotification({
-      title: '插件更新失败',
+      title: T('PLUGIN_UPDATE_FAILED'),
       body: res.body as string
     })
   }
@@ -189,8 +190,8 @@ const handleNPMError = (): IDispose => {
   const handler = (msg: string) => {
     if (msg === 'NPM is not installed') {
       dialog.showMessageBox({
-        title: '发生错误',
-        message: '请安装Node.js并重启PicGo再继续操作',
+        title: T('TIPS_ERROR'),
+        message: T('TIPS_INSTALL_NODE_AND_RELOAD_PICGO'),
         buttons: ['Yes']
       }).then((res) => {
         if (res.response === 0) {
@@ -265,12 +266,12 @@ const handleImportLocalPlugin = () => {
         const list = getPluginList()
         event.sender.send('pluginList', list)
         showNotification({
-          title: '导入插件成功',
+          title: T('PLUGIN_IMPORT_SUCCEED'),
           body: ''
         })
       } else {
         showNotification({
-          title: '导入插件失败',
+          title: T('PLUGIN_IMPORT_FAILED'),
           body: res.body as string
         })
       }

@@ -17,6 +17,7 @@ import {
   SHOW_INPUT_BOX
 } from '~/universal/events/constants'
 import { DBStore } from '@picgo/store'
+import { T } from '~/universal/i18n'
 
 // Cross-process support may be required in the future
 class GuiApi implements IGuiApi {
@@ -81,7 +82,7 @@ class GuiApi implements IGuiApi {
       for (let i = 0; i < imgs.length; i++) {
         pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
         const notification = new Notification({
-          title: '上传成功',
+          title: T('UPLOAD_SUCCEED'),
           body: imgs[i].imgUrl as string,
           icon: imgs[i].imgUrl
         })
@@ -151,8 +152,8 @@ class GuiApi implements IGuiApi {
               return new Promise((resolve) => {
                 const guiApi = GuiApi.getInstance()
                 guiApi.showMessageBox({
-                  title: '警告',
-                  message: '有插件正在试图删除一些相册图片，是否继续',
+                  title: T('TIPS_WARNING'),
+                  message: T('TIPS_PLUGIN_REMOVE_GALLERY_ITEM'),
                   type: 'info',
                   buttons: ['Yes', 'No']
                 }).then(res => {

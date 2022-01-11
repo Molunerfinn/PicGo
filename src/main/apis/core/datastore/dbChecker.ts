@@ -3,6 +3,7 @@ import path from 'path'
 import { app as APP } from 'electron'
 import { getLogger } from '@core/utils/localLogger'
 import dayjs from 'dayjs'
+import { T } from '~/universal/i18n'
 const STORE_PATH = APP.getPath('userData')
 const configFilePath = path.join(STORE_PATH, 'data.json')
 const configFileBackupPath = path.join(STORE_PATH, 'data.bak.json')
@@ -11,8 +12,8 @@ let _configFilePath = ''
 let hasCheckPath = false
 
 const errorMsg = {
-  broken: 'PicGo 配置文件损坏，已经恢复为默认配置',
-  brokenButBackup: 'PicGo 配置文件损坏，已经恢复为备份配置'
+  broken: T('TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_DEFAULT'),
+  brokenButBackup: T('TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_BACKUP')
 }
 
 /** ensure notification list */
@@ -36,7 +37,7 @@ function dbChecker () {
     }
     let configFile: string = '{}'
     const optionsTpl = {
-      title: '注意',
+      title: T('TIPS_NOTICE'),
       body: ''
     }
     // config save bak
@@ -51,7 +52,9 @@ function dbChecker () {
           JSON.parse(configFile)
           fs.writeFileSync(configFilePath, configFile, { encoding: 'utf-8' })
           const stats = fs.statSync(configFileBackupPath)
-          optionsTpl.body = `${errorMsg.brokenButBackup}\n备份文件版本：${dayjs(stats.mtime).format('YYYY-MM-DD HH:mm:ss')}`
+          optionsTpl.body = `${errorMsg.brokenButBackup}\n${T('TIPS_PICGO_BACKUP_FILE_VERSION', {
+            v: dayjs(stats.mtime).format('YYYY-MM-DD HH:mm:ss')
+          })}`
           global.notificationList?.push(optionsTpl)
           return
         } catch (e) {
@@ -98,8 +101,8 @@ function dbPathChecker (): string {
     const logger = getLogger(picgoLogPath)
     if (!hasCheckPath) {
       const optionsTpl = {
-        title: '注意',
-        body: '自定义文件解析出错，请检查路径内容是否正确'
+        title: T('TIPS_NOTICE'),
+        body: T('TIPS_CUSTOM_CONFIG_FILE_PATH_ERROR')
       }
       global.notificationList?.push(optionsTpl)
       hasCheckPath = true

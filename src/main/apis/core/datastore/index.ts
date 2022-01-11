@@ -5,6 +5,7 @@ import FileSync from 'lowdb/adapters/FileSync'
 import fs from 'fs-extra'
 import { dbPathChecker, dbPathDir, getGalleryDBPath } from './dbChecker'
 import { DBStore } from '@picgo/store'
+import { T } from '~/universal/i18n'
 
 const STORE_PATH = dbPathDir()
 
@@ -38,7 +39,7 @@ class ConfigStore {
         enable: true,
         key: 'CommandOrControl+Shift+P',
         name: 'upload',
-        label: '快捷上传'
+        label: T('QUICK_UPLOAD')
       }).write()
     }
   }
