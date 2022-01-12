@@ -97,7 +97,7 @@ function dbPathChecker (): string {
     }
     return _configFilePath
   } catch (e) {
-    const picgoLogPath = path.join(defaultConfigPath, 'picgo.log')
+    const picgoLogPath = path.join(STORE_PATH, 'picgo.log')
     const logger = getLogger(picgoLogPath)
     if (!hasCheckPath) {
       const optionsTpl = {
