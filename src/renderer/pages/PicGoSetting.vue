@@ -1,7 +1,7 @@
 <template>
   <div id="picgo-setting">
     <div class="view-title">
-      PicGo设置 - <i class="el-icon-document" @click="goConfigPage"></i>
+      {{ $T('PICGO_SETTINGS') }} - <i class="el-icon-document" @click="goConfigPage"></i>
     </div>
     <el-row class="setting-list">
       <el-col :span="16" :offset="4">
@@ -12,124 +12,124 @@
           size="small"
         >
           <el-form-item
-            label="打开配置文件"
+            :label="$T('SETTINGS_OPEN_CONFIG_FILE')"
           >
-            <el-button type="primary" round size="mini" @click="openFile('data.json')">点击打开</el-button>
+            <el-button type="primary" round size="mini" @click="openFile('data.json')">{{ $T('SETTINGS_CLICK_TO_OPEN') }}</el-button>
           </el-form-item>
           <el-form-item
-            label="设置日志文件"
+            :label="$T('SETTINGS_SET_LOG_FILE')"
           >
-            <el-button type="primary" round size="mini" @click="openLogSetting">点击设置</el-button>
+            <el-button type="primary" round size="mini" @click="openLogSetting">{{ $T('SETTINGS_CLICK_TO_SET') }}</el-button>
           </el-form-item>
           <el-form-item
-            label="修改快捷键"
+            :label="$T('SETTINGS_SET_SHORTCUT')"
           >
-            <el-button type="primary" round size="mini" @click="goShortCutPage">点击设置</el-button>
+            <el-button type="primary" round size="mini" @click="goShortCutPage">{{ $T('SETTINGS_CLICK_TO_SET') }}</el-button>
           </el-form-item>
           <el-form-item
-            label="自定义链接格式"
+            :label="$T('SETTINGS_CUSTOM_LINK_FORMAT')"
           >
-            <el-button type="primary" round size="mini" @click="customLinkVisible = true">点击设置</el-button>
+            <el-button type="primary" round size="mini" @click="customLinkVisible = true">{{ $T('SETTINGS_CLICK_TO_SET') }}</el-button>
           </el-form-item>
           <el-form-item
-            label="设置代理和镜像地址"
+            :label="$T('SETTINGS_SET_PROXY_AND_MIRROR')"
           >
-            <el-button type="primary" round size="mini" @click="proxyVisible = true">点击设置</el-button>
+            <el-button type="primary" round size="mini" @click="proxyVisible = true">{{ $T('SETTINGS_CLICK_TO_SET') }}</el-button>
           </el-form-item>
           <el-form-item
-            label="设置Server"
+            :label="$T('SETTINGS_SET_SERVER')"
           >
-            <el-button type="primary" round size="mini" @click="serverVisible = true">点击设置</el-button>
+            <el-button type="primary" round size="mini" @click="serverVisible = true">{{ $T('SETTINGS_CLICK_TO_SET') }}</el-button>
           </el-form-item>
           <el-form-item
-            label="检查更新"
+            :label="$T('SETTINGS_CHECK_UPDATE')"
           >
-            <el-button type="primary" round size="mini" @click="checkUpdate">点击检查</el-button>
+            <el-button type="primary" round size="mini" @click="checkUpdate">{{ $T('SETTINGS_CLICK_TO_CHECK') }}</el-button>
           </el-form-item>
           <el-form-item
-            label="打开更新助手"
+            :label="$T('SETTINGS_OPEN_UPDATE_HELPER')"
           >
             <el-switch
               v-model="form.updateHelper"
-              active-text="开"
-              inactive-text="关"
+              :active-text="$T('SETTINGS_OPEN')"
+              :inactive-text="$T('SETTINGS_CLOSE')"
               @change="updateHelperChange"
             ></el-switch>
           </el-form-item>
           <el-form-item
             v-show="form.updateHelper"
-            label="接受Beta版本更新"
+            :label="$T('SETTINGS_ACCEPT_BETA_UPDATE')"
           >
             <el-switch
               v-model="form.checkBetaUpdate"
-              active-text="开"
-              inactive-text="关"
+              :active-text="$T('SETTINGS_OPEN')"
+              :inactive-text="$T('SETTINGS_CLOSE')"
               @change="checkBetaUpdateChange"
             ></el-switch>
           </el-form-item>
           <el-form-item
-            label="开机自启"
+            :label="$T('SETTINGS_LAUNCH_ON_BOOT')"
           >
             <el-switch
               v-model="form.autoStart"
-              active-text="开"
-              inactive-text="关"
+              :active-text="$T('SETTINGS_OPEN')"
+              :inactive-text="$T('SETTINGS_CLOSE')"
               @change="handleAutoStartChange"
             ></el-switch>
           </el-form-item>
           <el-form-item
-            label="上传前重命名"
+            :label="$T('SETTINGS_RENAME_BEFORE_UPLOAD')"
           >
             <el-switch
               v-model="form.rename"
-              active-text="开"
-              inactive-text="关"
+              :active-text="$T('SETTINGS_OPEN')"
+              :inactive-text="$T('SETTINGS_CLOSE')"
               @change="handleRename"
             ></el-switch>
           </el-form-item>
           <el-form-item
-            label="时间戳重命名"
+            :label="$T('SETTINGS_TIMESTAMP_RENAME')"
           >
             <el-switch
               v-model="form.autoRename"
-              active-text="开"
-              inactive-text="关"
+              :active-text="$T('SETTINGS_OPEN')"
+              :inactive-text="$T('SETTINGS_CLOSE')"
               @change="handleAutoRename"
             ></el-switch>
           </el-form-item>
           <el-form-item
-            label="开启上传提示"
+            :label="$T('SETTINGS_OPEN_UPLOAD_TIPS')"
           >
             <el-switch
               v-model="form.uploadNotification"
-              active-text="开"
-              inactive-text="关"
+              :active-text="$T('SETTINGS_OPEN')"
+              :inactive-text="$T('SETTINGS_CLOSE')"
               @change="handleUploadNotification"
             ></el-switch>
           </el-form-item>
           <el-form-item
             v-if="os !== 'darwin'"
-            label="Mini窗口置顶"
+            :label="$T('SETTINGS_MINI_WINDOW_ON_TOP')"
           >
             <el-switch
               v-model="form.miniWindowOntop"
-              active-text="开"
-              inactive-text="关"
+              :active-text="$T('SETTINGS_OPEN')"
+              :inactive-text="$T('SETTINGS_CLOSE')"
               @change="handleMiniWindowOntop"
             ></el-switch>
           </el-form-item>
           <el-form-item
-            label="上传后自动复制URL"
+            :label="$T('SETTINGS_AUTO_COPY_URL_AFTER_UPLOAD')"
           >
             <el-switch
               v-model="form.autoCopyUrl"
-              active-text="开"
-              inactive-text="关"
+              :active-text="$T('SETTINGS_OPEN')"
+              :inactive-text="$T('SETTINGS_CLOSE')"
               @change="handleAutoCopyUrl"
             ></el-switch>
           </el-form-item>
           <el-form-item
-            label="选择显示的图床"
+            :label="$T('CHOOSE_SHOWED_PICBED')"
           >
             <el-checkbox-group
               v-model="form.showPicBedList"
@@ -147,7 +147,7 @@
       </el-col>
     </el-row>
     <el-dialog
-      title="自定义链接格式"
+      :title="$T('SETTINGS_CUSTOM_LINK_FORMAT')"
       :visible.sync="customLinkVisible"
       :modal-append-to-body="false"
     >
@@ -162,10 +162,10 @@
           prop="value"
         >
           <div class="custom-title">
-            用占位符 <b>$url</b> 来表示url的位置
+            {{ $T('SETTINGS_TIPS_PLACEHOLDER_URL') }}
           </div>
           <div class="custom-title">
-            用占位符 <b>$fileName</b> 来表示文件名的位置
+            {{ $T('SETTINGS_TIPS_PLACEHOLDER_FILENAME') }}
           </div>
           <el-input
             class="align-center"
@@ -175,15 +175,15 @@
         </el-form-item>
       </el-form>
       <div>
-        如[$fileName]($url)
+        {{ $T('SETTINGS_TIPS_SUCH_AS') }}[$fileName]($url)
       </div>
       <span slot="footer">
-        <el-button @click="cancelCustomLink" round>取消</el-button>
-        <el-button type="primary" @click="confirmCustomLink" round>确定</el-button>
+        <el-button @click="cancelCustomLink" round>{{ $T('CANCEL') }}</el-button>
+        <el-button type="primary" @click="confirmCustomLink" round>{{ $T('CONFIRM') }}</el-button>
       </span>
     </el-dialog>
     <el-dialog
-      title="设置代理和镜像地址"
+      :title="$T('SETTINGS_SET_PROXY_AND_MIRROR')"
       :visible.sync="proxyVisible"
       :modal-append-to-body="false"
       width="70%"
@@ -196,59 +196,59 @@
         label-width="120px"
       >
         <el-form-item
-          label="上传代理"
+          :label="$T('SETTINGS_UPLOAD_PROXY')"
         >
           <el-input
             v-model="proxy"
             :autofocus="true"
-            placeholder="例如：http://127.0.0.1:1080"
+            :placeholder="`${$T('SETTINGS_TIPS_SUCH_AS')}：http://127.0.0.1:1080`"
           ></el-input>
         </el-form-item>
         <el-form-item
-          label="插件安装代理"
+          :label="$T('SETTINGS_PLUGIN_INSTALL_PROXY')"
         >
           <el-input
             v-model="npmProxy"
             :autofocus="true"
-            placeholder="例如：http://127.0.0.1:1080"
+            :placeholder="`${$T('SETTINGS_TIPS_SUCH_AS')}：http://127.0.0.1:1080`"
           ></el-input>
         </el-form-item>
         <el-form-item
-          label="插件镜像地址"
+          :label="$T('SETTINGS_PLUGIN_INSTALL_MIRROR')"
         >
           <el-input
             v-model="npmRegistry"
             :autofocus="true"
-            placeholder="例如：https://registry.npm.taobao.org/"
+            :placeholder="`${$T('SETTINGS_TIPS_SUCH_AS')}：https://registry.npm.taobao.org/`"
           ></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button @click="cancelProxy" round>取消</el-button>
-        <el-button type="primary" @click="confirmProxy" round>确定</el-button>
+        <el-button @click="cancelProxy" round>{{ $T('CANCEL') }}</el-button>
+        <el-button type="primary" @click="confirmProxy" round>{{ $T('CONFIRM') }}</el-button>
       </span>
     </el-dialog>
     <el-dialog
-      title="检查更新"
+      :title="$T('SETTINGS_CHECK_UPDATE')"
       :visible.sync="checkUpdateVisible"
       :modal-append-to-body="false"
     >
       <div>
-        当前版本：{{ version }}
+        {{ $T('SETTINGS_CURRENT_VERSION') }}: {{ version }}
       </div>
       <div>
-        最新版本：{{ latestVersion ? latestVersion : '正在获取中...' }}
+        {{ $T('SETTINGS_NEWEST_VERSION') }}: {{ latestVersion ? latestVersion : `${$T('SETTINGS_GETING')}...` }}
       </div>
       <div v-if="needUpdate">
-        PicGo更新啦，请点击确定打开下载页面
+        {{ $T('SETTINGS_TIPS_HAS_NEW_VERSION') }}
       </div>
       <span slot="footer">
-        <el-button @click="cancelCheckVersion" round>取消</el-button>
-        <el-button type="primary" @click="confirmCheckVersion" round>确定</el-button>
+        <el-button @click="cancelCheckVersion" round>{{ $T('CANCEL') }}</el-button>
+        <el-button type="primary" @click="confirmCheckVersion" round>{{ $T('CONFIRM') }}</el-button>
       </span>
     </el-dialog>
     <el-dialog
-      title="设置日志文件"
+      :title="$T('SETTINGS_SET_LOG_FILE')"
       :visible.sync="logFileVisible"
       :modal-append-to-body="false"
     >
@@ -257,12 +257,12 @@
         label-width="100px"
       >
         <el-form-item
-          label="日志文件"
+          :label="$T('SETTINGS_LOG_FILE')"
         >
-          <el-button type="primary" round size="mini" @click="openFile('picgo.log')">点击打开</el-button>
+          <el-button type="primary" round size="mini" @click="openFile('picgo.log')">{{ $T('SETTINGS_CLICK_TO_OPEN') }}</el-button>
         </el-form-item>
         <el-form-item
-          label="日志记录等级"
+          :label="$T('SETTINGS_LOG_LEVEL')"
         >
           <el-select
             v-model="form.logLevel"
@@ -280,57 +280,57 @@
         </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button @click="cancelLogLevelSetting" round>取消</el-button>
-        <el-button type="primary" @click="confirmLogLevelSetting" round>确定</el-button>
+        <el-button @click="cancelLogLevelSetting" round>{{ $T('CANCEL') }}</el-button>
+        <el-button type="primary" @click="confirmLogLevelSetting" round>{{ $T('CONFIRM') }}</el-button>
       </span>
     </el-dialog>
     <el-dialog
       class="server-dialog"
       width="60%"
-      title="设置PicGo-Server"
+      :title="$T('SETTINGS_SET_PICGO_SERVER')"
       :visible.sync="serverVisible"
       :modal-append-to-body="false"
     >
       <div class="notice-text">
-        如果你不知道Server的作用，请阅读文档，或者不用修改配置。
+        {{ $T('SETTINGS_TIPS_SERVER_NOTICE') }}
       </div>
       <el-form
         label-position="right"
         label-width="120px"
       >
         <el-form-item
-          label="是否开启Server"
+          :label="$T('SETTINGS_ENABLE_SERVER')"
         >
           <el-switch
             v-model="server.enable"
-            active-text="开"
-            inactive-text="关"
+            :active-text="$T('SETTINGS_OPEN')"
+            :inactive-text="$T('SETTINGS_CLOSE')"
           ></el-switch>
         </el-form-item>
         <template v-if="server.enable">
           <el-form-item
-            label="设置监听地址"
+            :label="$T('SETTINGS_SET_SERVER_HOST')"
           >
             <el-input
               type="input"
               v-model="server.host"
-              placeholder="推荐默认地址:127.0.0.1"
+              :placeholder="$T('SETTINGS_TIP_PLACEHOLDER_HOST')"
             ></el-input>
           </el-form-item>
           <el-form-item
-            label="设置监听端口"
+            :label="$T('SETTINGS_SET_SERVER_PORT')"
           >
             <el-input
               type="number"
               v-model="server.port"
-              placeholder="推荐默认端口:36677"
+              :placeholder="$T('SETTINGS_TIP_PLACEHOLDER_PORT')"
             ></el-input>
           </el-form-item>
         </template>
       </el-form>
       <span slot="footer">
-        <el-button @click="cancelServerSetting" round>取消</el-button>
-        <el-button type="primary" @click="confirmServerSetting" round>确定</el-button>
+        <el-button @click="cancelServerSetting" round>{{ $T('CANCEL') }}</el-button>
+        <el-button type="primary" @click="confirmServerSetting" round>{{ $T('CONFIRM') }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -344,13 +344,14 @@ import {
   ipcRenderer
 } from 'electron'
 import { Component, Vue } from 'vue-property-decorator'
+import { T } from '~/universal/i18n'
 // import db from '#/datastore'
 const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
 const releaseUrlBackup = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'
 const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
 const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
   if (!/\$url/.test(value)) {
-    return callback(new Error('必须含有$url'))
+    return callback(new Error(T('TIPS_MUST_CONTAINS_URL')))
   } else {
     return callback()
   }
@@ -398,12 +399,12 @@ export default class extends Vue {
   }
 
   logLevel = {
-    all: '全部-All',
-    success: '成功-Success',
-    error: '错误-Error',
-    info: '普通-Info',
-    warn: '提醒-Warn',
-    none: '不记录日志-None'
+    all: this.$T('SETTINGS_LOG_LEVEL_ALL'),
+    success: this.$T('SETTINGS_LOG_LEVEL_SUCCESS'),
+    error: this.$T('SETTINGS_LOG_LEVEL_ERROR'),
+    info: this.$T('SETTINGS_LOG_LEVEL_INFO'),
+    warn: this.$T('SETTINGS_LOG_LEVEL_WARN'),
+    none: this.$T('SETTINGS_LOG_LEVEL_NONE')
   }
 
   server = {
@@ -522,8 +523,8 @@ export default class extends Vue {
       'settings.proxy': this.npmProxy,
       'settings.registry': this.npmRegistry
     })
-    const successNotification = new Notification('设置代理', {
-      body: '设置成功'
+    const successNotification = new Notification(this.$T('SETTINGS_SET_PROXY_AND_MIRROR'), {
+      body: this.$T('TIPS_SET_SUCCEED')
     })
     successNotification.onclick = () => {
       return true
@@ -595,7 +596,7 @@ export default class extends Vue {
           .then(res => {
             this.latestVersion = res.data.version
           }).catch(() => {
-            this.latestVersion = '网络错误暂时无法获取'
+            this.latestVersion = this.$T('TIPS_NETWORK_ERROR')
           })
       })
   }
@@ -619,13 +620,13 @@ export default class extends Vue {
 
   handleMiniWindowOntop (val: boolean) {
     this.saveConfig('settings.miniWindowOntop', val)
-    this.$message.info('需要重启生效')
+    this.$message.info(this.$T('TIPS_NEED_RELOAD'))
   }
 
   handleAutoCopyUrl (val: boolean) {
     this.saveConfig('settings.autoCopy', val)
-    const successNotification = new Notification('设置自动复制链接', {
-      body: '设置成功'
+    const successNotification = new Notification(this.$T('SETTINGS_AUTO_COPY_URL_AFTER_UPLOAD'), {
+      body: this.$T('TIPS_SET_SUCCEED')
     })
     successNotification.onclick = () => {
       return true
@@ -634,13 +635,13 @@ export default class extends Vue {
 
   confirmLogLevelSetting () {
     if (this.form.logLevel.length === 0) {
-      return this.$message.error('请选择日志记录等级')
+      return this.$message.error(this.$T('TIPS_PLEASE_CHOOSE_LOG_LEVEL'))
     }
     this.saveConfig({
       'settings.logLevel': this.form.logLevel
     })
-    const successNotification = new Notification('设置日志', {
-      body: '设置成功'
+    const successNotification = new Notification(this.$T('SETTINGS_SET_LOG_FILE'), {
+      body: this.$T('TIPS_SET_SUCCEED')
     })
     successNotification.onclick = () => {
       return true
@@ -667,8 +668,8 @@ export default class extends Vue {
     this.saveConfig({
       'settings.server': this.server
     })
-    const successNotification = new Notification('设置PicGo-Server', {
-      body: '设置成功'
+    const successNotification = new Notification(this.$T('SETTINGS_SET_PICGO_SERVER'), {
+      body: this.$T('TIPS_SET_SUCCEED')
     })
     successNotification.onclick = () => {
       return true
