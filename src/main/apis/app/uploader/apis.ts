@@ -23,7 +23,9 @@ export const uploadClipboardFiles = async (): Promise<string> => {
         body: img[0].imgUrl!,
         icon: img[0].imgUrl
       })
-      notification.show()
+      setTimeout(() => {
+        notification.show()
+      }, 100)
       await GalleryDB.getInstance().insert(img[0])
       // trayWindow just be created in mac/windows, not in linux
       trayWindow?.webContents?.send('clipboardFiles', [])
