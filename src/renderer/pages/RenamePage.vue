@@ -4,7 +4,7 @@
       @submit.native.prevent
     >
       <el-form-item
-        label="文件改名"
+        :label="$T('FILE_RENAME')"
       >
         <el-input
           v-model="fileName"
@@ -15,8 +15,8 @@
     </el-form>
     <el-row>
       <div class="pull-right">
-        <el-button @click="cancel" round size="mini">取消</el-button>
-        <el-button type="primary" @click="confirmName" round size="mini">确定</el-button>
+        <el-button @click="cancel" round size="mini">{{ $T('CANCEL') }}</el-button>
+        <el-button type="primary" @click="confirmName" round size="mini">{{ $T('CONFIRM') }}</el-button>
       </div>
     </el-row>
   </div>

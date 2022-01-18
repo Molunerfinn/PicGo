@@ -43,19 +43,19 @@
                 <template v-if="searchText">
                   <template v-if="!item.hasInstall">
                     <span class="config-button install" v-if="!item.ing" @click="installPlugin(item)">
-                      安装
+                      {{ $T('PLUGIN_INSTALL') }}
                     </span>
                     <span v-else-if="item.ing" class="config-button ing">
-                      安装中
+                      {{ $T('PLUGIN_INSTALLING') }}
                     </span>
                   </template>
                   <span v-else class="config-button ing">
-                    已安装
+                    {{ $T('PLUGIN_INSTALLED') }}
                   </span>
                 </template>
                 <template v-else>
                   <span v-if="item.ing" class="config-button ing">
-                    进行中
+                    {{ $T('PLUGIN_DOING_SOMETHING') }}
                   </span>
                   <template v-else>
                     <i
@@ -77,12 +77,14 @@
       </el-col>
     </el-row>
     <el-row v-show="needReload" class="reload-mask" :class="{ 'cut-width': pluginList.length > 6 }">
-      <el-button type="primary" @click="reloadApp" size="mini" round>重启以生效</el-button>
+      <el-button type="primary" @click="reloadApp" size="mini" round>{{ $T('TIPS_NEED_RELOAD') }}</el-button>
     </el-row>
     <el-dialog
       :visible.sync="dialogVisible"
       :modal-append-to-body="false"
-      :title="`配置${configName}`"
+      :title="$T('CONFIG_THING', {
+        c: configName
+      })"
       width="70%"
     >
       <config-form
@@ -93,8 +95,8 @@
       >
       </config-form>
       <span slot="footer">
-        <el-button @click="dialogVisible = false" round>取消</el-button>
-        <el-button type="primary" @click="handleConfirmConfig" round>确定</el-button>
+        <el-button @click="dialogVisible = false" round>{{ $T('CANCEL') }}</el-button>
+        <el-button type="primary" @click="handleConfirmConfig" round>{{ $T('CONFIRM') }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -138,8 +140,7 @@ export default class extends Vue {
   pluginNameList: string[] = []
   loading = true
   needReload = false
-  pluginListToolTip = '插件列表'
-  importLocalPluginToolTip = '导入本地插件'
+  pluginListToolTip = this.$T('PLUGIN_LIST')importLocalPluginToolTip = this.$T('PLUGIN_IMPORT_LOCAL')
   id = ''
   os = ''
   defaultLogo: string = 'this.src="https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@dev/public/roundLogo.png"'
@@ -264,9 +265,9 @@ export default class extends Vue {
 
   installPlugin (item: IPicGoPlugin) {
     if (!item.gui) {
-      this.$confirm('该插件未对可视化界面进行优化, 是否继续安装?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$T('TIPS_PLUGIN_NOT_GUI_IMPLEMENT'), this.$T('TIPS_NOTICE'), {
+        confirmButtonText: this.$T('CONFIRM'),
+        cancelButtonText: this.$T('CANCEL'),
         type: 'warning'
       }).then(() => {
         item.ing = true
@@ -309,8 +310,8 @@ export default class extends Vue {
       needReload: true
     })
     this.needReload = true
-    const successNotification = new Notification('更新成功', {
-      body: '请点击此通知重启应用以生效'
+    const successNotification = new Notification(this.$T('PLUGIN_UPDATE_SUCCEED'), {
+      body: this.$T('TIPS_NEED_RELOAD')
     })
     successNotification.onclick = () => {
       this.reloadApp()
@@ -342,8 +343,8 @@ export default class extends Vue {
           })
           break
       }
-      const successNotification = new Notification('设置结果', {
-        body: '设置成功'
+      const successNotification = new Notification(this.$T('SETTINGS_RESULT'), {
+        body: this.$T('TIPS_SET_SUCCEED')
       })
       successNotification.onclick = () => {
         return true

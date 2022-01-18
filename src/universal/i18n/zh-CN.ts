@@ -50,6 +50,7 @@ export const ZH_CN = {
   CHANGE_IMAGE_URL_SUCCEED: '修改图片URL成功',
   COPY_LINK_SUCCEED: '复制链接成功',
   BATCH_COPY_LINK_SUCCEED: '批量复制链接成功',
+  FILE_RENAME: '文件改名',
 
   // settings
   SETTINGS_OPEN_CONFIG_FILE: '打开配置文件',
@@ -98,6 +99,18 @@ export const ZH_CN = {
   SETTINGS_LOG_LEVEL_WARN: '提醒-Warn',
   SETTINGS_LOG_LEVEL_NONE: '不记录日志-None',
   SETTINGS_RESULT: '设置结果',
+
+  SHORTCUT_NAME: '快捷键名称',
+  SHORTCUT_BIND: '快捷键绑定',
+  SHORTCUT_STATUS: '状态',
+  SHORTCUT_ENABLED: '已启用',
+  SHORTCUT_DISABLED: '已禁用',
+  SHORTCUT_SOURCE: '已禁用',
+  SHORTCUT_HANDLE: '操作',
+  SHORTCUT_ENABLE: '启用',
+  SHORTCUT_DISABLE: '禁用',
+  SHORTCUT_EDIT: '编辑',
+  SHORTCUT_CHANGE_UPLOAD: '修改上传快捷键',
 
   // plugins
   PLUGIN_SEARCH_PLACEHOLDER: '搜索npm上的PicGo插件，或者点击上方按钮查看优秀插件列表',

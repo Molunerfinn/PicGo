@@ -1,7 +1,7 @@
 <template>
   <div id="shortcut-page">
     <div class="view-title">
-      快捷键设置
+      {{ $T('SETTINGS_SET_SHORTCUT') }}
     </div>
     <el-row>
       <el-col :span="20" :offset="2">
@@ -10,7 +10,7 @@
           size="mini"
         >
           <el-table-column
-            label="快捷键名称"
+            :label="$T('SHORTCUT_NAME')"
           >
             <template slot-scope="scope">
               {{ scope.row.label ? scope.row.label : scope.row.name }}
@@ -18,24 +18,24 @@
           </el-table-column>
           <el-table-column
             width="160px"
-            label="快捷键绑定"
+            :label="$T('SHORTCUT_BIND')"
             prop="key"
           >
           </el-table-column>
           <el-table-column
-            label="状态"
+            :label="$T('SHORTCUT_STATUS')"
           >
             <template slot-scope="scope">
               <el-tag
                 size="mini"
                 :type="scope.row.enable ? 'success' : 'danger'"
               >
-                {{ scope.row.enable ? '已启用' : '已禁用' }}
+                {{ scope.row.enable ? $T('SHORTCUT_ENABLED') : $T('SHORTCUT_DISABLED') }}
               </el-tag>
             </template>
           </el-table-column>
           <el-table-column
-            label="来源"
+            :label="$T('SHORTCUT_SOURCE')"
             width="100px"
           >
             <template slot-scope="scope">
@@ -43,7 +43,7 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="操作"
+            :label="$T('SHORTCUT_HANDLE')"
           >
             <template slot-scope="scope">
               <el-button
@@ -53,14 +53,14 @@
                   disabled: scope.row.enable
                 }"
                 type="text">
-                {{ scope.row.enable ? '禁用' : '启用' }}
+                {{ scope.row.enable ? $T('SHORTCUT_DISABLE') : $T('SHORTCUT_ENABLE') }}
               </el-button>
               <el-button
                 class="edit"
                 size="mini"
                 @click="openKeyBindingDialog(scope.row, scope.$index)"
                 type="text">
-                编辑
+                {{ $T('SHORTCUT_EDIT') }}
               </el-button>
             </template>
           </el-table-column>
@@ -68,7 +68,7 @@
       </el-col>
     </el-row>
     <el-dialog
-      title="修改上传快捷键"
+      :title="$T('SHORTCUT_CHANGE_UPLOAD')"
       :visible.sync="keyBindingVisible"
       :modal-append-to-body="false"
     >
@@ -76,9 +76,7 @@
         label-position="top"
         label-width="80px"
       >
-        <el-form-item
-          label="快捷上传"
-        >
+        <el-form-item>
           <el-input
             class="align-center"
             @keydown.native.prevent="keyDetect($event)"
@@ -88,8 +86,12 @@
         </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button @click="cancelKeyBinding" round>取消</el-button>
-        <el-button type="primary" @click="confirmKeyBinding" round>确定</el-button>
+        <el-button @click="cancelKeyBinding" round>
+          {{ $T('CANCEL') }}
+        </el-button>
+        <el-button type="primary" @click="confirmKeyBinding" round>
+          {{ $T('CONFIRM') }}
+        </el-button>
       </span>
     </el-dialog>
   </div>
