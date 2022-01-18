@@ -1,7 +1,7 @@
 <template>
   <div id="plugin-view">
     <div class="view-title">
-      插件设置 -
+      {{ $T('PLUGIN_SETTINGS') }} -
       <el-tooltip :content="pluginListToolTip" placement="right">
         <i class="el-icon-goods" @click="goAwesomeList"></i>
       </el-tooltip>
@@ -12,7 +12,7 @@
     <el-row class="handle-bar" :class="{ 'cut-width': pluginList.length > 6 }">
       <el-input
         v-model="searchText"
-        placeholder="搜索npm上的PicGo插件，或者点击上方按钮查看优秀插件列表"
+        :placeholder="$T('PLUGIN_SEARCH_PLACEHOLDER')"
         size="small"
       >
         <i slot="suffix" class="el-input__icon el-icon-close" v-if="searchText" @click="cleanSearch" style="cursor: pointer"></i>

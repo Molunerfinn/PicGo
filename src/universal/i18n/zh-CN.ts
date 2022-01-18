@@ -97,6 +97,16 @@ export const ZH_CN = {
   SETTINGS_LOG_LEVEL_INFO: '普通-Info',
   SETTINGS_LOG_LEVEL_WARN: '提醒-Warn',
   SETTINGS_LOG_LEVEL_NONE: '不记录日志-None',
+  SETTINGS_RESULT: '设置结果',
+
+  // plugins
+  PLUGIN_SEARCH_PLACEHOLDER: '搜索npm上的PicGo插件，或者点击上方按钮查看优秀插件列表',
+  PLUGIN_INSTALL: '安装',
+  PLUGIN_INSTALLING: '安装中',
+  PLUGIN_INSTALLED: '已安装',
+  PLUGIN_DOING_SOMETHING: '进行中',
+  PLUGIN_LIST: '插件列表',
+  PLUGIN_IMPORT_LOCAL: '导入本地插件',
 
   // tips
   TIPS_REMOVE_LINK: '此操作将把该图片移出相册, 是否继续?',
@@ -106,6 +116,8 @@ export const ZH_CN = {
   TIPS_NEED_RELOAD: '需要重启生效',
   TIPS_PLEASE_CHOOSE_LOG_LEVEL: '请选择日志记录等级',
   TIPS_SET_SUCCEED: '设置成功',
+  TIPS_PLUGIN_NOT_GUI_IMPLEMENT: '该插件未对可视化界面进行优化, 是否继续安装?',
+  TIPS_CLICK_NOTIFICATION_TO_RELOAD: '请点击此通知重启应用以生效',
   // ---renderer i18n end---
 
   // plugins
