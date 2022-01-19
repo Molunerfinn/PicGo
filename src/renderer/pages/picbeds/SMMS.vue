@@ -17,7 +17,7 @@
             :rules="{
               required: true, message: 'Token不能为空', trigger: 'blur'
             }">
-            <el-input v-model="form.token" type="password" placeholder="token" @keyup.native.enter="confirm('smmsForm')"></el-input>
+            <el-input v-model="form.token" type="password" placeholder="token" @keyup.native.enter="confirm"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button-group>

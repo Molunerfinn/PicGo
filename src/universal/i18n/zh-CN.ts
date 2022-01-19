@@ -53,6 +53,7 @@ export const ZH_CN = {
   FILE_RENAME: '文件改名',
 
   // settings
+  SETTINGS: '设置',
   SETTINGS_OPEN_CONFIG_FILE: '打开配置文件',
   SETTINGS_CLICK_TO_OPEN: '点击打开',
   SETTINGS_SET_LOG_FILE: '设置日志文件',
@@ -99,7 +100,11 @@ export const ZH_CN = {
   SETTINGS_LOG_LEVEL_WARN: '提醒-Warn',
   SETTINGS_LOG_LEVEL_NONE: '不记录日志-None',
   SETTINGS_RESULT: '设置结果',
+  SETTINGS_DEFAULT_PICBED: '设置默认图床',
+  SETTINGS_SET_DEFAULT_PICBED: '设为默认图床',
+  SETTINGS_NOT_CONFIG_OPTIONS: '暂无配置项',
 
+  // shortcut page
   SHORTCUT_NAME: '快捷键名称',
   SHORTCUT_BIND: '快捷键绑定',
   SHORTCUT_STATUS: '状态',
@@ -111,6 +116,22 @@ export const ZH_CN = {
   SHORTCUT_DISABLE: '禁用',
   SHORTCUT_EDIT: '编辑',
   SHORTCUT_CHANGE_UPLOAD: '修改上传快捷键',
+
+  // tray page
+  WAIT_TO_UPLOAD: '等待上传',
+  ALREADY_UPLOAD: '已上传',
+
+  // uload page
+  PICTURE_UPLOAD: '图片上传',
+  DRAG_FILE_TO_HERE: '将文件拖拽到此处，或',
+  CLICK_TO_UPLOAD: '点击上传',
+  LINK_FORMAT: '链接格式',
+  CUSTOM: '自定义',
+  CLIPBOARD_PICTURE: '剪贴板图片',
+  TIPS_DRAG_VALID_PICTURE_OR_URL: '请拖入合法的图片文件或者图片URL地址',
+  TIPS_INPUT_URL: '请输入URL',
+  TIPS_HTTP_PREFIX: 'http://或者https://开头',
+  TIPS_INPUT_VALID_URL: '请输入合法的URL',
 
   // plugins
   PLUGIN_SEARCH_PLACEHOLDER: '搜索npm上的PicGo插件，或者点击上方按钮查看优秀插件列表',

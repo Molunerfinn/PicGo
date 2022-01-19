@@ -3,7 +3,7 @@
     <!-- <div class="header-arrow"></div> -->
     <div class="content">
       <div class="wait-upload-img" v-if="clipboardFiles.length > 0">
-        <div class="list-title">等待上传</div>
+        <div class="list-title">{{ $T('WAIT_TO_UPLOAD') }}</div>
         <div v-for="(item, index) in clipboardFiles" :key="index" class="img-list">
           <div
             class="upload-img__container"
@@ -14,7 +14,7 @@
         </div>
       </div>
       <div class="uploaded-img">
-        <div class="list-title">已上传</div>
+        <div class="list-title">{{ $T('ALREADY_UPLOAD') }}</div>
         <div v-for="item in files" :key="item.imgUrl" class="img-list">
           <div class="upload-img__container" @click="copyTheLink(item)">
             <img :src="item.imgUrl" class="upload-img">
@@ -39,7 +39,7 @@ import { PASTE_TEXT } from '#/events/constants'
 export default class extends Vue {
   files: IResult<ImgInfo>[] = []
   notification = {
-    title: '复制链接成功',
+    title: this.$T('COPY_LINK_SUCCEED'),
     body: '',
     icon: ''
   }

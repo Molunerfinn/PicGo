@@ -3,7 +3,7 @@
     <el-row :gutter="16" class="setting-list">
       <el-col :span="16" :offset="4">
         <div class="view-title">
-          {{ picBedName }}设置
+          {{ picBedName }}{{ $T('SETTINGS') }}
         </div>
         <config-form
           v-if="config.length > 0"
@@ -14,14 +14,14 @@
         >
           <el-form-item>
             <el-button-group>
-              <el-button type="primary" @click="handleConfirm" round>确定</el-button>
-              <el-button type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type">设为默认图床</el-button>
+              <el-button type="primary" @click="handleConfirm" round>{{ $T('CONFIRM') }}</el-button>
+              <el-button type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type">{{ $T('SETTINGS_SET_DEFAULT_PICBED') }}</el-button>
             </el-button-group>
           </el-form-item>
         </config-form>
         <div v-else class="single">
-          <div class="notice">暂无配置项</div>
-          <el-button type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type" size="mini">设为默认图床</el-button>
+          <div class="notice">{{ $T('SETTINGS_NOT_CONFIG_OPTIONS') }}</div>
+          <el-button type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type" size="mini">{{ $T('SETTINGS_SET_DEFAULT_PICBED') }}</el-button>
         </div>
       </el-col>
     </el-row>
@@ -60,8 +60,8 @@ export default class extends Vue {
       this.saveConfig({
         [`picBed.${this.type}`]: result
       })
-      const successNotification = new Notification('设置结果', {
-        body: '设置成功'
+      const successNotification = new Notification(this.$T('SETTINGS_RESULT'), {
+        body: this.$T('TIPS_SET_SUCCEED')
       })
       successNotification.onclick = () => {
         return true
@@ -76,8 +76,8 @@ export default class extends Vue {
     })
     // @ts-ignore 来自mixin的数据
     this.defaultPicBed = type
-    const successNotification = new Notification('设置默认图床', {
-      body: '设置成功'
+    const successNotification = new Notification(this.$T('SETTINGS_DEFAULT_PICBED'), {
+      body: this.$T('TIPS_SET_SUCCEED')
     })
     successNotification.onclick = () => {
       return true

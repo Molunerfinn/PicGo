@@ -3,7 +3,7 @@
     <el-row :gutter="16">
       <el-col :span="20" :offset="2">
         <div class="view-title">
-          图片上传 - {{ picBedName }} <i class="el-icon-caret-bottom" @click="handleChangePicBed"></i>
+          {{ $T('PICTURE_UPLOAD') }} - {{ picBedName }} <i class="el-icon-caret-bottom" @click="handleChangePicBed"></i>
         </div>
         <div
           id="upload-area"
@@ -15,7 +15,7 @@
           <div id="upload-dragger" @click="openUplodWindow">
             <i class="el-icon-upload"></i>
             <div class="upload-dragger__text">
-              将文件拖到此处，或 <span>点击上传</span>
+              {{ $T('DRAG_FILE_TO_HERE') }} <span>{{ $T('CLICK_TO_UPLOAD') }}</span>
             </div>
             <input type="file" id="file-uploader" @change="onChange" multiple>
           </div>
@@ -30,7 +30,7 @@
         <div class="paste-style">
           <div class="el-col-16">
             <div class="paste-style__text">
-              链接格式
+              {{ $T('LINK_FORMAT') }}
             </div>
             <el-radio-group v-model="pasteStyle" size="mini"
               @change="handlePasteStyleChange"
@@ -41,14 +41,14 @@
               <el-radio-button label="HTML"></el-radio-button>
               <el-radio-button label="URL"></el-radio-button>
               <el-radio-button label="UBB"></el-radio-button>
-              <el-radio-button label="Custom" title="自定义"></el-radio-button>
+              <el-radio-button label="Custom" :title="$T('CUSTOM')"></el-radio-button>
             </el-radio-group>
           </div>
           <div class="el-col-8">
             <div class="paste-style__text">
-              快捷上传
+              {{ $T('QUICK_UPLOAD') }}
             </div>
-            <el-button type="primary" round size="mini" @click="uploadClipboardFiles" class="quick-upload" style="width: 50%">剪贴板图片</el-button>
+            <el-button type="primary" round size="mini" @click="uploadClipboardFiles" class="quick-upload" style="width: 50%">{{ $T('CLIPBOARD_PICTURE') }}</el-button>
             <el-button type="primary" round size="mini" @click="uploadURLFiles" class="quick-upload" style="width: 46%; margin-left: 6px">URL</el-button>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default class extends Vue {
       if (isUrl(str)) {
         ipcRenderer.send('uploadChoosedFiles', [{ path: str }])
       } else {
-        this.$message.error('请拖入合法的图片文件或者图片URL地址')
+        this.$message.error(this.$T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
       }
     } else {
       this.ipcSendFiles(e.dataTransfer!.files)
@@ -150,7 +150,7 @@ export default class extends Vue {
         }
       ])
     } else {
-      this.$message.error('请拖入合法的图片文件或者图片URL地址')
+      this.$message.error(this.$T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
     }
   }
 
@@ -193,8 +193,8 @@ export default class extends Vue {
     const str = await navigator.clipboard.readText()
     this.$bus.$emit(SHOW_INPUT_BOX, {
       value: isUrl(str) ? str : '',
-      title: '请输入URL',
-      placeholder: 'http://或者https://开头'
+      title: this.$T('TIPS_INPUT_URL'),
+      placeholder: this.$T('TIPS_HTTP_PREFIX')
     })
   }
 
@@ -205,7 +205,7 @@ export default class extends Vue {
         path: val
       }])
     } else {
-      this.$message.error('请输入合法的URL')
+      this.$message.error(this.$T('TIPS_INPUT_VALID_URL'))
     }
   }
 

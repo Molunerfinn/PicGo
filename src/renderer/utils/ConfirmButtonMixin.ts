@@ -16,8 +16,8 @@ export default class extends Vue {
       'picBed.uploader': type
     })
     this.defaultPicBed = type
-    const successNotification = new Notification('设置默认图床', {
-      body: '设置成功'
+    const successNotification = new Notification(this.$T('SETTINGS_DEFAULT_PICBED'), {
+      body: this.$T('TIPS_SET_SUCCEED')
     })
     successNotification.onclick = () => {
       return true
