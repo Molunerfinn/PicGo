@@ -134,6 +134,11 @@ export default {
     ipcMain.on('openMiniWindow', () => {
       const miniWindow = windowManager.get(IWindowList.MINI_WINDOW)!
       const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)!
+
+      if (db.get('settings.miniWindowOntop')) {
+        miniWindow.setAlwaysOnTop(true)
+      }
+
       miniWindow.show()
       miniWindow.focus()
       settingWindow.hide()
