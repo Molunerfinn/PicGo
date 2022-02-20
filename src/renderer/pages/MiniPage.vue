@@ -23,6 +23,9 @@ import {
   IpcRendererEvent
 } from 'electron'
 import { SHOW_MINI_PAGE_MENU, SET_MINI_WINDOW_POS } from '~/universal/events/constants'
+import {
+  isUrl
+} from '~/universal/utils/common'
 @Component({
   name: 'mini-page',
   mixins: [mixin]
@@ -80,7 +83,35 @@ export default class extends Vue {
 
   onDrop (e: DragEvent) {
     this.dragover = false
-    this.ipcSendFiles(e.dataTransfer!.files)
+    const items = e.dataTransfer!.items
+    if (items.length === 2 && items[0].type === 'text/uri-list') {
+      this.handleURLDrag(items, e.dataTransfer!)
+    } else if (items[0].type === 'text/plain') {
+      const str = e.dataTransfer!.getData(items[0].type)
+      if (isUrl(str)) {
+        ipcRenderer.send('uploadChoosedFiles', [{ path: str }])
+      } else {
+        this.$message.error(this.$T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
+      }
+    } else {
+      this.ipcSendFiles(e.dataTransfer!.files)
+    }
+  }
+
+  handleURLDrag (items: DataTransferItemList, dataTransfer: DataTransfer) {
+    // text/html
+    // Use this data to get a more precise URL
+    const urlString = dataTransfer.getData(items[1].type)
+    const urlMatch = urlString.match(/<img.*src="(.*?)"/)
+    if (urlMatch) {
+      ipcRenderer.send('uploadChoosedFiles', [
+        {
+          path: urlMatch[1]
+        }
+      ])
+    } else {
+      this.$message.error(this.$T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
+    }
   }
 
   openUploadWindow () {
