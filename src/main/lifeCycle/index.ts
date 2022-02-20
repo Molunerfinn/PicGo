@@ -35,6 +35,7 @@ import { privacyManager } from '~/main/utils/privacyManager'
 import logger from 'apis/core/picgo/logger'
 import picgo from 'apis/core/picgo'
 import fixPath from './fixPath'
+import { initI18n } from '~/main/utils/handleI18n'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -61,6 +62,7 @@ class LifeCycle {
     // fix the $PATH in macOS & linux
     fixPath()
     beforeOpen()
+    initI18n()
     ipcList.listen()
     busEventList.listen()
     updateShortKeyFromVersion212(db, db.get('settings.shortKey'))

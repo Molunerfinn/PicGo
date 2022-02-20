@@ -1,9 +1,15 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { ipcRenderer, IpcRendererEvent } from 'electron'
-import { PICGO_SAVE_CONFIG, PICGO_GET_CONFIG } from '#/events/constants'
+import { PICGO_SAVE_CONFIG, PICGO_GET_CONFIG, FORCE_UPDATE } from '#/events/constants'
 import { uuid } from 'uuidv4'
 @Component
 export default class extends Vue {
+  created () {
+    this.$bus.$on(FORCE_UPDATE, () => {
+      this.$forceUpdate()
+    })
+  }
+
   // support string key + value or object config
   saveConfig (config: IObj | string, value?: any) {
     if (typeof config === 'string') {
@@ -26,5 +32,9 @@ export default class extends Vue {
       ipcRenderer.on(PICGO_GET_CONFIG, callback)
       ipcRenderer.send(PICGO_GET_CONFIG, key, callbackId)
     })
+  }
+
+  forceUpdate () {
+    this.$bus.$emit(FORCE_UPDATE)
   }
 }

@@ -105,6 +105,7 @@ export const ZH_CN = {
   SETTINGS_SET_DEFAULT_PICBED: '设为默认图床',
   SETTINGS_NOT_CONFIG_OPTIONS: '暂无配置项',
   SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD: '使用内置剪贴板上传',
+  SETTINGS_CHOOSE_LANGUAGE: '选择语言',
 
   // shortcut page
   SHORTCUT_NAME: '快捷键名称',
@@ -112,7 +113,7 @@ export const ZH_CN = {
   SHORTCUT_STATUS: '状态',
   SHORTCUT_ENABLED: '已启用',
   SHORTCUT_DISABLED: '已禁用',
-  SHORTCUT_SOURCE: '已禁用',
+  SHORTCUT_SOURCE: '来源',
   SHORTCUT_HANDLE: '操作',
   SHORTCUT_ENABLE: '启用',
   SHORTCUT_DISABLE: '禁用',
@@ -214,3 +215,4 @@ a)本软件不会收集您的个人信息、密钥信息等隐私信息，所收
 }
 
 export type ILocalesKey = keyof typeof ZH_CN
+export type ILocales = typeof ZH_CN

@@ -27,7 +27,8 @@ import {
   OPEN_URL,
   RELOAD_APP,
   SHOW_PLUGIN_PAGE_MENU,
-  SET_MINI_WINDOW_POS
+  SET_MINI_WINDOW_POS,
+  CHANGE_LANGUAGE
 } from '#/events/constants'
 import {
   uploadClipboardFiles,
@@ -37,7 +38,7 @@ import picgoCoreIPC from './picgoCoreIPC'
 import { handleCopyUrl } from '~/main/utils/common'
 import { buildMainPageMenu, buildMiniPageMenu, buildPluginPageMenu, buildUploadPageMenu } from './remotes/menu'
 import path from 'path'
-import { T } from '~/universal/i18n'
+import { i18n, T } from '~/universal/i18n'
 
 const STORE_PATH = app.getPath('userData')
 
@@ -222,6 +223,10 @@ export default {
     ipcMain.on(SET_MINI_WINDOW_POS, (evt: IpcMainEvent, pos: IMiniWindowPos) => {
       const window = BrowserWindow.getFocusedWindow()
       window?.setBounds(pos)
+    })
+    ipcMain.on(CHANGE_LANGUAGE, (evt: IpcMainEvent, lang: string) => {
+      lang = lang || 'zh-CN'
+      i18n.setLanguage(lang)
     })
   },
   dispose () {}

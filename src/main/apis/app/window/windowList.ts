@@ -10,8 +10,18 @@ import { CREATE_APP_MENU } from '@core/bus/constants'
 import db from '~/main/apis/core/datastore'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { app } from 'electron'
+import { i18n } from '~/universal/i18n'
+import { URLSearchParams } from 'url'
 
 const windowList = new Map<IWindowList, IWindowListItem>()
+
+const handleWindowParams = (windowURL: string) => {
+  const [baseURL, hash = ''] = windowURL.split('#')
+  const search = new URLSearchParams()
+  const lang = i18n.getLanguage()
+  search.append('lang', lang)
+  return `${baseURL}?${search.toString()}#${hash}`
+}
 
 windowList.set(IWindowList.TRAY_WINDOW, {
   isValid: process.platform !== 'linux',
@@ -35,7 +45,7 @@ windowList.set(IWindowList.TRAY_WINDOW, {
     }
   },
   callback (window) {
-    window.loadURL(TRAY_WINDOW_URL)
+    window.loadURL(handleWindowParams(TRAY_WINDOW_URL))
     window.on('blur', () => {
       window.hide()
     })
@@ -76,7 +86,7 @@ windowList.set(IWindowList.SETTING_WINDOW, {
     return options
   },
   callback (window, windowManager) {
-    window.loadURL(SETTING_WINDOW_URL)
+    window.loadURL(handleWindowParams(SETTING_WINDOW_URL))
     window.on('closed', () => {
       bus.emit(TOGGLE_SHORTKEY_MODIFIED_MODE, false)
       if (process.platform === 'linux') {
@@ -118,7 +128,7 @@ windowList.set(IWindowList.MINI_WINDOW, {
     return obj
   },
   callback (window) {
-    window.loadURL(MINI_WINDOW_URL)
+    window.loadURL(handleWindowParams(MINI_WINDOW_URL))
   }
 })
 
@@ -149,7 +159,7 @@ windowList.set(IWindowList.RENAME_WINDOW, {
     return options
   },
   async callback (window, windowManager) {
-    window.loadURL(RENAME_WINDOW_URL)
+    window.loadURL(handleWindowParams(RENAME_WINDOW_URL))
     const currentWindow = windowManager.getAvailableWindow()
     if (currentWindow && currentWindow.isVisible()) {
     // bounds: { x: 821, y: 75, width: 800, height: 450 }

@@ -81,9 +81,11 @@ const getPluginList = (): IPicGoPlugin[] => {
     const pluginPKG = requireFunc(path.join(pluginPath, 'package.json'))
     const uploaderName = plugin.uploader || ''
     const transformerName = plugin.transformer || ''
-    let menu: IGuiMenuItem[] = []
+    let menu: Omit<IGuiMenuItem, 'handle'>[] = []
     if (plugin.guiMenu) {
-      menu = plugin.guiMenu(picgo)
+      menu = plugin.guiMenu(picgo).map(item => ({
+        label: item.label
+      }))
     }
     let gui = false
     if (pluginPKG.keywords && pluginPKG.keywords.length > 0) {
@@ -127,6 +129,8 @@ const getPluginList = (): IPicGoPlugin[] => {
 const handleGetPluginList = () => {
   ipcMain.on('getPluginList', (event: IpcMainEvent) => {
     const list = getPluginList()
+    // here can just send JS Object not function
+    // or will cause [Failed to serialize arguments] error
     event.sender.send('pluginList', list)
   })
 }

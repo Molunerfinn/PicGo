@@ -12,6 +12,24 @@
           size="small"
         >
           <el-form-item
+            :label="$T('SETTINGS_CHOOSE_LANGUAGE')"
+          >
+            <!-- <el-button type="primary" round size="mini" @click="openFile('data.json')">{{ $T('SETTINGS_CLICK_TO_OPEN') }}</el-button> -->
+            <el-select
+              v-model="currentLanguage"
+              size="mini"
+              style="width: 100%"
+              @change="handleLanguageChange"
+              :placeholder="$T('SETTINGS_CHOOSE_LANGUAGE')">
+              <el-option
+                v-for="item in languageList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item
             :label="$T('SETTINGS_OPEN_CONFIG_FILE')"
           >
             <el-button type="primary" round size="mini" @click="openFile('data.json')">{{ $T('SETTINGS_CLICK_TO_OPEN') }}</el-button>
@@ -350,12 +368,12 @@
 import keyDetect from '@/utils/key-binding'
 import pkg from 'root/package.json'
 import { IConfig } from 'picgo'
-import { PICGO_OPEN_FILE, OPEN_URL } from '#/events/constants'
+import { PICGO_OPEN_FILE, OPEN_URL, CHANGE_LANGUAGE } from '#/events/constants'
 import {
   ipcRenderer
 } from 'electron'
 import { Component, Vue } from 'vue-property-decorator'
-import { T } from '~/universal/i18n'
+import { T, languageList } from '~/universal/i18n'
 // import db from '#/datastore'
 const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
 const releaseUrlBackup = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'
@@ -383,9 +401,16 @@ export default class extends Vue {
     logLevel: ['all'],
     autoCopyUrl: true,
     checkBetaUpdate: true,
-    useBuiltinClipboard: false
+    useBuiltinClipboard: false,
+    language: 'zh-CN'
   }
 
+  languageList = languageList.map(item => ({
+    label: item,
+    value: item
+  }))
+
+  currentLanguage = 'zh-CN'
   picBed: IPicBedType[] = []
   logFileVisible = false
   keyBindingVisible = false
@@ -459,7 +484,8 @@ export default class extends Vue {
       this.form.autoCopyUrl = settings.autoCopy === undefined ? true : settings.autoCopy
       this.form.checkBetaUpdate = settings.checkBetaUpdate === undefined ? true : settings.checkBetaUpdate
       this.form.useBuiltinClipboard = settings.useBuiltinClipboard === undefined ? false : settings.useBuiltinClipboard
-
+      this.form.language = settings.language ?? 'zh-CN'
+      this.currentLanguage = settings.language ?? 'zh-CN'
       this.customLink.value = settings.customLink || '$url'
       this.shortKey.upload = settings.shortKey.upload
       this.proxy = picBed.proxy || ''
@@ -723,6 +749,15 @@ export default class extends Vue {
       }
     }
     return false
+  }
+
+  handleLanguageChange (val: string) {
+    this.$i18n.setLanguage(val)
+    this.forceUpdate()
+    ipcRenderer.send(CHANGE_LANGUAGE, val)
+    this.saveConfig({
+      'settings.language': val
+    })
   }
 
   goConfigPage () {

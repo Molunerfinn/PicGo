@@ -10,6 +10,7 @@ interface ISettingForm {
   autoCopyUrl: boolean
   checkBetaUpdate: boolean
   useBuiltinClipboard: boolean
+  language: string
 }
 
 interface IShortKeyMap {

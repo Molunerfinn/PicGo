@@ -1,11 +1,13 @@
 import { ZH_CN } from './zh-CN'
+import { EN } from './en'
 import { ObjectAdapter, I18n } from '@picgo/i18n'
 
-const languageList = {
-  'zh-CN': ZH_CN
+const languageMap = {
+  'zh-CN': ZH_CN,
+  en: EN
 }
 
-const objectAdapter = new ObjectAdapter(languageList)
+const objectAdapter = new ObjectAdapter(languageMap)
 
 const i18n = new I18n({
   adapter: objectAdapter,
@@ -16,4 +18,6 @@ const T = (key: ILocalesKey, args: IStringKeyMap = {}): string => {
   return i18n.translate(key, args) || ''
 }
 
-export { i18n, T }
+const languageList = Object.keys(languageMap)
+
+export { i18n, T, languageList }

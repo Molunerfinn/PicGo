@@ -20,9 +20,11 @@ declare module 'vue/types/vue' {
     $bus: Vue
     $$db: IGalleryDB
     $T: typeof import('#/i18n/index').T
+    $i18n: typeof import('#/i18n/index').i18n
     saveConfig(data: IObj | string, value?: any): void
     getConfig<T>(key?: string): Promise<T | undefined>
     setDefaultPicBed(picBed: string): void
     defaultPicBed: string
+    forceUpdate(): void
   }
 }
