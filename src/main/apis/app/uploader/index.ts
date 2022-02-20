@@ -2,7 +2,8 @@ import {
   Notification,
   BrowserWindow,
   ipcMain,
-  WebContents
+  WebContents,
+  clipboard
 } from 'electron'
 import dayjs from 'dayjs'
 import picgo from '@core/picgo'
@@ -15,6 +16,8 @@ import { showNotification, calcDurationRange } from '~/main/utils/common'
 import { RENAME_FILE_NAME, TALKING_DATA_EVENT } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
 import { T } from '~/universal/i18n'
+import fse from 'fs-extra'
+import path from 'path'
 
 const waitForShow = (webcontent: WebContents) => {
   return new Promise<void>((resolve) => {
@@ -107,6 +110,32 @@ class Uploader {
   setWebContents (webContents: WebContents) {
     this.webContents = webContents
     return this
+  }
+
+  /**
+   * use electron's clipboard image to upload
+   */
+  async uploadWithBuildInClipboard (): Promise<ImgInfo[]|false> {
+    let filePath = ''
+    try {
+      const nativeImage = clipboard.readImage()
+      if (nativeImage.isEmpty()) {
+        return false
+      }
+      const buffer = nativeImage.toPNG()
+      const baseDir = picgo.baseDir
+      const fileName = `${dayjs().format('YYYYMMDDHHmmSSS')}.png`
+      filePath = path.join(baseDir, fileName)
+      await fse.writeFile(filePath, buffer)
+      return await this.upload([filePath])
+    } catch (e: any) {
+      logger.error(e)
+      return false
+    } finally {
+      if (filePath) {
+        fse.unlink(filePath)
+      }
+    }
   }
 
   async upload (img?: IUploadOption): Promise<ImgInfo[]|false> {

@@ -103,6 +103,7 @@ export const ZH_CN = {
   SETTINGS_DEFAULT_PICBED: '设置默认图床',
   SETTINGS_SET_DEFAULT_PICBED: '设为默认图床',
   SETTINGS_NOT_CONFIG_OPTIONS: '暂无配置项',
+  SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD: '使用内置剪贴板上传',
 
   // shortcut page
   SHORTCUT_NAME: '快捷键名称',

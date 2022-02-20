@@ -10,9 +10,19 @@ import db, { GalleryDB } from '~/main/apis/core/datastore'
 import { handleCopyUrl } from '~/main/utils/common'
 import { handleUrlEncode } from '#/utils/common'
 import { T } from '#/i18n/index'
-export const uploadClipboardFiles = async (): Promise<string> => {
+// import dayjs from 'dayjs'
+
+const handleClipboardUploading = async (): Promise<false | ImgInfo[]> => {
+  const useBuiltinClipboard = !!db.get('settings.useBuiltinClipboard')
   const win = windowManager.getAvailableWindow()
-  const img = await uploader.setWebContents(win!.webContents).upload()
+  if (useBuiltinClipboard) {
+    return await uploader.setWebContents(win!.webContents).uploadWithBuildInClipboard()
+  }
+  return await uploader.setWebContents(win!.webContents).upload()
+}
+
+export const uploadClipboardFiles = async (): Promise<string> => {
+  const img = await handleClipboardUploading()
   if (img !== false) {
     if (img.length > 0) {
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)

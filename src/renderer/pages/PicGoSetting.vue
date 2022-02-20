@@ -129,6 +129,16 @@
             ></el-switch>
           </el-form-item>
           <el-form-item
+            :label="$T('SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD')"
+          >
+            <el-switch
+              v-model="form.useBuiltinClipboard"
+              :active-text="$T('SETTINGS_OPEN')"
+              :inactive-text="$T('SETTINGS_CLOSE')"
+              @change="useBuiltinClipboardChange"
+            ></el-switch>
+          </el-form-item>
+          <el-form-item
             :label="$T('CHOOSE_SHOWED_PICBED')"
           >
             <el-checkbox-group
@@ -371,7 +381,8 @@ export default class extends Vue {
     miniWindowOntop: false,
     logLevel: ['all'],
     autoCopyUrl: true,
-    checkBetaUpdate: true
+    checkBetaUpdate: true,
+    useBuiltinClipboard: false
   }
 
   picBed: IPicBedType[] = []
@@ -446,6 +457,7 @@ export default class extends Vue {
       this.form.logLevel = this.initLogLevel(settings.logLevel || [])
       this.form.autoCopyUrl = settings.autoCopy === undefined ? true : settings.autoCopy
       this.form.checkBetaUpdate = settings.checkBetaUpdate === undefined ? true : settings.checkBetaUpdate
+      this.form.useBuiltinClipboard = settings.useBuiltinClipboard === undefined ? false : settings.useBuiltinClipboard
 
       this.customLink.value = settings.customLink || '$url'
       this.shortKey.upload = settings.shortKey.upload
@@ -537,6 +549,10 @@ export default class extends Vue {
 
   checkBetaUpdateChange (val: boolean) {
     this.saveConfig('settings.checkBetaUpdate', val)
+  }
+
+  useBuiltinClipboardChange (val: boolean) {
+    this.saveConfig('settings.useBuiltinClipboard', val)
   }
 
   handleShowPicBedListChange (val: string[]) {

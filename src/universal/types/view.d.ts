@@ -9,6 +9,7 @@ interface ISettingForm {
   logLevel: string[]
   autoCopyUrl: boolean
   checkBetaUpdate: boolean
+  useBuiltinClipboard: boolean
 }
 
 interface IShortKeyMap {
