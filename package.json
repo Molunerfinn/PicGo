@@ -35,7 +35,7 @@
     ]
   },
   "dependencies": {
-    "@picgo/i18n": "^0.0.4",
+    "@picgo/i18n": "^1.0.0",
     "@picgo/store": "^1.0.3",
     "axios": "^0.19.0",
     "core-js": "^3.3.2",

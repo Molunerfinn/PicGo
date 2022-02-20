@@ -9,7 +9,7 @@ import {
 import { privacyManager } from '~/main/utils/privacyManager'
 import pkg from 'root/package.json'
 import GuiApi from 'apis/gui'
-import { PICGO_CONFIG_PLUGIN, PICGO_HANDLE_PLUGIN_ING, PICGO_TOGGLE_PLUGIN } from '~/universal/events/constants'
+import { PICGO_CONFIG_PLUGIN, PICGO_HANDLE_PLUGIN_ING, PICGO_TOGGLE_PLUGIN, SHOW_MAIN_PAGE_DONATION, SHOW_MAIN_PAGE_QRCODE } from '~/universal/events/constants'
 import picgoCoreIPC from '~/main/events/picgoCoreIPC'
 import { PicGo as PicGoCore } from 'picgo'
 import { T } from '~/universal/i18n'
@@ -87,7 +87,7 @@ const buildMiniPageMenu = () => {
   return Menu.buildFromTemplate(template)
 }
 
-const buildMainPageMenu = () => {
+const buildMainPageMenu = (win: BrowserWindow) => {
   const template = [
     {
       label: T('ABOUT'),
@@ -102,14 +102,19 @@ const buildMainPageMenu = () => {
     {
       label: T('SPONSOR_PICGO'),
       click () {
-        // TODO: show donation
+        win?.webContents?.send(SHOW_MAIN_PAGE_DONATION)
       }
     },
     {
       label: T('SHOW_PICBED_QRCODE'),
       click () {
-        // TODO: qrcode
-        // _this.qrcodeVisible = true
+        win?.webContents?.send(SHOW_MAIN_PAGE_QRCODE)
+      }
+    },
+    {
+      label: T('SHOW_DEVTOOLS'),
+      click () {
+        win?.webContents?.openDevTools()
       }
     },
     {

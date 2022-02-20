@@ -6,8 +6,11 @@
     <el-row>
       <el-col :span="20" :offset="2">
         <el-table
+          class="shortcut-page-table-border"
           :data="list"
           size="mini"
+          header-cell-class-name="shortcut-page-table-border"
+          cell-class-name="shortcut-page-table-border"
         >
           <el-table-column
             :label="$T('SHORTCUT_NAME')"
@@ -177,6 +180,8 @@ export default class extends Vue {
 </script>
 <style lang='stylus'>
 #shortcut-page
+  .shortcut-page-table-border
+    border-color darken(#eee, 50%)
   .el-dialog__body
     padding 10px 20px
     .el-form-item
@@ -189,6 +194,8 @@ export default class extends Vue {
   .el-table
     background-color: transparent
     color #ddd
+    &::before
+      background-color darken(#eee, 50%)
     thead
       color #bbb
     th,tr

@@ -23,6 +23,7 @@ export const ZH_CN = {
   CONFIG_THING: '配置${c}',
   FIND_NEW_VERSION: '发现新版本',
   NO_MORE_NOTICE: '以后不再提醒',
+  SHOW_DEVTOOLS: '打开开发者工具',
 
   // ---renderer i18n---
   CHOOSE_YOUR_DEFAULT_PICBED: '选择 ${d} 作为你默认图床：',

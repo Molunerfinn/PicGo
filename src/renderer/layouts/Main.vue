@@ -158,7 +158,9 @@ import InputBoxDialog from '@/components/InputBoxDialog.vue'
 import {
   MINIMIZE_WINDOW,
   CLOSE_WINDOW,
-  SHOW_MAIN_PAGE_MENU
+  SHOW_MAIN_PAGE_MENU,
+  SHOW_MAIN_PAGE_QRCODE,
+  SHOW_MAIN_PAGE_DONATION
 } from '~/universal/events/constants'
 @Component({
   name: 'main-page',
@@ -184,6 +186,12 @@ export default class extends Vue {
     ipcRenderer.send('getPicBeds')
     ipcRenderer.on('getPicBeds', this.getPicBeds)
     this.handleGetPicPeds()
+    ipcRenderer.on(SHOW_MAIN_PAGE_QRCODE, () => {
+      this.qrcodeVisible = true
+    })
+    ipcRenderer.on(SHOW_MAIN_PAGE_DONATION, () => {
+      this.visible = true
+    })
   }
 
   @Watch('choosedPicBedForQRCode')

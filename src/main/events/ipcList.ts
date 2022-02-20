@@ -177,7 +177,7 @@ export default {
     })
     ipcMain.on(SHOW_MAIN_PAGE_MENU, () => {
       const window = windowManager.get(IWindowList.SETTING_WINDOW)!
-      const menu = buildMainPageMenu()
+      const menu = buildMainPageMenu(window)
       menu.popup({
         window
       })

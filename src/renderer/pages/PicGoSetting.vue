@@ -4,11 +4,11 @@
       {{ $T('PICGO_SETTINGS') }} - <i class="el-icon-document" @click="goConfigPage"></i>
     </div>
     <el-row class="setting-list">
-      <el-col :span="16" :offset="4">
+      <el-col :span="20" :offset="2">
         <el-row>
         <el-form
-          label-width="160px"
-          label-position="right"
+          label-position="left"
+          label-width="10"
           size="small"
         >
           <el-form-item
@@ -139,6 +139,7 @@
             ></el-switch>
           </el-form-item>
           <el-form-item
+            :style="{ marginRight: '-64px' }"
             :label="$T('CHOOSE_SHOWED_PICBED')"
           >
             <el-checkbox-group
@@ -756,10 +757,25 @@ export default class extends Vue {
     overflow-x hidden
   .setting-list
     .el-form
+      &-item
+        display: flex
+        justify-content space-between
+        padding-top 8px
+        padding-bottom 8px
+        border-bottom 1px solid darken(#eee, 50%)
+        margin-bottom 0
+        &:last-child
+          border-bottom none
+        &::after
+          display none
+        &::before
+          display none
       label
         line-height 32px
         padding-bottom 0
         color #eee
+        flex-basis: 50%
+        flex-shrink: 0
       .el-button-group
         width 100%
         .el-button
