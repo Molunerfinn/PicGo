@@ -59,6 +59,8 @@ PicGo 本体支持如下图床：
 
 点击此处下载 [应用](https://github.com/Molunerfinn/PicGo/releases)。
 
+还可以通过山东大学镜像站提供的镜像地址下载 [应用](https://mirrors.sdu.edu.cn/github-release/Molunerfinn_PicGo)。感谢山东大学镜像站提供的镜像服务！
+
 ### Windows
 
 Windows 用户请下载最新版本的 `exe` 文件。
@@ -116,8 +118,8 @@ npm run electron:serve # 重新进入开发模式
 **注意**：如果你的网络环境不太好，可能会出现 `electron-builder` 下载 `electron` 二进制文件失败的情况。这个时候需要在 `npm run electron:build` 之前指定一下 `electron` 的源为国内源：
 
 ```bash
-export ELECTRON_MIRROR="https://npm.taobao.org/mirrors/electron/"
-# 在 Windows 上，则可以使用 set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/ （无需引号）
+export ELECTRON_MIRROR="https://registry.npmmirror.com/binary.html?path=electron/"
+# 在 Windows 上，则可以使用 set ELECTRON_MIRROR=https://registry.npmmirror.com/binary.html?path=electron/ （无需引号）
 npm run electron:build
 ```
 
