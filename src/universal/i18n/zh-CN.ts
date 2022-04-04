@@ -106,6 +106,7 @@ export const ZH_CN = {
   SETTINGS_NOT_CONFIG_OPTIONS: '暂无配置项',
   SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD: '使用内置剪贴板上传',
   SETTINGS_CHOOSE_LANGUAGE: '选择语言',
+  BUILTIN_CLIPBOARD_TIPS: '使用内置剪贴板函数而不是调用脚本获取剪贴板图片',
 
   // shortcut page
   SHORTCUT_NAME: '快捷键名称',

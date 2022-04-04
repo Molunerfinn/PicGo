@@ -24,6 +24,7 @@ router.post('/upload', async ({
       // upload with clipboard
       logger.info('[PicGo Server] upload clipboard file')
       const res = await uploadClipboardFiles()
+      logger.info('[PicGo Server] upload result:', res)
       if (res) {
         handleResponse({
           response,
@@ -51,6 +52,7 @@ router.post('/upload', async ({
       })
       const win = windowManager.getAvailableWindow()
       const res = await uploadChoosedFiles(win.webContents, pathList)
+      logger.info('[PicGo Server] upload result', res.join(' ; '))
       if (res.length) {
         handleResponse({
           response,

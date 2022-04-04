@@ -287,7 +287,8 @@ interface ITcYunConfig {
   area: string,
   path: string,
   customUrl: string,
-  version: 'v4' | 'v5'
+  version: 'v4' | 'v5',
+  options: string
 }
 
 interface IUpYunConfig {

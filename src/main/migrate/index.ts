@@ -35,6 +35,11 @@ const updateShortKeyFromVersion212 = (db: typeof ConfigStore, shortKeyConfig: IS
 
 const migrateGalleryFromVersion230 = async (configDB: typeof ConfigStore, galleryDB: DBStore, picgo: PicGoCore) => {
   const originGallery: ImgInfo[] = configDB.get('uploaded')
+  // if hasMigrate, we don't need to migrate
+  const hasMigrate: boolean = configDB.get('__migrateUploaded')
+  if (hasMigrate) {
+    return
+  }
   const configPath = configDB.getConfigPath()
   const configBakPath = path.join(path.dirname(configPath), 'config.bak.json')
   // migrate gallery from config to gallery db
@@ -44,7 +49,8 @@ const migrateGalleryFromVersion230 = async (configDB: typeof ConfigStore, galler
     }
     await galleryDB.insertMany(originGallery)
     picgo.saveConfig({
-      uploaded: []
+      uploaded: [],
+      __migrateUploaded: true
     })
   }
 }

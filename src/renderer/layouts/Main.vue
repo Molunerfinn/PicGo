@@ -270,6 +270,11 @@ export default class extends Vue {
 </script>
 <style lang='stylus'>
 $darwinBg = transparentify(#172426, #000, 0.7)
+.setting-list-scroll
+  height 425px
+  overflow-y auto
+  overflow-x hidden
+  margin-right 0!important
 .picgo-fade
   &-enter,
   &-leave,

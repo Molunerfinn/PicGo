@@ -1,6 +1,6 @@
 <template>
   <div id="tcyun-view">
-    <el-row :gutter="16">
+    <el-row :gutter="16" class="setting-list-scroll">
       <el-col :span="16" :offset="4">
         <div class="view-title">
           腾讯云COS设置
@@ -74,6 +74,11 @@
             >
             <el-input v-model="form.customUrl" @keyup.native.enter="confirm" placeholder="例如https://xxxx.com"></el-input>
           </el-form-item>
+          <el-form-item
+            label="设定网址后缀"
+            >
+            <el-input v-model="form.options" @keyup.native.enter="confirm" placeholder="例如?imageMogr2"></el-input>
+          </el-form-item>
           <el-form-item>
             <el-button-group>
               <el-button type="primary" @click="confirm" round>确定</el-button>
@@ -90,12 +95,13 @@ import { ipcRenderer } from 'electron'
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
 import { OPEN_URL } from '#/events/constants'
+import { ITcyunConfig } from 'picgo/dist/types'
 @Component({
   name: 'tcyun',
   mixins: [mixin]
 })
 export default class extends Vue {
-  form: ITcYunConfig = {
+  form: ITcyunConfig = {
     secretId: '',
     secretKey: '',
     bucket: '',
@@ -103,11 +109,12 @@ export default class extends Vue {
     area: '',
     path: '',
     customUrl: '',
-    version: 'v4'
+    version: 'v5',
+    options: ''
   }
 
   async created () {
-    const config = await this.getConfig<ITcYunConfig>('picBed.tcyun')
+    const config = await this.getConfig<ITcyunConfig>('picBed.tcyun')
     if (config) {
       this.form = Object.assign({}, config)
     }

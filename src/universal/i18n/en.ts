@@ -107,6 +107,7 @@ export const EN: ILocales = {
   SETTINGS_NOT_CONFIG_OPTIONS: 'Not Config Options',
   SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD: 'Use Builtin Clipboard to Upload',
   SETTINGS_CHOOSE_LANGUAGE: 'Choose Language',
+  BUILTIN_CLIPBOARD_TIPS: 'Use builtin clipboard function to upload instead of using scripts',
 
   // shortcut page
   SHORTCUT_NAME: 'Shortcut Name',

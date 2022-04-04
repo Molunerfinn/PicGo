@@ -147,8 +147,13 @@
             ></el-switch>
           </el-form-item>
           <el-form-item
-            :label="$T('SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD')"
           >
+            <div class="el-form-item__custom-label" slot="label">
+             {{ $T('SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD') }}
+            <el-tooltip class="item" effect="dark" :content="$T('BUILTIN_CLIPBOARD_TIPS')" placement="right">
+              <i class="el-icon-question"></i>
+            </el-tooltip>
+            </div>
             <el-switch
               v-model="form.useBuiltinClipboard"
               :active-text="$T('SETTINGS_OPEN')"
@@ -811,6 +816,9 @@ export default class extends Vue {
         color #eee
         flex-basis: 50%
         flex-shrink: 0
+      .el-form-item__custom-label
+        display flex
+        align-items center
       .el-button-group
         width 100%
         .el-button
@@ -824,9 +832,7 @@ export default class extends Vue {
         &.is-active
           color #409EFF
       .el-icon-question
-        font-size 20px
-        float right
-        margin-top 9px
+        margin-left 4px
         color #eee
         cursor pointer
         transition .2s color ease-in-out

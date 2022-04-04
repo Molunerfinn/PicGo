@@ -67,21 +67,23 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
+import { IUpyunConfig } from 'picgo/dist/types'
 @Component({
   name: 'upyun',
   mixins: [mixin]
 })
 export default class extends Vue {
-  form: IUpYunConfig = {
+  form: IUpyunConfig = {
     bucket: '',
     operator: '',
     password: '',
     options: '',
+    url: '',
     path: ''
   }
 
   async created () {
-    const config = await this.getConfig<IUpYunConfig>('picBed.upyun')
+    const config = await this.getConfig<IUpyunConfig>('picBed.upyun')
     if (config) {
       this.form = Object.assign({}, config)
     }

@@ -9782,11 +9782,12 @@ performance-now@^2.1.0:
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-picgo@^1.5.0-alpha.0:
-  version "1.5.0-alpha.0"
-  resolved "https://registry.npmmirror.com/picgo/download/picgo-1.5.0-alpha.0.tgz#c546a8e48035a0d0a97552dcb3b1e33d85e196d9"
-  integrity sha1-xUao5IA1oNCpdVLcs7HjPYXhltk=
+picgo@^1.5.0-alpha.3:
+  version "1.5.0-alpha.3"
+  resolved "https://registry.npmmirror.com/picgo/-/picgo-1.5.0-alpha.3.tgz#1d30de78d0a963de131b6a3739706160a6a7598f"
+  integrity sha512-87jotY0snEjQrjmy0Ka46ZvKLjPlfGOghRs5ArvDDZ8g2l5PuikXAyu8AEFxc2WcJ8RiMwjG/tbS15l1dzM5JQ==
   dependencies:
+    "@picgo/i18n" "^1.0.0"
     chalk "^2.4.1"
     commander "^8.1.0"
     comment-json "^2.3.1"
@@ -9810,7 +9811,7 @@ picgo@^1.5.0-alpha.0:
     request "^2.87.0"
     request-promise-native "^1.0.5"
     resolve "^1.8.1"
-    rimraf "^2.6.3"
+    rimraf "^3.0.2"
 
 picocolors@^0.2.1:
   version "0.2.1"
