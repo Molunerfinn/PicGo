@@ -1,3 +1,35 @@
+## :tada: 2.3.1-beta.3 (2022-04-04)
+
+
+### :sparkles: Features
+
+* add i18n for en ([1936ccf](https://github.com/Molunerfinn/PicGo/commit/1936ccf))
+* add tencent-cos options for url ([af291e4](https://github.com/Molunerfinn/PicGo/commit/af291e4)), closes [#862](https://github.com/Molunerfinn/PicGo/issues/862) [#863](https://github.com/Molunerfinn/PicGo/issues/863) [#865](https://github.com/Molunerfinn/PicGo/issues/865) [#524](https://github.com/Molunerfinn/PicGo/issues/524) [#845](https://github.com/Molunerfinn/PicGo/issues/845) [#732](https://github.com/Molunerfinn/PicGo/issues/732)
+* add upload-clipboard-image from electron' clipboard ([27628da](https://github.com/Molunerfinn/PicGo/commit/27628da)), closes [#822](https://github.com/Molunerfinn/PicGo/issues/822)
+* add wayland support for linux ([f1c8507](https://github.com/Molunerfinn/PicGo/commit/f1c8507))
+* click cancel in rename-window will use origin filename now ([04701d4](https://github.com/Molunerfinn/PicGo/commit/04701d4)), closes [#791](https://github.com/Molunerfinn/PicGo/issues/791)
+
+
+### :bug: Bug Fixes
+
+* fix mini-page can't upload image from dragging browser image ([6bcd019](https://github.com/Molunerfinn/PicGo/commit/6bcd019)), closes [#822](https://github.com/Molunerfinn/PicGo/issues/822)
+* mini window not always on top after reopen ([c79a286](https://github.com/Molunerfinn/PicGo/commit/c79a286))
+* notification freeze the main-process after uploading with clipboard ([3a50315](https://github.com/Molunerfinn/PicGo/commit/3a50315)), closes [#824](https://github.com/Molunerfinn/PicGo/issues/824)
+* picgo.log path error ([6b6ae27](https://github.com/Molunerfinn/PicGo/commit/6b6ae27)), closes [#819](https://github.com/Molunerfinn/PicGo/issues/819)
+
+
+### :pencil: Documentation
+
+* update readme ([6bcda9b](https://github.com/Molunerfinn/PicGo/commit/6bcda9b)), closes [#849](https://github.com/Molunerfinn/PicGo/issues/849) [#850](https://github.com/Molunerfinn/PicGo/issues/850)
+
+
+### :package: Chore
+
+* types change ([43d2a8e](https://github.com/Molunerfinn/PicGo/commit/43d2a8e))
+* update fix-path ([bcaf255](https://github.com/Molunerfinn/PicGo/commit/bcaf255)), closes [#774](https://github.com/Molunerfinn/PicGo/issues/774)
+
+
+
 ## :tada: 2.3.1-beta.2 (2022-01-06)
 
 
