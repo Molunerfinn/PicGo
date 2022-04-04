@@ -118,8 +118,8 @@ npm run electron:serve # 重新进入开发模式
 **注意**：如果你的网络环境不太好，可能会出现 `electron-builder` 下载 `electron` 二进制文件失败的情况。这个时候需要在 `npm run electron:build` 之前指定一下 `electron` 的源为国内源：
 
 ```bash
-export ELECTRON_MIRROR="https://registry.npmmirror.com/binary.html?path=electron/"
-# 在 Windows 上，则可以使用 set ELECTRON_MIRROR=https://registry.npmmirror.com/binary.html?path=electron/ （无需引号）
+export ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
+# 在 Windows 上，则可以使用 set ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ （无需引号）
 npm run electron:build
 ```
 
