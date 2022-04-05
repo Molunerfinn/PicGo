@@ -1,0 +1,62 @@
+name: "✨ Feature Request"
+description: 功能请求 / Feature request
+title: "[Feature]: "
+labels: ["feature request"]
+assignees:
+  - molunerfinn
+body:
+  - type: markdown
+    attributes:
+      value: |+
+        ## PicGo Issue 模板
+
+        请依照该模板来提交，否则将会被关闭。
+        **提问之前请注意你看过 FAQ、文档以及那些被关闭的 issues。否则同样的提问也会被关闭！**
+
+        Please submit according to this template, otherwise it will be closed.
+        **Before asking a question, please note that you have read the FAQ, Doc, and those closed issues. Otherwise the same question will also be closed! **
+
+  - type: checkboxes
+    id: read
+    attributes:
+      label: 前置阅读 | Pre-reading
+      description: 我已经自行查找、阅读以下内容（阅读了请打勾） | I have searched and read the following on my own (Please tick after reading)
+      options:
+        - label: "[文档/Doc](https://picgo.github.io/PicGo-Doc/)"
+          required: true
+        - label: "[Issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+sort%3Aupdated-desc+is%3Aclosed)"
+          required: true
+        - label: "[FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md)"
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: PicGo的版本 | PicGo Version
+      placeholder: 例如 v2.3.0-beta.1
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 系统信息 | System Information
+      options:
+        - Windows
+        - Mac
+        - Mac(arm64)
+        - Linux
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 功能请求 | Feature request
+      description: 详细描述你所预想的功能或者是现有功能的改进 | Describe in detail the features you envision or improvements to existing features
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        最后，喜欢 PicGo 的话不妨给它点个 star~
+        如果可以的话，请我喝杯咖啡？首页有赞助二维码，谢谢你的支持！ 
+        Finally, if you like PicGo, give it a star~
+        Buy me a cup of coffee if you can? There is a sponsorship QR code on the homepage, thank you for your support!
