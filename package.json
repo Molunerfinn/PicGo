@@ -15,7 +15,7 @@
     "bump": "bump-version",
     "release": "vue-cli-service electron:build --publish always"
   },
-  "main": "index.js",
+  "main": "background.js",
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
