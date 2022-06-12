@@ -1,25 +1,3 @@
-## :tada: 2.3.1-beta.4 (2022-06-12)
-
-
-### :bug: Bug Fixes
-
-* **db:** fix some db bugs ([d3bb5ca](https://github.com/Molunerfinn/PicGo/commit/d3bb5ca)), closes [#873](https://github.com/Molunerfinn/PicGo/issues/873) [#806](https://github.com/Molunerfinn/PicGo/issues/806)
-* **gallery:** can't copy gallery pics link ([8d861be](https://github.com/Molunerfinn/PicGo/commit/8d861be)), closes [#901](https://github.com/Molunerfinn/PicGo/issues/901)
-
-
-### :pencil: Documentation
-
-* fix electron_mirror link error ([5d06469](https://github.com/Molunerfinn/PicGo/commit/5d06469)), closes [#849](https://github.com/Molunerfinn/PicGo/issues/849)
-* update FAQ ([a79efbf](https://github.com/Molunerfinn/PicGo/commit/a79efbf))
-* update readme & FAQ ([746635e](https://github.com/Molunerfinn/PicGo/commit/746635e))
-
-
-### :package: Chore
-
-* add issue template ([db6c5b8](https://github.com/Molunerfinn/PicGo/commit/db6c5b8))
-
-
-
 ## :tada: 2.3.1-beta.3 (2022-04-04)
 
 
