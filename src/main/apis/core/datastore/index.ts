@@ -1,10 +1,6 @@
-import Datastore from 'lowdb'
-// @ts-ignore
-import LodashId from 'lodash-id'
-import FileSync from 'lowdb/adapters/FileSync'
 import fs from 'fs-extra'
 import { dbPathChecker, dbPathDir, getGalleryDBPath } from './dbChecker'
-import { DBStore } from '@picgo/store'
+import { DBStore, JSONStore } from '@picgo/store'
 import { T } from '~/universal/i18n'
 
 const STORE_PATH = dbPathDir()
@@ -15,68 +11,55 @@ if (!fs.pathExistsSync(STORE_PATH)) {
 const CONFIG_PATH: string = dbPathChecker()
 const DB_PATH: string = getGalleryDBPath().dbPath
 
-// TODO: use JSONStore with @picgo/store
 class ConfigStore {
-  private db: Datastore.LowdbSync<Datastore.AdapterSync>
+  private db: JSONStore
   constructor () {
-    const adapter = new FileSync(CONFIG_PATH)
+    this.db = new JSONStore(CONFIG_PATH)
 
-    this.db = Datastore(adapter)
-    this.db._.mixin(LodashId)
-
-    if (!this.db.has('picBed').value()) {
+    if (!this.db.has('picBed')) {
       this.db.set('picBed', {
         current: 'smms', // deprecated
         uploader: 'smms',
         smms: {
           token: ''
         }
-      }).write()
+      })
     }
 
-    if (!this.db.has('settings.shortKey').value()) {
+    if (!this.db.has('settings.shortKey')) {
       this.db.set('settings.shortKey[picgo:upload]', {
         enable: true,
         key: 'CommandOrControl+Shift+P',
         name: 'upload',
         label: T('QUICK_UPLOAD')
-      }).write()
+      })
     }
+    this.read()
   }
 
-  read () {
-    return this.db.read()
+  read (flush = false) {
+    // if flush -> true, read origin file again
+    this.db.read(flush)
+    return this.db
   }
 
-  get (key = '') {
-    return this.read().get(key).value()
+  get (key = ''): any {
+    if (key === '') {
+      return this.db.read()
+    }
+    return this.db.get(key)
   }
 
-  set (key: string, value: any) {
-    return this.read().set(key, value).write()
+  set (key: string, value: any): void {
+    return this.db.set(key, value)
   }
 
   has (key: string) {
-    return this.read().has(key).value()
-  }
-
-  insert (key: string, value: any): void {
-    // @ts-ignore
-    return this.read().get(key).insert(value).write()
+    return this.db.has(key)
   }
 
   unset (key: string, value: any): boolean {
-    return this.read().get(key).unset(value).value()
-  }
-
-  getById (key: string, id: string) {
-    // @ts-ignore
-    return this.read().get(key).getById(id).value()
-  }
-
-  removeById (key: string, id: string) {
-    // @ts-ignore
-    return this.read().get(key).removeById(id).write()
+    return this.db.unset(key, value)
   }
 
   getConfigPath () {
@@ -84,7 +67,9 @@ class ConfigStore {
   }
 }
 
-export default new ConfigStore()
+const db = new ConfigStore()
+
+export default db
 
 // v2.3.0 add gallery db
 class GalleryDB {

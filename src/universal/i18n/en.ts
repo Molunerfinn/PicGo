@@ -157,6 +157,7 @@ export const EN: ILocales = {
   TIPS_SET_SUCCEED: 'Set successfully',
   TIPS_PLUGIN_NOT_GUI_IMPLEMENT: 'This plugin is not optimized for the GUI, continue?',
   TIPS_CLICK_NOTIFICATION_TO_RELOAD: 'Click notification to reload app',
+  TIPS_GET_PLUGIN_LIST_FAILED: 'Get plugin list failed',
   // ---renderer i18n end---
 
   // plugins
@@ -177,7 +178,8 @@ export const EN: ILocales = {
   TIPS_WARNING: 'Warning',
   TIPS_ERROR: 'Error',
   TIPS_INSTALL_NODE_AND_RELOAD_PICGO: 'Please install Node.js and restart PicGo to continue',
-  TIPS_PLUGIN_REMOVE_GALLERY_ITEM: 'Plugin is trying to remove some images from the album, continue?',
+  TIPS_PLUGIN_REMOVE_GALLERY_ITEM: 'Plugin is trying to remove some images from the album gallery, continue?',
+  TIPS_PLUGIN_OVERWRITE_GALLERY: 'Plugin is trying to overwrite the album gallery, continue?',
   TIPS_UPLOAD_NOT_PICTURES: 'The latest clipboard item is not a picture',
   TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_DEFAULT: 'PicGo config file broken, has been restored to default',
   TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_BACKUP: 'PicGo config file broken, has been restored to backup',
@@ -212,6 +214,7 @@ c) If you violate relevant Chinese laws, regulations or relevant rules, you need
 
 a) This software does not collect your personal information, key information and other private information, and the collected information is only used for improving the software, optimizing the experience, and understanding the daily activities of the software.
 `,
+  PRIVACY_TIPS: 'Please agree the privacy policy to upload',
   // action
   QUIT: 'Quit'
 }

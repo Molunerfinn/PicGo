@@ -1,14 +1,9 @@
 import db from '~/main/apis/core/datastore'
-import { ipcMain } from 'electron'
 import { showMessageBox } from '~/main/utils/common'
-import { SHOW_PRIVACY_MESSAGE } from '~/universal/events/constants'
 import { T } from '~/universal/i18n'
 
 class PrivacyManager {
-  async init () {
-    ipcMain.on(SHOW_PRIVACY_MESSAGE, () => {
-      this.show(false)
-    })
+  async check () {
     if (db.get('settings.privacyEnsure') !== true) {
       const res = await this.show(true)
       // cancel

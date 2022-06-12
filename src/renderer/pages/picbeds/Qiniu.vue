@@ -74,6 +74,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
+import { trimValues } from '@/utils/common'
 @Component({
   name: 'qiniu',
   mixins: [mixin]
@@ -101,7 +102,7 @@ export default class extends Vue {
     this.$refs.qiniu.validate((valid) => {
       if (valid) {
         this.saveConfig({
-          'picBed.qiniu': this.form
+          'picBed.qiniu': trimValues(this.form)
         })
         const successNotification = new Notification('设置结果', {
           body: '设置成功'

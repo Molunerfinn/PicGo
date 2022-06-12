@@ -30,3 +30,10 @@ export const handleStreamlinePluginName = (name: string) => {
     return name.replace(/picgo-plugin-/, '')
   }
 }
+
+/**
+ * for just simple clone an object
+ */
+export const simpleClone = (obj: any) => {
+  return JSON.parse(JSON.stringify(obj))
+}

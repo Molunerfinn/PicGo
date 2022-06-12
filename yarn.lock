@@ -1109,6 +1109,18 @@
   dependencies:
     chalk "^4.0.0"
 
+"@commonify/lowdb@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.npmmirror.com/@commonify/lowdb/-/lowdb-3.0.0.tgz#09c33ffd19057eab67440a1dc22847569407cafe"
+  integrity sha512-GwZq68zStvMENxEzN6EE8pacgY2Rlrs5L00BpvB6NvpDW96JUxIa8PJXd9T7qIdx07ro0ITBtw6HfSJw/qboGw==
+  dependencies:
+    "@commonify/steno" "2.1.0"
+
+"@commonify/steno@2.1.0", "@commonify/steno@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmmirror.com/@commonify/steno/-/steno-2.1.0.tgz#7d1e68a0e239bf4fd35abfd167006a3e56140b28"
+  integrity sha512-3W0LmYb84EU82Ky18M+D0tB33W66ccoC/Ot/8mm3uBQFuaTpiWaoxntQGBTL3+bIpV4e77ks53IE3sy9BRFBxA==
+
 "@cspotcode/source-map-consumer@0.8.0":
   version "0.8.0"
   resolved "https://registry.npmjs.org/@cspotcode/source-map-consumer/-/source-map-consumer-0.8.0.tgz#33bf4b7b39c178821606f669bbc447a6a629786b"
@@ -1332,17 +1344,21 @@
     chalk "4.1.2"
     tslib "^2.3.1"
 
-"@picgo/store@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/@picgo/store/-/store-1.0.3.tgz#cfe346ad30c80f378e0bc81311e7468df436bc1f"
-  integrity sha512-quyu56yuUsFFJGQ88suTwUSEzKosZPzR1M52eyqzyQ2HZWZVn0pa/eBBsh7OYefS0V13YLR5llnIkQaL8y11Ww==
+"@picgo/store@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.npmmirror.com/@picgo/store/-/store-2.0.1.tgz#9dce62a6e61e5539c06d261628c1c6c29b8e07eb"
+  integrity sha512-DLv1/EpSWNec8AAFxVCHSFfArotuU4WdUs3KZePtDK7nwKYIqQMnfcCYOUadoAZn3mn1hS1byv7i26qyIPcKaw==
   dependencies:
+    "@commonify/lowdb" "^3.0.0"
+    "@commonify/steno" "^2.1.0"
     "@types/bson" "^4.0.1"
     "@types/graceful-fs" "^4.1.3"
-    bson "^4.0.3"
+    "@types/lodash" "^4.14.182"
     comment-json "^4.1.0"
+    fflate "^0.7.3"
+    lodash "^4.17.21"
     lodash-id "^0.14.0"
-    lowdb "^1.0.0"
+    write-file-atomic "^4.0.1"
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
@@ -1513,6 +1529,11 @@
   version "4.14.178"
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.178.tgz#341f6d2247db528d4a13ddbb374bcdc80406f4f8"
   integrity sha512-0d5Wd09ItQWH1qFbEyQ7oTQ3GZrMfth5JkbN3EvTKLXcHLRDSXeLnlvlOn0wvxVIwK5o2M8JzP/OWz7T3NRsbw==
+
+"@types/lodash@^4.14.182":
+  version "4.14.182"
+  resolved "https://registry.npmmirror.com/@types/lodash/-/lodash-4.14.182.tgz#05301a4d5e62963227eaafe0ce04dd77c54ea5c2"
+  integrity sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==
 
 "@types/lowdb@^1.0.9":
   version "1.0.11"
@@ -3087,7 +3108,7 @@ browserslist@^4.0.0, browserslist@^4.12.0, browserslist@^4.17.5, browserslist@^4
     node-releases "^2.0.1"
     picocolors "^1.0.0"
 
-bson@*, bson@^4.0.3:
+bson@*:
   version "4.6.0"
   resolved "https://registry.npmjs.org/bson/-/bson-4.6.0.tgz#15c3b39ba3940c3d915a0c44d51459f4b4fbf1b2"
   integrity sha512-8jw1NU1hglS+Da1jDOUYuNcBJ4cNHCFIqzlwoFNnsTOg2R/ox0aTYcTiBN4dzRa9q7Cvy6XErh3L8ReTEb9AQQ==
@@ -5993,6 +6014,11 @@ fd-slicer@~1.1.0:
   integrity sha1-JcfInLH5B3+IkbvmHY85Dq4lbx4=
   dependencies:
     pend "~1.2.0"
+
+fflate@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.npmmirror.com/fflate/-/fflate-0.7.3.tgz#288b034ff0e9c380eaa2feff48c787b8371b7fa5"
+  integrity sha512-0Zz1jOzJWERhyhsimS54VTqOteCNwRtIlh8isdL0AXLo0g7xNTfTL7oWrkmCnPhZGocKIkWHBistBrrpoNH3aw==
 
 figgy-pudding@^3.5.1:
   version "3.5.2"
@@ -9782,10 +9808,10 @@ performance-now@^2.1.0:
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-picgo@^1.5.0-alpha.3:
-  version "1.5.0-alpha.3"
-  resolved "https://registry.npmmirror.com/picgo/-/picgo-1.5.0-alpha.3.tgz#1d30de78d0a963de131b6a3739706160a6a7598f"
-  integrity sha512-87jotY0snEjQrjmy0Ka46ZvKLjPlfGOghRs5ArvDDZ8g2l5PuikXAyu8AEFxc2WcJ8RiMwjG/tbS15l1dzM5JQ==
+picgo@^1.5.0-alpha.4:
+  version "1.5.0-alpha.4"
+  resolved "https://registry.npmmirror.com/picgo/-/picgo-1.5.0-alpha.4.tgz#bca46bf6124a2855222c8536bd4e3522ebf2699c"
+  integrity sha512-igNNBHSZywwTvtA28TtwoXJtO8omgDu+8TX3em2c4F1e4yHSmPsTJdWbHSf69KujULs0J0SV11eLp8gyI3B7nw==
   dependencies:
     "@picgo/i18n" "^1.0.0"
     chalk "^2.4.1"
@@ -11312,6 +11338,11 @@ signal-exit@^3.0.0, signal-exit@^3.0.2, signal-exit@^3.0.3:
   version "3.0.6"
   resolved "https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.6.tgz#24e630c4b0f03fea446a2bd299e62b4a6ca8d0af"
   integrity sha512-sDl4qMFpijcGw22U5w63KmD3cZJfBuFlVNbVMKje2keoKML7X2UzWbc4XrmEbDwg0NXJc3yv4/ox7b+JWb57kQ==
+
+signal-exit@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.npmmirror.com/signal-exit/-/signal-exit-3.0.7.tgz#a9a1767f8af84155114eaabd73f99273c8f59ad9"
+  integrity sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==
 
 simple-swizzle@^0.2.2:
   version "0.2.2"
@@ -13236,6 +13267,14 @@ write-file-atomic@^3.0.0:
     is-typedarray "^1.0.0"
     signal-exit "^3.0.2"
     typedarray-to-buffer "^3.1.5"
+
+write-file-atomic@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.npmmirror.com/write-file-atomic/-/write-file-atomic-4.0.1.tgz#9faa33a964c1c85ff6f849b80b42a88c2c537c8f"
+  integrity sha512-nSKUxgAbyioruk6hU87QzVbY279oYT6uiwgDoujth2ju4mJ+TZau7SQBhtbTmUyuNYTuXnSyRn66FV0+eCgcrQ==
+  dependencies:
+    imurmurhash "^0.1.4"
+    signal-exit "^3.0.7"
 
 ws@^6.0.0, ws@^6.2.1:
   version "6.2.2"

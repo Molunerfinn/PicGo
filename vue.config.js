@@ -32,6 +32,10 @@ const config = {
           .set('#', resolve('src/universal'))
           .set('apis', resolve('src/main/apis'))
           .set('@core', resolve('src/main/apis/core'))
+        config.resolve.mainFields
+          .clear()
+          .add('main') // fix some modules will use browser target
+          .add('module')
       },
       builderOptions: {
         productName: 'PicGo',

@@ -39,6 +39,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
+import { trimValues } from '@/utils/common'
 @Component({
   name: 'imgur',
   mixins: [mixin]
@@ -61,7 +62,7 @@ export default class extends Vue {
     this.$refs.imgur.validate((valid) => {
       if (valid) {
         this.saveConfig({
-          'picBed.imgur': this.form
+          'picBed.imgur': trimValues(this.form)
         })
         const successNotification = new Notification('设置结果', {
           body: '设置成功'

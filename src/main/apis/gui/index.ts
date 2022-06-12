@@ -146,6 +146,27 @@ class GuiApi implements IGuiApi {
   get galleryDB (): DBStore {
     return new Proxy<DBStore>(GalleryDB.getInstance(), {
       get (target, prop: keyof DBStore) {
+        if (prop === 'overwrite') {
+          return new Proxy(GalleryDB.getInstance().overwrite, {
+            apply (target, ctx, args) {
+              return new Promise((resolve) => {
+                const guiApi = GuiApi.getInstance()
+                guiApi.showMessageBox({
+                  title: T('TIPS_WARNING'),
+                  message: T('TIPS_PLUGIN_REMOVE_GALLERY_ITEM'),
+                  type: 'info',
+                  buttons: ['Yes', 'No']
+                }).then(res => {
+                  if (res.result === 0) {
+                    resolve(Reflect.apply(target, ctx, args))
+                  } else {
+                    resolve(undefined)
+                  }
+                })
+              })
+            }
+          })
+        }
         if (prop === 'removeById') {
           return new Proxy(GalleryDB.getInstance().removeById, {
             apply (target, ctx, args) {

@@ -177,7 +177,7 @@ class ShortKeyHandler {
     keyList.forEach(item => {
       globalShortcut.unregister(item.key)
       shortKeyService.unregisterCommand(item.command)
-      picgo.unsetConfig('settings.shortKey', item.command)
+      db.unset('settings.shortKey', item.command)
     })
   }
 }

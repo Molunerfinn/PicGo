@@ -35,6 +35,7 @@ import {
   ipcRenderer,
   IpcRendererEvent
 } from 'electron'
+import { trimValues } from '@/utils/common'
 
 @Component({
   name: 'OtherPicBed',
@@ -58,7 +59,7 @@ export default class extends Vue {
     const result = await this.$refs.configForm.validate()
     if (result !== false) {
       this.saveConfig({
-        [`picBed.${this.type}`]: result
+        [`picBed.${this.type}`]: trimValues(result)
       })
       const successNotification = new Notification(this.$T('SETTINGS_RESULT'), {
         body: this.$T('TIPS_SET_SUCCEED')

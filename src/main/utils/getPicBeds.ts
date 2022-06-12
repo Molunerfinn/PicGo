@@ -10,6 +10,11 @@ const getPicBeds = () => {
       name: picgo.helper.uploader.get(item)!.name || item,
       visible: visible ? visible.visible : true
     }
+  }).sort((a) => {
+    if (a.type === 'tcyun') {
+      return -1
+    }
+    return 0
   }) as IPicBedType[]
   return picBeds
 }

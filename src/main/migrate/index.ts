@@ -34,7 +34,7 @@ const updateShortKeyFromVersion212 = (db: typeof ConfigStore, shortKeyConfig: IS
 }
 
 const migrateGalleryFromVersion230 = async (configDB: typeof ConfigStore, galleryDB: DBStore, picgo: PicGoCore) => {
-  const originGallery: ImgInfo[] = configDB.get('uploaded')
+  const originGallery: ImgInfo[] = picgo.getConfig('uploaded')
   // if hasMigrate, we don't need to migrate
   const hasMigrate: boolean = configDB.get('__migrateUploaded')
   if (hasMigrate) {

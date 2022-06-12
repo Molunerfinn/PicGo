@@ -18,6 +18,7 @@ import logger from '@core/picgo/logger'
 import { T } from '~/universal/i18n'
 import fse from 'fs-extra'
 import path from 'path'
+import { privacyManager } from '~/main/utils/privacyManager'
 
 const waitForShow = (webcontent: WebContents) => {
   return new Promise<void>((resolve) => {
@@ -140,6 +141,10 @@ class Uploader {
 
   async upload (img?: IUploadOption): Promise<ImgInfo[]|false> {
     try {
+      const privacyCheckRes = await privacyManager.check()
+      if (!privacyCheckRes) {
+        throw Error(T('PRIVACY_TIPS'))
+      }
       const startTime = Date.now()
       const output = await picgo.upload(img)
       if (Array.isArray(output) && output.some((item: ImgInfo) => item.imgUrl)) {

@@ -33,6 +33,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
+import { trimValues } from '@/utils/common'
 @Component({
   name: 'smms',
   mixins: [mixin]
@@ -54,7 +55,7 @@ export default class extends Vue {
     this.$refs.smms.validate((valid) => {
       if (valid) {
         this.saveConfig({
-          'picBed.smms': this.form
+          'picBed.smms': trimValues(this.form)
         })
         const successNotification = new window.Notification('设置结果', {
           body: '设置成功'

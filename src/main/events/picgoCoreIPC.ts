@@ -10,7 +10,7 @@ import {
 import { IPasteStyle, IPicGoHelperType, IWindowList } from '#/types/enum'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import picgo from '@core/picgo'
-import { handleStreamlinePluginName } from '~/universal/utils/common'
+import { handleStreamlinePluginName, simpleClone } from '~/universal/utils/common'
 import { IGuiMenuItem, PicGo as PicGoCore } from 'picgo'
 import windowManager from 'apis/app/window/windowManager'
 import { showNotification } from '~/main/utils/common'
@@ -128,10 +128,19 @@ const getPluginList = (): IPicGoPlugin[] => {
 
 const handleGetPluginList = () => {
   ipcMain.on('getPluginList', (event: IpcMainEvent) => {
-    const list = getPluginList()
-    // here can just send JS Object not function
-    // or will cause [Failed to serialize arguments] error
-    event.sender.send('pluginList', list)
+    try {
+      const list = simpleClone(getPluginList())
+      // here can just send JS Object not function
+      // or will cause [Failed to serialize arguments] error
+      event.sender.send('pluginList', list)
+    } catch (e: any) {
+      event.sender.send('pluginList', [])
+      showNotification({
+        title: T('TIPS_GET_PLUGIN_LIST_FAILED'),
+        body: e.message
+      })
+      picgo.log.error(e)
+    }
   })
 }
 
@@ -267,8 +276,16 @@ const handleImportLocalPlugin = () => {
     if (filePaths.length > 0) {
       const res = await picgo.pluginHandler.install(filePaths)
       if (res.success) {
-        const list = getPluginList()
-        event.sender.send('pluginList', list)
+        try {
+          const list = simpleClone(getPluginList())
+          event.sender.send('pluginList', list)
+        } catch (e: any) {
+          event.sender.send('pluginList', [])
+          showNotification({
+            title: T('TIPS_GET_PLUGIN_LIST_FAILED'),
+            body: e.message
+          })
+        }
         showNotification({
           title: T('PLUGIN_IMPORT_SUCCEED'),
           body: ''

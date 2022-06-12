@@ -8,3 +8,11 @@ export const handleTalkingDataEvent = (data: ITalkingDataOptions) => {
     console.log('talkingData', data)
   }
 }
+
+export const trimValues = (obj: IStringKeyMap) => {
+  const newObj = {} as IStringKeyMap
+  Object.keys(obj).forEach(key => {
+    newObj[key] = typeof obj[key] === 'string' ? obj[key].trim() : obj[key]
+  })
+  return newObj
+}

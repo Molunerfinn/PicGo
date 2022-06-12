@@ -1,38 +1,36 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch",
+      "name": "Electron: Main",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceRoot}/src/main/index.dev.js",
-      "env": {
-        "DEBUG_ENV": "debug"
-      },
-      "stopOnEntry": false,
-      "args": [],
-      "cwd": "${workspaceRoot}",
-                      // this points to the electron task runner
+      "protocol": "inspector",
       "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
-      "runtimeArgs": [
-        "--nolazy"
-      ],
-      "sourceMaps": true
+      "windows": {
+        "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+      },
+      "preLaunchTask": "electron-debug",
+      "args": ["--remote-debugging-port=9223", "./dist_electron"],
+      "outFiles": ["${workspaceFolder}/dist_electron/**/*.js"]
     },
     {
-      "name": "Attach",
-      "type": "node",
+      "name": "Electron: Renderer",
+      "type": "chrome",
       "request": "attach",
-      "port": 5858,
-      "sourceMaps": true,
-      "restart": true,
-      "outFiles": [],
-      "localRoot": "${workspaceRoot}",
-      "protocol": "inspector",
-      "remoteRoot": null
+      "port": 9223,
+      "urlFilter": "http://localhost:*",
+      "timeout": 30000,
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMapPathOverrides": {
+        "webpack:///./src/*": "${webRoot}/*"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Electron: All",
+      "configurations": ["Electron: Main", "Electron: Renderer"]
     }
   ]
 }

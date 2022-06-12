@@ -31,7 +31,6 @@ import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import { getUploadFiles } from '~/main/utils/handleArgv'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
 import bus from '@core/bus'
-import { privacyManager } from '~/main/utils/privacyManager'
 import logger from 'apis/core/picgo/logger'
 import picgo from 'apis/core/picgo'
 import fixPath from './fixPath'
@@ -80,10 +79,6 @@ class LifeCycle {
         } catch (e: any) {
           console.error('Vue Devtools failed to install:', e.toString())
         }
-      }
-      const res = await privacyManager.init()
-      if (!res) {
-        return app.quit()
       }
       windowManager.create(IWindowList.TRAY_WINDOW)
       windowManager.create(IWindowList.SETTING_WINDOW)

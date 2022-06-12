@@ -68,6 +68,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/ConfirmButtonMixin'
 import { IUpyunConfig } from 'picgo/dist/types'
+import { trimValues } from '@/utils/common'
 @Component({
   name: 'upyun',
   mixins: [mixin]
@@ -94,7 +95,7 @@ export default class extends Vue {
     this.$refs.tcyun.validate((valid) => {
       if (valid) {
         this.saveConfig({
-          'picBed.upyun': this.form
+          'picBed.upyun': trimValues(this.form)
         })
         const successNotification = new Notification('设置结果', {
           body: '设置成功'

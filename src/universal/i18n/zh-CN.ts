@@ -156,6 +156,7 @@ export const ZH_CN = {
   TIPS_SET_SUCCEED: '设置成功',
   TIPS_PLUGIN_NOT_GUI_IMPLEMENT: '该插件未对可视化界面进行优化, 是否继续安装?',
   TIPS_CLICK_NOTIFICATION_TO_RELOAD: '请点击此通知重启应用以生效',
+  TIPS_GET_PLUGIN_LIST_FAILED: '获取插件列表失败',
   // ---renderer i18n end---
 
   // plugins
@@ -177,6 +178,7 @@ export const ZH_CN = {
   TIPS_ERROR: '发生错误',
   TIPS_INSTALL_NODE_AND_RELOAD_PICGO: '请安装Node.js并重启PicGo再继续操作',
   TIPS_PLUGIN_REMOVE_GALLERY_ITEM: '有插件正在试图删除一些相册图片，是否继续',
+  TIPS_PLUGIN_OVERWRITE_GALLERY: '有插件正在试图覆盖相册列表，是否继续',
   TIPS_UPLOAD_NOT_PICTURES: '剪贴板最新的一条记录不是图片',
   TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_DEFAULT: 'PicGo 配置文件损坏，已经恢复为默认配置',
   TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_BACKUP: 'PicGo 配置文件损坏，已经恢复为备份配置',
@@ -211,6 +213,7 @@ c)如您出现违反中国有关法律、法规或者相关规则的情况，需
 
 a)本软件不会收集您的个人信息、密钥信息等隐私信息，所收集的信息仅仅作为改善软件、优化体验、了解软件日活等用途。
 `,
+  PRIVACY_TIPS: '请同意隐私协议，否则无法上传。',
   // action
   QUIT: '退出'
 }
