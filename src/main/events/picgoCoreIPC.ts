@@ -321,7 +321,7 @@ const handlePicGoGalleryDB = () => {
     event.sender.send(PICGO_REMOVE_BY_ID_DB, res, callbackId)
   })
 
-  ipcMain.handle(PASTE_TEXT, async (item: ImgInfo, copy = true) => {
+  ipcMain.handle(PASTE_TEXT, async (_, item: ImgInfo, copy = true) => {
     const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || IPasteStyle.MARKDOWN
     const customLink = picgo.getConfig<string>('settings.customLink')
     const txt = pasteTemplate(pasteStyle, item, customLink)
