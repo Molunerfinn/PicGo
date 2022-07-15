@@ -4,7 +4,10 @@ export const handleResponse = ({
   response,
   statusCode = 200,
   header = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'access-control-allow-headers': '*',
+    'access-control-allow-methods': 'POST, GET, OPTIONS',
+    'access-control-allow-origin': '*'
   },
   body = {
     success: false

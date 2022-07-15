@@ -140,7 +140,8 @@ export default class extends Vue {
   pluginNameList: string[] = []
   loading = true
   needReload = false
-  pluginListToolTip = this.$T('PLUGIN_LIST')importLocalPluginToolTip = this.$T('PLUGIN_IMPORT_LOCAL')
+  pluginListToolTip = this.$T('PLUGIN_LIST')
+  importLocalPluginToolTip = this.$T('PLUGIN_IMPORT_LOCAL')
   id = ''
   os = ''
   defaultLogo: string = 'this.src="https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@dev/public/roundLogo.png"'
