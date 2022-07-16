@@ -39,13 +39,19 @@ class Server {
   }
 
   private handleRequest = (request: http.IncomingMessage, response: http.ServerResponse) => {
+    if (request.method === 'OPTIONS') {
+      handleResponse({
+        response
+      })
+      return
+    }
+    
     if (request.method === 'POST') {
       if (!routers.getHandler(request.url!)) {
         logger.warn(`[PicGo Server] don't support [${request.url}] url`)
         handleResponse({
           response,
           statusCode: 404,
-          header: {},
           body: {
             success: false
           }
