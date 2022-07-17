@@ -54,7 +54,7 @@ PicGo 本体支持如下图床：
 
 ## 下载安装
 
-点击此处下载 [应用](https://github.com/Molunerfinn/PicGo/releases)。
+点击此处下载 [应用](https://github.com/Molunerfinn/PicGo/releases)。从 2.3.1-beta.4 版本开始，在下载页提供 [腾讯云COS](https://cloud.tencent.com/product/cos) 下载链接，供国内用户快速下载使用。感谢 [腾讯云COS](https://cloud.tencent.com/product/cos) 提供的赞助支持！
 
 还可以通过山东大学镜像站提供的镜像地址下载 [应用](https://mirrors.sdu.edu.cn/github-release/Molunerfinn_PicGo)。感谢山东大学镜像站提供的镜像服务！
 
