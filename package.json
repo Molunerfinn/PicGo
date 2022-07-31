@@ -44,14 +44,15 @@
     "keycode": "^2.2.0",
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0",
-    "picgo": "^1.5.0-alpha.4",
+    "picgo": "^1.5.0-alpha.5",
     "qrcode.vue": "^1.7.0",
     "shell-path": "2.1.0",
     "uuidv4": "^6.2.11",
     "vue": "^2.6.10",
     "vue-gallery": "^2.0.1",
     "vue-lazyload": "^1.2.6",
-    "vue-router": "^3.1.3"
+    "vue-router": "^3.1.3",
+    "write-file-atomic": "^4.0.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.16.7",
@@ -62,6 +63,7 @@
     "@types/node": "^16.10.2",
     "@types/request-promise-native": "^1.0.17",
     "@types/semver": "^7.3.8",
+    "@types/write-file-atomic": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "@vue/cli-plugin-babel": "^4.0.0",

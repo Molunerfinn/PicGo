@@ -1360,6 +1360,22 @@
     lodash-id "^0.14.0"
     write-file-atomic "^4.0.1"
 
+"@picgo/store@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npmmirror.com/@picgo/store/-/store-2.0.2.tgz#0b5050f5e8cef7043cf5463fa81ef3c3a19fffc7"
+  integrity sha512-/nZr6zeLNtlTG+g8iUd5xy5Vtl7iu7SHI3aY9a/+AIlBSs7Io/06MrxGyoAHSWVg9BsB80kJyrNeGyOWiOO5jw==
+  dependencies:
+    "@commonify/lowdb" "^3.0.0"
+    "@commonify/steno" "^2.1.0"
+    "@types/bson" "^4.0.1"
+    "@types/graceful-fs" "^4.1.3"
+    "@types/lodash" "^4.14.182"
+    comment-json "^4.1.0"
+    fflate "^0.7.3"
+    lodash "^4.17.21"
+    lodash-id "^0.14.0"
+    write-file-atomic "^4.0.1"
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.npmjs.org/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -1705,6 +1721,13 @@
     "@types/webpack-sources" "*"
     anymatch "^3.0.0"
     source-map "^0.6.0"
+
+"@types/write-file-atomic@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npmmirror.com/@types/write-file-atomic/-/write-file-atomic-4.0.0.tgz#ffcedcb1ae027e0a28ddfe218b72b3573797b5bc"
+  integrity sha512-piEKt2KKBUtye+feTlfdPjtW7uPFsAaLNX3/f6AJD+Y1T1YPTFwnqtlO9Y+gy9qGshrvxKa/Kay9vqbyVIuhwQ==
+  dependencies:
+    "@types/node" "*"
 
 "@types/yargs-parser@*":
   version "20.2.1"
@@ -9808,12 +9831,13 @@ performance-now@^2.1.0:
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-picgo@^1.5.0-alpha.4:
-  version "1.5.0-alpha.4"
-  resolved "https://registry.npmmirror.com/picgo/-/picgo-1.5.0-alpha.4.tgz#bca46bf6124a2855222c8536bd4e3522ebf2699c"
-  integrity sha512-igNNBHSZywwTvtA28TtwoXJtO8omgDu+8TX3em2c4F1e4yHSmPsTJdWbHSf69KujULs0J0SV11eLp8gyI3B7nw==
+picgo@^1.5.0-alpha.5:
+  version "1.5.0-alpha.5"
+  resolved "https://registry.npmmirror.com/picgo/-/picgo-1.5.0-alpha.5.tgz#3258efa1aecdb9392405dc77fdb3273d3703b003"
+  integrity sha512-62F1GoctoHG4lIak91TNls5cw/DeHRt7PGh3SU/vKMacjSaKuIA9eU6FOyXSKtXqBgZFIpEQC6JYEvlTf/aMQA==
   dependencies:
     "@picgo/i18n" "^1.0.0"
+    "@picgo/store" "^2.0.2"
     chalk "^2.4.1"
     commander "^8.1.0"
     comment-json "^2.3.1"
@@ -9827,8 +9851,6 @@ picgo@^1.5.0-alpha.4:
     inquirer "^6.0.0"
     is-wsl "^2.2.0"
     lodash "^4.17.21"
-    lodash-id "^0.14.0"
-    lowdb "^1.0.0"
     md5 "^2.2.1"
     mime-types "2.1.33"
     minimatch "^3.0.4"

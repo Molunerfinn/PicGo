@@ -11,6 +11,7 @@ interface ISettingForm {
   checkBetaUpdate: boolean
   useBuiltinClipboard: boolean
   language: string
+  logFileSizeLimit: number
 }
 
 interface IShortKeyMap {

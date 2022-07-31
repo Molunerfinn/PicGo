@@ -37,3 +37,7 @@ export const handleStreamlinePluginName = (name: string) => {
 export const simpleClone = (obj: any) => {
   return JSON.parse(JSON.stringify(obj))
 }
+
+export const enforceNumber = (num: number | string) => {
+  return isNaN(Number(num)) ? 0 : Number(num)
+}

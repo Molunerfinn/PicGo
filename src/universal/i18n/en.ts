@@ -88,6 +88,7 @@ export const EN: ILocales = {
   SETTINGS_TIPS_HAS_NEW_VERSION: 'PicGo has a new version, please click confirm to open download page',
   SETTINGS_LOG_FILE: 'Log File',
   SETTINGS_LOG_LEVEL: 'Log Level',
+  SETTINGS_LOG_FILE_SIZE: 'Log File Size',
   SETTINGS_SET_PICGO_SERVER: 'Set PicGo Server',
   SETTINGS_TIPS_SERVER_NOTICE: 'If you don\'t know what is the server\'s function, please read the document, or don\'t modify the configuration.',
   SETTINGS_ENABLE_SERVER: 'Enable Server',

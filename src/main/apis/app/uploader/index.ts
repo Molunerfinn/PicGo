@@ -19,6 +19,8 @@ import { T } from '~/universal/i18n'
 import fse from 'fs-extra'
 import path from 'path'
 import { privacyManager } from '~/main/utils/privacyManager'
+import writeFile from 'write-file-atomic'
+import { CLIPBOARD_IMAGE_FOLDER } from '~/universal/utils/static'
 
 const waitForShow = (webcontent: WebContents) => {
   return new Promise<void>((resolve) => {
@@ -126,8 +128,8 @@ class Uploader {
       const buffer = nativeImage.toPNG()
       const baseDir = picgo.baseDir
       const fileName = `${dayjs().format('YYYYMMDDHHmmSSS')}.png`
-      filePath = path.join(baseDir, fileName)
-      await fse.writeFile(filePath, buffer)
+      filePath = path.join(baseDir, CLIPBOARD_IMAGE_FOLDER, fileName)
+      await writeFile(filePath, buffer)
       return await this.upload([filePath])
     } catch (e: any) {
       logger.error(e)

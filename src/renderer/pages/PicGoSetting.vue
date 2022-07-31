@@ -285,10 +285,11 @@
       :title="$T('SETTINGS_SET_LOG_FILE')"
       :visible.sync="logFileVisible"
       :modal-append-to-body="false"
+      width="500px"
     >
       <el-form
         label-position="right"
-        label-width="100px"
+        label-width="150px"
       >
         <el-form-item
           :label="$T('SETTINGS_LOG_FILE')"
@@ -302,6 +303,7 @@
             v-model="form.logLevel"
             multiple
             collapse-tags
+            style="width: 100%;"
           >
             <el-option
               v-for="(value, key) of logLevel"
@@ -311,6 +313,17 @@
               :disabled="handleLevelDisabled(key)"
             ></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item
+          :label="`${$T('SETTINGS_LOG_FILE_SIZE')} (MB)`"
+        >
+          <el-input-number
+            style="width: 100%;"
+            v-model="form.logFileSizeLimit"
+            :placeholder="`${$T('SETTINGS_TIPS_SUCH_AS')}：10`"
+            :controls="false"
+            :min="1"
+          ></el-input-number>
         </el-form-item>
       </el-form>
       <span slot="footer">
@@ -379,6 +392,7 @@ import {
 } from 'electron'
 import { Component, Vue } from 'vue-property-decorator'
 import { T, languageList } from '~/universal/i18n'
+import { enforceNumber } from '~/universal/utils/common'
 // import db from '#/datastore'
 const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
 const releaseUrlBackup = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'
@@ -407,7 +421,8 @@ export default class extends Vue {
     autoCopyUrl: true,
     checkBetaUpdate: true,
     useBuiltinClipboard: false,
-    language: 'zh-CN'
+    language: 'zh-CN',
+    logFileSizeLimit: 10
   }
 
   languageList = languageList.map(item => ({
@@ -501,6 +516,7 @@ export default class extends Vue {
         host: '127.0.0.1',
         enable: true
       }
+      this.form.logFileSizeLimit = enforceNumber(settings.logFileSizeLimit) || 10
     }
   }
 
@@ -686,7 +702,8 @@ export default class extends Vue {
       return this.$message.error(this.$T('TIPS_PLEASE_CHOOSE_LOG_LEVEL'))
     }
     this.saveConfig({
-      'settings.logLevel': this.form.logLevel
+      'settings.logLevel': this.form.logLevel,
+      'settings.logFileSizeLimit': this.form.logFileSizeLimit
     })
     const successNotification = new Notification(this.$T('SETTINGS_SET_LOG_FILE'), {
       body: this.$T('TIPS_SET_SUCCEED')
@@ -700,6 +717,7 @@ export default class extends Vue {
   async cancelLogLevelSetting () {
     this.logFileVisible = false
     let logLevel = await this.getConfig<string | string[]>('settings.logLevel')
+    const logFileSizeLimit = await this.getConfig<number>('settings.logFileSizeLimit') || 10
     if (!Array.isArray(logLevel)) {
       if (logLevel && logLevel.length > 0) {
         logLevel = [logLevel]
@@ -708,6 +726,7 @@ export default class extends Vue {
       }
     }
     this.form.logLevel = logLevel
+    this.form.logFileSizeLimit = logFileSizeLimit
   }
 
   confirmServerSetting () {

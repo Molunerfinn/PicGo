@@ -87,6 +87,7 @@ export const ZH_CN = {
   SETTINGS_TIPS_HAS_NEW_VERSION: 'PicGo更新啦，请点击确定打开下载页面',
   SETTINGS_LOG_FILE: '日志文件',
   SETTINGS_LOG_LEVEL: '日志记录等级',
+  SETTINGS_LOG_FILE_SIZE: '日志文件大小',
   SETTINGS_SET_PICGO_SERVER: '设置PicGo-Server',
   SETTINGS_TIPS_SERVER_NOTICE: '如果你不知道Server的作用，请阅读文档，或者不用修改配置。',
   SETTINGS_ENABLE_SERVER: '是否开启Server',

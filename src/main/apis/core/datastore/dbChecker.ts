@@ -1,4 +1,5 @@
 import fs from 'fs-extra'
+import writeFile from 'write-file-atomic'
 import path from 'path'
 import { app as APP } from 'electron'
 import { getLogger } from '@core/utils/localLogger'
@@ -50,7 +51,7 @@ function dbChecker () {
         try {
           configFile = fs.readFileSync(configFileBackupPath, { encoding: 'utf-8' })
           JSON.parse(configFile)
-          fs.writeFileSync(configFilePath, configFile, { encoding: 'utf-8' })
+          writeFile.sync(configFilePath, configFile, { encoding: 'utf-8' })
           const stats = fs.statSync(configFileBackupPath)
           optionsTpl.body = `${errorMsg.brokenButBackup}\n${T('TIPS_PICGO_BACKUP_FILE_VERSION', {
             v: dayjs(stats.mtime).format('YYYY-MM-DD HH:mm:ss')
@@ -67,7 +68,7 @@ function dbChecker () {
       global.notificationList?.push(optionsTpl)
       return
     }
-    fs.writeFileSync(configFileBackupPath, configFile, { encoding: 'utf-8' })
+    writeFile.sync(configFileBackupPath, configFile, { encoding: 'utf-8' })
   }
 }
 
@@ -97,7 +98,7 @@ function dbPathChecker (): string {
     }
     return _configFilePath
   } catch (e) {
-    const picgoLogPath = path.join(STORE_PATH, 'picgo.log')
+    const picgoLogPath = path.join(STORE_PATH, 'picgo-gui-local.log')
     const logger = getLogger(picgoLogPath)
     if (!hasCheckPath) {
       const optionsTpl = {
@@ -108,7 +109,6 @@ function dbPathChecker (): string {
       hasCheckPath = true
     }
     logger('error', e)
-    console.error(e)
     _configFilePath = defaultConfigPath
     return _configFilePath
   }
