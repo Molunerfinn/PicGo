@@ -428,10 +428,6 @@ export default class extends Vue {
     ipcRenderer.send(OPEN_URL, 'https://github.com/PicGo/Awesome-PicGo')
   }
 
-  saveConfig (data: IObj) {
-    ipcRenderer.send('picgoSaveData', data)
-  }
-
   handleImportLocalPlugin () {
     ipcRenderer.send('importLocalPlugin')
     this.loading = true

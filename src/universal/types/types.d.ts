@@ -151,6 +151,11 @@ interface IPicGoPluginConfig {
   type: string
   required: boolean
   default?: any
+  alias?: string
+  choices?: {
+    name?: string
+    value?: any
+  }[]
   [propName: string]: any
 }
 

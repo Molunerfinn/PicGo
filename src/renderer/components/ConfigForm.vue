@@ -21,7 +21,7 @@
           :placeholder="item.message || item.name"
         ></el-input>
         <el-select
-          v-else-if="item.type === 'list'"
+          v-else-if="item.type === 'list' && item.choices"
           v-model="ruleForm[item.name]"
           :placeholder="item.message || item.name"
         >
@@ -33,7 +33,7 @@
           ></el-option>
         </el-select>
         <el-select
-          v-else-if="item.type === 'checkbox'"
+          v-else-if="item.type === 'checkbox' && item.choices"
           v-model="ruleForm[item.name]"
           :placeholder="item.message || item.name"
           multiple
@@ -74,8 +74,8 @@ export default class extends Vue {
   @Prop() private config!: any[]
   @Prop() readonly type!: 'uploader' | 'transformer' | 'plugin'
   @Prop() readonly id!: string
-  configList = []
-  ruleForm = {}
+  configList: IPicGoPluginConfig[] = []
+  ruleForm: IStringKeyMap = {}
   @Watch('config', {
     deep: true,
     immediate: true
@@ -114,20 +114,20 @@ export default class extends Vue {
     }
   }
 
-  async handleConfig (val: any) {
+  async handleConfig (val: IPicGoPluginConfig[]) {
     this.ruleForm = Object.assign({}, {})
     const config = await this.getConfig<IPicGoPluginConfig>(this.getConfigType())
     if (val.length > 0) {
-      this.configList = cloneDeep(val).map((item: any) => {
+      this.configList = cloneDeep(val).map((item) => {
         let defaultValue = item.default !== undefined
           ? item.default
           : item.type === 'checkbox'
             ? []
             : null
         if (item.type === 'checkbox') {
-          const defaults = item.choices.filter((i: any) => {
+          const defaults = item.choices?.filter((i: any) => {
             return i.checked
-          }).map((i: any) => i.value)
+          }).map((i: any) => i.value) || []
           defaultValue = union(defaultValue, defaults)
         }
         if (config && config[item.name] !== undefined) {
