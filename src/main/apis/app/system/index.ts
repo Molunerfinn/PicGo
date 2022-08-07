@@ -18,6 +18,7 @@ import pkg from 'root/package.json'
 import { handleCopyUrl } from '~/main/utils/common'
 import { privacyManager } from '~/main/utils/privacyManager'
 import { T } from '#/i18n'
+import { isMacOSVersionGreaterThanOrEqualTo } from '~/main/utils/getMacOSVersion'
 let contextMenu: Menu | null
 let menu: Menu | null
 let tray: Tray | null
@@ -147,8 +148,17 @@ export function createContextMenu () {
   }
 }
 
+const getTrayIcon = () => {
+  if (process.platform === 'darwin') {
+    const isMacOSGreaterThan11 = isMacOSVersionGreaterThanOrEqualTo('11')
+    return isMacOSGreaterThan11 ? `${__static}/menubar-newdarwin.png` : `${__static}/menubar.png`
+  } else {
+    return `${__static}/menubar-nodarwin.png`
+  }
+}
+
 export function createTray () {
-  const menubarPic = process.platform === 'darwin' ? `${__static}/menubar.png` : `${__static}/menubar-nodarwin.png`
+  const menubarPic = getTrayIcon()
   tray = new Tray(menubarPic)
   // click事件在Mac和Windows上可以触发（在Ubuntu上无法触发，Unity不支持）
   if (process.platform === 'darwin' || process.platform === 'win32') {
