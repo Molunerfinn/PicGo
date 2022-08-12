@@ -37,4 +37,8 @@ export default class extends Vue {
   forceUpdate () {
     this.$bus.$emit(FORCE_UPDATE)
   }
+
+  sendToMain (channel: string, ...args: any[]) {
+    ipcRenderer.send(channel, ...args)
+  }
 }

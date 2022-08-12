@@ -26,5 +26,6 @@ declare module 'vue/types/vue' {
     setDefaultPicBed(picBed: string): void
     defaultPicBed: string
     forceUpdate(): void
+    sendToMain(channel: string, ...args: any[]): void
   }
 }

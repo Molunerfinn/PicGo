@@ -25,7 +25,8 @@ import {
   PICGO_GET_BY_ID_DB,
   PICGO_REMOVE_BY_ID_DB,
   PICGO_OPEN_FILE,
-  PASTE_TEXT
+  PASTE_TEXT,
+  OPEN_WINDOW
 } from '#/events/constants'
 
 import { GalleryDB } from 'apis/core/datastore'
@@ -356,6 +357,15 @@ const handleOpenFile = () => {
   })
 }
 
+const handleOpenWindow = () => {
+  ipcMain.on(OPEN_WINDOW, (event: IpcMainEvent, windowName: IWindowList) => {
+    const window = windowManager.get(windowName)
+    if (window) {
+      window.show()
+    }
+  })
+}
+
 export default {
   listen () {
     handleGetPluginList()
@@ -368,6 +378,7 @@ export default {
     handlePicGoGalleryDB()
     handleImportLocalPlugin()
     handleOpenFile()
+    handleOpenWindow()
   },
   // TODO: separate to single file
   handlePluginUninstall,

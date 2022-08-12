@@ -1,6 +1,6 @@
 <template>
   <div id="tray-page">
-    <!-- <div class="header-arrow"></div> -->
+    <div class="open-main-window" @click="openSettingWindow">{{ $T('OPEN_MAIN_WINDOW') }}</div>
     <div class="content">
       <div class="wait-upload-img" v-if="clipboardFiles.length > 0">
         <div class="list-title">{{ $T('WAIT_TO_UPLOAD') }}</div>
@@ -30,7 +30,8 @@ import { Component, Vue } from 'vue-property-decorator'
 import mixin from '@/utils/mixin'
 import { ipcRenderer } from 'electron'
 import { IResult } from '@picgo/store/dist/types'
-import { PASTE_TEXT } from '#/events/constants'
+import { PASTE_TEXT, OPEN_WINDOW } from '#/events/constants'
+import { IWindowList } from '#/types/enum'
 
 @Component({
   name: 'tray-page',
@@ -48,6 +49,10 @@ export default class extends Vue {
   uploadFlag = false
   get reverseList () {
     return this.files.slice().reverse()
+  }
+
+  openSettingWindow () {
+    this.sendToMain(OPEN_WINDOW, IWindowList.SETTING_WINDOW)
   }
 
   async getData () {
@@ -124,6 +129,18 @@ body::-webkit-scrollbar
   width 0px
 #tray-page
   background-color transparent
+  .open-main-window
+    background #000
+    height 20px
+    line-height 20px
+    text-align center
+    color #858585
+    font-size 12px
+    cursor pointer
+    transition all .2s ease-in-out
+    &:hover
+      color: #fff;
+      background #49B1F5
   .list-title
     text-align center
     color #858585
@@ -138,19 +155,19 @@ body::-webkit-scrollbar
       bottom 0
       left 18px
       background #858585
-  .header-arrow
-    position absolute
-    top 12px
-    left 50%
-    margin-left -10px
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent
-    border-right: 10px solid transparent
-    border-bottom: 10px solid rgba(255,255,255, 1)
+  // .header-arrow
+  //   position absolute
+  //   top 12px
+  //   left 50%
+  //   margin-left -10px
+  //   width: 0;
+  //   height: 0;
+  //   border-left: 10px solid transparent
+  //   border-right: 10px solid transparent
+  //   border-bottom: 10px solid rgba(255,255,255, 1)
   .content
     position absolute
-    top 0px
+    top 20px
     width 100%
   .img-list
     padding 8px 8px
