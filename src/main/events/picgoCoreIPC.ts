@@ -26,7 +26,8 @@ import {
   PICGO_REMOVE_BY_ID_DB,
   PICGO_OPEN_FILE,
   PASTE_TEXT,
-  OPEN_WINDOW
+  OPEN_WINDOW,
+  DEFAULT_LOGO
 } from '#/events/constants'
 
 import { GalleryDB } from 'apis/core/datastore'
@@ -366,6 +367,12 @@ const handleOpenWindow = () => {
   })
 }
 
+const handleDefaultLogo = () => {
+  ipcMain.on(DEFAULT_LOGO, (event: IpcMainEvent) => {
+    event.sender.send(DEFAULT_LOGO, path.join(__static, 'roundLogo.png'))
+  })
+}
+
 export default {
   listen () {
     handleGetPluginList()
@@ -379,6 +386,7 @@ export default {
     handleImportLocalPlugin()
     handleOpenFile()
     handleOpenWindow()
+    handleDefaultLogo()
   },
   // TODO: separate to single file
   handlePluginUninstall,

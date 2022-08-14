@@ -81,7 +81,7 @@ const config = {
         win: {
           icon: 'build/icons/icon.ico',
           // eslint-disable-next-line no-template-curly-in-string
-          artifactName: 'PicGo Setup ${version}-${arch}.exe',
+          artifactName: 'PicGo-Setup-${version}-${arch}.exe',
           target: [{
             target: 'nsis',
             arch: [

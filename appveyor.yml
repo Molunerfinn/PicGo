@@ -27,5 +27,6 @@ install:
 build_script:
   #- yarn test
   - yarn release
+  - yarn upload-dist
 
 test: false

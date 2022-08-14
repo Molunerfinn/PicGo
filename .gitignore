@@ -18,3 +18,4 @@ docs/dist/
 dist_electron/
 test.js
 .env
+scripts/*.yml

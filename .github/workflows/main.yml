@@ -51,5 +51,8 @@ jobs:
       - name: Build  & release app
         run: |
           yarn release
+          yarn upload-dist
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          PICGO_ENV_COS_SECRET_ID: ${{ secrets.PICGO_ENV_COS_SECRET_ID }}
+          PICGO_ENV_COS_SECRET_KEY: ${{ secrets.PICGO_ENV_COS_SECRET_KEY }}

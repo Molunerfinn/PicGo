@@ -120,7 +120,8 @@ import {
   PICGO_CONFIG_PLUGIN,
   PICGO_HANDLE_PLUGIN_ING,
   PICGO_TOGGLE_PLUGIN,
-  SHOW_PLUGIN_PAGE_MENU
+  SHOW_PLUGIN_PAGE_MENU,
+  DEFAULT_LOGO
 } from '#/events/constants'
 
 @Component({
@@ -144,7 +145,7 @@ export default class extends Vue {
   importLocalPluginToolTip = this.$T('PLUGIN_IMPORT_LOCAL')
   id = ''
   os = ''
-  defaultLogo: string = 'this.src="https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@dev/public/roundLogo.png"'
+  defaultLogo: string = ''
   get npmSearchText () {
     return this.searchText.match('picgo-plugin-')
       ? this.searchText
@@ -247,9 +248,17 @@ export default class extends Vue {
         this.needReload = true
       }
     })
+    ipcRenderer.on(DEFAULT_LOGO, (evt: IpcRendererEvent, logoPath) => {
+      this.defaultLogo = `this.src="${logoPath.replace(/\\/g, '/')}"`
+    })
     this.getPluginList()
     this.getSearchResult = debounce(this.getSearchResult, 50)
+    this.getDefaultLogo()
     this.needReload = await this.getConfig<boolean>('needReload') || false
+  }
+
+  getDefaultLogo () {
+    ipcRenderer.send(DEFAULT_LOGO)
   }
 
   async buildContextMenu (plugin: IPicGoPlugin) {
@@ -439,6 +448,7 @@ export default class extends Vue {
     ipcRenderer.removeAllListeners('uninstallSuccess')
     ipcRenderer.removeAllListeners('updateSuccess')
     ipcRenderer.removeAllListeners('hideLoading')
+    ipcRenderer.removeAllListeners(DEFAULT_LOGO)
   }
 }
 </script>

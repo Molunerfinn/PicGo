@@ -393,10 +393,9 @@ import {
 import { Component, Vue } from 'vue-property-decorator'
 import { T, languageList } from '~/universal/i18n'
 import { enforceNumber } from '~/universal/utils/common'
-// import db from '#/datastore'
-const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases/latest'
-const releaseUrlBackup = 'https://cdn.jsdelivr.net/gh/Molunerfinn/PicGo@latest/package.json'
-const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
+import { getLatestVersion } from '#/utils/getLatestVersion'
+import { compare } from 'compare-versions'
+import { STABLE_RELEASE_URL, BETA_RELEASE_URL } from '#/utils/static'
 const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
   if (!/\$url/.test(value)) {
     return callback(new Error(T('TIPS_MUST_CONTAINS_URL')))
@@ -635,39 +634,23 @@ export default class extends Vue {
     })
   }
 
-  compareVersion2Update (current: string, latest: string) {
-    const currentVersion = current.split('.').map(item => parseInt(item))
-    const latestVersion = latest.split('.').map(item => parseInt(item))
-
-    for (let i = 0; i < 3; i++) {
-      if (currentVersion[i] < latestVersion[i]) {
-        return true
-      }
-      if (currentVersion[i] > latestVersion[i]) {
-        return false
-      }
-    }
-    return false
+  compareVersion2Update (current: string, latest: string): boolean {
+    return compare(current, latest, '<')
   }
 
-  checkUpdate () {
+  async checkUpdate () {
     this.checkUpdateVisible = true
-    this.$http.get(releaseUrl)
-      .then(res => {
-        this.latestVersion = res.data.name
-      }).catch(async () => {
-        this.$http.get(releaseUrlBackup)
-          .then(res => {
-            this.latestVersion = res.data.version
-          }).catch(() => {
-            this.latestVersion = this.$T('TIPS_NETWORK_ERROR')
-          })
-      })
+    const version = await getLatestVersion(this.form.checkBetaUpdate)
+    if (version) {
+      this.latestVersion = version
+    } else {
+      this.latestVersion = this.$T('TIPS_NETWORK_ERROR')
+    }
   }
 
   confirmCheckVersion () {
     if (this.needUpdate) {
-      ipcRenderer.send(OPEN_URL, downloadUrl)
+      ipcRenderer.send(OPEN_URL, this.form.checkBetaUpdate ? BETA_RELEASE_URL : STABLE_RELEASE_URL)
     }
     this.checkUpdateVisible = false
   }
