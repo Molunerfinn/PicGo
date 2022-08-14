@@ -1,3 +1,35 @@
+## :tada: 2.3.1-beta.5 (2022-08-14)
+
+
+### :sparkles: Features
+
+* add dist upload to cos & update checkupdate logic ([c926414](https://github.com/Molunerfinn/PicGo/commit/c926414))
+* add logFileSizeLimit for log file ([219b367](https://github.com/Molunerfinn/PicGo/commit/219b367)), closes [#935](https://github.com/Molunerfinn/PicGo/issues/935) [#945](https://github.com/Molunerfinn/PicGo/issues/945)
+* add server response headers for CORS ([#939](https://github.com/Molunerfinn/PicGo/issues/939)) ([fb69bad](https://github.com/Molunerfinn/PicGo/commit/fb69bad))
+* tray-window add open-setting-window button ([83ab3c6](https://github.com/Molunerfinn/PicGo/commit/83ab3c6))
+* update tray icon in macOS 11 or 12 ([4ebdc72](https://github.com/Molunerfinn/PicGo/commit/4ebdc72)), closes [#776](https://github.com/Molunerfinn/PicGo/issues/776)
+
+
+### :bug: Bug Fixes
+
+* build error ([1db84a2](https://github.com/Molunerfinn/PicGo/commit/1db84a2))
+* plugin config can't save ([09e4e82](https://github.com/Molunerfinn/PicGo/commit/09e4e82)), closes [#943](https://github.com/Molunerfinn/PicGo/issues/943)
+
+
+### :package: Chore
+
+* fix github action build scripts ([e6b9d88](https://github.com/Molunerfinn/PicGo/commit/e6b9d88))
+* fix version error ([0a9e169](https://github.com/Molunerfinn/PicGo/commit/0a9e169))
+* update macOS tray icon ([87161b3](https://github.com/Molunerfinn/PicGo/commit/87161b3))
+* update manually action ([351fbda](https://github.com/Molunerfinn/PicGo/commit/351fbda))
+
+
+### :pencil: Documentation
+
+* update cos links ([3102d7b](https://github.com/Molunerfinn/PicGo/commit/3102d7b))
+
+
+
 ## :tada: 2.3.1-beta.4 (2022-06-12)
 
 
