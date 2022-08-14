@@ -92,6 +92,7 @@
     "vue-template-compiler": "^2.6.10"
   },
   "resolutions": {
-    "@types/node": "^16.10.2"
+    "@types/node": "^16.10.2",
+    "vue-cli-plugin-electron-builder/**/electron-builder": "23.3.3"
   }
 }
