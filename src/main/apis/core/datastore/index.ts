@@ -1,7 +1,7 @@
 import fs from 'fs-extra'
 import { dbPathChecker, dbPathDir, getGalleryDBPath } from './dbChecker'
 import { DBStore, JSONStore } from '@picgo/store'
-import { T } from '~/universal/i18n'
+import { T } from '~/main/i18n'
 
 const STORE_PATH = dbPathDir()
 

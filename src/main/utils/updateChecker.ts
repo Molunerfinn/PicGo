@@ -2,7 +2,7 @@ import { dialog, shell } from 'electron'
 import db from '~/main/apis/core/datastore'
 import pkg from 'root/package.json'
 import { lt } from 'semver'
-import { T } from '~/universal/i18n'
+import { T } from '~/main/i18n'
 import { getLatestVersion } from '#/utils/getLatestVersion'
 const version = pkg.version
 // const releaseUrl = 'https://api.github.com/repos/Molunerfinn/PicGo/releases'

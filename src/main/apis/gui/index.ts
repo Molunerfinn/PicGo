@@ -17,7 +17,7 @@ import {
   SHOW_INPUT_BOX
 } from '~/universal/events/constants'
 import { DBStore } from '@picgo/store'
-import { T } from '~/universal/i18n'
+import { T } from '~/main/i18n'
 
 // Cross-process support may be required in the future
 class GuiApi implements IGuiApi {

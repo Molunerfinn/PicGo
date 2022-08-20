@@ -3,7 +3,7 @@ import ConfigStore from '~/main/apis/core/datastore'
 import path from 'path'
 import fse from 'fs-extra'
 import { PicGo as PicGoCore } from 'picgo'
-import { T } from '~/universal/i18n'
+import { T } from '~/main/i18n'
 // from v2.1.2
 const updateShortKeyFromVersion212 = (db: typeof ConfigStore, shortKeyConfig: IShortKeyConfigs | IOldShortKeyConfigs) => {
   // #557 极端情况可能会出现配置不存在，需要重新写入

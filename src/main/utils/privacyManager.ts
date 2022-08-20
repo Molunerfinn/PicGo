@@ -1,6 +1,6 @@
 import db from '~/main/apis/core/datastore'
 import { showMessageBox } from '~/main/utils/common'
-import { T } from '~/universal/i18n'
+import { T } from '~/main/i18n'
 
 class PrivacyManager {
   async check () {

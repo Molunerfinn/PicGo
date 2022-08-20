@@ -386,12 +386,12 @@
 import keyDetect from '@/utils/key-binding'
 import pkg from 'root/package.json'
 import { IConfig } from 'picgo'
-import { PICGO_OPEN_FILE, OPEN_URL, CHANGE_LANGUAGE } from '#/events/constants'
+import { PICGO_OPEN_FILE, OPEN_URL } from '#/events/constants'
 import {
   ipcRenderer
 } from 'electron'
 import { Component, Vue } from 'vue-property-decorator'
-import { T, languageList } from '~/universal/i18n'
+import { T, i18nManager } from '@/i18n/index'
 import { enforceNumber } from '~/universal/utils/common'
 import { getLatestVersion } from '#/utils/getLatestVersion'
 import { compare } from 'compare-versions'
@@ -424,9 +424,9 @@ export default class extends Vue {
     logFileSizeLimit: 10
   }
 
-  languageList = languageList.map(item => ({
-    label: item,
-    value: item
+  languageList = i18nManager.languageList.map(item => ({
+    label: item.label,
+    value: item.value
   }))
 
   currentLanguage = 'zh-CN'
@@ -759,9 +759,7 @@ export default class extends Vue {
   }
 
   handleLanguageChange (val: string) {
-    this.$i18n.setLanguage(val)
-    this.forceUpdate()
-    ipcRenderer.send(CHANGE_LANGUAGE, val)
+    this.$i18n.setCurrentLanguage(val)
     this.saveConfig({
       'settings.language': val
     })

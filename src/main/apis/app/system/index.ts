@@ -17,7 +17,8 @@ import pasteTemplate from '~/main/utils/pasteTemplate'
 import pkg from 'root/package.json'
 import { handleCopyUrl } from '~/main/utils/common'
 import { privacyManager } from '~/main/utils/privacyManager'
-import { T } from '#/i18n'
+// import { T } from '#/i18n'
+import { T } from '~/main/i18n'
 import { isMacOSVersionGreaterThanOrEqualTo } from '~/main/utils/getMacOSVersion'
 let contextMenu: Menu | null
 let menu: Menu | null

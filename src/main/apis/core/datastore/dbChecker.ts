@@ -4,7 +4,7 @@ import path from 'path'
 import { app as APP } from 'electron'
 import { getLogger } from '@core/utils/localLogger'
 import dayjs from 'dayjs'
-import { T } from '~/universal/i18n'
+import { T } from '~/main/i18n'
 const STORE_PATH = APP.getPath('userData')
 const configFilePath = path.join(STORE_PATH, 'data.json')
 const configFileBackupPath = path.join(STORE_PATH, 'data.bak.json')

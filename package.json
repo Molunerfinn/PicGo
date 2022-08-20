@@ -14,7 +14,8 @@
     "cz": "git-cz",
     "bump": "bump-version",
     "release": "vue-cli-service electron:build --publish always",
-    "upload-dist": "node ./scripts/upload-dist-to-cos.js"
+    "upload-dist": "node ./scripts/upload-dist-to-cos.js",
+    "gen-i18n": "node ./scripts/gen-i18n-types.js"
   },
   "main": "background.js",
   "husky": {

@@ -96,6 +96,7 @@ Linux 用户请下载 `AppImage` 文件。
 2. `git clone https://github.com/Molunerfinn/PicGo.git` 并进入项目。
 3. `yarn` 下载依赖。注意如果你没有 `yarn`，请去 [官网](https://classic.yarnpkg.com/en/docs/install) 下载安装后再使用。 **用 `npm install` 将导致未知错误！**
 4. Mac 需要有 Xcode 环境，Windows 需要有 VS 环境。
+5. 如果需要贡献代码，可以参考[贡献指南](./CONTRIBUTING.md)。
 
 ### 开发模式
 

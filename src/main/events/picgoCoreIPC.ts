@@ -27,13 +27,16 @@ import {
   PICGO_OPEN_FILE,
   PASTE_TEXT,
   OPEN_WINDOW,
-  DEFAULT_LOGO
+  DEFAULT_LOGO,
+  GET_LANGUAGE_LIST,
+  SET_CURRENT_LANGUAGE,
+  GET_CURRENT_LANGUAGE
 } from '#/events/constants'
 
 import { GalleryDB } from 'apis/core/datastore'
 import { IObject, IFilter } from '@picgo/store/dist/types'
 import pasteTemplate from '../utils/pasteTemplate'
-import { T } from '~/universal/i18n'
+import { i18nManager, T } from '~/main/i18n'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -373,6 +376,31 @@ const handleDefaultLogo = () => {
   })
 }
 
+const handleI18n = () => {
+  ipcMain.on(GET_LANGUAGE_LIST, (event: IpcMainEvent) => {
+    event.sender.send(GET_LANGUAGE_LIST, i18nManager.languageList)
+  })
+  ipcMain.on(SET_CURRENT_LANGUAGE, (event: IpcMainEvent, language: string) => {
+    i18nManager.setCurrentLanguage(language)
+    const { lang, locales } = i18nManager.getCurrentLocales()
+    if (process.platform === 'darwin') {
+      const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)
+      trayWindow?.webContents.send(SET_CURRENT_LANGUAGE, lang, locales)
+    }
+    const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)
+    settingWindow?.webContents.send(SET_CURRENT_LANGUAGE, lang, locales)
+    if (windowManager.has(IWindowList.MINI_WINDOW)) {
+      const miniWindow = windowManager.get(IWindowList.MINI_WINDOW)
+      miniWindow?.webContents.send(SET_CURRENT_LANGUAGE, lang, locales)
+    }
+    // event.sender.send(SET_CURRENT_LANGUAGE, lang, locales)
+  })
+  ipcMain.on(GET_CURRENT_LANGUAGE, (event: IpcMainEvent) => {
+    const { lang, locales } = i18nManager.getCurrentLocales()
+    event.sender.send(GET_CURRENT_LANGUAGE, lang, locales)
+  })
+}
+
 export default {
   listen () {
     handleGetPluginList()
@@ -387,6 +415,7 @@ export default {
     handleOpenFile()
     handleOpenWindow()
     handleDefaultLogo()
+    handleI18n()
   },
   // TODO: separate to single file
   handlePluginUninstall,
