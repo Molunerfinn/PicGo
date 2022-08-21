@@ -55,7 +55,6 @@ export default class extends Vue {
         this.showError = true
       }
     })
-    this.getPicBeds()
   }
 
   mounted () {
@@ -75,10 +74,6 @@ export default class extends Vue {
         this.progress = 0
       }, 1200)
     }
-  }
-
-  getPicBeds () {
-    this.picBed = ipcRenderer.sendSync('getPicBeds')
   }
 
   onDrop (e: DragEvent) {
@@ -172,7 +167,6 @@ export default class extends Vue {
       if (e.button === 0) { // left mouse
         this.openUploadWindow()
       } else {
-        this.getPicBeds()
         this.openContextMenu()
       }
     }
@@ -184,7 +178,6 @@ export default class extends Vue {
 
   beforeDestroy () {
     ipcRenderer.removeAllListeners('uploadProgress')
-    ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
     window.removeEventListener('mousedown', this.handleMouseDown, false)
     window.removeEventListener('mousemove', this.handleMouseMove, false)
     window.removeEventListener('mouseup', this.handleMouseUp, false)

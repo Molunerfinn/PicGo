@@ -37,9 +37,12 @@ class ConfigStore {
     this.read()
   }
 
-  read (flush = false) {
-    // if flush -> true, read origin file again
-    this.db.read(flush)
+  flush () {
+    this.db = new JSONStore(CONFIG_PATH)
+  }
+
+  read () {
+    this.db.read()
     return this.db
   }
 

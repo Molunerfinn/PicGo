@@ -25,7 +25,11 @@ yarn dev
 
 ### i18n
 
-在 `public/i18n/` 下面创建一种语言的 `yml` 文件，例如 `zh-Hans.yml`。然后参考 `zh-CN.yml` 或者 `en.yml` 编写语言文件。并注意，PicGo 会通过语言文件中的 `LANG_DISPLAY_LABEL` 向用户展示该语言的名称。
+1. 在 `public/i18n/` 下面创建一种语言的 `yml` 文件，例如 `zh-Hans.yml`。然后参考 `zh-CN.yml` 或者 `en.yml` 编写语言文件。并注意，PicGo 会通过语言文件中的 `LANG_DISPLAY_LABEL` 向用户展示该语言的名称。
+
+2. 在 `src/universal/i18n/index.ts` 里添加一种默认语言。其中 `label` 就是语言文件中 `LANG_DISPLAY_LABEL` 的值，`value` 是语言文件名。
+
+3. 如果是对已有语言文件进行更新，请在更新完，务必运行一遍 `yarn gen-i18n`，确保能生成正确的语言定义文件。
 
 ### 提交代码
 

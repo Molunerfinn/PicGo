@@ -160,7 +160,8 @@ import {
   CLOSE_WINDOW,
   SHOW_MAIN_PAGE_MENU,
   SHOW_MAIN_PAGE_QRCODE,
-  SHOW_MAIN_PAGE_DONATION
+  SHOW_MAIN_PAGE_DONATION,
+  GET_PICBEDS
 } from '~/universal/events/constants'
 @Component({
   name: 'main-page',
@@ -183,8 +184,8 @@ export default class extends Vue {
   choosedPicBedForQRCode: string[] = []
   created () {
     this.os = process.platform
-    ipcRenderer.send('getPicBeds')
-    ipcRenderer.on('getPicBeds', this.getPicBeds)
+    ipcRenderer.send(GET_PICBEDS)
+    ipcRenderer.on(GET_PICBEDS, this.getPicBeds)
     this.handleGetPicPeds()
     ipcRenderer.on(SHOW_MAIN_PAGE_QRCODE, () => {
       this.qrcodeVisible = true
@@ -206,7 +207,7 @@ export default class extends Vue {
   }
 
   handleGetPicPeds = () => {
-    ipcRenderer.send('getPicBeds')
+    ipcRenderer.send(GET_PICBEDS)
   }
 
   handleSelect (index: string) {
@@ -217,18 +218,24 @@ export default class extends Vue {
       })
     } else {
       const picBed = index.replace(/picbeds-/, '')
-      if (this.$builtInPicBed.includes(picBed)) {
-        this.$router.push({
-          name: picBed
-        })
-      } else {
-        this.$router.push({
-          name: 'others',
-          params: {
-            type: picBed
-          }
-        })
-      }
+      this.$router.push({
+        name: 'picbeds',
+        params: {
+          type: picBed
+        }
+      })
+      // if (this.$builtInPicBed.includes(picBed)) {
+      //   this.$router.push({
+      //     name: picBed
+      //   })
+      // } else {
+      //   this.$router.push({
+      //     name: 'others',
+      //     params: {
+      //       type: picBed
+      //     }
+      //   })
+      // }
     }
   }
 
@@ -264,7 +271,7 @@ export default class extends Vue {
   }
 
   beforeDestroy () {
-    ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
+    ipcRenderer.removeListener(GET_PICBEDS, this.getPicBeds)
   }
 }
 </script>

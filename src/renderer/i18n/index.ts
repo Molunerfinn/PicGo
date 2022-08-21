@@ -2,16 +2,11 @@ import { ipcRenderer } from 'electron'
 import { ObjectAdapter, I18n } from '@picgo/i18n'
 import { GET_CURRENT_LANGUAGE, SET_CURRENT_LANGUAGE, FORCE_UPDATE, GET_LANGUAGE_LIST } from '#/events/constants'
 import bus from '@/utils/bus'
+import { builtinI18nList } from '#/i18n'
 
 export class I18nManager {
   private i18n: I18n | null = null
-  private i18nFileList: II18nItem[] = [{
-    label: '简体中文',
-    value: 'zh-CN'
-  }, {
-    label: 'English',
-    value: 'en'
-  }]
+  private i18nFileList: II18nItem[] = builtinI18nList
 
   private getLanguageList () {
     ipcRenderer.send(GET_LANGUAGE_LIST)

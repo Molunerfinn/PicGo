@@ -32,44 +32,9 @@ export default new Router({
           name: 'upload'
         },
         {
-          path: 'qiniu',
-          component: () => import(/* webpackChunkName: "Qiniu" */ '@/pages/picbeds/Qiniu.vue'),
-          name: 'qiniu'
-        },
-        {
-          path: 'tcyun',
-          component: () => import(/* webpackChunkName: "TcYun" */ '@/pages/picbeds/TcYun.vue'),
-          name: 'tcyun'
-        },
-        {
-          path: 'upyun',
-          component: () => import(/* webpackChunkName: "UpYun" */ '@/pages/picbeds/UpYun.vue'),
-          name: 'upyun'
-        },
-        {
-          path: 'github',
-          component: () => import(/* webpackChunkName: "GitHub" */ '@/pages/picbeds/GitHub.vue'),
-          name: 'github'
-        },
-        {
-          path: 'smms',
-          component: () => import(/* webpackChunkName: "SMMS" */ '@/pages/picbeds/SMMS.vue'),
-          name: 'smms'
-        },
-        {
-          path: 'aliyun',
-          component: () => import(/* webpackChunkName: "AliYun" */ '@/pages/picbeds/AliYun.vue'),
-          name: 'aliyun'
-        },
-        {
-          path: 'imgur',
-          component: () => import(/* webpackChunkName: "Imgur" */ '@/pages/picbeds/Imgur.vue'),
-          name: 'imgur'
-        },
-        {
-          path: 'others/:type',
-          component: () => import(/* webpackChunkName: "Other" */ '@/pages/picbeds/Others.vue'),
-          name: 'others'
+          path: 'picbeds/:type',
+          component: () => import(/* webpackChunkName: "Other" */ '@/pages/picbeds/index.vue'),
+          name: 'picbeds'
         },
         {
           path: 'gallery',

@@ -25,7 +25,11 @@ Startup project.
 
 ### i18n
 
-Create a `yml` file for a language under `public/i18n/`, e.g. `zh-Hans.yml`. Then refer to `zh-CN.yml` or `en.yml` to write language files. Also note that PicGo will display the name of the language to the user via `LANG_DISPLAY_LABEL` in the language file.
+1. Create a language `yml` file under `public/i18n/`, for example `zh-Hans.yml`. Then refer to `zh-CN.yml` or `en.yml` to write language files. Also note that PicGo will display the name of the language to the user via `LANG_DISPLAY_LABEL` in the language file.
+
+2. Add a default language to `src/universal/i18n/index.ts`. where `label` is the value of `LANG_DISPLAY_LABEL` in the language file, and `value` is the name of the language file.
+
+3. If you are updating an existing language file, be sure to run `yarn gen-i18n` after the update to ensure that the correct language definition file can be generated.
 
 ### Submit code
 

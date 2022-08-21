@@ -2,6 +2,7 @@ import yaml from 'js-yaml'
 import { ObjectAdapter, I18n } from '@picgo/i18n'
 import path from 'path'
 import fs from 'fs-extra'
+import { builtinI18nList } from '#/i18n'
 
 class I18nManager {
   private i18n: I18n | null = null
@@ -10,13 +11,7 @@ class I18nManager {
   private localesMap: Map<string, ILocales> = new Map()
   private currentLanguage: string = 'zh-CN'
   readonly defaultLanguage: string = 'zh-CN'
-  private i18nFileList: II18nItem[] = [{
-    label: '简体中文',
-    value: 'zh-CN'
-  }, {
-    label: 'English',
-    value: 'en'
-  }]
+  private i18nFileList: II18nItem[] = builtinI18nList
 
   setOutterI18nFolder (folder: string) {
     this.outterI18nFolder = folder

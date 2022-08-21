@@ -112,7 +112,7 @@
 import gallerys from 'vue-gallery'
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { IResult } from '@picgo/store/dist/types'
-import { PASTE_TEXT } from '#/events/constants'
+import { PASTE_TEXT, GET_PICBEDS } from '#/events/constants'
 import {
   ipcRenderer,
   clipboard,
@@ -157,7 +157,6 @@ export default class extends Vue {
   picBed: IPicBedType[] = []
   @Watch('$route')
   handleRouteUpdate (to: any, from: any) {
-    console.log(to, from)
     if (from.name === 'gallery') {
       this.clearChoosedList()
     }
@@ -172,8 +171,8 @@ export default class extends Vue {
         this.updateGallery()
       })
     })
-    ipcRenderer.send('getPicBeds')
-    ipcRenderer.on('getPicBeds', this.getPicBeds)
+    ipcRenderer.send(GET_PICBEDS)
+    ipcRenderer.on(GET_PICBEDS, this.getPicBeds)
     this.updateGallery()
   }
 
@@ -451,7 +450,7 @@ export default class extends Vue {
 
   beforeDestroy () {
     ipcRenderer.removeAllListeners('updateGallery')
-    ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
+    ipcRenderer.removeListener(GET_PICBEDS, this.getPicBeds)
   }
 }
 </script>

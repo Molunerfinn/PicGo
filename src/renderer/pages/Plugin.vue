@@ -121,7 +121,8 @@ import {
   PICGO_HANDLE_PLUGIN_ING,
   PICGO_TOGGLE_PLUGIN,
   SHOW_PLUGIN_PAGE_MENU,
-  DEFAULT_LOGO
+  DEFAULT_LOGO,
+  GET_PICBEDS
 } from '#/events/constants'
 
 @Component({
@@ -249,7 +250,7 @@ export default class extends Vue {
       }
     })
     ipcRenderer.on(DEFAULT_LOGO, (evt: IpcRendererEvent, logoPath) => {
-      this.defaultLogo = `this.src="${logoPath.replace(/\\/g, '/')}"`
+      this.defaultLogo = `this.src="file://${logoPath.replace(/\\/g, '/')}"`
     })
     this.getPluginList()
     this.getSearchResult = debounce(this.getSearchResult, 50)
@@ -270,7 +271,7 @@ export default class extends Vue {
   }
 
   getPicBeds () {
-    ipcRenderer.send('getPicBeds')
+    ipcRenderer.send(GET_PICBEDS)
   }
 
   installPlugin (item: IPicGoPlugin) {

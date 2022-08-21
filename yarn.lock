@@ -1346,10 +1346,10 @@
     chalk "4.1.2"
     tslib "^2.3.1"
 
-"@picgo/store@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.npmmirror.com/@picgo/store/-/store-2.0.1.tgz#9dce62a6e61e5539c06d261628c1c6c29b8e07eb"
-  integrity sha512-DLv1/EpSWNec8AAFxVCHSFfArotuU4WdUs3KZePtDK7nwKYIqQMnfcCYOUadoAZn3mn1hS1byv7i26qyIPcKaw==
+"@picgo/store@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npmmirror.com/@picgo/store/-/store-2.0.2.tgz#0b5050f5e8cef7043cf5463fa81ef3c3a19fffc7"
+  integrity sha512-/nZr6zeLNtlTG+g8iUd5xy5Vtl7iu7SHI3aY9a/+AIlBSs7Io/06MrxGyoAHSWVg9BsB80kJyrNeGyOWiOO5jw==
   dependencies:
     "@commonify/lowdb" "^3.0.0"
     "@commonify/steno" "^2.1.0"
@@ -1362,17 +1362,17 @@
     lodash-id "^0.14.0"
     write-file-atomic "^4.0.1"
 
-"@picgo/store@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.npmmirror.com/@picgo/store/-/store-2.0.2.tgz#0b5050f5e8cef7043cf5463fa81ef3c3a19fffc7"
-  integrity sha512-/nZr6zeLNtlTG+g8iUd5xy5Vtl7iu7SHI3aY9a/+AIlBSs7Io/06MrxGyoAHSWVg9BsB80kJyrNeGyOWiOO5jw==
+"@picgo/store@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.npmjs.org/@picgo/store/-/store-2.0.4.tgz#6360ccf7dfaa90f8db6ee5115f96f5e8bf094113"
+  integrity sha512-QWBF/vxLkCOCwFmjPPwPW8ZJdcko+kFY4dBSJYi8spsKp/7FmKCHmSWIkOpkdH/ww0Gh7UbtSBveKgm5u4t42w==
   dependencies:
     "@commonify/lowdb" "^3.0.0"
     "@commonify/steno" "^2.1.0"
     "@types/bson" "^4.0.1"
     "@types/graceful-fs" "^4.1.3"
     "@types/lodash" "^4.14.182"
-    comment-json "^4.1.0"
+    comment-json "^4.2.3"
     fflate "^0.7.3"
     lodash "^4.17.21"
     lodash-id "^0.14.0"
@@ -3866,6 +3866,17 @@ comment-json@^4.1.0:
     has-own-prop "^2.0.0"
     repeat-string "^1.6.1"
 
+comment-json@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.npmjs.org/comment-json/-/comment-json-4.2.3.tgz#50b487ebbf43abe44431f575ebda07d30d015365"
+  integrity sha512-SsxdiOf064DWoZLH799Ata6u7iV658A11PlWtZATDlXPpKGJnbJZ5Z24ybixAi+LUUqJ/GKowAejtC5GFUG7Tw==
+  dependencies:
+    array-timsort "^1.0.3"
+    core-util-is "^1.0.3"
+    esprima "^4.0.1"
+    has-own-prop "^2.0.0"
+    repeat-string "^1.6.1"
+
 commitizen@^4.0.3, commitizen@^4.2.3:
   version "4.2.4"
   resolved "https://registry.npmjs.org/commitizen/-/commitizen-4.2.4.tgz#a3e5b36bd7575f6bf6e7aa19dbbf06b0d8f37165"
@@ -4261,7 +4272,7 @@ core-util-is@1.0.2:
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
 
-core-util-is@^1.0.2, core-util-is@~1.0.0:
+core-util-is@^1.0.2, core-util-is@^1.0.3, core-util-is@~1.0.0:
   version "1.0.3"
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.3.tgz#a6042d3634c2b27e9328f837b965fac83808db85"
   integrity sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==
@@ -9895,10 +9906,10 @@ performance-now@^2.1.0:
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-picgo@^1.5.0-alpha.5:
-  version "1.5.0-alpha.5"
-  resolved "https://registry.npmmirror.com/picgo/-/picgo-1.5.0-alpha.5.tgz#3258efa1aecdb9392405dc77fdb3273d3703b003"
-  integrity sha512-62F1GoctoHG4lIak91TNls5cw/DeHRt7PGh3SU/vKMacjSaKuIA9eU6FOyXSKtXqBgZFIpEQC6JYEvlTf/aMQA==
+picgo@^1.5.0-alpha.7:
+  version "1.5.0-alpha.7"
+  resolved "https://registry.npmjs.org/picgo/-/picgo-1.5.0-alpha.7.tgz#e334a5d736a54c45432a88288e964e71b36912db"
+  integrity sha512-MN0aBTF8u2fbdOaR8acTek9nEaCcWd3M1KGdu4Xp3aYqMakpF/meWItNYJYr8wwc4eCcQ7vC7aJ0ZIXsua6uVA==
   dependencies:
     "@picgo/i18n" "^1.0.0"
     "@picgo/store" "^2.0.2"
@@ -9914,6 +9925,7 @@ picgo@^1.5.0-alpha.5:
     image-size "^0.8.3"
     inquirer "^6.0.0"
     is-wsl "^2.2.0"
+    js-yaml "^4.1.0"
     lodash "^4.17.21"
     md5 "^2.2.1"
     mime-types "2.1.33"

@@ -65,7 +65,8 @@ import {
 import {
   SHOW_INPUT_BOX,
   SHOW_INPUT_BOX_RESPONSE,
-  SHOW_UPLOAD_PAGE_MENU
+  SHOW_UPLOAD_PAGE_MENU,
+  GET_PICBEDS
 } from '~/universal/events/constants'
 import {
   isUrl
@@ -96,8 +97,8 @@ export default class extends Vue {
     ipcRenderer.on('syncPicBed', () => {
       this.getDefaultPicBed()
     })
-    ipcRenderer.send('getPicBeds')
-    ipcRenderer.on('getPicBeds', this.getPicBeds)
+    ipcRenderer.send(GET_PICBEDS)
+    ipcRenderer.on(GET_PICBEDS, this.getPicBeds)
     this.$bus.$on(SHOW_INPUT_BOX_RESPONSE, this.handleInputBoxValue)
   }
 
@@ -118,7 +119,7 @@ export default class extends Vue {
     this.$bus.$off(SHOW_INPUT_BOX_RESPONSE)
     ipcRenderer.removeAllListeners('uploadProgress')
     ipcRenderer.removeAllListeners('syncPicBed')
-    ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
+    ipcRenderer.removeListener(GET_PICBEDS, this.getPicBeds)
   }
 
   onDrop (e: DragEvent) {

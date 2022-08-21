@@ -383,6 +383,7 @@ const handleI18n = () => {
   ipcMain.on(SET_CURRENT_LANGUAGE, (event: IpcMainEvent, language: string) => {
     i18nManager.setCurrentLanguage(language)
     const { lang, locales } = i18nManager.getCurrentLocales()
+    picgo.i18n.setLanguage(lang)
     if (process.platform === 'darwin') {
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)
       trayWindow?.webContents.send(SET_CURRENT_LANGUAGE, lang, locales)

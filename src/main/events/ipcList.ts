@@ -27,7 +27,8 @@ import {
   OPEN_URL,
   RELOAD_APP,
   SHOW_PLUGIN_PAGE_MENU,
-  SET_MINI_WINDOW_POS
+  SET_MINI_WINDOW_POS,
+  GET_PICBEDS
 } from '#/events/constants'
 import {
   uploadClipboardFiles,
@@ -151,9 +152,9 @@ export default {
       }
     })
 
-    ipcMain.on('getPicBeds', (evt: IpcMainEvent) => {
+    ipcMain.on(GET_PICBEDS, (evt: IpcMainEvent) => {
       const picBeds = getPicBeds()
-      evt.sender.send('getPicBeds', picBeds)
+      evt.sender.send(GET_PICBEDS, picBeds)
       evt.returnValue = picBeds
     })
 

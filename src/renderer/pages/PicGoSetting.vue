@@ -386,7 +386,7 @@
 import keyDetect from '@/utils/key-binding'
 import pkg from 'root/package.json'
 import { IConfig } from 'picgo'
-import { PICGO_OPEN_FILE, OPEN_URL } from '#/events/constants'
+import { PICGO_OPEN_FILE, OPEN_URL, GET_PICBEDS } from '#/events/constants'
 import {
   ipcRenderer
 } from 'electron'
@@ -483,8 +483,8 @@ export default class extends Vue {
 
   created () {
     this.os = process.platform
-    ipcRenderer.send('getPicBeds')
-    ipcRenderer.on('getPicBeds', this.getPicBeds)
+    ipcRenderer.send(GET_PICBEDS)
+    ipcRenderer.on(GET_PICBEDS, this.getPicBeds)
     this.initData()
   }
 
@@ -614,7 +614,7 @@ export default class extends Vue {
     this.saveConfig({
       'picBed.list': list
     })
-    ipcRenderer.send('getPicBeds')
+    ipcRenderer.send(GET_PICBEDS)
   }
 
   handleAutoStartChange (val: boolean) {
@@ -763,6 +763,7 @@ export default class extends Vue {
     this.saveConfig({
       'settings.language': val
     })
+    this.sendToMain(GET_PICBEDS)
   }
 
   goConfigPage () {
@@ -774,7 +775,7 @@ export default class extends Vue {
   }
 
   beforeDestroy () {
-    ipcRenderer.removeListener('getPicBeds', this.getPicBeds)
+    ipcRenderer.removeListener(GET_PICBEDS, this.getPicBeds)
   }
 }
 </script>

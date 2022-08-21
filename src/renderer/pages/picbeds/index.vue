@@ -3,7 +3,7 @@
     <el-row :gutter="16" class="setting-list">
       <el-col :span="16" :offset="4">
         <div class="view-title">
-          {{ picBedName }}{{ $T('SETTINGS') }}
+          {{ picBedName }} {{ $T('SETTINGS') }}
         </div>
         <config-form
           v-if="config.length > 0"
@@ -106,6 +106,8 @@ export default class extends Vue {
       line-height 22px
       padding-bottom 0
       color #eee
+    &-item
+      margin-bottom 11px
     .el-button-group
       width 100%
       .el-button

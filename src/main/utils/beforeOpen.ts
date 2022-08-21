@@ -93,18 +93,16 @@ function resolveOtherI18nFiles () {
     withFileTypes: true
   })
   i18nFiles.forEach(item => {
-    if (item.isFile()) {
-      if (item.name.endsWith('.yml')) {
-        const i18nFilePath = path.join(i18nFolder, item.name)
-        const i18nFile = fs.readFileSync(i18nFilePath, 'utf8')
-        try {
-          const i18nFileObj = yaml.load(i18nFile) as unknown as ILocales
-          if (i18nFileObj?.LANG_DISPLAY_LABEL) {
-            i18nManager.addI18nFile(item.name.replace('.yml', ''), i18nFileObj.LANG_DISPLAY_LABEL)
-          }
-        } catch (e) {
-          console.error(e)
+    if (item.isFile() && item.name?.endsWith('.yml')) {
+      const i18nFilePath = path.join(i18nFolder, item.name)
+      const i18nFile = fs.readFileSync(i18nFilePath, 'utf8')
+      try {
+        const i18nFileObj = yaml.load(i18nFile) as unknown as ILocales
+        if (i18nFileObj?.LANG_DISPLAY_LABEL) {
+          i18nManager.addI18nFile(item.name.replace('.yml', ''), i18nFileObj.LANG_DISPLAY_LABEL)
         }
+      } catch (e) {
+        console.error(e)
       }
     }
   })
