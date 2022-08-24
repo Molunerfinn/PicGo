@@ -69,7 +69,7 @@ class GuiApi implements IGuiApi {
   async showFileExplorer (options: IShowFileExplorerOption = {}) {
     this.windowId = await getWindowId()
     const res = await dialog.showOpenDialog(BrowserWindow.fromId(this.windowId)!, options)
-    return res.filePaths?.[0]
+    return res.filePaths || []
   }
 
   async upload (input: IUploadOption) {

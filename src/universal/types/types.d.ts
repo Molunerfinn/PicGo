@@ -193,7 +193,7 @@ type IDispose = () => void
 // GuiApi
 interface IGuiApi {
   showInputBox: (options: IShowInputBoxOption) => Promise<string>
-  showFileExplorer: (options: IShowFileExplorerOption) => Promise<string>
+  showFileExplorer: (options: IShowFileExplorerOption) => Promise<string[]>
   upload: (input: IUploadOption) => Promise<ImgInfo[]>
   showNotification: (options?: IShowNotificationOption) => void
   showMessageBox: (options?: IShowMessageBoxOption) => Promise<IShowMessageBoxResult>
