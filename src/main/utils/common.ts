@@ -1,3 +1,4 @@
+import fs from 'fs-extra'
 import db from '~/main/apis/core/datastore'
 import { clipboard, Notification, dialog } from 'electron'
 
@@ -68,4 +69,20 @@ export const calcDurationRange = (duration: number) => {
   }
   // max range
   return 100000
+}
+
+/**
+ * macOS public.file-url will get encoded file path,
+ * so we need to decode it
+ */
+export const ensureFilePath = (filePath: string, prefix = 'file://'): string => {
+  filePath = filePath.replace(prefix, '')
+  if (fs.existsSync(filePath)) {
+    return `${prefix}${filePath}`
+  }
+  filePath = decodeURIComponent(filePath)
+  if (fs.existsSync(filePath)) {
+    return `${prefix}${filePath}`
+  }
+  return ''
 }

@@ -41,7 +41,8 @@ windowList.set(IWindowList.TRAY_WINDOW, {
         nodeIntegration: !!process.env.ELECTRON_NODE_INTEGRATION,
         contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
         nodeIntegrationInWorker: true,
-        backgroundThrottling: false
+        backgroundThrottling: false,
+        webSecurity: false
       }
     }
   },

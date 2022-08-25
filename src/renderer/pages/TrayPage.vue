@@ -107,7 +107,6 @@ export default class extends Vue {
     })
     ipcRenderer.on('uploadFiles', async () => {
       this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
-      console.log(this.files)
       this.uploadFlag = false
     })
     ipcRenderer.on('updateFiles', () => {

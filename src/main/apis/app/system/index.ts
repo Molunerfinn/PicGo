@@ -1,3 +1,4 @@
+import fs from 'fs-extra'
 import {
   app,
   Menu,
@@ -15,7 +16,7 @@ import { IWindowList } from '#/types/enum'
 import picgo from '@core/picgo'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import pkg from 'root/package.json'
-import { handleCopyUrl } from '~/main/utils/common'
+import { ensureFilePath, handleCopyUrl } from '~/main/utils/common'
 import { privacyManager } from '~/main/utils/privacyManager'
 // import { T } from '#/i18n'
 import { T } from '~/main/i18n'
@@ -173,18 +174,37 @@ export function createTray () {
     tray.on('click', (event, bounds) => {
       if (process.platform === 'darwin') {
         toggleWindow(bounds)
-        setTimeout(() => {
+        setTimeout(async () => {
           const img = clipboard.readImage()
           const obj: ImgInfo[] = []
           if (!img.isEmpty()) {
             // 从剪贴板来的图片默认转为png
-            // @ts-ignore
-            const imgUrl = 'data:image/png;base64,' + Buffer.from(img.toPNG(), 'binary').toString('base64')
-            obj.push({
-              width: img.getSize().width,
-              height: img.getSize().height,
-              imgUrl
-            })
+            // https://github.com/electron/electron/issues/9035
+            const imgPath = clipboard.read('public.file-url')
+            if (imgPath) {
+              const decodePath = ensureFilePath(imgPath)
+              if (decodePath === imgPath) {
+                obj.push({
+                  imgUrl: imgPath
+                })
+              } else {
+                if (decodePath !== '') {
+                  // 带有中文的路径，无法直接被img.src所使用，会被转义
+                  const base64 = await fs.readFile(decodePath.replace('file://', ''), { encoding: 'base64' })
+                  obj.push({
+                    imgUrl: `data:image/png;base64,${base64}`
+                  })
+                }
+              }
+            } else {
+              const imgUrl = img.toDataURL()
+              // console.log(imgUrl)
+              obj.push({
+                width: img.getSize().width,
+                height: img.getSize().height,
+                imgUrl
+              })
+            }
           }
           windowManager.get(IWindowList.TRAY_WINDOW)!.webContents.send('clipboardFiles', obj)
         }, 0)
