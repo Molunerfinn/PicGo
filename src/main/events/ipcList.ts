@@ -48,7 +48,8 @@ export default {
     // from macOS tray
     ipcMain.on('uploadClipboardFiles', async () => {
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
-      const img = await uploader.setWebContents(trayWindow.webContents).upload()
+      // macOS use builtin clipboard is OK
+      const img = await uploader.setWebContents(trayWindow.webContents).uploadWithBuildInClipboard()
       if (img !== false) {
         const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
         handleCopyUrl(pasteTemplate(pasteStyle, img[0], db.get('settings.customLink')))

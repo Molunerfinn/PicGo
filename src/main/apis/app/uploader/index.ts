@@ -12,7 +12,7 @@ import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
 import util from 'util'
 import { IPicGo } from 'picgo'
-import { showNotification, calcDurationRange } from '~/main/utils/common'
+import { showNotification, calcDurationRange, getClipboardFilePath } from '~/main/utils/common'
 import { RENAME_FILE_NAME, TALKING_DATA_EVENT } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
 import { T } from '~/main/i18n'
@@ -121,16 +121,21 @@ class Uploader {
   async uploadWithBuildInClipboard (): Promise<ImgInfo[]|false> {
     let filePath = ''
     try {
-      const nativeImage = clipboard.readImage()
-      if (nativeImage.isEmpty()) {
-        return false
+      const imgPath = getClipboardFilePath()
+      if (!imgPath) {
+        const nativeImage = clipboard.readImage()
+        if (nativeImage.isEmpty()) {
+          return false
+        }
+        const buffer = nativeImage.toPNG()
+        const baseDir = picgo.baseDir
+        const fileName = `${dayjs().format('YYYYMMDDHHmmSSS')}.png`
+        filePath = path.join(baseDir, CLIPBOARD_IMAGE_FOLDER, fileName)
+        await writeFile(filePath, buffer)
+        return await this.upload([filePath])
+      } else {
+        return await this.upload([imgPath])
       }
-      const buffer = nativeImage.toPNG()
-      const baseDir = picgo.baseDir
-      const fileName = `${dayjs().format('YYYYMMDDHHmmSSS')}.png`
-      filePath = path.join(baseDir, CLIPBOARD_IMAGE_FOLDER, fileName)
-      await writeFile(filePath, buffer)
-      return await this.upload([filePath])
     } catch (e: any) {
       logger.error(e)
       return false
