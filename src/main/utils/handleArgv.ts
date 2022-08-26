@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'fs-extra'
 import { Logger } from 'picgo'
+import { isUrl } from '~/universal/utils/common'
 interface IResultFileObject {
   path: string
 }
@@ -34,6 +35,11 @@ const getUploadFiles = (argv = process.argv, cwd = process.cwd(), logger: Logger
       return null // for uploading images in clipboard
     } else if ((fileList?.length || 0) > 0) {
       const result = fileList!.map(item => {
+        if (isUrl(item)) {
+          return {
+            path: item
+          }
+        }
         if (path.isAbsolute(item)) {
           return {
             path: item
