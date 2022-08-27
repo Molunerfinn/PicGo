@@ -9906,10 +9906,10 @@ performance-now@^2.1.0:
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-picgo@^1.5.0-alpha.7:
-  version "1.5.0-alpha.7"
-  resolved "https://registry.npmjs.org/picgo/-/picgo-1.5.0-alpha.7.tgz#e334a5d736a54c45432a88288e964e71b36912db"
-  integrity sha512-MN0aBTF8u2fbdOaR8acTek9nEaCcWd3M1KGdu4Xp3aYqMakpF/meWItNYJYr8wwc4eCcQ7vC7aJ0ZIXsua6uVA==
+picgo@^1.5.0-alpha.8:
+  version "1.5.0-alpha.8"
+  resolved "https://registry.npmjs.org/picgo/-/picgo-1.5.0-alpha.8.tgz#8fad6f59e06bbf78e65660dd180d0283ed74b82b"
+  integrity sha512-WBxWFtfC7SQezOY4JWsfVnkQWn6uFKeNMyx8B0E8d0lOTeK55VIVmZdikOIflWXyS8xk+0lpZUIymg8sCuQxsQ==
   dependencies:
     "@picgo/i18n" "^1.0.0"
     "@picgo/store" "^2.0.2"
