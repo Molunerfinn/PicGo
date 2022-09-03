@@ -253,7 +253,7 @@
           <el-input
             v-model="npmRegistry"
             :autofocus="true"
-            :placeholder="`${$T('SETTINGS_TIPS_SUCH_AS')}：https://registry.npm.taobao.org/`"
+            :placeholder="`${$T('SETTINGS_TIPS_SUCH_AS')}：https://registry.npmmirror.com`"
           ></el-input>
         </el-form-item>
       </el-form>

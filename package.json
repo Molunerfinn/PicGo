@@ -48,7 +48,7 @@
     "keycode": "^2.2.0",
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0",
-    "picgo": "^1.5.0-alpha.8",
+    "picgo": "^1.5.0-alpha.9",
     "qrcode.vue": "^1.7.0",
     "shell-path": "2.1.0",
     "uuidv4": "^6.2.11",
