@@ -54,29 +54,15 @@ PicGo 本体支持如下图床：
 
 ## 下载安装
 
-点击此处下载 [应用](https://github.com/Molunerfinn/PicGo/releases)。从 2.3.1-beta.4 版本开始，在下载页提供 [腾讯云COS](https://cloud.tencent.com/product/cos) 下载链接，供国内用户快速下载使用。感谢 [腾讯云COS](https://cloud.tencent.com/product/cos) 提供的赞助支持！
-
-还可以通过山东大学镜像站提供的镜像地址下载 [应用](https://mirrors.sdu.edu.cn/github-release/Molunerfinn_PicGo)。感谢山东大学镜像站提供的镜像服务！
-
-### Windows
-
-Windows 用户请下载最新版本的 `exe` 文件。
-
-**还可以使用 [Scoop](https://scoop.sh/) 来安装 PicGo: `scoop bucket add helbing https://github.com/helbing/scoop-bucket` & `scoop install picgo`。 感谢 @helbing 的贡献！**
-
-**还可以使用 [Chocolatey](https://chocolatey.org/) 来安装 PicGo: `choco install picgo`。 感谢 @iYato 的贡献！**
-
-### macOS
-
-macOS 用户请下载最新版本的 `dmg` 文件。
-
-**还可以使用 [Homebrew](https://brew.sh/) 来安装 PicGo: `brew install picgo --cask`。感谢 @womeimingzi11 的贡献！**
-
-### Linux
-
-Linux 用户请下载 `AppImage` 文件。
-
-**如果你是 Arch 类的 Linux 用户，可以直接通过 `yay -S picgo-appimage` 来安装 PicGo （若是没有则先安装 yay ，是 aur 仓库助手）。感谢 @houbaron 的贡献！**
+| 下载源  | 地址/安装方式  | 平台 | 备注  |
+|---|---|---|---|
+| GitHub Release  | https://github.com/Molunerfinn/PicGo/releases | All | 国内下载速度可能会慢 |
+| [腾讯云COS](https://cloud.tencent.com/product/cos)  | https://github.com/Molunerfinn/PicGo/releases 附在更新日志结尾 | All | 感谢 [腾讯云COS](https://cloud.tencent.com/product/cos) 提供的赞助支持 |
+| [山东大学镜像站](https://mirrors.sdu.edu.cn/) | https://mirrors.sdu.edu.cn/github-release/Molunerfinn_PicGo | All | 感谢 [山东大学镜像站](https://mirrors.sdu.edu.cn/) 提供的镜像支持 |
+| [Scoop](https://scoop.sh/) | `scoop bucket add helbing https://github.com/helbing/scoop-bucket` & `scoop install picgo` | Windows | 感谢 @helbing 的贡献 |
+| [Chocolatey](https://chocolatey.org/) | `choco install picgo` | Windows | 感谢 @iYato 的贡献 |
+| [Homebrew](https://brew.sh/) | `brew install picgo --cask` | macOS | 感谢 @womeimingzi11 的贡献 |
+| [AUR](https://aur.archlinux.org/packages/yay) | `yay -S picgo-appimage` | Arch-Linux | 感谢 @houbaron 的贡献 |
 
 ## 应用截图
 
