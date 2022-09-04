@@ -1,3 +1,26 @@
+## :tada: 2.3.1-beta.6 (2022-09-04)
+
+
+### :sparkles: Features
+
+* cli support uploading image with url ([e848918](https://github.com/Molunerfinn/PicGo/commit/e848918))
+* finish i18n system ([428ffc7](https://github.com/Molunerfinn/PicGo/commit/428ffc7))
+
+
+### :bug: Bug Fixes
+
+* macos clipboard image can't show on tray page ([20e38f4](https://github.com/Molunerfinn/PicGo/commit/20e38f4)), closes [#961](https://github.com/Molunerfinn/PicGo/issues/961)
+* showFileExplorer result bug ([b6b2eea](https://github.com/Molunerfinn/PicGo/commit/b6b2eea))
+* windows upload clipboard file with builtin-clipboard not work ([7b50ba7](https://github.com/Molunerfinn/PicGo/commit/7b50ba7))
+
+
+### :package: Chore
+
+* up issue template ([5f1fb08](https://github.com/Molunerfinn/PicGo/commit/5f1fb08))
+* update cos upload url ([86012c0](https://github.com/Molunerfinn/PicGo/commit/86012c0))
+
+
+
 ## :tada: 2.3.1-beta.5 (2022-08-14)
 
 
