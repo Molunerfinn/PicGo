@@ -7,17 +7,25 @@ const checkLogFileIsLarge = (logPath: string): {
   logFileSize?: number
   logFileSizeLimit?: number
 } => {
-  if (fs.existsSync(logPath)) {
-    const logFileSize = fs.statSync(logPath).size
-    const logFileSizeLimit = 10 * 1024 * 1024 // 10 MB default
-    return {
-      isLarge: logFileSize > logFileSizeLimit,
-      logFileSize,
-      logFileSizeLimit
+  try {
+    if (fs.existsSync(logPath)) {
+      const logFileSize = fs.statSync(logPath).size
+      const logFileSizeLimit = 10 * 1024 * 1024 // 10 MB default
+      return {
+        isLarge: logFileSize > logFileSizeLimit,
+        logFileSize,
+        logFileSizeLimit
+      }
     }
-  }
-  return {
-    isLarge: false
+    return {
+      isLarge: false
+    }
+  } catch (e) {
+    // why throw error???
+    console.error(e)
+    return {
+      isLarge: true
+    }
   }
 }
 
@@ -32,11 +40,17 @@ const recreateLogFile = (logPath: string): void => {
  * for local log before picgo inited
  */
 const getLogger = (logPath: string) => {
-  if (!fs.existsSync(logPath)) {
-    fs.ensureFileSync(logPath)
-  }
-  if (checkLogFileIsLarge(logPath).isLarge) {
-    recreateLogFile(logPath)
+  let hasUncathcedError = false
+  try {
+    if (!fs.existsSync(logPath)) {
+      fs.ensureFileSync(logPath)
+    }
+    if (checkLogFileIsLarge(logPath).isLarge) {
+      recreateLogFile(logPath)
+    }
+  } catch (e) {
+    console.error(e)
+    hasUncathcedError = true
   }
   return (type: string, ...msg: any[]) => {
     try {
@@ -54,9 +68,12 @@ const getLogger = (logPath: string) => {
       log += '\n'
       console.log(log)
       // A synchronized approach to avoid log msg sequence errors
-      fs.appendFileSync(logPath, log)
+      if (!hasUncathcedError) {
+        fs.appendFileSync(logPath, log)
+      }
     } catch (e) {
       console.error(e)
+      hasUncathcedError = true
     }
   }
 }
