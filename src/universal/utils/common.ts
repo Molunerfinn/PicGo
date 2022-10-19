@@ -2,7 +2,7 @@ export const isUrl = (url: string): boolean => (url.startsWith('http://') || url
 export const isUrlEncode = (url: string): boolean => {
   url = url || ''
   try {
-    return url !== decodeURI(url)
+    return url !== decodeURIComponent(url)
   } catch (e) {
     // if some error caught, try to let it go
     return true
@@ -11,7 +11,7 @@ export const isUrlEncode = (url: string): boolean => {
 
 export const handleUrlEncode = (url: string): string => {
   if (!isUrlEncode(url)) {
-    url = encodeURI(url)
+    url = encodeURIComponent(url)
   }
   return url
 }
