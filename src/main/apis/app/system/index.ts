@@ -153,7 +153,7 @@ export function createContextMenu () {
 const getTrayIcon = () => {
   if (process.platform === 'darwin') {
     const isMacOSGreaterThan11 = isMacOSVersionGreaterThanOrEqualTo('11')
-    return isMacOSGreaterThan11 ? `${__static}/menubar-newdarwin-v2.png` : `${__static}/menubar.png`
+    return isMacOSGreaterThan11 ? `${__static}/menubar-newdarwinTemplate.png` : `${__static}/menubar.png`
   } else {
     return `${__static}/menubar-nodarwin.png`
   }
