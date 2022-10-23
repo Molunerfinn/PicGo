@@ -1,3 +1,26 @@
+## :tada: 2.3.1-beta.7 (2022-10-23)
+
+
+### :sparkles: Features
+
+* add zh-TW.yml ([#976](https://github.com/Molunerfinn/PicGo/issues/976)) ([72371de](https://github.com/Molunerfinn/PicGo/commit/72371de))
+
+
+### :bug: Bug Fixes
+
+* change decodeURI -> decodeURIComponent & encode also ([7677f1e](https://github.com/Molunerfinn/PicGo/commit/7677f1e))
+* macOS tray icon background color bug ([9791ff2](https://github.com/Molunerfinn/PicGo/commit/9791ff2)), closes [#970](https://github.com/Molunerfinn/PicGo/issues/970)
+* some bugs will case picgo-gui-local.log too large ([012a01d](https://github.com/Molunerfinn/PicGo/commit/012a01d)), closes [#995](https://github.com/Molunerfinn/PicGo/issues/995)
+* some case will cause picgo-gui-local.log too large ([3c01861](https://github.com/Molunerfinn/PicGo/commit/3c01861))
+* some texts in zh-TW ([#978](https://github.com/Molunerfinn/PicGo/issues/978)) ([531bc13](https://github.com/Molunerfinn/PicGo/commit/531bc13))
+
+
+### :pencil: Documentation
+
+* update readme & FAQ ([d438f82](https://github.com/Molunerfinn/PicGo/commit/d438f82))
+
+
+
 ## :tada: 2.3.1-beta.6 (2022-09-04)
 
 
