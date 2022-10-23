@@ -22,7 +22,7 @@ const checkLogFileIsLarge = (logPath: string): {
     }
   } catch (e) {
     // why throw error???
-    console.error(e)
+    console.log(e)
     return {
       isLarge: true
     }
@@ -30,9 +30,13 @@ const checkLogFileIsLarge = (logPath: string): {
 }
 
 const recreateLogFile = (logPath: string): void => {
-  if (fs.existsSync(logPath)) {
-    fs.unlinkSync(logPath)
-    fs.createFileSync(logPath)
+  try {
+    if (fs.existsSync(logPath)) {
+      fs.unlinkSync(logPath)
+      fs.createFileSync(logPath)
+    }
+  } catch (e) {
+    // do nothing
   }
 }
 
@@ -49,10 +53,16 @@ const getLogger = (logPath: string) => {
       recreateLogFile(logPath)
     }
   } catch (e) {
-    console.error(e)
+    console.log(e)
     hasUncathcedError = true
   }
   return (type: string, ...msg: any[]) => {
+    if (hasUncathcedError) {
+      if (checkLogFileIsLarge(logPath).isLarge) {
+        recreateLogFile(logPath)
+      }
+      return
+    }
     try {
       let log = `${dayjs().format('YYYY-MM-DD HH:mm:ss')} [PicGo ${type.toUpperCase()}] `
       msg.forEach((item: ILogArgvTypeWithError) => {
@@ -68,11 +78,14 @@ const getLogger = (logPath: string) => {
       log += '\n'
       console.log(log)
       // A synchronized approach to avoid log msg sequence errors
+      if (checkLogFileIsLarge(logPath).isLarge) {
+        recreateLogFile(logPath)
+      }
       if (!hasUncathcedError) {
         fs.appendFileSync(logPath, log)
       }
     } catch (e) {
-      console.error(e)
+      console.log(e)
       hasUncathcedError = true
     }
   }
