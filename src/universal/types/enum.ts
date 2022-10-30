@@ -27,3 +27,22 @@ export enum IWindowList {
   MINI_WINDOW = 'MINI_WINDOW',
   RENAME_WINDOW = 'RENAME_WINDOW'
 }
+
+export enum IRemoteNoticeActionType {
+  OPEN_URL = 'OPEN_URL',
+  SHOW_NOTICE = 'SHOW_NOTICE', // notification
+  SHOW_DIALOG = 'SHOW_DIALOG', // dialog notice
+  COMMON = 'COMMON',
+  VOID = 'VOID', // do nothing
+  SHOW_MESSAGE_BOX = 'SHOW_MESSAGE_BOX'
+}
+
+export enum IRemoteNoticeTriggerHook {
+  APP_START = 'APP_START',
+  SETTING_WINDOW_OPEN = 'SETTING_WINDOW_OPEN',
+}
+
+export enum IRemoteNoticeTriggerCount {
+  ONCE = 'ONCE', // default
+  ALWAYS = 'ALWAYS'
+}

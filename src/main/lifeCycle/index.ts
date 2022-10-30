@@ -12,7 +12,7 @@ import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import beforeOpen from '~/main/utils/beforeOpen'
 import ipcList from '~/main/events/ipcList'
 import busEventList from '~/main/events/busEventList'
-import { IWindowList } from '#/types/enum'
+import { IRemoteNoticeTriggerHook, IWindowList } from '#/types/enum'
 import windowManager from 'apis/app/window/windowManager'
 import {
   updateShortKeyFromVersion212,
@@ -35,6 +35,7 @@ import logger from 'apis/core/picgo/logger'
 import picgo from 'apis/core/picgo'
 import fixPath from './fixPath'
 import { initI18n } from '~/main/utils/handleI18n'
+import { remoteNoticeHandler } from 'apis/app/remoteNotice'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -101,6 +102,8 @@ class LifeCycle {
           notice.show()
         }
       }
+      await remoteNoticeHandler.init()
+      remoteNoticeHandler.triggerHook(IRemoteNoticeTriggerHook.APP_START)
     }
     if (!app.isReady()) {
       app.on('ready', readyFunction)

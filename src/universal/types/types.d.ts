@@ -219,6 +219,8 @@ interface IPrivateShowNotificationOption extends IShowNotificationOption{
    * click notification to copy the body
    */
   clickToCopy?: boolean
+  copyContent?: string // something to copy
+  clickFn?: () => void
 }
 
 interface IShowMessageBoxOption {
@@ -347,4 +349,43 @@ type PromiseResType<T> = T extends Promise<infer R> ? R : T
 interface II18nItem {
   label: string
   value: string
+}
+
+interface IRemoteNotice {
+  version: number
+  list: Array<{
+    versions: string[] // matched picgo version
+    actions: IRemoteNoticeAction[]
+    versionMatch?: 'exact' | 'gte' | 'lte'
+  }>
+}
+
+interface IRemoteNoticeAction {
+  type: import('#/types/enum').IRemoteNoticeActionType
+  // trigger time
+  hooks: import('#/types/enum').IRemoteNoticeTriggerHook[]
+  id: string
+  // trigger count: always or once; default: once
+  triggerCount: import('#/types/enum').IRemoteNoticeTriggerCount
+
+  data?: {
+    title?: string
+    content?: string
+    desc?: string // action desc
+    buttons?: IRemoteNoticeButton[]
+    url?: string
+    copyToClipboard?: string
+    options: any // for other case
+  }
+}
+
+interface IRemoteNoticeButton {
+  label: string
+  labelEN?: string
+  type: 'confirm' | 'cancel' | 'other'
+  action: IRemoteNoticeAction
+}
+
+interface IRemoteNoticeLocalCountStorage {
+  [id: string]: true | number
 }

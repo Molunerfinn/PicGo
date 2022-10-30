@@ -15,7 +15,9 @@ export const handleCopyUrl = (str: string): void => {
 export const showNotification = (options: IPrivateShowNotificationOption = {
   title: '',
   body: '',
-  clickToCopy: false
+  clickToCopy: false,
+  copyContent: '',
+  clickFn: () => {}
 }) => {
   const notification = new Notification({
     title: options.title,
@@ -24,7 +26,10 @@ export const showNotification = (options: IPrivateShowNotificationOption = {
   })
   const handleClick = () => {
     if (options.clickToCopy) {
-      clipboard.writeText(options.body)
+      clipboard.writeText(options.copyContent || options.body)
+    }
+    if (options.clickFn) {
+      options.clickFn()
     }
   }
   notification.once('click', handleClick)

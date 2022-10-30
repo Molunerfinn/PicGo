@@ -41,3 +41,5 @@ export const simpleClone = (obj: any) => {
 export const enforceNumber = (num: number | string) => {
   return isNaN(Number(num)) ? 0 : Number(num)
 }
+
+export const isDev = process.env.NODE_ENV === 'development'

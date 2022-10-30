@@ -4,12 +4,13 @@ import {
   MINI_WINDOW_URL,
   RENAME_WINDOW_URL
 } from './constants'
-import { IWindowList } from '#/types/enum'
+import { IRemoteNoticeTriggerHook, IWindowList } from '#/types/enum'
 import bus from '@core/bus'
 import { CREATE_APP_MENU } from '@core/bus/constants'
 import db from '~/main/apis/core/datastore'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { app } from 'electron'
+import { remoteNoticeHandler } from '../remoteNotice'
 // import { i18n } from '~/main/i18n'
 // import { URLSearchParams } from 'url'
 
@@ -88,6 +89,9 @@ windowList.set(IWindowList.SETTING_WINDOW, {
     return options
   },
   callback (window, windowManager) {
+    window.once('show', () => {
+      remoteNoticeHandler.triggerHook(IRemoteNoticeTriggerHook.SETTING_WINDOW_OPEN)
+    })
     window.loadURL(handleWindowParams(SETTING_WINDOW_URL))
     window.on('closed', () => {
       bus.emit(TOGGLE_SHORTKEY_MODIFIED_MODE, false)
