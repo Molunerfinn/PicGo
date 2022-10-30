@@ -1,3 +1,23 @@
+## :tada: 2.3.1-beta.8 (2022-10-30)
+
+
+### :sparkles: Features
+
+* add remoteNotice ([9317871](https://github.com/Molunerfinn/PicGo/commit/9317871))
+* macOS tray icon more clearer ([ecd462f](https://github.com/Molunerfinn/PicGo/commit/ecd462f))
+
+
+### :bug: Bug Fixes
+
+* url encode bug && copy-paste url encode bug ([4de7a1d](https://github.com/Molunerfinn/PicGo/commit/4de7a1d)), closes [#996](https://github.com/Molunerfinn/PicGo/issues/996)
+
+
+### :pencil: Documentation
+
+* add PicHoro ([a355bc0](https://github.com/Molunerfinn/PicGo/commit/a355bc0))
+
+
+
 ## :tada: 2.3.1-beta.7 (2022-10-23)
 
 
