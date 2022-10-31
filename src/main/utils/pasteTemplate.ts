@@ -4,11 +4,13 @@ import { handleUrlEncode } from '#/utils/common'
 const formatCustomLink = (customLink: string, item: ImgInfo) => {
   const fileName = item.fileName!.replace(new RegExp(`\\${item.extname}$`), '')
   const url = item.url || item.imgUrl
+  const extName = item.extname
   const formatObj = {
     url,
-    fileName
+    fileName,
+    extName
   }
-  const keys = Object.keys(formatObj) as ['url', 'fileName']
+  const keys = Object.keys(formatObj) as ['url', 'fileName', 'extName']
   keys.forEach(item => {
     if (customLink.indexOf(`$${item}`) !== -1) {
       const reg = new RegExp(`\\$${item}`, 'g')

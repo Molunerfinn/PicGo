@@ -78,6 +78,7 @@ SETTINGS_MINI_WINDOW_ON_TOP: Mini Window On Top
 SETTINGS_AUTO_COPY_URL_AFTER_UPLOAD: Auto Copy URL After Upload
 SETTINGS_TIPS_PLACEHOLDER_URL: Use $url to represent url position
 SETTINGS_TIPS_PLACEHOLDER_FILENAME: Use $fileName to represent file name position
+SETTINGS_TIPS_PLACEHOLDER_EXTNAME: Use $extName to represent file's ext position
 SETTINGS_TIPS_SUCH_AS: 'Such as: $url/$fileName'
 SETTINGS_UPLOAD_PROXY: Upload Proxy
 SETTINGS_PLUGIN_INSTALL_PROXY: Proxy for Plugin Install
@@ -156,7 +157,7 @@ PLUGIN_IMPORT_LOCAL: Import Local Plugins
 
 TIPS_REMOVE_LINK: This operation will remove the picture from the album, continue?
 TIPS_WILL_REMOVE_CHOOSED_IMAGES: This operation will remove the picture from the album, continue?
-TIPS_MUST_CONTAINS_URL: Must contains $url
+TIPS_MUST_CONTAINS_URL: Must contains $url or $fileName or $extName
 TIPS_NETWORK_ERROR: Network Error
 TIPS_NEED_RELOAD: Need Reload App
 TIPS_PLEASE_CHOOSE_LOG_LEVEL: Please choose log level

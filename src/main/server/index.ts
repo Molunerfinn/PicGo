@@ -45,7 +45,7 @@ class Server {
       })
       return
     }
-    
+
     if (request.method === 'POST') {
       if (!routers.getHandler(request.url!)) {
         logger.warn(`[PicGo Server] don't support [${request.url}] url`)

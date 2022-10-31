@@ -201,6 +201,9 @@
           <div class="custom-title">
             {{ $T('SETTINGS_TIPS_PLACEHOLDER_FILENAME') }}
           </div>
+          <div class="custom-title">
+            {{ $T('SETTINGS_TIPS_PLACEHOLDER_EXTNAME') }}
+          </div>
           <el-input
             class="align-center"
             v-model="customLink.value"
@@ -226,7 +229,6 @@
         label-position="right"
         :model="customLink"
         ref="customLink"
-        :rules="rules"
         label-width="120px"
       >
         <el-form-item
@@ -397,7 +399,7 @@ import { getLatestVersion } from '#/utils/getLatestVersion'
 import { compare } from 'compare-versions'
 import { STABLE_RELEASE_URL, BETA_RELEASE_URL } from '#/utils/static'
 const customLinkRule = (rule: string, value: string, callback: (arg0?: Error) => void) => {
-  if (!/\$url/.test(value)) {
+  if (!/\$url/.test(value) && !/\$fileName/.test(value) && !/\$extName/.test(value)) {
     return callback(new Error(T('TIPS_MUST_CONTAINS_URL')))
   } else {
     return callback()
