@@ -1,3 +1,17 @@
+## :tada: 2.3.1 (2022-11-13)
+
+
+### :sparkles: Features
+
+* add $extName for paste template ([64e54d0](https://github.com/Molunerfinn/PicGo/commit/64e54d0)), closes [#1000](https://github.com/Molunerfinn/PicGo/issues/1000)
+
+
+### :bug: Bug Fixes
+
+* upyun options is not required ([167e424](https://github.com/Molunerfinn/PicGo/commit/167e424)), closes [#1002](https://github.com/Molunerfinn/PicGo/issues/1002)
+
+
+
 ## :tada: 2.3.1-beta.8 (2022-10-30)
 
 
