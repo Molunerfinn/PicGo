@@ -1,10 +1,11 @@
 <template>
   <div id="others-view">
-    <el-row :gutter="16" class="setting-list">
-      <el-col :span="16" :offset="4">
+    <el-row :gutter="20" class="setting-list">
+      <el-col :span="20" :offset="2">
         <div class="view-title">
           {{ picBedName }} {{ $T('SETTINGS') }}
         </div>
+        <ConfigList />
         <config-form
           v-if="config.length > 0"
           :config="config"
@@ -36,12 +37,14 @@ import {
   IpcRendererEvent
 } from 'electron'
 import { trimValues } from '@/utils/common'
+import ConfigList from './config-list.vue'
 
 @Component({
   name: 'OtherPicBed',
   mixins: [mixin],
   components: {
-    ConfigForm
+    ConfigForm,
+    ConfigList
   }
 })
 export default class extends Vue {
