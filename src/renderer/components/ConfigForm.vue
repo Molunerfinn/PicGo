@@ -116,7 +116,7 @@ export default class extends Vue {
 
   async handleConfig (val: IPicGoPluginConfig[]) {
     this.ruleForm = Object.assign({}, {})
-    const config = await this.getConfig<IPicGoPluginConfig>(this.getConfigType())
+    const config = await this.getCurConfigFormData()
     if (val.length > 0) {
       this.configList = cloneDeep(val).map((item) => {
         let defaultValue = item.default !== undefined
@@ -137,6 +137,12 @@ export default class extends Vue {
         return item
       })
     }
+  }
+
+  async getCurConfigFormData () {
+    const configId = this.$route.params.configId
+    const curTypeConfigList = await this.getConfig<IStringKeyMap[]>(`uploader.${this.type}.configList`) || []
+    return curTypeConfigList.find(i => i._id === configId) || {}
   }
 }
 </script>

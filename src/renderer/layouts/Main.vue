@@ -39,7 +39,7 @@
             >
               <el-menu-item
                 v-if="item.visible"
-                :index="`picbeds-${item.type}`"
+                :index="`uploader-config-page-${item.type}`"
                 :key="item.type"
               >
                 <!-- <i :class="`el-icon-ui-${item.type}`"></i> -->
@@ -211,17 +211,17 @@ export default class extends Vue {
   }
 
   handleSelect (index: string) {
-    const type = index.match(/picbeds-/)
+    const type = index.match(/uploader-config-page-/)
     if (type === null) {
       this.$router.push({
         name: index
       })
     } else {
-      const picBed = index.replace(/picbeds-/, '')
+      const type = index.replace(/uploader-config-page-/, '')
       this.$router.push({
-        name: 'picbeds',
+        name: 'UploaderConfigPage',
         params: {
-          type: picBed
+          type
         }
       })
       // if (this.$builtInPicBed.includes(picBed)) {

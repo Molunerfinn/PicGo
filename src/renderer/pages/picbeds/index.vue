@@ -5,7 +5,6 @@
         <div class="view-title">
           {{ picBedName }} {{ $T('SETTINGS') }}
         </div>
-        <ConfigList />
         <config-form
           v-if="config.length > 0"
           :config="config"
@@ -37,14 +36,12 @@ import {
   IpcRendererEvent
 } from 'electron'
 import { trimValues } from '@/utils/common'
-import ConfigList from './config-list.vue'
 
 @Component({
   name: 'OtherPicBed',
   mixins: [mixin],
   components: {
-    ConfigForm,
-    ConfigList
+    ConfigForm
   }
 })
 export default class extends Vue {

@@ -32,7 +32,7 @@ export default new Router({
           name: 'upload'
         },
         {
-          path: 'picbeds/:type',
+          path: 'picbeds/:type/:configId',
           component: () => import(/* webpackChunkName: "Other" */ '@/pages/picbeds/index.vue'),
           name: 'picbeds'
         },
@@ -58,6 +58,11 @@ export default new Router({
           path: 'shortKey',
           component: () => import(/* webpackChunkName: "ShortkeyPage" */ '@/pages/ShortKey.vue'),
           name: 'shortKey'
+        },
+        {
+          path: 'uploader-config-page/:type',
+          component: () => import(/* webpackChunkName: "Other" */ '@/pages/UploaderConfigPage.vue'),
+          name: 'UploaderConfigPage'
         }
       ]
     },
