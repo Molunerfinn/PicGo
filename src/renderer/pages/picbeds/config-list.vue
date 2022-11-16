@@ -3,17 +3,17 @@
     <el-row :gutter="20" align="middle" class="config-list">
       <el-col
         class="config-item-col"
-        v-for="item in 5"
-        :key="item"
+        v-for="item in curConfigList"
+        :key="item._id"
         :span="11"
         :offset="1"
       >
         <div
-          :class="`config-item ${activeItem === item ? 'selected' : ''}`"
-          @click="() => selectItem(item)"
+          :class="`config-item ${defaultConfigId === item._id ? 'selected' : ''}`"
+          @click="() => selectItem(item._id)"
         >
-          <div class="config-name">配置名</div>
-          <div class="config-update-time">更新时间</div>
+          <div class="config-name">{{item.name}}</div>
+          <div class="config-update-time">{{item._updatedAt}}</div>
           <div class="operation-container">
             <i class="el-icon-edit"></i>
             <i class="el-icon-delete"></i>
@@ -24,21 +24,55 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-// import {
-//   ipcRenderer,
-//   IpcRendererEvent
-// } from 'electron'
-// import { trimValues } from '@/utils/common'
+import { Component, Vue, Prop } from 'vue-property-decorator'
+import { uuid } from 'uuidv4'
 
 @Component({
   name: 'OssConfigList'
 })
 export default class extends Vue {
-  activeItem = 1;
+  @Prop() private id!: string;
+  curConfigList: IStringKeyMap[] = [];
+  defaultConfigId = '';
 
-  selectItem (id: number) {
-    this.activeItem = id
+  async selectItem (id: string) {
+    await this.saveConfig(`uploader.${this.id}.defaultId`, id)
+    this.defaultConfigId = id
+  }
+
+  created () {
+    this.getCurrentConfigList()
+  }
+
+  async getCurrentConfigList () {
+    const curUploaderConfig = await this.getConfig<IStringKeyMap>(`uploader.${this.id}`) ?? {}
+    let curConfigList = curUploaderConfig?.configList
+    this.defaultConfigId = curUploaderConfig?.defaultId
+
+    if (!curConfigList) {
+      curConfigList = await this.fixUploaderConfig()
+    }
+
+    this.curConfigList = curConfigList
+  }
+
+  async fixUploaderConfig (): Promise<IStringKeyMap[]> {
+    const curSelectUploaderConfig = await this.getConfig<IStringKeyMap>(`picBed.${this.id}`) ?? {}
+
+    if (!curSelectUploaderConfig._id) {
+      curSelectUploaderConfig._id = uuid()
+      curSelectUploaderConfig.name = '默认配置'
+      curSelectUploaderConfig._createdAt = Date.now()
+      curSelectUploaderConfig._updatedAt = Date.now()
+    }
+
+    const curUploaderConfigList = [curSelectUploaderConfig]
+    await this.saveConfig(`uploader.${this.id}`, {
+      configList: curUploaderConfigList,
+      defaultId: curSelectUploaderConfig._id
+    })
+
+    return curUploaderConfigList
   }
 }
 </script>

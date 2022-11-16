@@ -5,7 +5,7 @@
         <div class="view-title">
           {{ picBedName }} {{ $T('SETTINGS') }}
         </div>
-        <ConfigList />
+        <ConfigList :id="type"/>
         <config-form
           v-if="config.length > 0"
           :config="config"
