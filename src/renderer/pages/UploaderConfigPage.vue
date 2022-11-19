@@ -8,19 +8,32 @@
         class="config-item-col"
         v-for="item in curConfigList"
         :key="item._id"
-        :span="11"
+        :span="10"
         :offset="1"
       >
         <div
           :class="`config-item ${defaultConfigId === item._id ? 'selected' : ''}`"
           @click="() => selectItem(item._id)"
         >
-          <div class="config-name">{{item.name}}</div>
+          <div class="config-name">{{item._configName}}</div>
           <div class="config-update-time">{{formatTime(item._updatedAt)}}</div>
+          <div v-if="defaultConfigId === item._id" class="default-text">{{$T('DEFAULT_SETTING_HINT')}}</div>
           <div class="operation-container">
-            <i class="el-icon-edit" @click="openEditPage(item.type)"></i>
+            <i class="el-icon-edit" @click="openEditPage(item._id)"></i>
             <i :class="`el-icon-delete ${curConfigList.length <= 1 ? 'disabled' : ''}`" @click="() => deleteConfig(item._id)"></i>
           </div>
+        </div>
+      </el-col>
+      <el-col
+        class="config-item-col"
+        :span="11"
+        :offset="1"
+      >
+        <div
+          class="config-item config-item-add"
+          @click="addNewConfig"
+        >
+          <i class="el-icon-plus"></i>
         </div>
       </el-col>
     </el-row>
@@ -28,8 +41,8 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { uuid } from 'uuidv4'
 import dayjs from 'dayjs'
+import { completeUploaderMetaConfig } from '../utils/uploader'
 
 @Component({
   name: 'OssConfigList'
@@ -67,10 +80,10 @@ export default class extends Vue {
     const curUploaderConfig = await this.getConfig<IStringKeyMap>(`picBed.${this.type}`) ?? {}
 
     if (!curUploaderConfig._id) {
-      curUploaderConfig._id = uuid()
-      curUploaderConfig.name = 'Default'
-      curUploaderConfig._createdAt = Date.now()
-      curUploaderConfig._updatedAt = Date.now()
+      Object.assign(
+        curUploaderConfig,
+        completeUploaderMetaConfig(curUploaderConfig)
+      )
     }
 
     const curUploaderConfigList = [curUploaderConfig]
@@ -78,6 +91,9 @@ export default class extends Vue {
       configList: curUploaderConfigList,
       defaultId: curUploaderConfig._id
     })
+
+    // fix exist config
+    await this.saveConfig(`picBed.${this.type}`, curUploaderConfig)
 
     this.defaultConfigId = curUploaderConfig._id
 
@@ -98,7 +114,7 @@ export default class extends Vue {
     return dayjs(time).format('YYYY-MM-DD HH:mm:ss')
   }
 
-  deleteConfig (id: string) {
+  async deleteConfig (id: string) {
     if (this.curConfigList.length <= 1) return
     const updatedConfigList = this.curConfigList.filter(i => i._id === id)
 
@@ -106,7 +122,18 @@ export default class extends Vue {
       this.defaultConfigId = updatedConfigList[0]._id
     }
 
-    this.saveConfig(`uploader.${this.type}.configList`, updatedConfigList)
+    await this.saveConfig(`uploader.${this.type}.configList`, updatedConfigList)
+    this.curConfigList = updatedConfigList
+  }
+
+  addNewConfig () {
+    this.$router.push({
+      name: 'picbeds',
+      params: {
+        type: this.type,
+        configId: ''
+      }
+    })
   }
 }
 </script>
@@ -131,6 +158,10 @@ export default class extends Vue {
         color #aaa
         font-size 14px
         margin-top 10px
+      .default-text
+        color: #67C23A
+        font-size: 12px
+        margin-top: 5px
       .operation-container
         position absolute
         right: 5px
@@ -147,6 +178,13 @@ export default class extends Vue {
         .disabled
           cursor: not-allowed
           color: #aaa
+    .config-item-add
+      width: 80px
+      display: flex
+      justify-content: center
+      align-items: center
+      color: #eee
+      font-size: 28px
     .selected
       border 1px solid #409EFF
 </style>

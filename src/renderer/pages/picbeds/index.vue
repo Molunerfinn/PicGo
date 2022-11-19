@@ -35,7 +35,7 @@ import {
   ipcRenderer,
   IpcRendererEvent
 } from 'electron'
-import { trimValues } from '@/utils/common'
+import { completeUploaderMetaConfig } from '../../utils/uploader'
 
 @Component({
   name: 'OtherPicBed',
@@ -58,15 +58,27 @@ export default class extends Vue {
     // @ts-ignore
     const result = await this.$refs.configForm.validate()
     if (result !== false) {
-      this.saveConfig({
-        [`picBed.${this.type}`]: trimValues(result)
-      })
+      const configListConfigPath = `uploader.${this.type}.configList`
+      const configList = await this.getConfig<IStringKeyMap[]>(configListConfigPath)
+      // Finds the specified item from the config array and modifies it
+      const existItem = configList?.find(item => item._id === result._id)
+      // edit
+      if (existItem) {
+        Object.assign(existItem, result, {
+          _updatedAt: Date.now()
+        })
+      } else { // add new
+        configList?.push(completeUploaderMetaConfig(result))
+      }
+
+      await this.saveConfig(configListConfigPath, configList)
       const successNotification = new Notification(this.$T('SETTINGS_RESULT'), {
         body: this.$T('TIPS_SET_SUCCEED')
       })
       successNotification.onclick = () => {
         return true
       }
+      this.$router.back()
     }
   }
 
