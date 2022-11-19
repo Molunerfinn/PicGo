@@ -17,7 +17,7 @@
         >
           <div class="config-name">{{item._configName}}</div>
           <div class="config-update-time">{{formatTime(item._updatedAt)}}</div>
-          <div v-if="defaultConfigId === item._id" class="default-text">{{$T('DEFAULT_SETTING_HINT')}}</div>
+          <div v-if="defaultConfigId === item._id" class="default-text">{{$T('SELECTED_SETTING_HINT')}}</div>
           <div class="operation-container">
             <i class="el-icon-edit" @click="openEditPage(item._id)"></i>
             <i :class="`el-icon-delete ${curConfigList.length <= 1 ? 'disabled' : ''}`" @click="() => deleteConfig(item._id)"></i>

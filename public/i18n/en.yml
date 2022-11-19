@@ -111,7 +111,7 @@ SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD: Use Builtin Clipboard to Upload
 SETTINGS_CHOOSE_LANGUAGE: Choose Language
 UPLOADER_CONFIG_NAME: Configuration Name
 UPLOADER_CONFIG_PLACEHOLDER: Please Enter Configuration Name
-DEFAULT_SETTING_HINT: Default
+SELECTED_SETTING_HINT: Selected
 
 # shortcut-page
 
