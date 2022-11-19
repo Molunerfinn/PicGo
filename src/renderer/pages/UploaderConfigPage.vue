@@ -116,7 +116,7 @@ export default class extends Vue {
 
   async deleteConfig (id: string) {
     if (this.curConfigList.length <= 1) return
-    const updatedConfigList = this.curConfigList.filter(i => i._id === id)
+    const updatedConfigList = this.curConfigList.filter(i => i._id !== id)
 
     if (id === this.defaultConfigId) {
       this.defaultConfigId = updatedConfigList[0]._id
