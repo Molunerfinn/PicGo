@@ -93,7 +93,8 @@ const config = {
         nsis: {
           shortcutName: 'PicGo',
           oneClick: false,
-          allowToChangeInstallationDirectory: true
+          allowToChangeInstallationDirectory: true,
+          include: 'build/installer.nsh'
         },
         linux: {
           icon: 'build/icons/'
