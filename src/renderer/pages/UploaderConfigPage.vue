@@ -106,6 +106,9 @@ export default class extends Vue {
       params: {
         type: this.type,
         configId
+      },
+      query: {
+        defaultConfigId: this.defaultConfigId,
       }
     })
   }
@@ -119,7 +122,7 @@ export default class extends Vue {
     const updatedConfigList = this.curConfigList.filter(i => i._id !== id)
 
     if (id === this.defaultConfigId) {
-      this.defaultConfigId = updatedConfigList[0]._id
+      this.selectItem(updatedConfigList[0]._id)
     }
 
     await this.saveConfig(`uploader.${this.type}.configList`, updatedConfigList)

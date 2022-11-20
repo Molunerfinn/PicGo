@@ -72,6 +72,8 @@ export default class extends Vue {
       }
 
       await this.saveConfig(configListConfigPath, configList)
+      existItem && await this.shouldUpdateDefaultConfig(existItem)
+
       const successNotification = new Notification(this.$T('SETTINGS_RESULT'), {
         body: this.$T('TIPS_SET_SUCCEED')
       })
@@ -79,6 +81,13 @@ export default class extends Vue {
         return true
       }
       this.$router.back()
+    }
+  }
+
+  shouldUpdateDefaultConfig (item: IStringKeyMap) {
+    const curDefaultConfigId = this.$route.query.defaultConfigId
+    if (item._id === curDefaultConfigId) {
+      this.saveConfig(`picBed.${this.type}`, item)
     }
   }
 
