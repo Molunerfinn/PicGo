@@ -13,15 +13,11 @@
           :id="type"
         >
           <el-form-item>
-            <el-button-group>
-              <el-button type="primary" @click="handleConfirm" round>{{ $T('CONFIRM') }}</el-button>
-              <el-button type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type">{{ $T('SETTINGS_SET_DEFAULT_PICBED') }}</el-button>
-            </el-button-group>
+            <el-button class="confirm-btn" type="primary" @click="handleConfirm" round>{{ $T('CONFIRM') }}</el-button>
           </el-form-item>
         </config-form>
         <div v-else class="single">
           <div class="notice">{{ $T('SETTINGS_NOT_CONFIG_OPTIONS') }}</div>
-          <el-button type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type" size="mini">{{ $T('SETTINGS_SET_DEFAULT_PICBED') }}</el-button>
         </div>
       </el-col>
     </el-row>
@@ -122,6 +118,8 @@ export default class extends Vue {
     height 425px
     overflow-y auto
     overflow-x hidden
+  .confirm-btn
+    width: 250px
   .el-form
     label
       line-height 22px

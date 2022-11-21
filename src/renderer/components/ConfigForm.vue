@@ -81,7 +81,7 @@ import { cloneDeep, union } from 'lodash'
 
 @Component({
   name: 'config-form'
-  })
+})
 export default class extends Vue {
   @Prop() private config!: any[]
   @Prop() readonly type!: 'uploader' | 'transformer' | 'plugin'
@@ -91,7 +91,7 @@ export default class extends Vue {
   @Watch('config', {
     deep: true,
     immediate: true
-    })
+  })
   handleConfigChange (val: any) {
     this.handleConfig(val)
   }

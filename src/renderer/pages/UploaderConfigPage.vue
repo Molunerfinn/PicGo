@@ -1,14 +1,14 @@
 <template>
   <div id="config-list-view">
-    <el-row :gutter="20" align="middle" class="config-list">
-      <div class="view-title">
-        {{ $T('SETTINGS') }}
-      </div>
+    <div class="view-title">
+      {{ $T('SETTINGS') }}
+    </div>
+    <el-row :gutter="15" justify="space-between" align="center" type="flex" class="config-list">
       <el-col
         class="config-item-col"
         v-for="item in curConfigList"
         :key="item._id"
-        :span="10"
+        :span="11"
         :offset="1"
       >
         <div
@@ -20,7 +20,7 @@
           <div v-if="defaultConfigId === item._id" class="default-text">{{$T('SELECTED_SETTING_HINT')}}</div>
           <div class="operation-container">
             <i class="el-icon-edit" @click="openEditPage(item._id)"></i>
-            <i :class="`el-icon-delete ${curConfigList.length <= 1 ? 'disabled' : ''}`" @click="() => deleteConfig(item._id)"></i>
+            <i :class="`el-icon-delete ${curConfigList.length <= 1 ? 'disabled' : ''}`" @click.stop="() => deleteConfig(item._id)"></i>
           </div>
         </div>
       </el-col>
@@ -36,6 +36,9 @@
           <i class="el-icon-plus"></i>
         </div>
       </el-col>
+    </el-row>
+    <el-row type="flex" justify="center" :span="24" class="set-default-container">
+      <el-button class="set-default-btn" type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type">{{ $T('SETTINGS_SET_DEFAULT_PICBED') }}</el-button>
     </el-row>
   </div>
 </template>
@@ -108,7 +111,7 @@ export default class extends Vue {
         configId
       },
       query: {
-        defaultConfigId: this.defaultConfigId,
+        defaultConfigId: this.defaultConfigId
       }
     })
   }
@@ -122,7 +125,7 @@ export default class extends Vue {
     const updatedConfigList = this.curConfigList.filter(i => i._id !== id)
 
     if (id === this.defaultConfigId) {
-      this.selectItem(updatedConfigList[0]._id)
+      await this.selectItem(updatedConfigList[0]._id)
     }
 
     await this.saveConfig(`uploader.${this.type}.configList`, updatedConfigList)
@@ -138,13 +141,36 @@ export default class extends Vue {
       }
     })
   }
+
+  setDefaultPicBed (type: string) {
+    this.saveConfig({
+      'picBed.current': type,
+      'picBed.uploader': type
+    })
+    // @ts-ignore 来自mixin的数据
+    this.defaultPicBed = type
+    const successNotification = new Notification(this.$T('SETTINGS_DEFAULT_PICBED'), {
+      body: this.$T('TIPS_SET_SUCCEED')
+    })
+    successNotification.onclick = () => {
+      return true
+    }
+  }
 }
 </script>
 <style lang='stylus'>
 #config-list-view
+  position relative
+  min-height 100%
+  overflow-x hidden
+  overflow-y auto
+  padding-bottom 50px
+  box-sizing border-box
   .config-list
+    flex-wrap wrap
+    width: 98%
     .config-item
-      height 80px
+      height 85px
       margin-bottom 20px
       border-radius 4px
       cursor pointer
@@ -162,27 +188,26 @@ export default class extends Vue {
         font-size 14px
         margin-top 10px
       .default-text
-        color: #67C23A
-        font-size: 12px
-        margin-top: 5px
+        color #67C23A
+        font-size 12px
+        margin-top 5px
       .operation-container
         position absolute
-        right: 5px
-        top: 8px
-        font-size: 18pxc
-        display: flex
-        align-items: center
+        right 5px
+        top 8px
+        font-size 18pxc
+        display flex
+        align-items center
         color #eee
         .el-icon-edit
         .el-icon-delete
           cursor pointer
         .el-icon-edit
-          margin-right: 10px
+          margin-right 10px
         .disabled
-          cursor: not-allowed
-          color: #aaa
+          cursor not-allowed
+          color #aaa
     .config-item-add
-      width: 80px
       display: flex
       justify-content: center
       align-items: center
@@ -190,4 +215,10 @@ export default class extends Vue {
       font-size: 28px
     .selected
       border 1px solid #409EFF
+  .set-default-container
+    position absolute
+    bottom 10px
+    width 100%
+    .set-default-btn
+      width 250px
 </style>
