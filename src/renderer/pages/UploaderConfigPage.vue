@@ -46,9 +46,11 @@
 import { Component, Vue } from 'vue-property-decorator'
 import dayjs from 'dayjs'
 import { completeUploaderMetaConfig } from '../utils/uploader'
+import mixin from '@/utils/ConfirmButtonMixin'
 
 @Component({
-  name: 'OssConfigList'
+  name: 'UploaderConfigPage',
+  mixins: [mixin]
 })
 export default class extends Vue {
   type!: string;

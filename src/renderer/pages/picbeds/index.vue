@@ -31,7 +31,8 @@ import {
   ipcRenderer,
   IpcRendererEvent
 } from 'electron'
-import { completeUploaderMetaConfig } from '../../utils/uploader'
+import { completeUploaderMetaConfig } from '@/utils/uploader'
+import { trimValues } from '@/utils/common'
 
 @Component({
   name: 'OtherPicBed',
@@ -60,11 +61,11 @@ export default class extends Vue {
       const existItem = configList?.find(item => item._id === result._id)
       // edit
       if (existItem) {
-        Object.assign(existItem, result, {
+        Object.assign(existItem, trimValues(result), {
           _updatedAt: Date.now()
         })
       } else { // add new
-        configList?.push(completeUploaderMetaConfig(result))
+        configList?.push(trimValues(completeUploaderMetaConfig(result)))
       }
 
       await this.saveConfig(configListConfigPath, configList)
