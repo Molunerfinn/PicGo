@@ -1,7 +1,7 @@
 <template>
   <div id="others-view">
-    <el-row :gutter="16" class="setting-list">
-      <el-col :span="16" :offset="4">
+    <el-row :gutter="20" class="setting-list">
+      <el-col :span="20" :offset="2">
         <div class="view-title">
           {{ picBedName }} {{ $T('SETTINGS') }}
         </div>
@@ -13,15 +13,11 @@
           :id="type"
         >
           <el-form-item>
-            <el-button-group>
-              <el-button type="primary" @click="handleConfirm" round>{{ $T('CONFIRM') }}</el-button>
-              <el-button type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type">{{ $T('SETTINGS_SET_DEFAULT_PICBED') }}</el-button>
-            </el-button-group>
+            <el-button class="confirm-btn" type="primary" @click="handleConfirm" round>{{ $T('CONFIRM') }}</el-button>
           </el-form-item>
         </config-form>
         <div v-else class="single">
           <div class="notice">{{ $T('SETTINGS_NOT_CONFIG_OPTIONS') }}</div>
-          <el-button type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type" size="mini">{{ $T('SETTINGS_SET_DEFAULT_PICBED') }}</el-button>
         </div>
       </el-col>
     </el-row>
@@ -35,6 +31,7 @@ import {
   ipcRenderer,
   IpcRendererEvent
 } from 'electron'
+import { completeUploaderMetaConfig } from '@/utils/uploader'
 import { trimValues } from '@/utils/common'
 
 @Component({
@@ -58,15 +55,36 @@ export default class extends Vue {
     // @ts-ignore
     const result = await this.$refs.configForm.validate()
     if (result !== false) {
-      this.saveConfig({
-        [`picBed.${this.type}`]: trimValues(result)
-      })
+      const configListConfigPath = `uploader.${this.type}.configList`
+      const configList = await this.getConfig<IStringKeyMap[]>(configListConfigPath)
+      // Finds the specified item from the config array and modifies it
+      const existItem = configList?.find(item => item._id === result._id)
+      // edit
+      if (existItem) {
+        Object.assign(existItem, trimValues(result), {
+          _updatedAt: Date.now()
+        })
+      } else { // add new
+        configList?.push(trimValues(completeUploaderMetaConfig(result)))
+      }
+
+      await this.saveConfig(configListConfigPath, configList)
+      existItem && await this.shouldUpdateDefaultConfig(existItem)
+
       const successNotification = new Notification(this.$T('SETTINGS_RESULT'), {
         body: this.$T('TIPS_SET_SUCCEED')
       })
       successNotification.onclick = () => {
         return true
       }
+      this.$router.back()
+    }
+  }
+
+  shouldUpdateDefaultConfig (item: IStringKeyMap) {
+    const curDefaultConfigId = this.$route.query.defaultConfigId
+    if (item._id === curDefaultConfigId) {
+      this.saveConfig(`picBed.${this.type}`, item)
     }
   }
 
@@ -101,6 +119,8 @@ export default class extends Vue {
     height 425px
     overflow-y auto
     overflow-x hidden
+  .confirm-btn
+    width: 250px
   .el-form
     label
       line-height 22px

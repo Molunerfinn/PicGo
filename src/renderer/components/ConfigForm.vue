@@ -8,6 +8,18 @@
       size="mini"
     >
       <el-form-item
+        :label="$T('UPLOADER_CONFIG_NAME')"
+        required
+        prop="_configName"
+      >
+        <el-input
+          type="input"
+          v-model="ruleForm._configName"
+          :placeholder="$T('UPLOADER_CONFIG_PLACEHOLDER')"
+        ></el-input>
+      </el-form-item>
+      <!-- dynamic config -->
+      <el-form-item
         v-for="(item, index) in configList"
         :label="item.alias || item.name"
         :required="item.required"
@@ -115,10 +127,12 @@ export default class extends Vue {
   }
 
   async handleConfig (val: IPicGoPluginConfig[]) {
-    this.ruleForm = Object.assign({}, {})
-    const config = await this.getConfig<IPicGoPluginConfig>(this.getConfigType())
+    const config = await this.getCurConfigFormData()
+    const configId = this.$route.params.configId
+    this.ruleForm = Object.assign({}, config)
     if (val.length > 0) {
       this.configList = cloneDeep(val).map((item) => {
+        if (!configId) return item
         let defaultValue = item.default !== undefined
           ? item.default
           : item.type === 'checkbox'
@@ -137,6 +151,12 @@ export default class extends Vue {
         return item
       })
     }
+  }
+
+  async getCurConfigFormData () {
+    const configId = this.$route.params.configId
+    const curTypeConfigList = await this.getConfig<IStringKeyMap[]>(`uploader.${this.id}.configList`) || []
+    return curTypeConfigList.find(i => i._id === configId) || {}
   }
 }
 </script>
