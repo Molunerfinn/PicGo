@@ -76,12 +76,15 @@
             @close="handleClose"
             :options="options"
           ></gallerys>
-          <el-col :span="6" v-for="(item, index) in filterList" :key="item.id" class="gallery-list__img">
+          <el-col :span="8" v-for="(item, index) in filterList" :key="item.id" class="gallery-list__img">
             <div
               class="gallery-list__item"
               @click="zoomImage(index)"
             >
               <img v-lazy="item.imgUrl" class="gallery-list__item-img">
+            </div>
+            <div style="color: #ddd;">
+              <span>{{ item.fileName }}</span>
             </div>
             <div class="gallery-list__tool-panel">
               <i class="el-icon-document" @click="copy(item)"></i>

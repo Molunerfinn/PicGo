@@ -9,7 +9,7 @@
             class="upload-img__container"
             :class="{ upload: uploadFlag }"
             @click="uploadClipboardFiles">
-            <img :src="item.imgUrl" class="upload-img">
+            <img :src="item.imgUrl" :onerror="`this.src='${placeholderImage}';this.parentElement.parentElement.remove()`" class="upload-img">
           </div>
         </div>
       </div>
@@ -17,7 +17,7 @@
         <div class="list-title">{{ $T('ALREADY_UPLOAD') }}</div>
         <div v-for="item in files" :key="item.imgUrl" class="img-list">
           <div class="upload-img__container" @click="copyTheLink(item)">
-            <img :src="item.imgUrl" class="upload-img">
+            <img :src="item.imgUrl" :onerror="`this.src='${placeholderImage}';this.parentElement.parentElement.remove()`" class="upload-img">
           </div>
         </div>
       </div>
@@ -38,6 +38,7 @@ import { IWindowList } from '#/types/enum'
   mixins: [mixin]
 })
 export default class extends Vue {
+  placeholderImage = require('../assets/substitution-file.png')
   files: IResult<ImgInfo>[] = []
   notification = {
     title: this.$T('COPY_LINK_SUCCEED'),
