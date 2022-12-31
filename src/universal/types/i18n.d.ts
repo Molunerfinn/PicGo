@@ -24,6 +24,7 @@ interface ILocales {
   FIND_NEW_VERSION: string
   NO_MORE_NOTICE: string
   SHOW_DEVTOOLS: string
+  CURRENT_PICBED: string
   CHOOSE_YOUR_DEFAULT_PICBED: string
   UPLOAD_AREA: string
   GALLERY: string

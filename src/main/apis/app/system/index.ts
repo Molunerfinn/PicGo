@@ -9,11 +9,9 @@ import {
   Notification
 } from 'electron'
 import uploader from 'apis/app/uploader'
-import getPicBeds from '~/main/utils/getPicBeds'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
-import picgo from '@core/picgo'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import pkg from 'root/package.json'
 import { ensureFilePath, handleCopyUrl } from '~/main/utils/common'
@@ -21,28 +19,13 @@ import { privacyManager } from '~/main/utils/privacyManager'
 // import { T } from '#/i18n'
 import { T } from '~/main/i18n'
 import { isMacOSVersionGreaterThanOrEqualTo } from '~/main/utils/getMacOSVersion'
+import { buildPicBedListMenu } from '~/main/events/remotes/menu'
 let contextMenu: Menu | null
 let menu: Menu | null
 let tray: Tray | null
 export function createContextMenu () {
-  const picBeds = getPicBeds()
   if (process.platform === 'darwin' || process.platform === 'win32') {
-    const submenu = picBeds.filter(item => item.visible).map(item => {
-      return {
-        label: item.name,
-        type: 'radio',
-        checked: db.get('picBed.current') === item.type,
-        click () {
-          picgo.saveConfig({
-            'picBed.current': item.type,
-            'picBed.uploader': item.type
-          })
-          if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-            windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('syncPicBed')
-          }
-        }
-      }
-    })
+    const submenu = buildPicBedListMenu()
     contextMenu = Menu.buildFromTemplate([
       {
         label: T('ABOUT'),

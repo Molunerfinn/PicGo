@@ -29,7 +29,8 @@ import {
   OPEN_WINDOW,
   GET_LANGUAGE_LIST,
   SET_CURRENT_LANGUAGE,
-  GET_CURRENT_LANGUAGE
+  GET_CURRENT_LANGUAGE,
+  RPC_ACTIONS
 } from '#/events/constants'
 
 import { GalleryDB } from 'apis/core/datastore'
@@ -395,6 +396,10 @@ const handleI18n = () => {
   })
 }
 
+const handleRPCActions = () => {
+  ipcMain.on(RPC_ACTIONS, (event: IpcMainEvent, action: IRPCActions, ...args: any[], callbackId: string) => {})
+}
+
 export default {
   listen () {
     handleGetPluginList()
@@ -409,6 +414,7 @@ export default {
     handleOpenFile()
     handleOpenWindow()
     handleI18n()
+    handleRPCActions()
   },
   // TODO: separate to single file
   handlePluginUninstall,

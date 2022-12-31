@@ -159,6 +159,22 @@ interface IPicGoPluginConfig {
   [propName: string]: any
 }
 
+interface IPicGoPluginOriginConfig {
+  name: string
+  type: string
+  required: boolean
+  default?: any
+  alias?: string
+  choices?: {
+    name?: string
+    value?: any
+  }[] | (() => {
+    name?: string
+    value?: any
+  }[])
+  [propName: string]: any
+}
+
 interface IPluginMenuConfig {
   name: string
   fullName?: string
@@ -388,4 +404,18 @@ interface IRemoteNoticeButton {
 
 interface IRemoteNoticeLocalCountStorage {
   [id: string]: true | number
+}
+
+interface IUploaderListItemMetaInfo {
+  _id: string
+  _configName: string
+  _updatedAt: number
+  _createdAt: number
+}
+
+interface IUploaderConfig { 
+  [picBedType: string]: {
+    configList: (IStringKeyMap & IUploaderListItemMetaInfo)[]
+    defaultId: string
+  }
 }

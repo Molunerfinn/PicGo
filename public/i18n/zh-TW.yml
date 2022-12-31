@@ -23,6 +23,7 @@ CONFIG_THING: 設定${c}
 FIND_NEW_VERSION: 發現新版本
 NO_MORE_NOTICE: 以後不再提醒
 SHOW_DEVTOOLS: 開啟開發者工具
+CURRENT_PICBED: 當前圖床
 
 # ---renderer i18n begin---
 

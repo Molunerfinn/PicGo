@@ -36,7 +36,7 @@ import {
 } from '~/main/apis/app/uploader/apis'
 import picgoCoreIPC from './picgoCoreIPC'
 import { handleCopyUrl } from '~/main/utils/common'
-import { buildMainPageMenu, buildMiniPageMenu, buildPluginPageMenu, buildUploadPageMenu } from './remotes/menu'
+import { buildMainPageMenu, buildMiniPageMenu, buildPluginPageMenu, buildPicBedListMenu } from './remotes/menu'
 import path from 'path'
 import { T } from '~/main/i18n'
 
@@ -186,7 +186,7 @@ export default {
     })
     ipcMain.on(SHOW_UPLOAD_PAGE_MENU, () => {
       const window = windowManager.get(IWindowList.SETTING_WINDOW)!
-      const menu = buildUploadPageMenu()
+      const menu = buildPicBedListMenu()
       menu.popup({
         window
       })

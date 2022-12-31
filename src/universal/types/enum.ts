@@ -46,3 +46,10 @@ export enum IRemoteNoticeTriggerCount {
   ONCE = 'ONCE', // default
   ALWAYS = 'ALWAYS'
 }
+
+/**
+ * renderer trigger action from main
+ */
+export enum IRPCActionType {
+  GET_PICBED_CONFIG_LIST = 'GET_PICBED_CONFIG_LIST',
+}

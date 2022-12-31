@@ -43,3 +43,11 @@ export const enforceNumber = (num: number | string) => {
 }
 
 export const isDev = process.env.NODE_ENV === 'development'
+
+export const trimValues = (obj: IStringKeyMap) => {
+  const newObj = {} as IStringKeyMap
+  Object.keys(obj).forEach(key => {
+    newObj[key] = typeof obj[key] === 'string' ? obj[key].trim() : obj[key]
+  })
+  return newObj
+}

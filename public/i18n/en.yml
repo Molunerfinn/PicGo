@@ -23,6 +23,7 @@ CONFIG_THING: Config ${c}
 FIND_NEW_VERSION: Find New Version
 NO_MORE_NOTICE: No More Notice
 SHOW_DEVTOOLS: Show Devtools
+CURRENT_PICBED: Current Picbed
 
 # ---renderer i18n begin---
 
