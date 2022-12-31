@@ -17,7 +17,7 @@
         <div class="list-title">{{ $T('ALREADY_UPLOAD') }}</div>
         <div v-for="item in files" :key="item.imgUrl" class="img-list">
           <div class="upload-img__container" @click="copyTheLink(item)">
-            <img :src="item.imgUrl" class="upload-img">
+            <img v-lazy="item.imgUrl" class="upload-img">
           </div>
         </div>
       </div>
@@ -41,8 +41,7 @@ export default class extends Vue {
   files: IResult<ImgInfo>[] = []
   notification = {
     title: this.$T('COPY_LINK_SUCCEED'),
-    body: '',
-    icon: ''
+    body: ''
   }
 
   clipboardFiles: ImgInfo[] = []
@@ -61,7 +60,6 @@ export default class extends Vue {
 
   async copyTheLink (item: ImgInfo) {
     this.notification.body = item.imgUrl!
-    this.notification.icon = item.imgUrl!
     const myNotification = new Notification(this.notification.title, this.notification)
     ipcRenderer.invoke(PASTE_TEXT, item)
     myNotification.onclick = () => {

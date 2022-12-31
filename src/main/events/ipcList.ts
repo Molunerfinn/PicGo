@@ -55,9 +55,9 @@ export default {
         handleCopyUrl(pasteTemplate(pasteStyle, img[0], db.get('settings.customLink')))
         const notification = new Notification({
           title: T('UPLOAD_SUCCEED'),
-          body: img[0].imgUrl!,
+          body: img[0].imgUrl!
           // icon: file[0]
-          icon: img[0].imgUrl
+          // icon: img[0].imgUrl
         })
         notification.show()
         await GalleryDB.getInstance().insert(img[0])

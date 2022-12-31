@@ -83,8 +83,8 @@ class GuiApi implements IGuiApi {
         pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
         const notification = new Notification({
           title: T('UPLOAD_SUCCEED'),
-          body: imgs[i].imgUrl as string,
-          icon: imgs[i].imgUrl
+          body: imgs[i].imgUrl as string
+          // icon: imgs[i].imgUrl
         })
         setTimeout(() => {
           notification.show()

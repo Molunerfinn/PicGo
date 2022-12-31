@@ -21,8 +21,8 @@ export const showNotification = (options: IPrivateShowNotificationOption = {
 }) => {
   const notification = new Notification({
     title: options.title,
-    body: options.body,
-    icon: options.icon || undefined
+    body: options.body
+    // icon: options.icon || undefined
   })
   const handleClick = () => {
     if (options.clickToCopy) {

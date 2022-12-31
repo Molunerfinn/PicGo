@@ -83,6 +83,9 @@
             >
               <img v-lazy="item.imgUrl" class="gallery-list__item-img">
             </div>
+            <div class="gallery-list__file-name" :title="item.fileName">
+              {{ item.fileName }}
+            </div>
             <div class="gallery-list__tool-panel">
               <i class="el-icon-document" @click="copy(item)"></i>
               <i class="el-icon-edit-outline" @click="openDialog(item)"></i>
@@ -285,8 +288,9 @@ export default class extends Vue {
     const copyLink = await ipcRenderer.invoke(PASTE_TEXT, item)
     const obj = {
       title: this.$T('COPY_LINK_SUCCEED'),
-      body: copyLink,
-      icon: item.url || item.imgUrl
+      body: copyLink
+      // sometimes will cause lagging
+      // icon: item.url || item.imgUrl
     }
     const myNotification = new Notification(obj.title, obj)
     myNotification.onclick = () => {
@@ -332,8 +336,8 @@ export default class extends Vue {
     })
     const obj = {
       title: this.$T('CHANGE_IMAGE_URL_SUCCEED'),
-      body: this.imgInfo.imgUrl,
-      icon: this.imgInfo.imgUrl
+      body: this.imgInfo.imgUrl
+      // icon: this.imgInfo.imgUrl
     }
     const myNotification = new Notification(obj.title, obj)
     myNotification.onclick = () => {
@@ -527,7 +531,7 @@ export default class extends Vue {
       height 120px
       transition all .2s ease-in-out
       cursor pointer
-      margin-bottom 8px
+      margin-bottom 4px
       overflow hidden
       display flex
       &-fake
@@ -544,6 +548,7 @@ export default class extends Vue {
         object-fit fill
     &__tool-panel
       color #ddd
+      margin-bottom 4px
       i
         cursor pointer
         transition all .2s ease-in-out
@@ -556,6 +561,13 @@ export default class extends Vue {
         &.el-icon-delete
           &:hover
             color #F15140
+    &__file-name
+      overflow hidden
+      text-overflow ellipsis
+      white-space nowrap
+      color #ddd
+      font-size 14px
+      margin-bottom 4px
   .handle-bar
     color #ddd
     margin-bottom 10px

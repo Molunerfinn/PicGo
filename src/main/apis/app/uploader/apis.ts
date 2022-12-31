@@ -30,8 +30,8 @@ export const uploadClipboardFiles = async (): Promise<string> => {
       handleCopyUrl(pasteTemplate(pasteStyle, img[0], db.get('settings.customLink')))
       const notification = new Notification({
         title: T('UPLOAD_SUCCEED'),
-        body: img[0].imgUrl!,
-        icon: img[0].imgUrl
+        body: img[0].imgUrl!
+        // icon: img[0].imgUrl
       })
       setTimeout(() => {
         notification.show()
@@ -68,8 +68,8 @@ export const uploadChoosedFiles = async (webContents: WebContents, files: IFileW
       pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
       const notification = new Notification({
         title: T('UPLOAD_SUCCEED'),
-        body: imgs[i].imgUrl!,
-        icon: files[i].path
+        body: imgs[i].imgUrl!
+        // icon: files[i].path
       })
       setTimeout(() => {
         notification.show()

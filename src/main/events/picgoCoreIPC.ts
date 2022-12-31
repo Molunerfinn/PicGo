@@ -27,7 +27,6 @@ import {
   PICGO_OPEN_FILE,
   PASTE_TEXT,
   OPEN_WINDOW,
-  DEFAULT_LOGO,
   GET_LANGUAGE_LIST,
   SET_CURRENT_LANGUAGE,
   GET_CURRENT_LANGUAGE
@@ -370,12 +369,6 @@ const handleOpenWindow = () => {
   })
 }
 
-const handleDefaultLogo = () => {
-  ipcMain.on(DEFAULT_LOGO, (event: IpcMainEvent) => {
-    event.sender.send(DEFAULT_LOGO, path.join(__static, 'roundLogo.png'))
-  })
-}
-
 const handleI18n = () => {
   ipcMain.on(GET_LANGUAGE_LIST, (event: IpcMainEvent) => {
     event.sender.send(GET_LANGUAGE_LIST, i18nManager.languageList)
@@ -415,7 +408,6 @@ export default {
     handleImportLocalPlugin()
     handleOpenFile()
     handleOpenWindow()
-    handleDefaultLogo()
     handleI18n()
   },
   // TODO: separate to single file

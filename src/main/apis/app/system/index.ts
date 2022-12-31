@@ -247,8 +247,8 @@ export function createTray () {
           pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
           const notification = new Notification({
             title: T('UPLOAD_SUCCEED'),
-            body: imgs[i].imgUrl!,
-            icon: files[i]
+            body: imgs[i].imgUrl!
+            // icon: files[i]
           })
           setTimeout(() => {
             notification.show()

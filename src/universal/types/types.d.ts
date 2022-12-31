@@ -211,7 +211,7 @@ type IUploadOption = string[]
 interface IShowNotificationOption {
   title: string
   body: string
-  icon?: string | import('electron').NativeImage
+  // icon?: string | import('electron').NativeImage
 }
 
 interface IPrivateShowNotificationOption extends IShowNotificationOption{

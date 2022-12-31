@@ -36,7 +36,9 @@ Vue.prototype.$T = T
 Vue.prototype.$i18n = i18nManager
 
 Vue.use(ElementUI)
-Vue.use(VueLazyLoad)
+Vue.use(VueLazyLoad, {
+  error: `file://${__static.replace(/\\/g, '/')}/unknown-file-type.svg`
+})
 Vue.mixin(mainMixin)
 
 new Vue({
