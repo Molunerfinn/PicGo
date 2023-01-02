@@ -37,11 +37,12 @@ export default class extends Vue {
 
   /**
    * trigger RPC action
+   * TODO: create an isolate rpc handler
    */
-  triggerRPC<T> (action: IRPCActionType, ...args: any[]): Promise<T | undefined> {
+  triggerRPC<T> (action: IRPCActionType, ...args: any[]): Promise<T | null> {
     return new Promise((resolve) => {
       const callbackId = uuid()
-      const callback = (event: IpcRendererEvent, data: T | undefined, returnActionType: IRPCActionType, returnCallbackId: string) => {
+      const callback = (event: IpcRendererEvent, data: T | null, returnActionType: IRPCActionType, returnCallbackId: string) => {
         if (returnCallbackId === callbackId && returnActionType === action) {
           resolve(data)
           ipcRenderer.removeListener(RPC_ACTIONS, callback)

@@ -414,8 +414,12 @@ interface IUploaderListItemMetaInfo {
 }
 
 interface IUploaderConfig { 
-  [picBedType: string]: {
-    configList: (IStringKeyMap & IUploaderListItemMetaInfo)[]
-    defaultId: string
-  }
+  [picBedType: string]: IUploaderConfigItem
 }
+
+interface IUploaderConfigItem {
+  configList: IUploaderConfigListItem[]
+  defaultId: string
+}
+
+type IUploaderConfigListItem = IStringKeyMap & IUploaderListItemMetaInfo

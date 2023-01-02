@@ -24,6 +24,7 @@ declare module 'vue/types/vue' {
     saveConfig(data: IObj | string, value?: any): void
     getConfig<T>(key?: string): Promise<T | undefined>
     setDefaultPicBed(picBed: string): void
+    triggerRPC<T> (action: import('~/universal/types/enum').IRPCActionType, ...args: any[]): Promise<T | null>
     defaultPicBed: string
     forceUpdate(): void
     sendToMain(channel: string, ...args: any[]): void

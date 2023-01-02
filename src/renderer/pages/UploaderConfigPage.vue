@@ -45,8 +45,8 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import dayjs from 'dayjs'
-import { completeUploaderMetaConfig } from '../utils/uploader'
 import mixin from '@/utils/ConfirmButtonMixin'
+import { IRPCActionType } from '~/universal/types/enum'
 
 @Component({
   name: 'UploaderConfigPage',
@@ -58,9 +58,7 @@ export default class extends Vue {
   defaultConfigId = '';
 
   async selectItem (id: string) {
-    await this.saveConfig(`uploader.${this.type}.defaultId`, id)
-    const activeConfig = this.curConfigList.find(i => i._id === id)
-    await this.saveConfig(`picBed.${this.type}`, activeConfig)
+    await this.triggerRPC<void>(IRPCActionType.SELECT_UPLOADER, this.type, id)
     this.defaultConfigId = id
   }
 
@@ -70,39 +68,9 @@ export default class extends Vue {
   }
 
   async getCurrentConfigList () {
-    const curUploaderConfig = await this.getConfig<IStringKeyMap>(`uploader.${this.type}`) ?? {}
-    let curConfigList = curUploaderConfig?.configList
-    this.defaultConfigId = curUploaderConfig?.defaultId
-
-    if (!curConfigList) {
-      curConfigList = await this.fixUploaderConfig()
-    }
-
-    this.curConfigList = curConfigList
-  }
-
-  async fixUploaderConfig (): Promise<IStringKeyMap[]> {
-    const curUploaderConfig = await this.getConfig<IStringKeyMap>(`picBed.${this.type}`) ?? {}
-
-    if (!curUploaderConfig._id) {
-      Object.assign(
-        curUploaderConfig,
-        completeUploaderMetaConfig(curUploaderConfig)
-      )
-    }
-
-    const curUploaderConfigList = [curUploaderConfig]
-    await this.saveConfig(`uploader.${this.type}`, {
-      configList: curUploaderConfigList,
-      defaultId: curUploaderConfig._id
-    })
-
-    // fix exist config
-    await this.saveConfig(`picBed.${this.type}`, curUploaderConfig)
-
-    this.defaultConfigId = curUploaderConfig._id
-
-    return curUploaderConfigList
+    const configList = await this.triggerRPC<IUploaderConfigItem>(IRPCActionType.GET_PICBED_CONFIG_LIST, this.type)
+    this.curConfigList = configList?.configList ?? []
+    this.defaultConfigId = configList?.defaultId ?? ''
   }
 
   openEditPage (configId: string) {
@@ -123,15 +91,10 @@ export default class extends Vue {
   }
 
   async deleteConfig (id: string) {
-    if (this.curConfigList.length <= 1) return
-    const updatedConfigList = this.curConfigList.filter(i => i._id !== id)
-
-    if (id === this.defaultConfigId) {
-      await this.selectItem(updatedConfigList[0]._id)
-    }
-
-    await this.saveConfig(`uploader.${this.type}.configList`, updatedConfigList)
-    this.curConfigList = updatedConfigList
+    const res = await this.triggerRPC<IUploaderConfigItem | undefined>(IRPCActionType.DELETE_PICBED_CONFIG, this.type, id)
+    if (!res) return
+    this.curConfigList = res.configList
+    this.defaultConfigId = res.defaultId
   }
 
   addNewConfig () {

@@ -29,14 +29,14 @@ import {
   OPEN_WINDOW,
   GET_LANGUAGE_LIST,
   SET_CURRENT_LANGUAGE,
-  GET_CURRENT_LANGUAGE,
-  RPC_ACTIONS
+  GET_CURRENT_LANGUAGE
 } from '#/events/constants'
 
 import { GalleryDB } from 'apis/core/datastore'
 import { IObject, IFilter } from '@picgo/store/dist/types'
 import pasteTemplate from '../utils/pasteTemplate'
 import { i18nManager, T } from '~/main/i18n'
+import { rpcServer } from './rpc'
 
 // eslint-disable-next-line
 const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
@@ -397,7 +397,7 @@ const handleI18n = () => {
 }
 
 const handleRPCActions = () => {
-  ipcMain.on(RPC_ACTIONS, (event: IpcMainEvent, action: IRPCActions, ...args: any[], callbackId: string) => {})
+  rpcServer.start()
 }
 
 export default {

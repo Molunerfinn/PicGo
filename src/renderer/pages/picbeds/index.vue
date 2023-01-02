@@ -31,8 +31,7 @@ import {
   ipcRenderer,
   IpcRendererEvent
 } from 'electron'
-import { completeUploaderMetaConfig } from '@/utils/uploader'
-import { trimValues } from '@/utils/common'
+import { IRPCActionType } from '~/universal/types/enum'
 
 @Component({
   name: 'OtherPicBed',
@@ -55,22 +54,7 @@ export default class extends Vue {
     // @ts-ignore
     const result = await this.$refs.configForm.validate()
     if (result !== false) {
-      const configListConfigPath = `uploader.${this.type}.configList`
-      const configList = await this.getConfig<IStringKeyMap[]>(configListConfigPath)
-      // Finds the specified item from the config array and modifies it
-      const existItem = configList?.find(item => item._id === result._id)
-      // edit
-      if (existItem) {
-        Object.assign(existItem, trimValues(result), {
-          _updatedAt: Date.now()
-        })
-      } else { // add new
-        configList?.push(trimValues(completeUploaderMetaConfig(result)))
-      }
-
-      await this.saveConfig(configListConfigPath, configList)
-      existItem && await this.shouldUpdateDefaultConfig(existItem)
-
+      await this.triggerRPC<void>(IRPCActionType.UPDATE_UPLOADER_CONFIG, this.type, result?._id, result)
       const successNotification = new Notification(this.$T('SETTINGS_RESULT'), {
         body: this.$T('TIPS_SET_SUCCEED')
       })

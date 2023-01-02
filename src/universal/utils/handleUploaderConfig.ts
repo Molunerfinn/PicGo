@@ -14,7 +14,7 @@ export const handleConfigWithFunction = (config: IPicGoPluginOriginConfig[]): IP
   return config as IPicGoPluginConfig[]
 }
 
-export const completeUploaderMetaConfig = (originData: IStringKeyMap): IStringKeyMap => {
+export const completeUploaderMetaConfig = (originData: IStringKeyMap): IUploaderConfigListItem => {
   return Object.assign({
     _configName: 'Default'
   }, trimValues(originData), {
@@ -46,8 +46,8 @@ export const getPicBedConfig = (type: string) => {
   }
 }
 
-export const changeCurrentUploader = (type: string, config: IStringKeyMap, id?: string) => {
-  if (!type || !config) {
+export const changeCurrentUploader = (type: string, config?: IStringKeyMap, id?: string) => {
+  if (!type) {
     return
   }
   if (id) {
@@ -55,16 +55,37 @@ export const changeCurrentUploader = (type: string, config: IStringKeyMap, id?: 
       [`uploader.${type}.defaultId`]: id
     })
   }
+  if (config) {
+    picgo.saveConfig({
+      [`picBed.${type}`]: config
+    })
+  }
   picgo.saveConfig({
     'picBed.current': type,
-    'picBed.uploader': type,
-    [`picBed.${type}`]: config
+    'picBed.uploader': type
   })
 }
 
-export const getUploaderConfigList = (type: string) => {
+export const selectUploaderConfig = (type: string, id: string) => {
+  const { configList } = getUploaderConfigList(type)
+  const config = configList.find((item: IStringKeyMap) => item._id === id)
+  if (config) {
+    picgo.saveConfig({
+      [`uploader.${type}.defaultId`]: id,
+      [`picBed.${type}`]: config
+    })
+  }
+}
+
+export const getUploaderConfigList = (type: string): IUploaderConfigItem => {
+  if (!type) {
+    return {
+      configList: [],
+      defaultId: ''
+    }
+  }
   const currentUploaderConfig = picgo.getConfig<IStringKeyMap>(`uploader.${type}`) ?? {}
-  let configList = currentUploaderConfig.configList || []
+  let configList = currentUploaderConfig.configList
   let defaultId = currentUploaderConfig.defaultId || ''
   if (!configList) {
     const res = upgradeUploaderConfig(type)
@@ -80,18 +101,24 @@ export const getUploaderConfigList = (type: string) => {
 /**
  * delete uploader config by type & id
  */
-export const deleteUploaderConfig = (type: string, id: string) => {
+export const deleteUploaderConfig = (type: string, id: string): IUploaderConfigItem | void => {
   const { configList, defaultId } = getUploaderConfigList(type)
   if (configList.length <= 1) {
     return
   }
+  let newDefaultId = defaultId
   const updatedConfigList = configList.filter((item: IStringKeyMap) => item._id !== id)
   if (id === defaultId) {
+    newDefaultId = updatedConfigList[0]._id
     changeCurrentUploader(type, updatedConfigList[0], updatedConfigList[0]._id)
   }
   picgo.saveConfig({
     [`uploader.${type}.configList`]: updatedConfigList
   })
+  return {
+    configList: updatedConfigList,
+    defaultId: newDefaultId
+  }
 }
 
 /**
@@ -118,4 +145,25 @@ export const upgradeUploaderConfig = (type: string): {
     configList: uploaderConfigList,
     defaultId: uploaderConfig._id
   }
+}
+
+export const updateUploaderConfig = (type: string, id: string, config: IStringKeyMap) => {
+  const { configList, defaultId } = getUploaderConfigList(type)
+  const existConfig = configList.find((item: IStringKeyMap) => item._id === id)
+  let updatedConfig: IUploaderConfigListItem
+  let updatedDefaultId = defaultId
+  if (existConfig) {
+    updatedConfig = Object.assign(existConfig, trimValues(config), {
+      _updatedAt: Date.now()
+    })
+  } else {
+    updatedConfig = completeUploaderMetaConfig(config)
+    updatedDefaultId = updatedConfig._id
+    configList.push(updatedConfig)
+  }
+  picgo.saveConfig({
+    [`uploader.${type}.configList`]: configList,
+    [`uploader.${type}.defaultId`]: updatedDefaultId,
+    [`picBed.${type}`]: updatedConfig
+  })
 }
