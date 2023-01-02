@@ -18,6 +18,7 @@
         <div v-for="item in files" :key="item.imgUrl" class="img-list">
           <div class="upload-img__container" @click="copyTheLink(item)">
             <img v-lazy="item.imgUrl" class="upload-img">
+            <div class="upload-img__title" :title="item.fileName">{{ item.fileName }}</div>
           </div>
         </div>
       </div>
@@ -167,7 +168,7 @@ body::-webkit-scrollbar
     top 20px
     width 100%
   .img-list
-    padding 8px 8px
+    padding 4px 8px
     display flex
     justify-content space-between
     align-items center
@@ -184,8 +185,16 @@ body::-webkit-scrollbar
     margin 0 auto
     &__container
       width 100%
-      padding 8px 10px
+      padding 8px 8px 4px
       height 100%
       &.upload
         cursor not-allowed
+    &__title
+      text-align center
+      overflow hidden
+      text-overflow ellipsis
+      white-space nowrap
+      color #ddd
+      font-size 14px
+      margin-top 4px
 </style>
