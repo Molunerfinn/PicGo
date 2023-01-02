@@ -13,7 +13,7 @@ import { PICGO_CONFIG_PLUGIN, PICGO_HANDLE_PLUGIN_ING, PICGO_TOGGLE_PLUGIN, SHOW
 import picgoCoreIPC from '~/main/events/picgoCoreIPC'
 import { PicGo as PicGoCore } from 'picgo'
 import { T } from '~/main/i18n'
-import { changeCurrentUploader } from '~/universal/utils/handleUploaderConfig'
+import { changeCurrentUploader } from '~/main/utils/handleUploaderConfig'
 
 interface GuiMenuItem {
   label: string

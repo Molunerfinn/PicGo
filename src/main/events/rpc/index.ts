@@ -6,7 +6,7 @@ import {
   getUploaderConfigList,
   selectUploaderConfig,
   updateUploaderConfig
-} from '~/universal/utils/handleUploaderConfig'
+} from '~/main/utils/handleUploaderConfig'
 
 class RPCServer {
   start () {
