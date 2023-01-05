@@ -1,3 +1,25 @@
+# :tada: 2.4.0-beta.0 (2023-01-05)
+
+
+### :sparkles: Features
+
+* add file-name in gallery & add unknown-file-type placholder image ([f0787d3](https://github.com/Molunerfinn/PicGo/commit/f0787d3)), closes [#1050](https://github.com/Molunerfinn/PicGo/issues/1050)
+* add file-name in tray-page ([c011654](https://github.com/Molunerfinn/PicGo/commit/c011654)), closes [#1054](https://github.com/Molunerfinn/PicGo/issues/1054)
+* support multiple config ([#1016](https://github.com/Molunerfinn/PicGo/issues/1016)) ([9555649](https://github.com/Molunerfinn/PicGo/commit/9555649))
+
+
+### :bug: Bug Fixes
+
+* handleUploaderConfig should be placed in main/utils ([fc897ce](https://github.com/Molunerfinn/PicGo/commit/fc897ce))
+* nsis script ([44f5fbb](https://github.com/Molunerfinn/PicGo/commit/44f5fbb)), closes [#1019](https://github.com/Molunerfinn/PicGo/issues/1019)
+
+
+### :pencil: Documentation
+
+* update FAQ.md ([#1011](https://github.com/Molunerfinn/PicGo/issues/1011)) ([05998bb](https://github.com/Molunerfinn/PicGo/commit/05998bb))
+
+
+
 ## :tada: 2.3.1 (2022-11-13)
 
 
