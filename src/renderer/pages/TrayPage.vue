@@ -1,24 +1,59 @@
 <template>
   <div id="tray-page">
-    <div class="open-main-window" @click="openSettingWindow">{{ $T('OPEN_MAIN_WINDOW') }}</div>
+    <div
+      class="open-main-window"
+      @click="openSettingWindow"
+    >
+      {{ $T('OPEN_MAIN_WINDOW') }}
+    </div>
     <div class="content">
-      <div class="wait-upload-img" v-if="clipboardFiles.length > 0">
-        <div class="list-title">{{ $T('WAIT_TO_UPLOAD') }}</div>
-        <div v-for="(item, index) in clipboardFiles" :key="index" class="img-list">
+      <div
+        v-if="clipboardFiles.length > 0"
+        class="wait-upload-img"
+      >
+        <div class="list-title">
+          {{ $T('WAIT_TO_UPLOAD') }}
+        </div>
+        <div
+          v-for="(item, index) in clipboardFiles"
+          :key="index"
+          class="img-list"
+        >
           <div
             class="upload-img__container"
             :class="{ upload: uploadFlag }"
-            @click="uploadClipboardFiles">
-            <img :src="item.imgUrl" class="upload-img">
+            @click="uploadClipboardFiles"
+          >
+            <img
+              :src="item.imgUrl"
+              class="upload-img"
+            >
           </div>
         </div>
       </div>
       <div class="uploaded-img">
-        <div class="list-title">{{ $T('ALREADY_UPLOAD') }}</div>
-        <div v-for="item in files" :key="item.imgUrl" class="img-list">
-          <div class="upload-img__container" @click="copyTheLink(item)">
-            <img v-lazy="item.imgUrl" class="upload-img">
-            <div class="upload-img__title" :title="item.fileName">{{ item.fileName }}</div>
+        <div class="list-title">
+          {{ $T('ALREADY_UPLOAD') }}
+        </div>
+        <div
+          v-for="item in files"
+          :key="item.imgUrl"
+          class="img-list"
+        >
+          <div
+            class="upload-img__container"
+            @click="copyTheLink(item)"
+          >
+            <img
+              v-lazy="item.imgUrl"
+              class="upload-img"
+            >
+            <div
+              class="upload-img__title"
+              :title="item.fileName"
+            >
+              {{ item.fileName }}
+            </div>
           </div>
         </div>
       </div>
@@ -26,99 +61,100 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-import mixin from '@/utils/mixin'
+<script lang="ts" setup>
+import { reactive, ref, onBeforeUnmount, onBeforeMount } from 'vue'
 import { ipcRenderer } from 'electron'
+import $$db from '@/utils/db'
+import { T as $T } from '@/i18n/index'
 import { IResult } from '@picgo/store/dist/types'
 import { PASTE_TEXT, OPEN_WINDOW } from '#/events/constants'
 import { IWindowList } from '#/types/enum'
+import { sendToMain } from '@/utils/dataSender'
 
-@Component({
-  name: 'tray-page',
-  mixins: [mixin]
+const files = ref<IResult<ImgInfo>[]>([])
+const notification = reactive({
+  title: $T('COPY_LINK_SUCCEED'),
+  body: ''
 })
-export default class extends Vue {
-  files: IResult<ImgInfo>[] = []
-  notification = {
-    title: this.$T('COPY_LINK_SUCCEED'),
-    body: ''
-  }
 
-  clipboardFiles: ImgInfo[] = []
-  uploadFlag = false
-  get reverseList () {
-    return this.files.slice().reverse()
-  }
+const clipboardFiles = ref<ImgInfo[]>([])
+const uploadFlag = ref(false)
 
-  openSettingWindow () {
-    this.sendToMain(OPEN_WINDOW, IWindowList.SETTING_WINDOW)
-  }
+// const reverseList = computed(() => files.value.slice().reverse())
 
-  async getData () {
-    this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
-  }
+function openSettingWindow () {
+  sendToMain(OPEN_WINDOW, IWindowList.SETTING_WINDOW)
+}
 
-  async copyTheLink (item: ImgInfo) {
-    this.notification.body = item.imgUrl!
-    const myNotification = new Notification(this.notification.title, this.notification)
-    ipcRenderer.invoke(PASTE_TEXT, item)
-    myNotification.onclick = () => {
-      return true
+async function getData () {
+  files.value = (await $$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
+}
+
+async function copyTheLink (item: ImgInfo) {
+  notification.body = item.imgUrl!
+  const myNotification = new Notification(notification.title, notification)
+  ipcRenderer.invoke(PASTE_TEXT, item)
+  myNotification.onclick = () => {
+    return true
+  }
+}
+
+// function calcHeight (width: number, height: number): number {
+//   return height * 160 / width
+// }
+
+function disableDragFile () {
+  window.addEventListener('dragover', (e) => {
+    e = e || event
+    e.preventDefault()
+  }, false)
+  window.addEventListener('drop', (e) => {
+    e = e || event
+    e.preventDefault()
+  }, false)
+}
+
+function uploadClipboardFiles () {
+  if (uploadFlag.value) {
+    return
+  }
+  uploadFlag.value = true
+  sendToMain('uploadClipboardFiles')
+}
+
+onBeforeMount(() => {
+  disableDragFile()
+  getData()
+  ipcRenderer.on('dragFiles', async (event: Event, _files: string[]) => {
+    for (let i = 0; i < _files.length; i++) {
+      const item = _files[i]
+      await $$db.insert(item)
     }
-  }
+    files.value = (await $$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
+  })
+  ipcRenderer.on('clipboardFiles', (event: Event, files: ImgInfo[]) => {
+    clipboardFiles.value = files
+  })
+  ipcRenderer.on('uploadFiles', async () => {
+    files.value = (await $$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
+    uploadFlag.value = false
+  })
+  ipcRenderer.on('updateFiles', () => {
+    getData()
+  })
+})
 
-  calcHeight (width: number, height: number): number {
-    return height * 160 / width
-  }
+onBeforeUnmount(() => {
+  ipcRenderer.removeAllListeners('dragFiles')
+  ipcRenderer.removeAllListeners('clipboardFiles')
+  ipcRenderer.removeAllListeners('uploadClipboardFiles')
+  ipcRenderer.removeAllListeners('updateFiles')
+})
+</script>
 
-  disableDragFile () {
-    window.addEventListener('dragover', (e) => {
-      e = e || event
-      e.preventDefault()
-    }, false)
-    window.addEventListener('drop', (e) => {
-      e = e || event
-      e.preventDefault()
-    }, false)
-  }
-
-  uploadClipboardFiles () {
-    if (this.uploadFlag) {
-      return
-    }
-    this.uploadFlag = true
-    ipcRenderer.send('uploadClipboardFiles')
-  }
-
-  mounted () {
-    this.disableDragFile()
-    this.getData()
-    ipcRenderer.on('dragFiles', async (event: Event, files: string[]) => {
-      for (let i = 0; i < files.length; i++) {
-        const item = files[i]
-        await this.$$db.insert(item)
-      }
-      this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
-    })
-    ipcRenderer.on('clipboardFiles', (event: Event, files: ImgInfo[]) => {
-      this.clipboardFiles = files
-    })
-    ipcRenderer.on('uploadFiles', async () => {
-      this.files = (await this.$$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
-      this.uploadFlag = false
-    })
-    ipcRenderer.on('updateFiles', () => {
-      this.getData()
-    })
-  }
-
-  beforeDestroy () {
-    ipcRenderer.removeAllListeners('dragFiles')
-    ipcRenderer.removeAllListeners('clipboardFiles')
-    ipcRenderer.removeAllListeners('uploadClipboardFiles')
-    ipcRenderer.removeAllListeners('updateFiles')
-  }
+<script lang="ts">
+export default {
+  name: 'TrayPage'
 }
 </script>
 
@@ -179,11 +215,20 @@ body::-webkit-scrollbar
       background #49B1F5
       .upload-img__index
         color #fff
+    .upload-img__container
+      display flex
+      flex-direction column
+      justify-content center
+      align-items center
   .upload-img
-    width 100%
+    max-width 100%
     object-fit scale-down
     margin 0 auto
     &__container
+      display flex
+      flex-direction column
+      justify-content center
+      align-items center
       width 100%
       padding 8px 8px 4px
       height 100%

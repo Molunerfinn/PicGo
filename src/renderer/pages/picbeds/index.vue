@@ -1,104 +1,104 @@
 <template>
-  <div id="others-view">
-    <el-row :gutter="20" class="setting-list">
-      <el-col :span="20" :offset="2">
+  <div id="picbeds-page">
+    <el-row
+      :gutter="20"
+      class="setting-list"
+    >
+      <el-col
+        :span="20"
+        :offset="2"
+      >
         <div class="view-title">
           {{ picBedName }} {{ $T('SETTINGS') }}
         </div>
         <config-form
           v-if="config.length > 0"
+          :id="type"
+          ref="$configForm"
           :config="config"
           type="uploader"
-          ref="configForm"
-          :id="type"
         >
           <el-form-item>
-            <el-button class="confirm-btn" type="primary" @click="handleConfirm" round>{{ $T('CONFIRM') }}</el-button>
+            <el-button
+              class="confirm-btn"
+              type="primary"
+              round
+              @click="handleConfirm"
+            >
+              {{ $T('CONFIRM') }}
+            </el-button>
           </el-form-item>
         </config-form>
-        <div v-else class="single">
-          <div class="notice">{{ $T('SETTINGS_NOT_CONFIG_OPTIONS') }}</div>
+        <div
+          v-else
+          class="single"
+        >
+          <div class="notice">
+            {{ $T('SETTINGS_NOT_CONFIG_OPTIONS') }}
+          </div>
         </div>
       </el-col>
     </el-row>
   </div>
 </template>
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+<script lang="ts" setup>
+import { IRPCActionType } from '~/universal/types/enum'
+import { ref, onBeforeUnmount, onBeforeMount } from 'vue'
+import { T as $T } from '@/i18n/index'
+import { sendToMain, triggerRPC } from '@/utils/dataSender'
+import { useRoute, useRouter } from 'vue-router'
 import ConfigForm from '@/components/ConfigForm.vue'
-import mixin from '@/utils/ConfirmButtonMixin'
+// import mixin from '@/utils/ConfirmButtonMixin'
 import {
   ipcRenderer,
   IpcRendererEvent
 } from 'electron'
-import { IRPCActionType } from '~/universal/types/enum'
+const type = ref('')
+const config = ref<IPicGoPluginConfig[]>([])
+const picBedName = ref('')
+const $route = useRoute()
+const $router = useRouter()
+const $configForm = ref<InstanceType<typeof ConfigForm> | null>(null)
+type.value = $route.params.type as string
+console.log('picbed type', $route.params.type)
 
-@Component({
-  name: 'OtherPicBed',
-  mixins: [mixin],
-  components: {
-    ConfigForm
-  }
+onBeforeMount(() => {
+  sendToMain('getPicBedConfig', $route.params.type)
+  ipcRenderer.on('getPicBedConfig', getPicBeds)
 })
-export default class extends Vue {
-  type: string = ''
-  config: any[] = []
-  picBedName: string = ''
-  created () {
-    this.type = this.$route.params.type
-    ipcRenderer.send('getPicBedConfig', this.$route.params.type)
-    ipcRenderer.on('getPicBedConfig', this.getPicBeds)
-  }
 
-  async handleConfirm () {
-    // @ts-ignore
-    const result = await this.$refs.configForm.validate()
-    if (result !== false) {
-      await this.triggerRPC<void>(IRPCActionType.UPDATE_UPLOADER_CONFIG, this.type, result?._id, result)
-      const successNotification = new Notification(this.$T('SETTINGS_RESULT'), {
-        body: this.$T('TIPS_SET_SUCCEED')
-      })
-      successNotification.onclick = () => {
-        return true
-      }
-      this.$router.back()
-    }
-  }
-
-  shouldUpdateDefaultConfig (item: IStringKeyMap) {
-    const curDefaultConfigId = this.$route.query.defaultConfigId
-    if (item._id === curDefaultConfigId) {
-      this.saveConfig(`picBed.${this.type}`, item)
-    }
-  }
-
-  setDefaultPicBed (type: string) {
-    this.saveConfig({
-      'picBed.current': type,
-      'picBed.uploader': type
-    })
-    // @ts-ignore 来自mixin的数据
-    this.defaultPicBed = type
-    const successNotification = new Notification(this.$T('SETTINGS_DEFAULT_PICBED'), {
-      body: this.$T('TIPS_SET_SUCCEED')
+const handleConfirm = async () => {
+  const result = (await $configForm.value?.validate()) || false
+  console.log(result)
+  if (result !== false) {
+    await triggerRPC<void>(IRPCActionType.UPDATE_UPLOADER_CONFIG, type.value, result?._id, result)
+    const successNotification = new Notification($T('SETTINGS_RESULT'), {
+      body: $T('TIPS_SET_SUCCEED')
     })
     successNotification.onclick = () => {
       return true
     }
+    $router.back()
   }
+}
 
-  getPicBeds (event: IpcRendererEvent, config: any[], name: string) {
-    this.config = config
-    this.picBedName = name
-  }
+function getPicBeds (event: IpcRendererEvent, _config: IPicGoPluginConfig[], name: string) {
+  config.value = _config
+  picBedName.value = name
+}
 
-  beforeDestroy () {
-    ipcRenderer.removeListener('getPicBedConfig', this.getPicBeds)
-  }
+onBeforeUnmount(() => {
+  ipcRenderer.removeListener('getPicBedConfig', getPicBeds)
+})
+
+</script>
+<script lang="ts">
+export default {
+  name: 'PicbedsPage'
 }
 </script>
 <style lang='stylus'>
-#others-view
+#picbeds-page
   .setting-list
     height 425px
     overflow-y auto
@@ -111,13 +111,11 @@ export default class extends Vue {
       padding-bottom 0
       color #eee
     &-item
-      margin-bottom 11px
+      margin-bottom 16px
     .el-button-group
       width 100%
       .el-button
         width 50%
-    .el-input__inner
-      border-radius 19px
     .el-radio-group
       margin-left 25px
     .el-switch__label

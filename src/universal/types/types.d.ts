@@ -49,6 +49,12 @@ interface ImgInfo {
   [propName: string]: any
 }
 
+interface IGalleryItem extends ImgInfo {
+  src: string
+  key: string
+  intro: string
+}
+
 interface IPicBedType {
   type: string
   name: string
@@ -423,3 +429,5 @@ interface IUploaderConfigItem {
 }
 
 type IUploaderConfigListItem = IStringKeyMap & IUploaderListItemMetaInfo
+
+type ICheckBoxValueType = boolean | string | number

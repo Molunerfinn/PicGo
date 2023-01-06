@@ -1,4 +1,3 @@
-import VueRouter, { Route } from 'vue-router'
 import axios from 'axios'
 import { IObject, IResult, IGetResult, IFilter } from '@picgo/store/dist/types'
 
@@ -13,11 +12,13 @@ interface IGalleryDB {
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $router: VueRouter,
-    $route: Route,
+  }
+}
+
+declare module '@vue/runtime-core' {
+  interface ComponentCustomProperties {
     $http: typeof axios
     $builtInPicBed: string[]
-    $bus: Vue
     $$db: IGalleryDB
     $T: typeof import('~/renderer/i18n/index').T
     $i18n: import('~/renderer/i18n/index').I18nManager
@@ -28,5 +29,10 @@ declare module 'vue/types/vue' {
     defaultPicBed: string
     forceUpdate(): void
     sendToMain(channel: string, ...args: any[]): void
+  }
+  interface GlobalComponents {
+    PhotoProvider: typeof import('vue3-photo-preview').PhotoProvider
+    PhotoConsumer: typeof import('vue3-photo-preview').PhotoConsumer
+    PhotoSlider: typeof import('vue3-photo-preview').PhotoSlider
   }
 }

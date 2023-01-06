@@ -3,11 +3,17 @@
     <div class="view-title">
       {{ $T('SETTINGS') }}
     </div>
-    <el-row :gutter="15" justify="space-between" align="center" type="flex" class="config-list">
+    <el-row
+      :gutter="15"
+      justify="space-between"
+      align="middle"
+      type="flex"
+      class="config-list"
+    >
       <el-col
-        class="config-item-col"
         v-for="item in curConfigList"
         :key="item._id"
+        class="config-item-col"
         :span="11"
         :offset="1"
       >
@@ -15,12 +21,32 @@
           :class="`config-item ${defaultConfigId === item._id ? 'selected' : ''}`"
           @click="() => selectItem(item._id)"
         >
-          <div class="config-name">{{item._configName}}</div>
-          <div class="config-update-time">{{formatTime(item._updatedAt)}}</div>
-          <div v-if="defaultConfigId === item._id" class="default-text">{{$T('SELECTED_SETTING_HINT')}}</div>
+          <div class="config-name">
+            {{ item._configName }}
+          </div>
+          <div class="config-update-time">
+            {{ formatTime(item._updatedAt) }}
+          </div>
+          <div
+            v-if="defaultConfigId === item._id"
+            class="default-text"
+          >
+            {{ $T('SELECTED_SETTING_HINT') }}
+          </div>
           <div class="operation-container">
-            <i class="el-icon-edit" @click="openEditPage(item._id)"></i>
-            <i :class="`el-icon-delete ${curConfigList.length <= 1 ? 'disabled' : ''}`" @click.stop="() => deleteConfig(item._id)"></i>
+            <el-icon
+              class="el-icon-edit"
+              @click="openEditPage(item._id)"
+            >
+              <Edit />
+            </el-icon>
+            <el-icon
+              class="el-icon-delete"
+              :class="curConfigList.length <= 1 ? 'disabled' : ''"
+              @click.stop="() => deleteConfig(item._id)"
+            >
+              <Delete />
+            </el-icon>
           </div>
         </div>
       </el-col>
@@ -33,94 +59,130 @@
           class="config-item config-item-add"
           @click="addNewConfig"
         >
-          <i class="el-icon-plus"></i>
+          <el-icon
+            class="el-icon-plus"
+          >
+            <Plus />
+          </el-icon>
         </div>
       </el-col>
     </el-row>
-    <el-row type="flex" justify="center" :span="24" class="set-default-container">
-      <el-button class="set-default-btn" type="success" @click="setDefaultPicBed(type)" round :disabled="defaultPicBed === type">{{ $T('SETTINGS_SET_DEFAULT_PICBED') }}</el-button>
+    <el-row
+      type="flex"
+      justify="center"
+      :span="24"
+      class="set-default-container"
+    >
+      <el-button
+        class="set-default-btn"
+        type="success"
+        round
+        :disabled="store?.state.defaultPicBed === type"
+        @click="setDefaultPicBed(type)"
+      >
+        {{ $T('SETTINGS_SET_DEFAULT_PICBED') }}
+      </el-button>
     </el-row>
   </div>
 </template>
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+<script lang="ts" setup>
+import { Edit, Delete, Plus } from '@element-plus/icons-vue'
+import { saveConfig, triggerRPC } from '@/utils/dataSender'
 import dayjs from 'dayjs'
-import mixin from '@/utils/ConfirmButtonMixin'
 import { IRPCActionType } from '~/universal/types/enum'
+import { T as $T } from '@/i18n/index'
+import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router'
+import { onBeforeMount, ref } from 'vue'
+import { PICBEDS_PAGE, UPLOADER_CONFIG_PAGE } from '@/router/config'
+import { useStore } from '@/hooks/useStore'
+const $router = useRouter()
+const $route = useRoute()
 
-@Component({
-  name: 'UploaderConfigPage',
-  mixins: [mixin]
+const type = ref('')
+const curConfigList = ref<IStringKeyMap[]>([])
+const defaultConfigId = ref('')
+const store = useStore()
+
+async function selectItem (id: string) {
+  await triggerRPC<void>(IRPCActionType.SELECT_UPLOADER, type.value, id)
+  defaultConfigId.value = id
+}
+
+onBeforeRouteUpdate((to, from, next) => {
+  if (to.params.type && (to.name === UPLOADER_CONFIG_PAGE)) {
+    type.value = to.params.type as string
+    getCurrentConfigList()
+    console.log(type.value)
+  }
+  next()
 })
-export default class extends Vue {
-  type!: string;
-  curConfigList: IStringKeyMap[] = [];
-  defaultConfigId = '';
 
-  async selectItem (id: string) {
-    await this.triggerRPC<void>(IRPCActionType.SELECT_UPLOADER, this.type, id)
-    this.defaultConfigId = id
-  }
+onBeforeMount(() => {
+  type.value = $route.params.type as string
+  console.log(type.value)
+  getCurrentConfigList()
+})
 
-  created () {
-    this.type = this.$route.params.type
-    this.getCurrentConfigList()
-  }
+async function getCurrentConfigList () {
+  const configList = await triggerRPC<IUploaderConfigItem>(IRPCActionType.GET_PICBED_CONFIG_LIST, type.value)
+  console.log(configList)
+  curConfigList.value = configList?.configList ?? []
+  defaultConfigId.value = configList?.defaultId ?? ''
+}
 
-  async getCurrentConfigList () {
-    const configList = await this.triggerRPC<IUploaderConfigItem>(IRPCActionType.GET_PICBED_CONFIG_LIST, this.type)
-    this.curConfigList = configList?.configList ?? []
-    this.defaultConfigId = configList?.defaultId ?? ''
-  }
-
-  openEditPage (configId: string) {
-    this.$router.push({
-      name: 'picbeds',
-      params: {
-        type: this.type,
-        configId
-      },
-      query: {
-        defaultConfigId: this.defaultConfigId
-      }
-    })
-  }
-
-  formatTime (time: number):string {
-    return dayjs(time).format('YYYY-MM-DD HH:mm:ss')
-  }
-
-  async deleteConfig (id: string) {
-    const res = await this.triggerRPC<IUploaderConfigItem | undefined>(IRPCActionType.DELETE_PICBED_CONFIG, this.type, id)
-    if (!res) return
-    this.curConfigList = res.configList
-    this.defaultConfigId = res.defaultId
-  }
-
-  addNewConfig () {
-    this.$router.push({
-      name: 'picbeds',
-      params: {
-        type: this.type,
-        configId: ''
-      }
-    })
-  }
-
-  setDefaultPicBed (type: string) {
-    this.saveConfig({
-      'picBed.current': type,
-      'picBed.uploader': type
-    })
-    // @ts-ignore 来自mixin的数据
-    this.defaultPicBed = type
-    const successNotification = new Notification(this.$T('SETTINGS_DEFAULT_PICBED'), {
-      body: this.$T('TIPS_SET_SUCCEED')
-    })
-    successNotification.onclick = () => {
-      return true
+function openEditPage (configId: string) {
+  console.log(configId, type.value, defaultConfigId.value)
+  $router.push({
+    name: PICBEDS_PAGE,
+    params: {
+      type: type.value,
+      configId
+    },
+    query: {
+      defaultConfigId: defaultConfigId.value
     }
+  })
+}
+
+function formatTime (time: number): string {
+  return dayjs(time).format('YYYY-MM-DD HH:mm:ss')
+}
+
+async function deleteConfig (id: string) {
+  const res = await triggerRPC<IUploaderConfigItem | undefined>(IRPCActionType.DELETE_PICBED_CONFIG, type.value, id)
+  if (!res) return
+  curConfigList.value = res.configList
+  defaultConfigId.value = res.defaultId
+}
+
+function addNewConfig () {
+  $router.push({
+    name: PICBEDS_PAGE,
+    params: {
+      type: type.value,
+      configId: ''
+    }
+  })
+}
+
+function setDefaultPicBed (type: string) {
+  saveConfig({
+    'picBed.current': type,
+    'picBed.uploader': type
+  })
+
+  store?.setDefaultPicBed(type)
+  const successNotification = new Notification($T('SETTINGS_DEFAULT_PICBED'), {
+    body: $T('TIPS_SET_SUCCEED')
+  })
+  successNotification.onclick = () => {
+    return true
   }
+}
+</script>
+<script lang="ts">
+export default {
+  name: 'UploaderConfigPage'
 }
 </script>
 <style lang='stylus'>

@@ -13,7 +13,9 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "element-plus/global",
+      "vue3-photo-preview"
     ],
     "typeRoots": [
       "./src/universal/types/*",
@@ -56,6 +58,6 @@
     "node_modules"
   ],
   "vueCompilerOptions": {
-    "target": 2,
+    "target": 3,
   }
 }

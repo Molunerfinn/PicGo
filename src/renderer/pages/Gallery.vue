@@ -1,65 +1,105 @@
 <template>
   <div id="gallery-view">
     <div class="view-title">
-      {{ $T('GALLERY') }} - {{ filterList.length }} <i class="el-icon-caret-bottom" @click="toggleHandleBar" :class="{'active': handleBarActive}"></i>
+      {{ $T('GALLERY') }} - {{ filterList.length }}
+      <el-icon
+        style="margin-left: 4px"
+        class="cursor-pointer"
+        @click="toggleHandleBar"
+      >
+        <CaretBottom v-show="!handleBarActive" />
+        <CaretTop v-show="handleBarActive" />
+      </el-icon>
     </div>
     <transition name="el-zoom-in-top">
       <el-row v-show="handleBarActive">
-        <el-col :span="20" :offset="2">
-          <el-row class="handle-bar" :gutter="16">
+        <el-col
+          :span="20"
+          :offset="2"
+        >
+          <el-row
+            class="handle-bar"
+            :gutter="16"
+          >
             <el-col :span="12">
               <el-select
                 v-model="choosedPicBed"
                 multiple
                 collapse-tags
-                size="mini"
+                size="small"
                 style="width: 100%"
-                :placeholder="$T('CHOOSE_SHOWED_PICBED')">
+                :placeholder="$T('CHOOSE_SHOWED_PICBED')"
+              >
                 <el-option
                   v-for="item in picBed"
                   :key="item.type"
                   :label="item.name"
-                  :value="item.type">
-                </el-option>
+                  :value="item.type"
+                />
               </el-select>
             </el-col>
             <el-col :span="12">
               <el-select
                 v-model="pasteStyle"
-                size="mini"
+                size="small"
                 style="width: 100%"
+                :placeholder="$T('CHOOSE_PASTE_FORMAT')"
                 @change="handlePasteStyleChange"
-                :placeholder="$T('CHOOSE_PASTE_FORMAT')">
+              >
                 <el-option
                   v-for="(value, key) in pasteStyleMap"
                   :key="key"
                   :label="key"
-                  :value="value">
-                </el-option>
+                  :value="value"
+                />
               </el-select>
             </el-col>
           </el-row>
-          <el-row class="handle-bar" :gutter="16">
+          <el-row
+            class="handle-bar"
+            :gutter="16"
+          >
             <el-col :span="12">
               <el-input
+                v-model="searchText"
                 :placeholder="$T('SEARCH')"
-                size="mini"
-                v-model="searchText">
-                <i slot="suffix" class="el-input__icon el-icon-close" v-if="searchText" @click="cleanSearch" style="cursor: pointer"></i>
+                size="small"
+              >
+                <template #suffix>
+                  <el-icon
+                    class="el-input__icon"
+                    style="cursor: pointer;"
+                    @click="cleanSearch"
+                  >
+                    <close />
+                  </el-icon>
+                </template>
               </el-input>
             </el-col>
             <el-col :span="4">
-              <div class="item-base copy round" :class="{ active: isMultiple(choosedList)}" @click="multiCopy">
+              <div
+                class="item-base copy round"
+                :class="{ active: isMultiple(choosedList)}"
+                @click="multiCopy"
+              >
                 {{ $T('COPY') }}
               </div>
             </el-col>
             <el-col :span="4">
-              <div class="item-base delete round" :class="{ active: isMultiple(choosedList)}" @click="multiRemove">
+              <div
+                class="item-base delete round"
+                :class="{ active: isMultiple(choosedList)}"
+                @click="multiRemove"
+              >
                 {{ $T('DELETE') }}
               </div>
             </el-col>
             <el-col :span="4">
-              <div class="item-base all-pick round" :class="{ active: filterList.length > 0}" @click="toggleSelectAll">
+              <div
+                class="item-base all-pick round"
+                :class="{ active: filterList.length > 0}"
+                @click="toggleSelectAll"
+              >
                 {{ isAllSelected ? $T('CANCEL') : $T('SELECT_ALL') }}
               </div>
             </el-col>
@@ -67,398 +107,470 @@
         </el-col>
       </el-row>
     </transition>
-    <el-row class="gallery-list" :class="{ small: handleBarActive }">
-      <el-col :span="20" :offset="2">
+    <el-row
+      class="gallery-list"
+      :class="{ small: handleBarActive }"
+    >
+      <el-col
+        :span="20"
+        :offset="2"
+      >
         <el-row :gutter="16">
-          <gallerys
-            :images="filterList"
-            :index="idx"
-            @close="handleClose"
-            :options="options"
-          ></gallerys>
-          <el-col :span="6" v-for="(item, index) in filterList" :key="item.id" class="gallery-list__img">
+          <photo-slider
+            :items="filterList"
+            :visible="gallerySliderControl.visible"
+            :index="gallerySliderControl.index"
+            :should-transition="true"
+            @change-index="zoomImage"
+            @click-mask="handleClose"
+            @close-modal="handleClose"
+          />
+          <el-col
+            v-for="(item, index) in filterList"
+            :key="item.id"
+            :span="6"
+            class="gallery-list__img"
+          >
             <div
               class="gallery-list__item"
               @click="zoomImage(index)"
             >
-              <img v-lazy="item.imgUrl" class="gallery-list__item-img">
+              <img
+                v-lazy="item.imgUrl"
+                class="gallery-list__item-img"
+              >
             </div>
-            <div class="gallery-list__file-name" :title="item.fileName">
+            <div
+              class="gallery-list__file-name"
+              :title="item.fileName"
+            >
               {{ item.fileName }}
             </div>
-            <div class="gallery-list__tool-panel">
-              <i class="el-icon-document" @click="copy(item)"></i>
-              <i class="el-icon-edit-outline" @click="openDialog(item)"></i>
-              <i class="el-icon-delete" @click="remove(item.id)"></i>
-              <el-checkbox v-model="choosedList[item.id ? item.id : '']" class="pull-right" @change="(val) => handleChooseImage(val, index)"></el-checkbox>
-            </div>
+            <el-row
+              class="gallery-list__tool-panel"
+              justify="space-between"
+              align="middle"
+            >
+              <el-row>
+                <el-icon
+                  class="cursor-pointer document"
+                  @click="copy(item)"
+                >
+                  <Document />
+                </el-icon>
+                <el-icon
+                  class="cursor-pointer edit"
+                  @click="openDialog(item)"
+                >
+                  <Edit />
+                </el-icon>
+                <el-icon
+                  class="cursor-pointer delete"
+                  @click="remove(item.id)"
+                >
+                  <Delete />
+                </el-icon>
+              </el-row>
+              <el-checkbox
+                v-model="choosedList[item.id ? item.id : '']"
+                @change="(val) => handleChooseImage(val, index)"
+              />
+            </el-row>
           </el-col>
         </el-row>
       </el-col>
     </el-row>
     <el-dialog
-      :visible.sync="dialogVisible"
+      v-model="dialogVisible"
       :title="$T('CHANGE_IMAGE_URL')"
       width="500px"
       :modal-append-to-body="false"
     >
-      <el-input v-model="imgInfo.imgUrl"></el-input>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">{{ $T('CANCEL') }}</el-button>
-        <el-button type="primary" @click="confirmModify">{{ $T('CONFIRM') }}</el-button>
-      </span>
+      <el-input v-model="imgInfo.imgUrl" />
+      <template
+        #footer
+      >
+        <el-button @click="dialogVisible = false">
+          {{ $T('CANCEL') }}
+        </el-button>
+        <el-button
+          type="primary"
+          @click="confirmModify"
+        >
+          {{ $T('CONFIRM') }}
+        </el-button>
+      </template>
     </el-dialog>
   </div>
 </template>
-<script lang="ts">
-// @ts-ignore
-import gallerys from 'vue-gallery'
-import { Component, Vue, Watch } from 'vue-property-decorator'
-import { IResult } from '@picgo/store/dist/types'
+<script lang="ts" setup>
+import type { IResult } from '@picgo/store/dist/types'
 import { PASTE_TEXT, GET_PICBEDS } from '#/events/constants'
+import { CheckboxValueType, ElMessageBox } from 'element-plus'
+import { Close, CaretBottom, Document, Edit, Delete, CaretTop } from '@element-plus/icons-vue'
 import {
   ipcRenderer,
   clipboard,
   IpcRendererEvent
 } from 'electron'
-@Component({
-  name: 'gallery',
-  components: {
-    gallerys
+import { computed, nextTick, onActivated, onBeforeUnmount, onBeforeMount, reactive, ref, watch } from 'vue'
+import { getConfig, saveConfig, sendToMain } from '@/utils/dataSender'
+import { onBeforeRouteUpdate } from 'vue-router'
+import { T as $T } from '@/i18n/index'
+import $$db from '@/utils/db'
+const images = ref<ImgInfo[]>([])
+const dialogVisible = ref(false)
+const imgInfo = reactive({
+  id: '',
+  imgUrl: ''
+})
+const $confirm = ElMessageBox.confirm
+const choosedList: IObjT<boolean> = reactive({})
+const gallerySliderControl = reactive({
+  visible: false,
+  index: 0
+})
+const choosedPicBed = ref<string[]>([])
+const lastChoosed = ref<number>(-1)
+const isShiftKeyPress = ref<boolean>(false)
+const searchText = ref<string>('')
+const handleBarActive = ref<boolean>(false)
+const pasteStyle = ref<string>('')
+const pasteStyleMap = {
+  Markdown: 'markdown',
+  HTML: 'HTML',
+  URL: 'URL',
+  UBB: 'UBB',
+  Custom: 'Custom'
+}
+const picBed = ref<IPicBedType[]>([])
+onBeforeRouteUpdate((to, from) => {
+  if (from.name === 'gallery') {
+    clearChoosedList()
+  }
+  if (to.name === 'gallery') {
+    updateGallery()
   }
 })
-export default class extends Vue {
-  images: ImgInfo[] = []
-  idx: null | number = null
-  options = {
-    titleProperty: 'fileName',
-    urlProperty: 'imgUrl',
-    closeOnSlideClick: true
-  }
 
-  dialogVisible = false
-  imgInfo = {
-    id: '',
-    imgUrl: ''
-  }
-
-  choosedList: IObjT<boolean> = {}
-  choosedPicBed: string[] = []
-  lastChoosed: number = -1
-  isShiftKeyPress: boolean = false
-  searchText = ''
-  handleBarActive = false
-  pasteStyle = ''
-  pasteStyleMap = {
-    Markdown: 'markdown',
-    HTML: 'HTML',
-    URL: 'URL',
-    UBB: 'UBB',
-    Custom: 'Custom'
-  }
-
-  picBed: IPicBedType[] = []
-  @Watch('$route')
-  handleRouteUpdate (to: any, from: any) {
-    if (from.name === 'gallery') {
-      this.clearChoosedList()
-    }
-    if (to.name === 'gallery') {
-      this.updateGallery()
-    }
-  }
-
-  async created () {
-    ipcRenderer.on('updateGallery', () => {
-      this.$nextTick(async () => {
-        this.updateGallery()
-      })
+onBeforeMount(async () => {
+  ipcRenderer.on('updateGallery', () => {
+    nextTick(async () => {
+      updateGallery()
     })
-    ipcRenderer.send(GET_PICBEDS)
-    ipcRenderer.on(GET_PICBEDS, this.getPicBeds)
-    this.updateGallery()
-  }
+  })
+  sendToMain(GET_PICBEDS)
+  ipcRenderer.on(GET_PICBEDS, getPicBeds)
+  updateGallery()
 
-  mounted () {
-    document.addEventListener('keydown', this.handleDetectShiftKey)
-    document.addEventListener('keyup', this.handleDetectShiftKey)
-  }
+  document.addEventListener('keydown', handleDetectShiftKey)
+  document.addEventListener('keyup', handleDetectShiftKey)
+})
 
-  handleDetectShiftKey (event: KeyboardEvent) {
-    if (event.key === 'Shift') {
-      if (event.type === 'keydown') {
-        this.isShiftKeyPress = true
-      } else if (event.type === 'keyup') {
-        this.isShiftKeyPress = false
+function handleDetectShiftKey (event: KeyboardEvent) {
+  if (event.key === 'Shift') {
+    if (event.type === 'keydown') {
+      isShiftKeyPress.value = true
+    } else if (event.type === 'keyup') {
+      isShiftKeyPress.value = false
+    }
+  }
+}
+
+const filterList = computed(() => {
+  return getGallery()
+})
+
+const isAllSelected = computed(() => {
+  const values = Object.values(choosedList)
+  if (values.length === 0) {
+    return false
+  } else {
+    return filterList.value.every(item => {
+      return choosedList[item.id!]
+    })
+  }
+})
+
+function getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
+  picBed.value = picBeds
+}
+
+function getGallery (): IGalleryItem[] {
+  if (searchText.value || choosedPicBed.value.length > 0) {
+    return images.value
+      .filter(item => {
+        let isInChoosedPicBed = true
+        let isIncludesSearchText = true
+        if (choosedPicBed.value.length > 0) {
+          isInChoosedPicBed = choosedPicBed.value.some(type => type === item.type)
+        }
+        if (searchText.value) {
+          isIncludesSearchText = item.fileName?.includes(searchText.value) || false
+        }
+        return isIncludesSearchText && isInChoosedPicBed
+      }).map(item => {
+        return {
+          ...item,
+          src: item.imgUrl || '',
+          key: (item.id || `${Date.now()}`),
+          intro: item.fileName || ''
+        }
+      })
+  } else {
+    return images.value.map(item => {
+      return {
+        ...item,
+        src: item.imgUrl || '',
+        key: (item.id || `${Date.now()}`),
+        intro: item.fileName || ''
+      }
+    })
+  }
+}
+
+async function updateGallery () {
+  images.value = (await $$db.get({ orderBy: 'desc' })).data
+}
+
+watch(() => filterList, () => {
+  clearChoosedList()
+})
+
+function handleChooseImage (val: CheckboxValueType, index: number) {
+  if (val === true) {
+    handleBarActive.value = true
+    if (lastChoosed.value !== -1 && isShiftKeyPress.value) {
+      const min = Math.min(lastChoosed.value, index)
+      const max = Math.max(lastChoosed.value, index)
+      for (let i = min + 1; i < max; i++) {
+        const id = filterList.value[i].id!
+        choosedList[id] = true
       }
     }
+    lastChoosed.value = index
   }
+}
 
-  get filterList () {
-    return this.getGallery()
+function clearChoosedList () {
+  isShiftKeyPress.value = false
+  Object.keys(choosedList).forEach(key => {
+    choosedList[key] = false
+  })
+  lastChoosed.value = -1
+}
+
+function zoomImage (index: number) {
+  gallerySliderControl.index = index
+  gallerySliderControl.visible = true
+  changeZIndexForGallery(true)
+}
+
+function changeZIndexForGallery (isOpen: boolean) {
+  if (isOpen) {
+    // @ts-ignore
+    document.querySelector('.main-content.el-row').style.zIndex = 101
+  } else {
+    // @ts-ignore
+    document.querySelector('.main-content.el-row').style.zIndex = 10
   }
+}
 
-  get isAllSelected () {
-    const values = Object.values(this.choosedList)
-    if (values.length === 0) {
-      return false
-    } else {
-      return this.filterList.every(item => {
-        return this.choosedList[item.id!]
-      })
-    }
+function handleClose () {
+  gallerySliderControl.index = 0
+  gallerySliderControl.visible = false
+  changeZIndexForGallery(false)
+}
+
+async function copy (item: ImgInfo) {
+  const copyLink = await ipcRenderer.invoke(PASTE_TEXT, item)
+  const obj = {
+    title: $T('COPY_LINK_SUCCEED'),
+    body: copyLink
+    // sometimes will cause lagging
+    // icon: item.url || item.imgUrl
   }
-
-  getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
-    this.picBed = picBeds
+  const myNotification = new Notification(obj.title, obj)
+  myNotification.onclick = () => {
+    return true
   }
+}
 
-  getGallery (): ImgInfo[] {
-    if (this.searchText || this.choosedPicBed.length > 0) {
-      return this.images
-        .filter(item => {
-          let isInChoosedPicBed = true
-          let isIncludesSearchText = true
-          if (this.choosedPicBed.length > 0) {
-            isInChoosedPicBed = this.choosedPicBed.some(type => type === item.type)
-          }
-          if (this.searchText) {
-            isIncludesSearchText = item.fileName?.includes(this.searchText) || false
-          }
-          return isIncludesSearchText && isInChoosedPicBed
-        })
-    } else {
-      return this.images
-    }
-  }
-
-  async updateGallery () {
-    this.images = (await this.$$db.get({ orderBy: 'desc' })).data
-  }
-
-  @Watch('filterList')
-  handleFilterListChange () {
-    this.clearChoosedList()
-  }
-
-  handleChooseImage (val: boolean, index: number) {
-    if (val === true) {
-      this.handleBarActive = true
-      if (this.lastChoosed !== -1 && this.isShiftKeyPress) {
-        const min = Math.min(this.lastChoosed, index)
-        const max = Math.max(this.lastChoosed, index)
-        for (let i = min + 1; i < max; i++) {
-          const id = this.filterList[i].id!
-          this.$set(this.choosedList, id, true)
-        }
-      }
-      this.lastChoosed = index
-    }
-  }
-
-  clearChoosedList () {
-    this.isShiftKeyPress = false
-    Object.keys(this.choosedList).forEach(key => {
-      this.choosedList[key] = false
-    })
-    this.lastChoosed = -1
-  }
-
-  zoomImage (index: number) {
-    this.idx = index
-    this.changeZIndexForGallery(true)
-  }
-
-  changeZIndexForGallery (isOpen: boolean) {
-    if (isOpen) {
-      // @ts-ignore
-      document.querySelector('.main-content.el-row').style.zIndex = 101
-    } else {
-      // @ts-ignore
-      document.querySelector('.main-content.el-row').style.zIndex = 10
-    }
-  }
-
-  handleClose () {
-    this.idx = null
-    this.changeZIndexForGallery(false)
-  }
-
-  async copy (item: ImgInfo) {
-    const copyLink = await ipcRenderer.invoke(PASTE_TEXT, item)
-    const obj = {
-      title: this.$T('COPY_LINK_SUCCEED'),
-      body: copyLink
-      // sometimes will cause lagging
-      // icon: item.url || item.imgUrl
-    }
-    const myNotification = new Notification(obj.title, obj)
-    myNotification.onclick = () => {
-      return true
-    }
-  }
-
-  remove (id?: string) {
-    if (id) {
-      this.$confirm(this.$T('TIPS_REMOVE_LINK'), this.$T('TIPS_NOTICE'), {
-        confirmButtonText: this.$T('CONFIRM'),
-        cancelButtonText: this.$T('CANCEL'),
-        type: 'warning'
-      }).then(async () => {
-        const file = await this.$$db.getById(id)
-        await this.$$db.removeById(id)
-        ipcRenderer.send('removeFiles', [file])
-        const obj = {
-          title: this.$T('OPERATION_SUCCEED'),
-          body: ''
-        }
-        const myNotification = new Notification(obj.title, obj)
-        myNotification.onclick = () => {
-          return true
-        }
-        this.updateGallery()
-      }).catch((e) => {
-        console.log(e)
-        return true
-      })
-    }
-  }
-
-  openDialog (item: ImgInfo) {
-    this.imgInfo.id = item.id!
-    this.imgInfo.imgUrl = item.imgUrl as string
-    this.dialogVisible = true
-  }
-
-  async confirmModify () {
-    await this.$$db.updateById(this.imgInfo.id, {
-      imgUrl: this.imgInfo.imgUrl
-    })
-    const obj = {
-      title: this.$T('CHANGE_IMAGE_URL_SUCCEED'),
-      body: this.imgInfo.imgUrl
-      // icon: this.imgInfo.imgUrl
-    }
-    const myNotification = new Notification(obj.title, obj)
-    myNotification.onclick = () => {
-      return true
-    }
-    this.dialogVisible = false
-    this.updateGallery()
-  }
-
-  choosePicBed (type: string) {
-    const idx = this.choosedPicBed.indexOf(type)
-    if (idx !== -1) {
-      this.choosedPicBed.splice(idx, 1)
-    } else {
-      this.choosedPicBed.push(type)
-    }
-  }
-
-  cleanSearch () {
-    this.searchText = ''
-  }
-
-  isMultiple (obj: IObj) {
-    return Object.values(obj).some(item => item)
-  }
-
-  toggleSelectAll () {
-    const result = !this.isAllSelected
-    this.filterList.forEach(item => {
-      this.$set(this.choosedList, item.id!, result)
-    })
-  }
-
-  multiRemove () {
-    // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
-    const multiRemoveNumber = Object.values(this.choosedList).filter(item => item).length
-    if (multiRemoveNumber) {
-      this.$confirm(this.$T('TIPS_WILL_REMOVE_CHOOSED_IMAGES', {
-        m: multiRemoveNumber
-      }), this.$T('TIPS_NOTICE'), {
-        confirmButtonText: this.$T('CONFIRM'),
-        cancelButtonText: this.$T('CANCEL'),
-        type: 'warning'
-      }).then(async () => {
-        const files: IResult<ImgInfo>[] = []
-        const imageIDList = Object.keys(this.choosedList)
-        for (let i = 0; i < imageIDList.length; i++) {
-          const key = imageIDList[i]
-          if (this.choosedList[key]) {
-            const file = await this.$$db.getById<ImgInfo>(key)
-            if (file) {
-              files.push(file)
-              await this.$$db.removeById(key)
-            }
-          }
-        }
-        this.clearChoosedList()
-        this.choosedList = {} // 只有删除才能将这个置空
-        const obj = {
-          title: this.$T('OPERATION_SUCCEED'),
-          body: ''
-        }
-        ipcRenderer.send('removeFiles', files)
-        const myNotification = new Notification(obj.title, obj)
-        myNotification.onclick = () => {
-          return true
-        }
-        this.updateGallery()
-      }).catch(() => {
-        return true
-      })
-    }
-  }
-
-  async multiCopy () {
-    if (Object.values(this.choosedList).some(item => item)) {
-      const copyString: string[] = []
-      // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
-      const imageIDList = Object.keys(this.choosedList)
-      for (let i = 0; i < imageIDList.length; i++) {
-        const key = imageIDList[i]
-        if (this.choosedList[key]) {
-          const item = await this.$$db.getById<ImgInfo>(key)
-          if (item) {
-            const txt = await ipcRenderer.invoke(PASTE_TEXT, item)
-            copyString.push(txt)
-            this.choosedList[key] = false
-          }
-        }
-      }
+function remove (id?: string) {
+  if (id) {
+    $confirm($T('TIPS_REMOVE_LINK'), $T('TIPS_NOTICE'), {
+      confirmButtonText: $T('CONFIRM'),
+      cancelButtonText: $T('CANCEL'),
+      type: 'warning'
+    }).then(async () => {
+      const file = await $$db.getById(id)
+      await $$db.removeById(id)
+      sendToMain('removeFiles', [file])
       const obj = {
-        title: this.$T('BATCH_COPY_LINK_SUCCEED'),
-        body: copyString.join('\n')
+        title: $T('OPERATION_SUCCEED'),
+        body: ''
       }
       const myNotification = new Notification(obj.title, obj)
-      clipboard.writeText(copyString.join('\n'))
       myNotification.onclick = () => {
         return true
       }
+      updateGallery()
+    }).catch((e) => {
+      console.log(e)
+      return true
+    })
+  }
+}
+
+function openDialog (item: ImgInfo) {
+  imgInfo.id = item.id!
+  imgInfo.imgUrl = item.imgUrl as string
+  dialogVisible.value = true
+}
+
+async function confirmModify () {
+  await $$db.updateById(imgInfo.id, {
+    imgUrl: imgInfo.imgUrl
+  })
+  const obj = {
+    title: $T('CHANGE_IMAGE_URL_SUCCEED'),
+    body: imgInfo.imgUrl
+    // icon: this.imgInfo.imgUrl
+  }
+  const myNotification = new Notification(obj.title, obj)
+  myNotification.onclick = () => {
+    return true
+  }
+  dialogVisible.value = false
+  updateGallery()
+}
+
+// function choosePicBed (type: string) {
+//   const idx = choosedPicBed.value.indexOf(type)
+//   if (idx !== -1) {
+//     choosedPicBed.value.splice(idx, 1)
+//   } else {
+//     choosedPicBed.value.push(type)
+//   }
+// }
+
+function cleanSearch () {
+  searchText.value = ''
+}
+
+function isMultiple (obj: IObj) {
+  return Object.values(obj).some(item => item)
+}
+
+function toggleSelectAll () {
+  const result = !isAllSelected.value
+  filterList.value.forEach(item => {
+    choosedList[item.id!] = result
+  })
+}
+
+function multiRemove () {
+  // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
+  const multiRemoveNumber = Object.values(choosedList).filter(item => item).length
+  if (multiRemoveNumber) {
+    $confirm($T('TIPS_WILL_REMOVE_CHOOSED_IMAGES', {
+      m: multiRemoveNumber
+    }), $T('TIPS_NOTICE'), {
+      confirmButtonText: $T('CONFIRM'),
+      cancelButtonText: $T('CANCEL'),
+      type: 'warning'
+    }).then(async () => {
+      const files: IResult<ImgInfo>[] = []
+      const imageIDList = Object.keys(choosedList)
+      for (let i = 0; i < imageIDList.length; i++) {
+        const key = imageIDList[i]
+        if (choosedList[key]) {
+          const file = await $$db.getById<ImgInfo>(key)
+          if (file) {
+            files.push(file)
+            await $$db.removeById(key)
+          }
+        }
+      }
+      clearChoosedList()
+      // TODO: check this
+      // choosedList = {} // 只有删除才能将这个置空
+      const obj = {
+        title: $T('OPERATION_SUCCEED'),
+        body: ''
+      }
+      sendToMain('removeFiles', files)
+      const myNotification = new Notification(obj.title, obj)
+      myNotification.onclick = () => {
+        return true
+      }
+      updateGallery()
+    }).catch(() => {
+      return true
+    })
+  }
+}
+
+async function multiCopy () {
+  if (Object.values(choosedList).some(item => item)) {
+    const copyString: string[] = []
+    // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
+    const imageIDList = Object.keys(choosedList)
+    for (let i = 0; i < imageIDList.length; i++) {
+      const key = imageIDList[i]
+      if (choosedList[key]) {
+        const item = await $$db.getById<ImgInfo>(key)
+        if (item) {
+          const txt = await ipcRenderer.invoke(PASTE_TEXT, item)
+          copyString.push(txt)
+          choosedList[key] = false
+        }
+      }
+    }
+    const obj = {
+      title: $T('BATCH_COPY_LINK_SUCCEED'),
+      body: copyString.join('\n')
+    }
+    const myNotification = new Notification(obj.title, obj)
+    clipboard.writeText(copyString.join('\n'))
+    myNotification.onclick = () => {
+      return true
     }
   }
+}
 
-  toggleHandleBar () {
-    this.handleBarActive = !this.handleBarActive
-  }
+function toggleHandleBar () {
+  handleBarActive.value = !handleBarActive.value
+}
 
-  // getPasteStyle () {
-  //   this.pasteStyle = this.$db.get('settings.pasteStyle') || 'markdown'
-  // }
-  async handlePasteStyleChange (val: string) {
-    this.saveConfig('settings.pasteStyle', val)
-    this.pasteStyle = val
-  }
+async function handlePasteStyleChange (val: string) {
+  saveConfig('settings.pasteStyle', val)
+  pasteStyle.value = val
+}
 
-  beforeDestroy () {
-    ipcRenderer.removeAllListeners('updateGallery')
-    ipcRenderer.removeListener(GET_PICBEDS, this.getPicBeds)
-  }
+onBeforeUnmount(() => {
+  console.log('unmounted')
+  ipcRenderer.removeAllListeners('updateGallery')
+  ipcRenderer.removeListener(GET_PICBEDS, getPicBeds)
+})
+
+onActivated(async () => {
+  pasteStyle.value = (await getConfig('settings.pasteStyle')) || 'markdown'
+})
+
+</script>
+<script lang="ts">
+export default {
+  name: 'GalleryPage'
 }
 </script>
 <style lang='stylus'>
+.PhotoSlider
+  &__BannerIcon
+    &:nth-child(1)
+      display none
+  &__Counter
+    margin-top 20px
 .view-title
   color #eee
   font-size 20px
@@ -473,6 +585,8 @@ export default class extends Vue {
       transform: rotate(180deg)
 #gallery-view
   height 100%
+  .cursor-pointer
+    cursor pointer
 .item-base
   background #2E2E2E
   text-align center
@@ -523,9 +637,9 @@ export default class extends Vue {
       height: 287px
       top: 113px
     &__img
-      height 150px
+      // height 150px
       position relative
-      margin-bottom 16px
+      margin-bottom 8px
     &__item
       width 100%
       height 120px
@@ -534,6 +648,7 @@ export default class extends Vue {
       margin-bottom 4px
       overflow hidden
       display flex
+      margin-bottom 6px
       &-fake
         position absolute
         top 0
@@ -549,16 +664,20 @@ export default class extends Vue {
     &__tool-panel
       color #ddd
       margin-bottom 4px
+      display flex
+      .el-checkbox
+        height 16px
       i
         cursor pointer
         transition all .2s ease-in-out
-        &.el-icon-document
+        margin-right 4px
+        &.document
           &:hover
             color #49B1F5
-        &.el-icon-edit-outline
+        &.edit
           &:hover
             color #69C282
-        &.el-icon-delete
+        &.delete
           &:hover
             color #F15140
     &__file-name
@@ -571,6 +690,4 @@ export default class extends Vue {
   .handle-bar
     color #ddd
     margin-bottom 10px
-  .el-input__inner
-    border-radius 14px
 </style>

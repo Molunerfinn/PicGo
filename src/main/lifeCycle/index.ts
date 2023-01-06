@@ -105,11 +105,7 @@ class LifeCycle {
       await remoteNoticeHandler.init()
       remoteNoticeHandler.triggerHook(IRemoteNoticeTriggerHook.APP_START)
     }
-    if (!app.isReady()) {
-      app.on('ready', readyFunction)
-    } else {
-      readyFunction()
-    }
+    app.whenReady().then(readyFunction)
   }
 
   private onRunning () {

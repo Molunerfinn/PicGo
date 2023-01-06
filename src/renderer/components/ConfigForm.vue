@@ -1,11 +1,14 @@
 <template>
-  <div id="config-form">
+  <div
+    id="config-form"
+    :class="props.colorMode === 'white' ? 'white' : ''"
+  >
     <el-form
-      label-position="right"
-      label-width="120px"
+      ref="$form"
+      label-position="left"
+      label-width="50%"
       :model="ruleForm"
-      ref="form"
-      size="mini"
+      size="small"
     >
       <el-form-item
         :label="$T('UPLOADER_CONFIG_NAME')"
@@ -13,25 +16,25 @@
         prop="_configName"
       >
         <el-input
-          type="input"
           v-model="ruleForm._configName"
+          type="input"
           :placeholder="$T('UPLOADER_CONFIG_PLACEHOLDER')"
-        ></el-input>
+        />
       </el-form-item>
       <!-- dynamic config -->
       <el-form-item
         v-for="(item, index) in configList"
+        :key="item.name + index"
         :label="item.alias || item.name"
         :required="item.required"
         :prop="item.name"
-        :key="item.name + index"
       >
         <el-input
           v-if="item.type === 'input' || item.type === 'password'"
-          :type="item.type === 'password' ? 'password' : 'input'"
           v-model="ruleForm[item.name]"
+          :type="item.type === 'password' ? 'password' : 'input'"
           :placeholder="item.message || item.name"
-        ></el-input>
+        />
         <el-select
           v-else-if="item.type === 'list' && item.choices"
           v-model="ruleForm[item.name]"
@@ -39,10 +42,10 @@
         >
           <el-option
             v-for="choice in item.choices"
-            :label="choice.name || choice.value || choice"
             :key="choice.name || choice.value || choice"
+            :label="choice.name || choice.value || choice"
             :value="choice.value || choice"
-          ></el-option>
+          />
         </el-select>
         <el-select
           v-else-if="item.type === 'checkbox' && item.choices"
@@ -53,112 +56,120 @@
         >
           <el-option
             v-for="choice in item.choices"
-            :label="choice.name || choice.value || choice"
             :key="choice.value || choice"
+            :label="choice.name || choice.value || choice"
             :value="choice.value || choice"
-          ></el-option>
+          />
         </el-select>
         <el-switch
           v-else-if="item.type === 'confirm'"
           v-model="ruleForm[item.name]"
           active-text="yes"
           inactive-text="no"
-        >
-        </el-switch>
+        />
       </el-form-item>
-      <slot></slot>
+      <slot />
     </el-form>
   </div>
 </template>
-<script lang="ts">
-import {
-  Component,
-  Vue,
-  Prop,
-  Watch
-} from 'vue-property-decorator'
+<script lang="ts" setup>
+import { reactive, ref, watch, defineExpose, toRefs } from 'vue'
 import { cloneDeep, union } from 'lodash'
+import { getConfig } from '@/utils/dataSender'
+import { useRoute } from 'vue-router'
+import type { FormInstance } from 'element-plus'
 
-@Component({
-  name: 'config-form'
+interface IProps {
+  config: any[]
+  type: 'uploader' | 'transformer' | 'plugin'
+  id: string
+  colorMode?: 'white' | 'dark'
+}
+
+const props = defineProps<IProps>()
+const $route = useRoute()
+const $form = ref<FormInstance>()
+
+const configList = ref<IPicGoPluginConfig[]>([])
+const ruleForm = reactive<IStringKeyMap>({})
+
+watch(toRefs(props.config), (val: IPicGoPluginConfig[]) => {
+  handleConfigChange(val)
+}, {
+  deep: true,
+  immediate: true
 })
-export default class extends Vue {
-  @Prop() private config!: any[]
-  @Prop() readonly type!: 'uploader' | 'transformer' | 'plugin'
-  @Prop() readonly id!: string
-  configList: IPicGoPluginConfig[] = []
-  ruleForm: IStringKeyMap = {}
-  @Watch('config', {
-    deep: true,
-    immediate: true
-  })
-  handleConfigChange (val: any) {
-    this.handleConfig(val)
-  }
 
-  async validate () {
-    return new Promise((resolve) => {
-      // @ts-ignore
-      this.$refs.form.validate((valid: boolean) => {
-        if (valid) {
-          resolve(this.ruleForm)
-        } else {
-          resolve(false)
-          return false
-        }
-      })
+function handleConfigChange (val: any) {
+  handleConfig(val)
+}
+
+async function validate (): Promise<IStringKeyMap | false> {
+  return new Promise((resolve) => {
+    $form.value?.validate((valid: boolean) => {
+      if (valid) {
+        resolve(ruleForm)
+      } else {
+        resolve(false)
+        return false
+      }
     })
-  }
+  })
+}
 
-  getConfigType () {
-    switch (this.type) {
-      case 'plugin': {
-        return this.id
-      }
-      case 'uploader': {
-        return `picBed.${this.id}`
-      }
-      case 'transformer': {
-        return `transformer.${this.id}`
-      }
-      default:
-        return 'unknown'
+function getConfigType () {
+  switch (props.type) {
+    case 'plugin': {
+      return props.id
     }
-  }
-
-  async handleConfig (val: IPicGoPluginConfig[]) {
-    const config = await this.getCurConfigFormData()
-    const configId = this.$route.params.configId
-    this.ruleForm = Object.assign({}, config)
-    if (val.length > 0) {
-      this.configList = cloneDeep(val).map((item) => {
-        if (!configId) return item
-        let defaultValue = item.default !== undefined
-          ? item.default
-          : item.type === 'checkbox'
-            ? []
-            : null
-        if (item.type === 'checkbox') {
-          const defaults = item.choices?.filter((i: any) => {
-            return i.checked
-          }).map((i: any) => i.value) || []
-          defaultValue = union(defaultValue, defaults)
-        }
-        if (config && config[item.name] !== undefined) {
-          defaultValue = config[item.name]
-        }
-        this.$set(this.ruleForm, item.name, defaultValue)
-        return item
-      })
+    case 'uploader': {
+      return `picBed.${props.id}`
     }
-  }
-
-  async getCurConfigFormData () {
-    const configId = this.$route.params.configId
-    const curTypeConfigList = await this.getConfig<IStringKeyMap[]>(`uploader.${this.id}.configList`) || []
-    return curTypeConfigList.find(i => i._id === configId) || {}
+    case 'transformer': {
+      return `transformer.${props.id}`
+    }
+    default:
+      return 'unknown'
   }
 }
+
+async function handleConfig (val: IPicGoPluginConfig[]) {
+  const config = await getCurConfigFormData()
+  const configId = $route.params.configId
+  Object.assign(ruleForm, config)
+  if (val.length > 0) {
+    configList.value = cloneDeep(val).map((item) => {
+      if (!configId) return item
+      let defaultValue = item.default !== undefined
+        ? item.default
+        : item.type === 'checkbox'
+          ? []
+          : null
+      if (item.type === 'checkbox') {
+        const defaults = item.choices?.filter((i: any) => {
+          return i.checked
+        }).map((i: any) => i.value) || []
+        defaultValue = union(defaultValue, defaults)
+      }
+      if (config && config[item.name] !== undefined) {
+        defaultValue = config[item.name]
+      }
+      ruleForm[item.name] = defaultValue
+      return item
+    })
+  }
+}
+
+async function getCurConfigFormData () {
+  const configId = $route.params.configId
+  const curTypeConfigList = await getConfig<IStringKeyMap[]>(`uploader.${props.id}.configList`) || []
+  return curTypeConfigList.find(i => i._id === configId) || {}
+}
+
+defineExpose({
+  validate,
+  getConfigType
+})
 </script>
 <style lang='stylus'>
 #config-form
@@ -166,15 +177,25 @@ export default class extends Vue {
     label
       line-height 22px
       padding-bottom 0
+    &-item
+      display: flex
+      justify-content space-between
+      border-bottom 1px solid darken(#eee, 50%)
+      padding-bottom 16px
+      &:last-child
+        border-bottom none
+      &__content
+        justify-content flex-end
     .el-button-group
       width 100%
       .el-button
         width 50%
-    .el-input__inner
-      border-radius 19px
     .el-radio-group
       margin-left 25px
     .el-switch__label
       &.is-active
         color #409EFF
+  &.white
+    .el-form-item
+      border-bottom 1px solid #ddd
 </style>

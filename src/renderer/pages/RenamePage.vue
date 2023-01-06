@@ -1,7 +1,7 @@
 <template>
   <div id="rename-page">
     <el-form
-      @submit.native.prevent
+      @submit.prevent
     >
       <el-form-item
         :label="$T('FILE_RENAME')"
@@ -9,54 +9,67 @@
         <el-input
           v-model="fileName"
           size="small"
-          @keyup.enter.native="confirmName"
-        ></el-input>
+          @keyup.enter="confirmName"
+        />
       </el-form-item>
     </el-form>
     <el-row>
       <div class="pull-right">
-        <el-button @click="cancel" round size="mini">{{ $T('CANCEL') }}</el-button>
-        <el-button type="primary" @click="confirmName" round size="mini">{{ $T('CONFIRM') }}</el-button>
+        <el-button
+          round
+          size="small"
+          @click="cancel"
+        >
+          {{ $T('CANCEL') }}
+        </el-button>
+        <el-button
+          type="primary"
+          round
+          size="small"
+          @click="confirmName"
+        >
+          {{ $T('CONFIRM') }}
+        </el-button>
       </div>
     </el-row>
   </div>
 </template>
-<script lang="ts">
+<script lang="ts" setup>
 import { RENAME_FILE_NAME } from '#/events/constants'
-import { Component, Vue } from 'vue-property-decorator'
-import mixin from '@/utils/mixin'
+import { sendToMain } from '@/utils/dataSender'
 import {
   ipcRenderer,
   IpcRendererEvent
 } from 'electron'
-@Component({
-  name: 'rename-page',
-  mixins: [mixin]
+import { onBeforeUnmount, onBeforeMount, ref } from 'vue'
+const fileName = ref('')
+const originName = ref('')
+const id = ref<string | null>(null)
+onBeforeMount(() => {
+  ipcRenderer.on(RENAME_FILE_NAME, (event: IpcRendererEvent, newName: string, _originName: string, _id: string) => {
+    fileName.value = newName
+    originName.value = _originName
+    id.value = _id
+  })
 })
-export default class extends Vue {
-  fileName: string = ''
-  originName: string = ''
-  id: string | null = null
-  created () {
-    ipcRenderer.on(RENAME_FILE_NAME, (event: IpcRendererEvent, newName: string, originName: string, id: string) => {
-      this.fileName = newName
-      this.originName = originName
-      this.id = id
-    })
-  }
 
-  confirmName () {
-    ipcRenderer.send(`${RENAME_FILE_NAME}${this.id}`, this.fileName)
-  }
+function confirmName () {
+  sendToMain(`${RENAME_FILE_NAME}${id.value}`, fileName.value)
+}
 
-  cancel () {
-    // if cancel, use origin file name
-    ipcRenderer.send(`${RENAME_FILE_NAME}${this.id}`, this.originName)
-  }
+function cancel () {
+  // if cancel, use origin file name
+  sendToMain(`${RENAME_FILE_NAME}${id.value}`, originName.value)
+}
 
-  beforeDestroy () {
-    ipcRenderer.removeAllListeners('rename')
-  }
+onBeforeUnmount(() => {
+  ipcRenderer.removeAllListeners('rename')
+})
+
+</script>
+<script lang="ts">
+export default {
+  name: 'RenamePage'
 }
 </script>
 <style lang='stylus'>

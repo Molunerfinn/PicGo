@@ -1,69 +1,84 @@
 <template>
   <el-dialog
+    v-model="showInputBoxVisible"
     :title="inputBoxOptions.title || $T('INPUT')"
-    :visible.sync="showInputBoxVisible"
     :modal-append-to-body="false"
   >
     <el-input
       v-model="inputBoxValue"
-      :placeholder="inputBoxOptions.placeholder"></el-input>
-    <span slot="footer">
-      <el-button @click="handleInputBoxCancel" round>{{ $T('CANCEL') }}</el-button>
-      <el-button type="primary" @click="handleInputBoxConfirm" round>{{ $T('CONFIRM') }}</el-button>
-    </span>
+      :placeholder="inputBoxOptions.placeholder"
+    />
+    <template #footer>
+      <el-button
+        round
+        @click="handleInputBoxCancel"
+      >
+        {{ $T('CANCEL') }}
+      </el-button>
+      <el-button
+        type="primary"
+        round
+        @click="handleInputBoxConfirm"
+      >
+        {{ $T('CONFIRM') }}
+      </el-button>
+    </template>
   </el-dialog>
 </template>
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+<script lang="ts" setup>
+import { ref, reactive, onBeforeUnmount, onBeforeMount } from 'vue'
 import { ipcRenderer, IpcRendererEvent } from 'electron'
 import {
   SHOW_INPUT_BOX,
   SHOW_INPUT_BOX_RESPONSE
 } from '~/universal/events/constants'
-@Component({
-  name: 'input-box-dialog'
+import $bus from '@/utils/bus'
+import { sendToMain } from '@/utils/dataSender'
+const inputBoxValue = ref('')
+const showInputBoxVisible = ref(false)
+const inputBoxOptions = reactive({
+  title: '',
+  placeholder: ''
 })
-export default class extends Vue {
-  inputBoxValue = ''
-  showInputBoxVisible = false
-  inputBoxOptions = {
-    title: '',
-    placeholder: ''
-  }
 
-  created () {
-    ipcRenderer.on(SHOW_INPUT_BOX, this.ipcEventHandler)
-    this.$bus.$on(SHOW_INPUT_BOX, this.initInputBoxValue)
-  }
+onBeforeMount(() => {
+  ipcRenderer.on(SHOW_INPUT_BOX, ipcEventHandler)
+  $bus.on(SHOW_INPUT_BOX, initInputBoxValue)
+})
 
-  ipcEventHandler (evt: IpcRendererEvent, options: IShowInputBoxOption) {
-    this.initInputBoxValue(options)
-  }
+function ipcEventHandler (evt: IpcRendererEvent, options: IShowInputBoxOption) {
+  initInputBoxValue(options)
+}
 
-  initInputBoxValue (options: IShowInputBoxOption) {
-    this.inputBoxValue = options.value || ''
-    this.inputBoxOptions.title = options.title || ''
-    this.inputBoxOptions.placeholder = options.placeholder || ''
-    this.showInputBoxVisible = true
-  }
+function initInputBoxValue (options: IShowInputBoxOption) {
+  inputBoxValue.value = options.value || ''
+  inputBoxOptions.title = options.title || ''
+  inputBoxOptions.placeholder = options.placeholder || ''
+  showInputBoxVisible.value = true
+}
 
-  handleInputBoxCancel () {
-    // TODO: RPCServer
-    this.showInputBoxVisible = false
-    ipcRenderer.send(SHOW_INPUT_BOX, '')
-    this.$bus.$emit(SHOW_INPUT_BOX_RESPONSE, '')
-  }
+function handleInputBoxCancel () {
+  // TODO: RPCServer
+  showInputBoxVisible.value = false
+  sendToMain(SHOW_INPUT_BOX, '')
+  $bus.emit(SHOW_INPUT_BOX_RESPONSE, '')
+}
 
-  handleInputBoxConfirm () {
-    this.showInputBoxVisible = false
-    ipcRenderer.send(SHOW_INPUT_BOX, this.inputBoxValue)
-    this.$bus.$emit(SHOW_INPUT_BOX_RESPONSE, this.inputBoxValue)
-  }
+function handleInputBoxConfirm () {
+  showInputBoxVisible.value = false
+  sendToMain(SHOW_INPUT_BOX, inputBoxValue.value)
+  $bus.emit(SHOW_INPUT_BOX_RESPONSE, inputBoxValue.value)
+}
 
-  beforeDestroy () {
-    ipcRenderer.removeListener(SHOW_INPUT_BOX, this.ipcEventHandler)
-    this.$bus.$off(SHOW_INPUT_BOX)
-  }
+onBeforeUnmount(() => {
+  ipcRenderer.removeListener(SHOW_INPUT_BOX, ipcEventHandler)
+  $bus.off(SHOW_INPUT_BOX)
+})
+
+</script>
+<script lang="ts">
+export default {
+  name: 'InputBoxDialog'
 }
 </script>
 <style lang='stylus'>

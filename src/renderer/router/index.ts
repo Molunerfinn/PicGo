@@ -1,45 +1,43 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
+import * as config from './config'
 
-Vue.use(Router)
-
-export default new Router({
-  mode: 'hash',
+export default createRouter({
+  history: createWebHashHistory(),
   routes: [
     {
       path: '/',
-      name: 'tray-page',
+      name: config.TRAY_PAGE,
       component: () => import(/* webpackChunkName: "tray" */ '@/pages/TrayPage.vue')
     },
     {
       path: '/rename-page',
-      name: 'rename-page',
+      name: config.RENAME_PAGE,
       component: () => import(/* webpackChunkName: "RenamePage" */ '@/pages/RenamePage.vue')
     },
     {
       path: '/mini-page',
-      name: 'mini-page',
+      name: config.MINI_PAGE,
       component: () => import(/* webpackChunkName: "MiniPage" */ '@/pages/MiniPage.vue')
     },
     {
       path: '/main-page',
-      name: 'main-page',
+      name: config.MAIN_PAGE,
       component: () => import(/* webpackChunkName: "SettingPage" */ '@/layouts/Main.vue'),
       children: [
         {
           path: 'upload',
           component: () => import(/* webpackChunkName: "Upload" */ '@/pages/Upload.vue'),
-          name: 'upload'
+          name: config.UPLOAD_PAGE
         },
         {
-          path: 'picbeds/:type/:configId',
+          path: 'picbeds/:type/:configId?',
           component: () => import(/* webpackChunkName: "Other" */ '@/pages/picbeds/index.vue'),
-          name: 'picbeds'
+          name: config.PICBEDS_PAGE
         },
         {
           path: 'gallery',
-          component: () => import(/* webpackChunkName: "Gallery" */ '@/pages/Gallery.vue'),
-          name: 'gallery',
+          component: () => import(/* webpackChunkName: "GalleryView" */ '@/pages/Gallery.vue'),
+          name: config.GALLERY_PAGE,
           meta: {
             keepAlive: true
           }
@@ -47,27 +45,27 @@ export default new Router({
         {
           path: 'setting',
           component: () => import(/* webpackChunkName: "setting" */ '@/pages/PicGoSetting.vue'),
-          name: 'setting'
+          name: config.SETTING_PAGE
         },
         {
           path: 'plugin',
           component: () => import(/* webpackChunkName: "Plugin" */ '@/pages/Plugin.vue'),
-          name: 'plugin'
+          name: config.PLUGIN_PAGE
         },
         {
           path: 'shortKey',
           component: () => import(/* webpackChunkName: "ShortkeyPage" */ '@/pages/ShortKey.vue'),
-          name: 'shortKey'
+          name: config.SHORTKEY_PAGE
         },
         {
           path: 'uploader-config-page/:type',
           component: () => import(/* webpackChunkName: "Other" */ '@/pages/UploaderConfigPage.vue'),
-          name: 'UploaderConfigPage'
+          name: config.UPLOADER_CONFIG_PAGE
         }
       ]
     },
     {
-      path: '*',
+      path: '/:pathMatch(.*)*',
       redirect: '/'
     }
   ]

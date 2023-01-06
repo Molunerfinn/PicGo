@@ -1,12 +1,28 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <router-view />
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
+import { useStore } from '@/hooks/useStore'
+import { onBeforeMount } from 'vue'
+import { getConfig } from './utils/dataSender'
+import type { IConfig } from 'picgo'
+
+const store = useStore()
+onBeforeMount(async () => {
+  const config = await getConfig<IConfig>()
+  if (config) {
+    store?.setDefaultPicBed(config?.picBed?.uploader || config?.picBed?.current || 'smms')
+  }
+})
+
+</script>
+
+<script lang="ts">
 export default {
-  name: 'picgo'
+  name: 'PicGoApp'
 }
 </script>
 

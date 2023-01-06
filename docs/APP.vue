@@ -30,7 +30,7 @@
 </template>
 <script>
 export default {
-  name: '',
+  name: 'HomePage',
   data () {
     return {
       version: '',

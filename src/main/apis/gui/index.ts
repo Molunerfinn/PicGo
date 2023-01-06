@@ -21,6 +21,7 @@ import { T } from '~/main/i18n'
 
 // Cross-process support may be required in the future
 class GuiApi implements IGuiApi {
+  // eslint-disable-next-line no-use-before-define
   private static instance: GuiApi
   private windowId: number = -1
   private settingWindowId: number = -1

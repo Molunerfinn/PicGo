@@ -1,187 +1,198 @@
 <template>
-  <div id="mini-page"
+  <div
+    id="mini-page"
     :style="{ backgroundImage: 'url(' + logo + ')' }"
     :class="{ linux: os === 'linux' }"
   >
     <!-- <i class="el-icon-upload2"></i> -->
-  <div
-    id="upload-area"
-    :class="{ 'is-dragover': dragover, uploading: showProgress, linux: os === 'linux' }" @drop.prevent="onDrop" @dragover.prevent="dragover = true" @dragleave.prevent="dragover = false"
-    :style="{ backgroundPosition: '0 ' + progress + '%'}"
-  >
-    <div id="upload-dragger" @dblclick="openUploadWindow">
-      <input type="file" id="file-uploader" @change="onChange" multiple>
+    <div
+      id="upload-area"
+      :class="{ 'is-dragover': dragover, uploading: showProgress, linux: os === 'linux' }"
+      :style="{ backgroundPosition: '0 ' + progress + '%'}"
+      @drop.prevent="onDrop"
+      @dragover.prevent="dragover = true"
+      @dragleave.prevent="dragover = false"
+    >
+      <div
+        id="upload-dragger"
+        @dblclick="openUploadWindow"
+      >
+        <input
+          id="file-uploader"
+          type="file"
+          multiple
+          @change="onChange"
+        >
+      </div>
     </div>
   </div>
-  </div>
 </template>
-<script lang="ts">
-import mixin from '@/utils/mixin'
-import { Component, Vue, Watch } from 'vue-property-decorator'
+<script lang="ts" setup>
+// import mixin from '@/utils/mixin'
+// import { Component, Vue, Watch } from 'vue-property-decorator'
+import { T as $T } from '@/i18n/index'
+import { ElMessage as $message } from 'element-plus'
 import {
   ipcRenderer,
   IpcRendererEvent
 } from 'electron'
+import { onBeforeUnmount, onBeforeMount, ref, watch } from 'vue'
 import { SHOW_MINI_PAGE_MENU, SET_MINI_WINDOW_POS } from '~/universal/events/constants'
 import {
   isUrl
 } from '~/universal/utils/common'
-@Component({
-  name: 'mini-page',
-  mixins: [mixin]
+import { sendToMain } from '@/utils/dataSender'
+const logo = require('../assets/squareLogo.png')
+const dragover = ref(false)
+const progress = ref(0)
+const showProgress = ref(false)
+const showError = ref(false)
+const dragging = ref(false)
+const wX = ref(-1)
+const wY = ref(-1)
+const screenX = ref(-1)
+const screenY = ref(-1)
+const os = ref('')
+
+onBeforeMount(() => {
+  os.value = process.platform
+  ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, _progress: number) => {
+    if (_progress !== -1) {
+      showProgress.value = true
+      progress.value = _progress
+    } else {
+      progress.value = 100
+      showError.value = true
+    }
+  })
+  window.addEventListener('mousedown', handleMouseDown, false)
+  window.addEventListener('mousemove', handleMouseMove, false)
+  window.addEventListener('mouseup', handleMouseUp, false)
 })
-export default class extends Vue {
-  logo = require('../assets/squareLogo.png')
-  dragover = false
-  progress = 0
-  showProgress = false
-  showError = false
-  dragging = false
-  wX: number = -1
-  wY: number = -1
-  screenX: number = -1
-  screenY: number = -1
-  menu: Electron.Menu | null = null
-  os = ''
-  picBed: IPicBedType[] = []
-  created () {
-    this.os = process.platform
-    ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, progress: number) => {
-      if (progress !== -1) {
-        this.showProgress = true
-        this.progress = progress
-      } else {
-        this.progress = 100
-        this.showError = true
-      }
-    })
-  }
 
-  mounted () {
-    window.addEventListener('mousedown', this.handleMouseDown, false)
-    window.addEventListener('mousemove', this.handleMouseMove, false)
-    window.addEventListener('mouseup', this.handleMouseUp, false)
+watch(progress, (val) => {
+  if (val === 100) {
+    setTimeout(() => {
+      showProgress.value = false
+      showError.value = false
+    }, 1000)
+    setTimeout(() => {
+      progress.value = 0
+    }, 1200)
   }
+})
 
-  @Watch('progress')
-  onProgressChange (val: number) {
-    if (val === 100) {
-      setTimeout(() => {
-        this.showProgress = false
-        this.showError = false
-      }, 1000)
-      setTimeout(() => {
-        this.progress = 0
-      }, 1200)
-    }
-  }
-
-  onDrop (e: DragEvent) {
-    this.dragover = false
-    const items = e.dataTransfer!.items
-    if (items.length === 2 && items[0].type === 'text/uri-list') {
-      this.handleURLDrag(items, e.dataTransfer!)
-    } else if (items[0].type === 'text/plain') {
-      const str = e.dataTransfer!.getData(items[0].type)
-      if (isUrl(str)) {
-        ipcRenderer.send('uploadChoosedFiles', [{ path: str }])
-      } else {
-        this.$message.error(this.$T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
-      }
+function onDrop (e: DragEvent) {
+  dragover.value = false
+  const items = e.dataTransfer!.items
+  if (items.length === 2 && items[0].type === 'text/uri-list') {
+    handleURLDrag(items, e.dataTransfer!)
+  } else if (items[0].type === 'text/plain') {
+    const str = e.dataTransfer!.getData(items[0].type)
+    if (isUrl(str)) {
+      sendToMain('uploadChoosedFiles', [{ path: str }])
     } else {
-      this.ipcSendFiles(e.dataTransfer!.files)
+      $message.error($T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
     }
+  } else {
+    ipcSendFiles(e.dataTransfer!.files)
   }
+}
 
-  handleURLDrag (items: DataTransferItemList, dataTransfer: DataTransfer) {
-    // text/html
-    // Use this data to get a more precise URL
-    const urlString = dataTransfer.getData(items[1].type)
-    const urlMatch = urlString.match(/<img.*src="(.*?)"/)
-    if (urlMatch) {
-      ipcRenderer.send('uploadChoosedFiles', [
-        {
-          path: urlMatch[1]
-        }
-      ])
-    } else {
-      this.$message.error(this.$T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
-    }
-  }
-
-  openUploadWindow () {
-    // @ts-ignore
-    document.getElementById('file-uploader').click()
-  }
-
-  onChange (e: any) {
-    this.ipcSendFiles(e.target.files)
-    // @ts-ignore
-    document.getElementById('file-uploader').value = ''
-  }
-
-  ipcSendFiles (files: FileList) {
-    const sendFiles: IFileWithPath[] = []
-    Array.from(files).forEach((item) => {
-      const obj = {
-        name: item.name,
-        path: item.path
+function handleURLDrag (items: DataTransferItemList, dataTransfer: DataTransfer) {
+  // text/html
+  // Use this data to get a more precise URL
+  const urlString = dataTransfer.getData(items[1].type)
+  const urlMatch = urlString.match(/<img.*src="(.*?)"/)
+  if (urlMatch) {
+    sendToMain('uploadChoosedFiles', [
+      {
+        path: urlMatch[1]
       }
-      sendFiles.push(obj)
+    ])
+  } else {
+    $message.error($T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
+  }
+}
+
+function openUploadWindow () {
+  // @ts-ignore
+  document.getElementById('file-uploader').click()
+}
+
+function onChange (e: any) {
+  ipcSendFiles(e.target.files)
+  // @ts-ignore
+  document.getElementById('file-uploader').value = ''
+}
+
+function ipcSendFiles (files: FileList) {
+  const sendFiles: IFileWithPath[] = []
+  Array.from(files).forEach((item) => {
+    const obj = {
+      name: item.name,
+      path: item.path
+    }
+    sendFiles.push(obj)
+  })
+  sendToMain('uploadChoosedFiles', sendFiles)
+}
+
+function handleMouseDown (e: MouseEvent) {
+  dragging.value = true
+  wX.value = e.pageX
+  wY.value = e.pageY
+  screenX.value = e.screenX
+  screenY.value = e.screenY
+}
+
+function handleMouseMove (e: MouseEvent) {
+  e.preventDefault()
+  e.stopPropagation()
+  if (dragging.value) {
+    const xLoc = e.screenX - wX.value
+    const yLoc = e.screenY - wY.value
+    sendToMain(SET_MINI_WINDOW_POS, {
+      x: xLoc,
+      y: yLoc,
+      width: 64,
+      height: 64
     })
-    ipcRenderer.send('uploadChoosedFiles', sendFiles)
+    // remote.BrowserWindow.getFocusedWindow()!.setBounds({
+    //   x: xLoc,
+    //   y: yLoc,
+    //   width: 64,
+    //   height: 64
+    // })
   }
+}
 
-  handleMouseDown (e: MouseEvent) {
-    this.dragging = true
-    this.wX = e.pageX
-    this.wY = e.pageY
-    this.screenX = e.screenX
-    this.screenY = e.screenY
-  }
-
-  handleMouseMove (e: MouseEvent) {
-    e.preventDefault()
-    e.stopPropagation()
-    if (this.dragging) {
-      const xLoc = e.screenX - this.wX
-      const yLoc = e.screenY - this.wY
-      ipcRenderer.send(SET_MINI_WINDOW_POS, {
-        x: xLoc,
-        y: yLoc,
-        width: 64,
-        height: 64
-      })
-      // remote.BrowserWindow.getFocusedWindow()!.setBounds({
-      //   x: xLoc,
-      //   y: yLoc,
-      //   width: 64,
-      //   height: 64
-      // })
+function handleMouseUp (e: MouseEvent) {
+  dragging.value = false
+  if (screenX.value === e.screenX && screenY.value === e.screenY) {
+    if (e.button === 0) { // left mouse
+      openUploadWindow()
+    } else {
+      openContextMenu()
     }
   }
+}
 
-  handleMouseUp (e: MouseEvent) {
-    this.dragging = false
-    if (this.screenX === e.screenX && this.screenY === e.screenY) {
-      if (e.button === 0) { // left mouse
-        this.openUploadWindow()
-      } else {
-        this.openContextMenu()
-      }
-    }
-  }
+function openContextMenu () {
+  sendToMain(SHOW_MINI_PAGE_MENU)
+}
 
-  openContextMenu () {
-    ipcRenderer.send(SHOW_MINI_PAGE_MENU)
-  }
+onBeforeUnmount(() => {
+  ipcRenderer.removeAllListeners('uploadProgress')
+  window.removeEventListener('mousedown', handleMouseDown, false)
+  window.removeEventListener('mousemove', handleMouseMove, false)
+  window.removeEventListener('mouseup', handleMouseUp, false)
+})
 
-  beforeDestroy () {
-    ipcRenderer.removeAllListeners('uploadProgress')
-    window.removeEventListener('mousedown', this.handleMouseDown, false)
-    window.removeEventListener('mousemove', this.handleMouseMove, false)
-    window.removeEventListener('mouseup', this.handleMouseUp, false)
-  }
+</script>
+<script lang="ts">
+export default {
+  name: 'MiniPage'
 }
 </script>
 <style lang='stylus'>

@@ -1,37 +1,69 @@
 <template>
   <div id="main-page">
-    <div class="fake-title-bar" :class="{ 'darwin': os === 'darwin' }">
+    <div
+      class="fake-title-bar"
+      :class="{ 'darwin': os === 'darwin' }"
+    >
       <div class="fake-title-bar__title">
         PicGo - {{ version }}
       </div>
-      <div class="handle-bar" v-if="os !== 'darwin'">
-        <i class="el-icon-minus" @click="minimizeWindow"></i>
-        <i class="el-icon-circle-plus-outline" @click="openMiniWindow"></i>
-        <i class="el-icon-close" @click="closeWindow"></i>
+      <div
+        v-if="os !== 'darwin'"
+        class="handle-bar"
+      >
+        <el-icon
+          class="minus"
+          @click="minimizeWindow"
+        >
+          <Minus />
+        </el-icon>
+        <el-icon
+          class="plus"
+          @click="openMiniWindow"
+        >
+          <CirclePlus />
+        </el-icon>
+        <el-icon
+          class="close"
+          @click="closeWindow"
+        >
+          <Close />
+        </el-icon>
       </div>
     </div>
-    <el-row style="padding-top: 22px;" class="main-content">
-      <el-col :span="5" class="side-bar-menu">
+    <el-row
+      style="padding-top: 22px;"
+      class="main-content"
+    >
+      <el-col
+        class="side-bar-menu"
+      >
         <el-menu
           class="picgo-sidebar"
           :default-active="defaultActive"
-          @select="handleSelect"
           :unique-opened="true"
+          @select="handleSelect"
           @open="handleGetPicPeds"
-          >
-          <el-menu-item index="upload">
-            <i class="el-icon-upload"></i>
-            <span slot="title">{{ $T('UPLOAD_AREA') }}</span>
+        >
+          <el-menu-item :index="routerConfig.UPLOAD_PAGE">
+            <el-icon>
+              <UploadFilled />
+            </el-icon>
+            <span>{{ $T('UPLOAD_AREA') }}</span>
           </el-menu-item>
-          <el-menu-item index="gallery">
-            <i class="el-icon-picture"></i>
-            <span slot="title">{{ $T('GALLERY') }}</span>
+          <el-menu-item :index="routerConfig.GALLERY_PAGE">
+            <el-icon>
+              <PictureFilled />
+            </el-icon>
+            <span>{{ $T('GALLERY') }}</span>
           </el-menu-item>
-          <el-submenu
+          <el-sub-menu
             index="sub-menu"
           >
-            <template slot="title">
-              <i class="el-icon-menu"></i>
+            <template #title>
+              <el-icon>
+                <Menu />
+              </el-icon>
               <span>{{ $T('PICBEDS_SETTINGS') }}</span>
             </template>
             <template
@@ -39,72 +71,97 @@
             >
               <el-menu-item
                 v-if="item.visible"
-                :index="`uploader-config-page-${item.type}`"
                 :key="item.type"
+                :index="`${routerConfig.UPLOADER_CONFIG_PAGE}-${item.type}`"
               >
-                <!-- <i :class="`el-icon-ui-${item.type}`"></i> -->
-                <span slot="title">{{ item.name }}</span>
+                <span>{{ item.name }}</span>
               </el-menu-item>
             </template>
-          </el-submenu>
-          <el-menu-item index="setting">
-            <i class="el-icon-setting"></i>
-            <span slot="title">{{ $T('PICGO_SETTINGS') }}</span>
+          </el-sub-menu>
+          <el-menu-item :index="routerConfig.SETTING_PAGE">
+            <el-icon>
+              <Setting />
+            </el-icon>
+            <span>{{ $T('PICGO_SETTINGS') }}</span>
           </el-menu-item>
-          <el-menu-item index="plugin">
-            <i class="el-icon-share"></i>
-            <span slot="title">{{ $T('PLUGIN_SETTINGS') }}</span>
+          <el-menu-item :index="routerConfig.PLUGIN_PAGE">
+            <el-icon>
+              <Share />
+            </el-icon>
+            <span>{{ $T('PLUGIN_SETTINGS') }}</span>
           </el-menu-item>
         </el-menu>
-        <i class="el-icon-info setting-window" @click="openDialog"></i>
+        <el-icon
+          class="info-window"
+          @click="openMenu"
+        >
+          <InfoFilled />
+        </el-icon>
       </el-col>
       <el-col
         :span="19"
         :offset="5"
         style="height: 428px"
         class="main-wrapper"
-        :class="{ 'darwin': os === 'darwin' }">
-        <transition name="picgo-fade" mode="out-in">
-          <keep-alive>
-            <router-view v-if="$route && $route.meta && $route.meta.keepAlive"></router-view>
-          </keep-alive>
-        </transition>
-        <transition name="picgo-fade" mode="out-in">
-          <router-view :key="$route.path" v-if="!($route && $route.meta && $route.meta.keepAlive)"></router-view>
-        </transition>
+        :class="{ 'darwin': os === 'darwin' }"
+      >
+        <router-view
+          v-slot="{ Component }"
+        >
+          <transition
+            name="picgo-fade"
+            mode="out-in"
+          >
+            <keep-alive :include="keepAlivePages">
+              <component
+                :is="Component"
+              />
+            </keep-alive>
+          </transition>
+        </router-view>
       </el-col>
     </el-row>
     <el-dialog
+      v-model="visible"
       :title="$T('SPONSOR_PICGO')"
-      :visible.sync="visible"
       width="70%"
       top="10vh"
     >
       {{ $T('PICGO_SPONSOR_TEXT') }}
       <el-row class="support">
         <el-col :span="12">
-          <img src="https://user-images.githubusercontent.com/12621342/34188165-e7cdf372-e56f-11e7-8732-1338c88b9bb7.jpg" :alt="$T('ALIPAY')">
-          <div class="support-title">{{ $T('ALIPAY') }}</div>
+          <img
+            src="https://user-images.githubusercontent.com/12621342/34188165-e7cdf372-e56f-11e7-8732-1338c88b9bb7.jpg"
+            :alt="$T('ALIPAY')"
+          >
+          <div class="support-title">
+            {{ $T('ALIPAY') }}
+          </div>
         </el-col>
         <el-col :span="12">
-          <img src="https://user-images.githubusercontent.com/12621342/34188201-212cda84-e570-11e7-9b7a-abb298699d85.jpg" :alt="$T('WECHATPAY')">
-          <div class="support-title">{{ $T('WECHATPAY') }}</div>
+          <img
+            src="https://user-images.githubusercontent.com/12621342/34188201-212cda84-e570-11e7-9b7a-abb298699d85.jpg"
+            :alt="$T('WECHATPAY')"
+          >
+          <div class="support-title">
+            {{ $T('WECHATPAY') }}
+          </div>
         </el-col>
       </el-row>
     </el-dialog>
     <el-dialog
+      v-model="qrcodeVisible"
       class="qrcode-dialog"
       top="3vh"
       width="60%"
       :title="$T('PICBED_QRCODE')"
-      :visible.sync="qrcodeVisible"
       :modal-append-to-body="false"
       lock-scroll
     >
       <el-form
         label-position="left"
         label-width="70px"
-        size="mini"
+        size="small"
       >
         <el-form-item
           :label="$T('CHOOSE_PICBED')"
@@ -119,7 +176,7 @@
               :key="item.type"
               :label="item.name"
               :value="item.type"
-            ></el-option>
+            />
           </el-select>
           <el-button
             v-show="choosedPicBedForQRCode.length > 0"
@@ -143,17 +200,32 @@
     <input-box-dialog />
   </div>
 </template>
-<script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator'
+<script lang="ts" setup>
+// import { Component, Vue, Watch } from 'vue-property-decorator'
+import {
+  Setting,
+  UploadFilled,
+  PictureFilled,
+  Menu,
+  Share,
+  InfoFilled,
+  Minus,
+  CirclePlus,
+  Close
+} from '@element-plus/icons-vue'
+import { ElMessage as $message } from 'element-plus'
+import { T } from '@/i18n/index'
+import { ref, onBeforeUnmount, Ref, onBeforeMount, watch, nextTick, reactive } from 'vue'
+import { onBeforeRouteUpdate, useRouter } from 'vue-router'
 import QrcodeVue from 'qrcode.vue'
 import pick from 'lodash/pick'
 import pkg from 'root/package.json'
+import * as config from '@/router/config'
 import {
   ipcRenderer,
   IpcRendererEvent,
   clipboard
 } from 'electron'
-import mixin from '@/utils/mixin'
 import InputBoxDialog from '@/components/InputBoxDialog.vue'
 import {
   MINIMIZE_WINDOW,
@@ -163,116 +235,118 @@ import {
   SHOW_MAIN_PAGE_DONATION,
   GET_PICBEDS
 } from '~/universal/events/constants'
-@Component({
-  name: 'main-page',
-  mixins: [mixin],
-  components: {
-    InputBoxDialog,
-    QrcodeVue
+import { getConfig, sendToMain } from '@/utils/dataSender'
+const version = ref(process.env.NODE_ENV === 'production' ? pkg.version : 'Dev')
+const routerConfig = reactive(config)
+const defaultActive = ref(routerConfig.UPLOAD_PAGE)
+const visible = ref(false)
+const os = ref('')
+const $router = useRouter()
+const picBed: Ref<IPicBedType[]> = ref([])
+const qrcodeVisible = ref(false)
+const picBedConfigString = ref('')
+const choosedPicBedForQRCode: Ref<string[]> = ref([])
+
+const keepAlivePages = $router.getRoutes().filter(item => item.meta.keepAlive).map(item => item.name as string)
+
+onBeforeMount(() => {
+  os.value = process.platform
+  sendToMain(GET_PICBEDS)
+  ipcRenderer.on(GET_PICBEDS, getPicBeds)
+  handleGetPicPeds()
+  ipcRenderer.on(SHOW_MAIN_PAGE_QRCODE, () => {
+    qrcodeVisible.value = true
+  })
+  ipcRenderer.on(SHOW_MAIN_PAGE_DONATION, () => {
+    visible.value = true
+  })
+})
+
+watch(() => choosedPicBedForQRCode, (val) => {
+  if (val.value.length > 0) {
+    nextTick(async () => {
+      const picBedConfig = await getConfig('picBed')
+      const config = pick(picBedConfig, ...choosedPicBedForQRCode.value)
+      picBedConfigString.value = JSON.stringify(config)
+    })
+  }
+}, { deep: true })
+
+const handleGetPicPeds = () => {
+  sendToMain(GET_PICBEDS)
+}
+
+const handleSelect = (index: string) => {
+  defaultActive.value = index
+  const type = index.match(routerConfig.UPLOADER_CONFIG_PAGE)
+  if (type === null) {
+    $router.push({
+      name: index
+    })
+  } else {
+    const type = index.replace(`${routerConfig.UPLOADER_CONFIG_PAGE}-`, '')
+    $router.push({
+      name: routerConfig.UPLOADER_CONFIG_PAGE,
+      params: {
+        type
+      }
+    })
+    // if (this.$builtInPicBed.includes(picBed)) {
+    //   this.$router.push({
+    //     name: picBed
+    //   })
+    // } else {
+    //   this.$router.push({
+    //     name: 'others',
+    //     params: {
+    //       type: picBed
+    //     }
+    //   })
+    // }
+  }
+}
+
+function minimizeWindow () {
+  sendToMain(MINIMIZE_WINDOW)
+}
+
+function closeWindow () {
+  sendToMain(CLOSE_WINDOW)
+}
+
+function openMenu () {
+  sendToMain(SHOW_MAIN_PAGE_MENU)
+}
+
+function openMiniWindow () {
+  sendToMain('openMiniWindow')
+}
+
+function handleCopyPicBedConfig () {
+  clipboard.writeText(picBedConfigString.value)
+  $message.success(T('COPY_PICBED_CONFIG_SUCCEED'))
+}
+
+function getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
+  picBed.value = picBeds
+}
+
+onBeforeRouteUpdate(async (to) => {
+  if (to.params.type) {
+    defaultActive.value = `${routerConfig.UPLOADER_CONFIG_PAGE}-${to.params.type}`
+  } else {
+    defaultActive.value = to.name as string
   }
 })
-export default class extends Vue {
-  version = process.env.NODE_ENV === 'production' ? pkg.version : 'Dev'
-  defaultActive = 'upload'
-  visible = false
-  keyBindingVisible = false
-  customLinkVisible = false
-  os = ''
-  picBed: IPicBedType[] = []
-  qrcodeVisible = false
-  picBedConfigString = ''
-  choosedPicBedForQRCode: string[] = []
-  created () {
-    this.os = process.platform
-    ipcRenderer.send(GET_PICBEDS)
-    ipcRenderer.on(GET_PICBEDS, this.getPicBeds)
-    this.handleGetPicPeds()
-    ipcRenderer.on(SHOW_MAIN_PAGE_QRCODE, () => {
-      this.qrcodeVisible = true
-    })
-    ipcRenderer.on(SHOW_MAIN_PAGE_DONATION, () => {
-      this.visible = true
-    })
-  }
 
-  @Watch('choosedPicBedForQRCode')
-  choosedPicBedForQRCodeChange (val: string[]) {
-    if (val.length > 0) {
-      this.$nextTick(async () => {
-        const picBedConfig = await this.getConfig('picBed')
-        const config = pick(picBedConfig, ...this.choosedPicBedForQRCode)
-        this.picBedConfigString = JSON.stringify(config)
-      })
-    }
-  }
+onBeforeUnmount(() => {
+  ipcRenderer.removeListener(GET_PICBEDS, getPicBeds)
+})
 
-  handleGetPicPeds = () => {
-    ipcRenderer.send(GET_PICBEDS)
-  }
-
-  handleSelect (index: string) {
-    const type = index.match(/uploader-config-page-/)
-    if (type === null) {
-      this.$router.push({
-        name: index
-      })
-    } else {
-      const type = index.replace(/uploader-config-page-/, '')
-      this.$router.push({
-        name: 'UploaderConfigPage',
-        params: {
-          type
-        }
-      })
-      // if (this.$builtInPicBed.includes(picBed)) {
-      //   this.$router.push({
-      //     name: picBed
-      //   })
-      // } else {
-      //   this.$router.push({
-      //     name: 'others',
-      //     params: {
-      //       type: picBed
-      //     }
-      //   })
-      // }
-    }
-  }
-
-  minimizeWindow () {
-    ipcRenderer.send(MINIMIZE_WINDOW)
-  }
-
-  closeWindow () {
-    ipcRenderer.send(CLOSE_WINDOW)
-  }
-
-  openDialog () {
-    ipcRenderer.send(SHOW_MAIN_PAGE_MENU)
-  }
-
-  openMiniWindow () {
-    ipcRenderer.send('openMiniWindow')
-  }
-
-  handleCopyPicBedConfig () {
-    clipboard.writeText(this.picBedConfigString)
-    this.$message.success(this.$T('COPY_PICBED_CONFIG_SUCCEED'))
-  }
-
-  getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
-    this.picBed = picBeds
-  }
-
-  beforeRouteEnter (to: any, next: any) {
-    next((vm: this) => {
-      vm.defaultActive = to.name
-    })
-  }
-
-  beforeDestroy () {
-    ipcRenderer.removeListener(GET_PICBEDS, this.getPicBeds)
-  }
+</script>
+<script lang="ts">
+export default {
+  name: 'MainPage'
 }
 </script>
 <style lang='stylus'>
@@ -289,7 +363,7 @@ $darwinBg = transparentify(#172426, #000, 0.7)
     opacity 0
   &-enter-active,
   &-leave-active
-    transition all 100ms linear
+    transition all 150ms linear
 .view-title
   color #eee
   font-size 20px
@@ -304,8 +378,6 @@ $darwinBg = transparentify(#172426, #000, 0.7)
       padding-top 10px
     .copy-picbed-config
       margin-left 10px
-    .el-input__inner
-      border-radius 14px
   .fake-title-bar
     -webkit-app-region drag
     height h = 22px
@@ -333,17 +405,17 @@ $darwinBg = transparentify(#172426, #000, 0.7)
       right 4px
       z-index 10000
       -webkit-app-region no-drag
-      i
+      .el-icon
         cursor pointer
         font-size 16px
         margin-left 5px
-      .el-icon-minus
+      .el-icon.minus
         &:hover
           color #409EFF
-      .el-icon-close
+      .el-icon.close
         &:hover
           color #F15140
-      .el-icon-circle-plus-outline
+      .el-icon.plus
         &:hover
           color #69C282
   .main-wrapper
@@ -355,7 +427,8 @@ $darwinBg = transparentify(#172426, #000, 0.7)
     overflow-x hidden
     overflow-y auto
     width 170px
-    .el-icon-info.setting-window
+    .info-window
+      cursor pointer
       position fixed
       bottom 4px
       left 4px
@@ -385,14 +458,13 @@ $darwinBg = transparentify(#172426, #000, 0.7)
           right 0
           top 18px
           background active-color
-  .el-submenu__title
-    span
-      color #eee
+  .el-sub-menu__title
+    color #eee
     &:hover
       background transparent
       span
         color #fff
-  .el-submenu
+  .el-sub-menu
     .el-menu-item
       min-width 166px
       &.is-active

@@ -19,7 +19,7 @@ export class I18nManager {
     ipcRenderer.send(GET_CURRENT_LANGUAGE)
     ipcRenderer.once(GET_CURRENT_LANGUAGE, (event, lang: string, locales: ILocales) => {
       this.setLocales(lang, locales)
-      bus.$emit(FORCE_UPDATE)
+      bus.emit(FORCE_UPDATE)
     })
   }
 
@@ -38,7 +38,7 @@ export class I18nManager {
     this.getLanguageList()
     ipcRenderer.on(SET_CURRENT_LANGUAGE, (event, lang: string, locales: ILocales) => {
       this.setLocales(lang, locales)
-      bus.$emit(FORCE_UPDATE)
+      bus.emit(FORCE_UPDATE)
     })
   }
 

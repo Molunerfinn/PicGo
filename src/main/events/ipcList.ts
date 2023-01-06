@@ -70,6 +70,7 @@ export default {
     })
 
     ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
+      console.log('handle')
       uploadClipboardFiles()
     })
 

@@ -9,7 +9,7 @@ import {
 import { privacyManager } from '~/main/utils/privacyManager'
 import pkg from 'root/package.json'
 import GuiApi from 'apis/gui'
-import { PICGO_CONFIG_PLUGIN, PICGO_HANDLE_PLUGIN_ING, PICGO_TOGGLE_PLUGIN, SHOW_MAIN_PAGE_DONATION, SHOW_MAIN_PAGE_QRCODE } from '~/universal/events/constants'
+import { PICGO_CONFIG_PLUGIN, PICGO_HANDLE_PLUGIN_DONE, PICGO_HANDLE_PLUGIN_ING, PICGO_TOGGLE_PLUGIN, SHOW_MAIN_PAGE_DONATION, SHOW_MAIN_PAGE_QRCODE } from '~/universal/events/constants'
 import picgoCoreIPC from '~/main/events/picgoCoreIPC'
 import { PicGo as PicGoCore } from 'picgo'
 import { T } from '~/main/i18n'
@@ -210,6 +210,7 @@ const buildPluginPageMenu = (plugin: IPicGoPlugin) => {
       const window = windowManager.get(IWindowList.SETTING_WINDOW)!
       window.webContents.send(PICGO_HANDLE_PLUGIN_ING, plugin.fullName)
       window.webContents.send(PICGO_TOGGLE_PLUGIN, plugin.fullName, false)
+      window.webContents.send(PICGO_HANDLE_PLUGIN_DONE, plugin.fullName)
       if (plugin.config.transformer.name) {
         handleRestoreState('transformer', plugin.config.transformer.name)
       }
