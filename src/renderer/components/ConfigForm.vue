@@ -73,7 +73,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, watch, defineExpose, toRefs } from 'vue'
+import { reactive, ref, watch, toRefs } from 'vue'
 import { cloneDeep, union } from 'lodash'
 import { getConfig } from '@/utils/dataSender'
 import { useRoute } from 'vue-router'

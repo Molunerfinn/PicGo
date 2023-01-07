@@ -549,7 +549,6 @@ async function handlePasteStyleChange (val: string) {
 }
 
 onBeforeUnmount(() => {
-  console.log('unmounted')
   ipcRenderer.removeAllListeners('updateGallery')
   ipcRenderer.removeListener(GET_PICBEDS, getPicBeds)
 })

@@ -112,26 +112,22 @@ onBeforeRouteUpdate((to, from, next) => {
   if (to.params.type && (to.name === UPLOADER_CONFIG_PAGE)) {
     type.value = to.params.type as string
     getCurrentConfigList()
-    console.log(type.value)
   }
   next()
 })
 
 onBeforeMount(() => {
   type.value = $route.params.type as string
-  console.log(type.value)
   getCurrentConfigList()
 })
 
 async function getCurrentConfigList () {
   const configList = await triggerRPC<IUploaderConfigItem>(IRPCActionType.GET_PICBED_CONFIG_LIST, type.value)
-  console.log(configList)
   curConfigList.value = configList?.configList ?? []
   defaultConfigId.value = configList?.defaultId ?? ''
 }
 
 function openEditPage (configId: string) {
-  console.log(configId, type.value, defaultConfigId.value)
   $router.push({
     name: PICBEDS_PAGE,
     params: {

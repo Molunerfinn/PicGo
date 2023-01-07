@@ -32,6 +32,7 @@ app.config.globalProperties.$builtInPicBed = [
   'aliyun',
   'github'
 ]
+app.config.unwrapInjectedRef = true
 
 app.config.globalProperties.$$db = db
 app.config.globalProperties.$http = axios

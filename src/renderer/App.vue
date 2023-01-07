@@ -6,9 +6,11 @@
 
 <script lang="ts" setup>
 import { useStore } from '@/hooks/useStore'
-import { onBeforeMount } from 'vue'
+import { onBeforeMount, onMounted, onUnmounted } from 'vue'
 import { getConfig } from './utils/dataSender'
 import type { IConfig } from 'picgo'
+import bus from './utils/bus'
+import { FORCE_UPDATE } from '~/universal/events/constants'
 
 const store = useStore()
 onBeforeMount(async () => {
@@ -16,6 +18,16 @@ onBeforeMount(async () => {
   if (config) {
     store?.setDefaultPicBed(config?.picBed?.uploader || config?.picBed?.current || 'smms')
   }
+})
+
+onMounted(() => {
+  bus.on(FORCE_UPDATE, () => {
+    store?.updateForceUpdateTime()
+  })
+})
+
+onUnmounted(() => {
+  bus.off(FORCE_UPDATE)
 })
 
 </script>

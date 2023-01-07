@@ -1,11 +1,16 @@
-import { ComponentOptions, getCurrentInstance } from 'vue'
+import { ComponentOptions } from 'vue'
 import { FORCE_UPDATE, GET_PICBEDS } from '~/universal/events/constants'
 import bus from '~/renderer/utils/bus'
 import { ipcRenderer } from 'electron'
 export const mainMixin: ComponentOptions = {
+  inject: ['forceUpdateTime'],
+
   created () {
-    bus.on(FORCE_UPDATE, () => {
-      getCurrentInstance()?.proxy?.$forceUpdate()
+    // FIXME: may be memory leak
+    this?.$watch('forceUpdateTime', (newVal: number, oldVal: number) => {
+      if (oldVal !== newVal) {
+        this?.$forceUpdate()
+      }
     })
   },
 

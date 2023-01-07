@@ -60,7 +60,6 @@ const $route = useRoute()
 const $router = useRouter()
 const $configForm = ref<InstanceType<typeof ConfigForm> | null>(null)
 type.value = $route.params.type as string
-console.log('picbed type', $route.params.type)
 
 onBeforeMount(() => {
   sendToMain('getPicBedConfig', $route.params.type)
@@ -69,7 +68,6 @@ onBeforeMount(() => {
 
 const handleConfirm = async () => {
   const result = (await $configForm.value?.validate()) || false
-  console.log(result)
   if (result !== false) {
     await triggerRPC<void>(IRPCActionType.UPDATE_UPLOADER_CONFIG, type.value, result?._id, result)
     const successNotification = new Notification($T('SETTINGS_RESULT'), {
