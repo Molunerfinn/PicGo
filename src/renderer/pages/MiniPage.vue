@@ -84,18 +84,23 @@ watch(progress, (val) => {
 
 function onDrop (e: DragEvent) {
   dragover.value = false
-  const items = e.dataTransfer!.items
-  if (items.length === 2 && items[0].type === 'text/uri-list') {
-    handleURLDrag(items, e.dataTransfer!)
-  } else if (items[0].type === 'text/plain') {
-    const str = e.dataTransfer!.getData(items[0].type)
-    if (isUrl(str)) {
-      sendToMain('uploadChoosedFiles', [{ path: str }])
-    } else {
-      $message.error($T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
-    }
+  const items = e.dataTransfer?.items!
+  const files = e.dataTransfer?.files!
+
+  // send files first
+  if (files?.length) {
+    ipcSendFiles(e.dataTransfer?.files!)
   } else {
-    ipcSendFiles(e.dataTransfer!.files)
+    if (items.length === 2 && items[0].type === 'text/uri-list') {
+      handleURLDrag(items, e.dataTransfer!)
+    } else if (items[0].type === 'text/plain') {
+      const str = e.dataTransfer!.getData(items[0].type)
+      if (isUrl(str)) {
+        sendToMain('uploadChoosedFiles', [{ path: str }])
+      } else {
+        $message.error($T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
+      }
+    }
   }
 }
 
