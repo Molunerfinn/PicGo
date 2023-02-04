@@ -121,6 +121,12 @@ options:
 xattr -c /Applications/PicGo.app/*
 ```
 
+如果上述命令依然没有效果，可以尝试下面的命令：
+
+```
+sudo xattr -d com.apple.quarantine /Applications/PicGo.app/
+```
+
 2. 如果安装打开后没有反应，请按下方顺序排查：
    1. macOS安装好之后，PicGo 是不会弹出主窗口的，因为 PicGo 在 macOS 系统里设计是个顶部栏应用。注意看你顶部栏的图标，如果有 PicGo 的图标，说明安装成功了，点击图标即可打开顶部栏窗口。参考上述[第八点](#8-mac-上无法打开-picgo-的主窗口界面)。
    2. 如果你是 M1 的系统，此前装过 PicGo 的 x64 版本，但是后来更新了 arm64 的版本发现打开后没反应，请重启电脑即可。
