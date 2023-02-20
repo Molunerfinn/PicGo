@@ -24,6 +24,7 @@ FIND_NEW_VERSION: Find New Version
 NO_MORE_NOTICE: No More Notice
 SHOW_DEVTOOLS: Show Devtools
 CURRENT_PICBED: Current Picbed
+OPEN_TOOLBOX: Open Toolbox
 
 # ---renderer i18n begin---
 
@@ -157,6 +158,9 @@ PLUGIN_INSTALLED: Installed
 PLUGIN_DOING_SOMETHING: Doing...
 PLUGIN_LIST: Plugin List
 PLUGIN_IMPORT_LOCAL: Import Local Plugins
+
+# toolbox
+TOOLBOX: Toolbox
 
 # tips
 

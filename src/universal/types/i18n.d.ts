@@ -25,6 +25,7 @@ interface ILocales {
   NO_MORE_NOTICE: string
   SHOW_DEVTOOLS: string
   CURRENT_PICBED: string
+  OPEN_TOOLBOX: string
   CHOOSE_YOUR_DEFAULT_PICBED: string
   UPLOAD_AREA: string
   GALLERY: string
@@ -162,6 +163,7 @@ interface ILocales {
   DISABLE_PLUGIN: string
   UNINSTALL_PLUGIN: string
   UPDATE_PLUGIN: string
+  TOOLBOX: string
   TIPS_NOTICE: string
   TIPS_WARNING: string
   TIPS_ERROR: string

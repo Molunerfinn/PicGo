@@ -65,6 +65,11 @@ export default createRouter({
       ]
     },
     {
+      path: '/toolbox-page',
+      name: config.TOOLBOX_CONFIG_PAGE,
+      component: () => import(/* webpackChunkName: "ToolboxPage" */ '@/pages/Toolbox.vue')
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: '/'
     }

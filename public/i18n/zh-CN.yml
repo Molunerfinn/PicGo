@@ -24,6 +24,7 @@ FIND_NEW_VERSION: 发现新版本
 NO_MORE_NOTICE: 以后不再提醒
 SHOW_DEVTOOLS: 打开开发者工具
 CURRENT_PICBED: 当前图床
+OPEN_TOOLBOX: 打开修复工具箱
 
 # ---renderer i18n begin---
 
@@ -186,6 +187,9 @@ ENABLE_PLUGIN: 启用插件
 DISABLE_PLUGIN: 禁用插件
 UNINSTALL_PLUGIN: 卸载插件
 UPDATE_PLUGIN: 更新插件
+
+# toolbox
+TOOLBOX: 工具箱
 
 # tips
 TIPS_NOTICE: 注意

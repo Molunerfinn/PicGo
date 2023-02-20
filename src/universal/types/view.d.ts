@@ -18,3 +18,10 @@ interface ISettingForm {
 interface IShortKeyMap {
   [propName: string]: string
 }
+
+interface IToolboxItem {
+  id: import('#/types/enum').IToolboxItemType
+  title: string
+  status: 'loading' | 'success' | 'error' | 'init'
+  errorTips?: string[]
+}
