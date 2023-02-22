@@ -7,10 +7,11 @@ import {
   selectUploaderConfig,
   updateUploaderConfig
 } from '~/main/utils/handleUploaderConfig'
+import { getLatestVersion } from '~/main/utils/getLatestVersion'
 
 class RPCServer {
   start () {
-    ipcMain.on(RPC_ACTIONS, (event: IpcMainEvent, action: IRPCActionType, args: any[], callbackId: string) => {
+    ipcMain.on(RPC_ACTIONS, async (event: IpcMainEvent, action: IRPCActionType, args: any[], callbackId: string) => {
       try {
         switch (action) {
           case IRPCActionType.GET_PICBED_CONFIG_LIST: {
@@ -31,6 +32,11 @@ class RPCServer {
           case IRPCActionType.UPDATE_UPLOADER_CONFIG: {
             this.updateUploaderConfig(args as IUpdateUploaderConfigArgs)
             this.sendBack(event, action, true, callbackId)
+            break
+          }
+          case IRPCActionType.GET_LATEST_VERSION: {
+            const res = await this.getLastestVersion(args as IGetLatestVersionArgs)
+            this.sendBack(event, action, res, callbackId)
             break
           }
           default: {
@@ -73,6 +79,12 @@ class RPCServer {
     const [type, id, config] = args
     const res = updateUploaderConfig(type, id, config)
     return res
+  }
+
+  private async getLastestVersion (args: IGetLatestVersionArgs) {
+    const [isCheckBetaUpdate] = args
+    const version = await getLatestVersion(isCheckBetaUpdate)
+    return version
   }
 }
 

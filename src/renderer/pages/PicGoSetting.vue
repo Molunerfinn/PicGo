@@ -527,13 +527,13 @@ import {
 } from 'electron'
 import { i18nManager, T as $T } from '@/i18n/index'
 import { enforceNumber } from '~/universal/utils/common'
-import { getLatestVersion } from '#/utils/getLatestVersion'
 import { compare } from 'compare-versions'
 import { STABLE_RELEASE_URL, BETA_RELEASE_URL } from '#/utils/static'
 import { computed, onBeforeMount, onBeforeUnmount, reactive, ref } from 'vue'
-import { getConfig, saveConfig, sendToMain } from '@/utils/dataSender'
+import { getConfig, saveConfig, sendToMain, triggerRPC } from '@/utils/dataSender'
 import { useRouter } from 'vue-router'
 import { SHORTKEY_PAGE } from '@/router/config'
+import { IRPCActionType } from '~/universal/types/enum'
 
 const $customLink = ref<InstanceType<typeof ElForm> | null>(null)
 
@@ -774,7 +774,7 @@ function compareVersion2Update (current: string, latest: string): boolean {
 
 async function checkUpdate () {
   checkUpdateVisible.value = true
-  const version = await getLatestVersion(form.checkBetaUpdate)
+  const version = await triggerRPC<string>(IRPCActionType.GET_LATEST_VERSION, form.checkBetaUpdate)
   if (version) {
     latestVersion.value = version
   } else {
