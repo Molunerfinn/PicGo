@@ -659,7 +659,7 @@ export default {
         transform scale(1.1)
       &-img
         width 100%
-        object-fit fill
+        object-fit contain
     &__tool-panel
       color #ddd
       margin-bottom 4px
