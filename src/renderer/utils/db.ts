@@ -1,6 +1,6 @@
 import { IObject, IResult, IGetResult, IFilter } from '@picgo/store/dist/types'
 import { ipcRenderer, IpcRendererEvent } from 'electron'
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import {
   PICGO_GET_DB,
   PICGO_INSERT_DB,

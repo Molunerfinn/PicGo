@@ -1,4 +1,4 @@
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import { trimValues } from '#/utils/common'
 import picgo from '@core/picgo'
 

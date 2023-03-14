@@ -1,6 +1,6 @@
 import { ipcRenderer, IpcRendererEvent } from 'electron'
 import { PICGO_SAVE_CONFIG, PICGO_GET_CONFIG, RPC_ACTIONS } from '#/events/constants'
-import { uuid } from 'uuidv4'
+import { v4 as uuid } from 'uuid'
 import { IRPCActionType } from '~/universal/types/enum'
 import { getRawData } from './common'
 
