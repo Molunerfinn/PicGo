@@ -6,7 +6,7 @@
         :offset="2"
       >
         <div class="view-title">
-          {{ $T('PICTURE_UPLOAD') }} - {{ picBedName }}
+          {{ $T('PICTURE_UPLOAD') }} - {{ picBedName }} - {{ picBedConfigName }}
           <el-icon
             style="cursor: pointer; margin-left: 4px;"
             @click="handleChangePicBed"
@@ -126,6 +126,7 @@ const showError = ref(false)
 const pasteStyle = ref('')
 const picBed = ref<IPicBedType[]>([])
 const picBedName = ref('')
+const picBedConfigName = ref('')
 onBeforeMount(() => {
   ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, _progress: number) => {
     if (_progress !== -1) {
@@ -267,6 +268,7 @@ async function getDefaultPicBed () {
       picBedName.value = item.name
     }
   })
+  picBedConfigName.value = await getConfig<string>(`picBed.${currentPicBed}._configName`) || ''
 }
 
 function getPicBeds (event: Event, picBeds: IPicBedType[]) {
