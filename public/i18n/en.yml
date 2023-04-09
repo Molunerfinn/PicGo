@@ -113,6 +113,7 @@ SETTINGS_CHOOSE_LANGUAGE: Choose Language
 UPLOADER_CONFIG_NAME: Configuration Name
 UPLOADER_CONFIG_PLACEHOLDER: Please Enter Configuration Name
 SELECTED_SETTING_HINT: Selected
+SETTINGS_ENCODE_OUTPUT_URL: Encode Output(or Copyed) URL
 
 # shortcut-page
 

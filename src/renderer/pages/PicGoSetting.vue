@@ -233,6 +233,16 @@
               />
             </el-form-item>
             <el-form-item
+              :label="$T('SETTINGS_ENCODE_OUTPUT_URL')"
+            >
+              <el-switch
+                v-model="form.encodeOutputURL"
+                :active-text="$T('SETTINGS_OPEN')"
+                :inactive-text="$T('SETTINGS_CLOSE')"
+                @change="handleEncodeOutputURL"
+              />
+            </el-form-item>
+            <el-form-item
               :style="{ marginRight: '-64px' }"
               :label="$T('CHOOSE_SHOWED_PICBED')"
             >
@@ -558,7 +568,8 @@ const form = reactive<ISettingForm>({
   checkBetaUpdate: true,
   useBuiltinClipboard: false,
   language: 'zh-CN',
-  logFileSizeLimit: 10
+  logFileSizeLimit: 10,
+  encodeOutputURL: true
 })
 
 const languageList = i18nManager.languageList.map(item => ({
@@ -643,6 +654,7 @@ async function initData () {
     form.checkBetaUpdate = settings.checkBetaUpdate === undefined ? true : settings.checkBetaUpdate
     form.useBuiltinClipboard = settings.useBuiltinClipboard === undefined ? false : settings.useBuiltinClipboard
     form.language = settings.language ?? 'zh-CN'
+    form.encodeOutputURL = settings.encodeOutputURL === undefined ? true : settings.encodeOutputURL
     currentLanguage.value = settings.language ?? 'zh-CN'
     customLink.value = settings.customLink || '$url'
     shortKey.upload = settings.shortKey.upload
@@ -807,6 +819,16 @@ function handleMiniWindowOntop (val: ICheckBoxValueType) {
 function handleAutoCopyUrl (val: ICheckBoxValueType) {
   saveConfig('settings.autoCopy', val)
   const successNotification = new Notification($T('SETTINGS_AUTO_COPY_URL_AFTER_UPLOAD'), {
+    body: $T('TIPS_SET_SUCCEED')
+  })
+  successNotification.onclick = () => {
+    return true
+  }
+}
+
+function handleEncodeOutputURL (val: ICheckBoxValueType) {
+  saveConfig('settings.encodeOutputURL', val)
+  const successNotification = new Notification($T('SETTINGS_ENCODE_OUTPUT_URL'), {
     body: $T('TIPS_SET_SUCCEED')
   })
   successNotification.onclick = () => {

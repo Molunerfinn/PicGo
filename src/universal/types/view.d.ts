@@ -12,6 +12,7 @@ interface ISettingForm {
   useBuiltinClipboard: boolean
   language: string
   logFileSizeLimit: number
+  encodeOutputURL: boolean
 }
 
 interface IShortKeyMap {
