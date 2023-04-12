@@ -5,8 +5,8 @@ import {
   Tray,
   dialog,
   clipboard,
-  systemPreferences,
-  Notification
+  Notification,
+  nativeTheme
 } from 'electron'
 import uploader from 'apis/app/uploader'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
@@ -205,7 +205,7 @@ export function createTray () {
     })
 
     tray.on('drag-enter', () => {
-      if (systemPreferences.isDarkMode()) {
+      if (nativeTheme.shouldUseDarkColors) {
         tray!.setImage(`${__static}/upload-dark.png`)
       } else {
         tray!.setImage(`${__static}/upload.png`)
@@ -213,7 +213,8 @@ export function createTray () {
     })
 
     tray.on('drag-end', () => {
-      tray!.setImage(`${__static}/menubar.png`)
+      const menubarPic = getTrayIcon()
+      tray!.setImage(menubarPic)
     })
 
     // drop-files only be supported in macOS
