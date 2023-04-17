@@ -32,7 +32,10 @@ export default (style: IPasteStyle, item: ImgInfo, customLink: string | undefine
     HTML: `<img src="${url}"/>`,
     URL: url,
     UBB: `[IMG]${url}[/IMG]`,
-    Custom: formatCustomLink(_customLink, item)
+    Custom: formatCustomLink(_customLink, {
+      ...item,
+      url
+    })
   }
   return tpl[style]
 }
