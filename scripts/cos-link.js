@@ -2,7 +2,7 @@ const pkg = require('../package.json')
 const version = pkg.version
 // TODO: use the same name format
 const generateURL = (platform, ext, prefix = 'PicGo-') => {
-  return `https://picgo-1251750343.cos.ap-chengdu.myqcloud.com/${version}/${prefix}${version}${platform}${ext}`
+  return `https://picgo-release.molunerfinn.com/${version}/${prefix}${version}${platform}${ext}`
 }
 
 const platformExtList = [
