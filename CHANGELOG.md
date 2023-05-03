@@ -574,6 +574,3 @@
 ### :package: Chore
 
 * add picgo bump-version ([37f1d34](https://github.com/Molunerfinn/PicGo/commit/37f1d34))
-
-
-

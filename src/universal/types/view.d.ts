@@ -13,6 +13,7 @@ interface ISettingForm {
   language: string
   logFileSizeLimit: number
   encodeOutputURL: boolean
+  showDockIcon: boolean
 }
 
 interface IShortKeyMap {

@@ -70,7 +70,8 @@ export enum IRPCActionType {
   // system rpc
   RELOAD_APP = 'RELOAD_APP',
   OPEN_FILE = 'OPEN_FILE',
-  COPY_TEXT = 'COPY_TEXT'
+  COPY_TEXT = 'COPY_TEXT',
+  SHOW_DOCK_ICON = 'SHOW_DOCK_ICON',
 }
 
 export enum IToolboxItemType {

@@ -7,6 +7,7 @@ type IGetLatestVersionArgs = [isCheckBetaVersion: boolean]
 type IToolboxCheckArgs = [type: import('./enum').IToolboxItemType]
 type IOpenFileArgs = [filePath: string]
 type ICopyTextArgs = [text: string]
+type IShowDockIconArgs = [visible: boolean]
 
 interface IRPCServer {
   start: () => void

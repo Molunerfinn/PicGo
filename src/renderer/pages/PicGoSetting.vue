@@ -242,6 +242,13 @@
                 @change="handleEncodeOutputURL"
               />
             </el-form-item>
+            <checkbox-form-item
+              v-if="os === 'darwin'"
+              :default-value="form.showDockIcon"
+              setting-props="settings.showDockIcon"
+              :setting-text="$T('SETTINGS_SHOW_DOCK_ICON')"
+              @change="handleShowDockIcon"
+            />
             <el-form-item
               :style="{ marginRight: '-64px' }"
               :label="$T('CHOOSE_SHOWED_PICBED')"
@@ -540,10 +547,11 @@ import { enforceNumber } from '~/universal/utils/common'
 import { compare } from 'compare-versions'
 import { STABLE_RELEASE_URL, BETA_RELEASE_URL } from '#/utils/static'
 import { computed, onBeforeMount, onBeforeUnmount, reactive, ref } from 'vue'
-import { getConfig, saveConfig, sendToMain, triggerRPC } from '@/utils/dataSender'
+import { getConfig, saveConfig, sendRPC, sendToMain, triggerRPC } from '@/utils/dataSender'
 import { useRouter } from 'vue-router'
 import { SHORTKEY_PAGE } from '@/router/config'
 import { IRPCActionType } from '~/universal/types/enum'
+import CheckboxFormItem from '@/components/settings/CheckboxFormItem.vue'
 
 const $customLink = ref<InstanceType<typeof ElForm> | null>(null)
 
@@ -569,7 +577,8 @@ const form = reactive<ISettingForm>({
   useBuiltinClipboard: false,
   language: 'zh-CN',
   logFileSizeLimit: 10,
-  encodeOutputURL: true
+  encodeOutputURL: true,
+  showDockIcon: true
 })
 
 const languageList = i18nManager.languageList.map(item => ({
@@ -667,6 +676,7 @@ async function initData () {
       enable: true
     }
     form.logFileSizeLimit = enforceNumber(settings.logFileSizeLimit) || 10
+    form.showDockIcon = settings.showDockIcon === undefined ? true : settings.showDockIcon
   }
 }
 
@@ -919,6 +929,10 @@ function handleLanguageChange (val: string) {
     'settings.language': val
   })
   sendToMain(GET_PICBEDS)
+}
+
+function handleShowDockIcon (val: ICheckBoxValueType) {
+  sendRPC(IRPCActionType.SHOW_DOCK_ICON, val)
 }
 
 function goConfigPage () {

@@ -60,6 +60,7 @@ windowList.set(IWindowList.SETTING_WINDOW, {
   isValid: true,
   multiple: false,
   options () {
+    const showDockIcon = db.get('settings.showDockIcon') !== false
     const options: IBrowserWindowOptions = {
       height: 450,
       width: 800,
@@ -71,6 +72,7 @@ windowList.set(IWindowList.SETTING_WINDOW, {
       title: 'PicGo',
       vibrancy: 'ultra-dark',
       transparent: true,
+      skipTaskbar: !showDockIcon,
       titleBarStyle: 'hidden',
       webPreferences: {
         backgroundThrottling: false,
@@ -86,6 +88,7 @@ windowList.set(IWindowList.SETTING_WINDOW, {
       options.backgroundColor = '#3f3c37'
       options.transparent = false
       options.icon = `${__static}/logo.png`
+      options.skipTaskbar = false
     }
     return options
   },

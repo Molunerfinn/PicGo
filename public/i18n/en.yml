@@ -114,13 +114,14 @@ SETTINGS_NOT_CONFIG_OPTIONS: Not Config Options
 SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD: Use Builtin Clipboard to Upload
 SETTINGS_CHOOSE_LANGUAGE: Choose Language
 UPLOADER_CONFIG_NAME: Configuration Name
+BUILTIN_CLIPBOARD_TIPS: Use builtin clipboard function to upload instead of using scripts
 UPLOADER_CONFIG_PLACEHOLDER: Please Enter Configuration Name
 SELECTED_SETTING_HINT: Selected
 SETTINGS_ENCODE_OUTPUT_URL: Encode Output(or Copyed) URL
+SETTINGS_SHOW_DOCK_ICON: Show Dock icon
 
 # shortcut-page
 
-BUILTIN_CLIPBOARD_TIPS: Use builtin clipboard function to upload instead of using scripts
 SHORTCUT_NAME: Shortcut Name
 SHORTCUT_BIND: Shortcut Binding
 SHORTCUT_STATUS: Status
@@ -161,33 +162,6 @@ PLUGIN_DOING_SOMETHING: Doing...
 PLUGIN_LIST: Plugin List
 PLUGIN_IMPORT_LOCAL: Import Local Plugins
 
-# toolbox
-TOOLBOX: Toolbox
-TOOLBOX_TITLE: Troubleshoot PicGo runtime issues  
-TOOLBOX_SUB_TITLE: Scan the following items immediately to fix usage issues
-TOOLBOX_CHECK_CONFIG_FILE_BROKEN: Check if the configuration file is damaged
-TOOLBOX_CHECK_GALLERY_FILE_BROKEN: Check if the album file is damaged 
-TOOLBOX_CHECK_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD: Check if there is a problem with clipboard picture upload
-TOOLBOX_CHECK_PROBLEM_WITH_PROXY: Check if the proxy settings are normal
-TOOLBOX_FIX_DONE_NEED_RELOAD: Repair completed, need to restart to take effect, restart or not
-TOOLBOX_CANT_AUTO_FIX: Unable to automatically repair, please repair the following problems yourself
-TOOLBOX_START_SCAN: Start scanning
-TOOLBOX_RE_SCAN: Re scanning
-TOOLBOX_START_FIX: Start fixing
-TOOLBOX_SUCCESS_TIPS: Congratulations, no problems were found
-TOOLBOX_CHECK_CONFIG_FILE_PATH_TIPS: "The configuration file path is: ${path}"
-TOOLBOX_CHECK_CONFIG_FILE_BROKEN_TIPS: The configuration file is damaged
-TOOLBOX_CHECK_GALLERY_FILE_PATH_TIPS: "The album file path is: ${path}"
-TOOLBOX_CHECK_GALLERY_FILE_BROKEN_TIPS: The album file is damaged
-TOOLBOX_CHECK_PROXY_SUCCESS_TIPS: Proxy settings normal
-TOOLBOX_CHECK_PROXY_NO_PROXY_TIPS: No proxy settings
-TOOLBOX_CHECK_PROXY_PROXY_IS_NOT_CORRECT: Proxy settings incorrect
-TOOLBOX_CHECK_PROXY_PROXY_IS_NOT_WORKING: Proxy settings unavailable
-TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_TIPS: "The temporary folder path for clipboard pictures is: ${path}"
-TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_NOT_EXIST_TIPS: "The temporary folder for clipboard pictures does not exist: ${path}"
-TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_ERROR_TIPS: "Please create the folder yourself: ${path}"
-
-
 # tips
 
 TIPS_REMOVE_LINK: This operation will remove the picture from the album, continue?
@@ -216,6 +190,32 @@ ENABLE_PLUGIN: Enable Plugin
 DISABLE_PLUGIN: Disable Plugin
 UNINSTALL_PLUGIN: Uninstall Plugin
 UPDATE_PLUGIN: Update Plugin
+
+# toolbox
+TOOLBOX: Toolbox
+TOOLBOX_TITLE: Troubleshoot PicGo runtime issues  
+TOOLBOX_SUB_TITLE: Scan the following items immediately to fix usage issues
+TOOLBOX_CHECK_CONFIG_FILE_BROKEN: Check if the configuration file is damaged
+TOOLBOX_CHECK_GALLERY_FILE_BROKEN: Check if the album file is damaged 
+TOOLBOX_CHECK_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD: Check if there is a problem with clipboard picture upload
+TOOLBOX_CHECK_PROBLEM_WITH_PROXY: Check if the proxy settings are normal
+TOOLBOX_FIX_DONE_NEED_RELOAD: Repair completed, need to restart to take effect, restart or not
+TOOLBOX_CANT_AUTO_FIX: Unable to automatically repair, please repair the following problems yourself
+TOOLBOX_START_SCAN: Start scanning
+TOOLBOX_RE_SCAN: Re scanning
+TOOLBOX_START_FIX: Start fixing
+TOOLBOX_SUCCESS_TIPS: Congratulations, no problems were found
+TOOLBOX_CHECK_CONFIG_FILE_PATH_TIPS: "The configuration file path is: ${path}"
+TOOLBOX_CHECK_CONFIG_FILE_BROKEN_TIPS: The configuration file is damaged
+TOOLBOX_CHECK_GALLERY_FILE_PATH_TIPS: "The album file path is: ${path}"
+TOOLBOX_CHECK_GALLERY_FILE_BROKEN_TIPS: The album file is damaged
+TOOLBOX_CHECK_PROXY_SUCCESS_TIPS: Proxy settings normal
+TOOLBOX_CHECK_PROXY_NO_PROXY_TIPS: No proxy settings
+TOOLBOX_CHECK_PROXY_PROXY_IS_NOT_CORRECT: Proxy settings incorrect
+TOOLBOX_CHECK_PROXY_PROXY_IS_NOT_WORKING: Proxy settings unavailable
+TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_TIPS: "The temporary folder path for clipboard pictures is: ${path}"
+TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_NOT_EXIST_TIPS: "The temporary folder for clipboard pictures does not exist: ${path}"
+TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_ERROR_TIPS: "Please create the folder yourself: ${path}"
 
 # tips
 TIPS_NOTICE: Tips

@@ -15,7 +15,7 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "release": "vue-cli-service electron:build --publish always",
-    "upload-dist": "node ./scripts/upload-dist-to-cos.js"
+    "upload-dist": "node ./scripts/upload-dist.js"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.10",
