@@ -1,94 +1,58 @@
 import { ipcMain, IpcMainEvent } from 'electron'
 import { IRPCActionType } from '~/universal/types/enum'
 import { RPC_ACTIONS } from '#/events/constants'
-import {
-  deleteUploaderConfig,
-  getUploaderConfigList,
-  selectUploaderConfig,
-  updateUploaderConfig
-} from '~/main/utils/handleUploaderConfig'
-import { getLatestVersion } from '~/main/utils/getLatestVersion'
+import { configRouter } from './routes/config'
+import { versionRouter } from './routes/version'
+import { toolboxRouter } from './routes/toolbox'
+import { systemRouter } from './routes/system'
 
-class RPCServer {
-  start () {
-    ipcMain.on(RPC_ACTIONS, async (event: IpcMainEvent, action: IRPCActionType, args: any[], callbackId: string) => {
-      try {
-        switch (action) {
-          case IRPCActionType.GET_PICBED_CONFIG_LIST: {
-            const configList = this.getPicBedConfigList(args as IGetUploaderConfigListArgs)
-            this.sendBack(event, action, configList, callbackId)
-            break
-          }
-          case IRPCActionType.DELETE_PICBED_CONFIG: {
-            const res = this.deleteUploaderConfig(args as IDeleteUploaderConfigArgs)
-            this.sendBack(event, action, res, callbackId)
-            break
-          }
-          case IRPCActionType.SELECT_UPLOADER: {
-            this.selectUploaderConfig(args as ISelectUploaderConfigArgs)
-            this.sendBack(event, action, true, callbackId)
-            break
-          }
-          case IRPCActionType.UPDATE_UPLOADER_CONFIG: {
-            this.updateUploaderConfig(args as IUpdateUploaderConfigArgs)
-            this.sendBack(event, action, true, callbackId)
-            break
-          }
-          case IRPCActionType.GET_LATEST_VERSION: {
-            const res = await this.getLastestVersion(args as IGetLatestVersionArgs)
-            this.sendBack(event, action, res, callbackId)
-            break
-          }
-          default: {
-            this.sendBack(event, action, null, callbackId)
-            break
-          }
-        }
-      } catch (e) {
-        this.sendBack(event, action, null, callbackId)
+class RPCServer implements IRPCServer {
+  private routes: IRPCRoutes = new Map()
+
+  private rpcEventHandler = async (event: IpcMainEvent, action: IRPCActionType, args: any[], callbackId: string) => {
+    try {
+      const handler = this.routes.get(action)
+      if (!handler) {
+        return this.sendBack(event, action, null, callbackId)
       }
-    })
+      const res = await handler?.(args, event)
+      this.sendBack(event, action, res, callbackId)
+    } catch (e) {
+      this.sendBack(event, action, null, callbackId)
+    }
   }
 
   /**
    * if sendback data is null, then it means that the action is not supported or error occurs
+   * if there is no callbackId, then do not send back
    */
   private sendBack (event: IpcMainEvent, action: IRPCActionType, data: any, callbackId: string) {
-    event.sender.send(RPC_ACTIONS, data, action, callbackId)
+    if (callbackId) {
+      event.sender.send(RPC_ACTIONS, data, action, callbackId)
+    }
   }
 
-  private getPicBedConfigList (args: IGetUploaderConfigListArgs) {
-    const [type] = args
-    const config = getUploaderConfigList(type)
-    return config
+  start () {
+    ipcMain.on(RPC_ACTIONS, this.rpcEventHandler)
   }
 
-  private deleteUploaderConfig (args: IDeleteUploaderConfigArgs) {
-    const [type, id] = args
-    const config = deleteUploaderConfig(type, id)
-    return config
+  use (routes: IRPCRoutes) {
+    for (const [action, handler] of routes) {
+      this.routes.set(action, handler)
+    }
   }
 
-  private selectUploaderConfig (args: ISelectUploaderConfigArgs) {
-    const [type, id] = args
-    const config = selectUploaderConfig(type, id)
-    return config
-  }
-
-  private updateUploaderConfig (args: IUpdateUploaderConfigArgs) {
-    const [type, id, config] = args
-    const res = updateUploaderConfig(type, id, config)
-    return res
-  }
-
-  private async getLastestVersion (args: IGetLatestVersionArgs) {
-    const [isCheckBetaUpdate] = args
-    const version = await getLatestVersion(isCheckBetaUpdate)
-    return version
+  stop () {
+    ipcMain.off(RPC_ACTIONS, this.rpcEventHandler)
   }
 }
 
 const rpcServer = new RPCServer()
+
+rpcServer.use(configRouter.routes())
+rpcServer.use(versionRouter.routes())
+rpcServer.use(toolboxRouter.routes())
+rpcServer.use(systemRouter.routes())
 
 export {
   rpcServer

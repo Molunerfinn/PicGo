@@ -52,12 +52,25 @@ export enum IRemoteNoticeTriggerCount {
  * renderer trigger action from main
  */
 export enum IRPCActionType {
+  // config rpc
   GET_PICBED_CONFIG_LIST = 'GET_PICBED_CONFIG_LIST',
   DELETE_PICBED_CONFIG = 'DELETE_PICBED_CONFIG',
   CHANGE_CURRENT_UPLOADER = 'CHANGE_CURRENT_UPLOADER',
   SELECT_UPLOADER = 'SELECT_UPLOADER',
   UPDATE_UPLOADER_CONFIG = 'UPDATE_UPLOADER_CONFIG',
+
+  // version rpc
   GET_LATEST_VERSION = 'GET_LATEST_VERSION',
+
+  // toolbox rpc
+  TOOLBOX_CHECK = 'TOOLBOX_CHECK',
+  TOOLBOX_CHECK_RES = 'TOOLBOX_CHECK_RES',
+  TOOLBOX_CHECK_FIX = 'TOOLBOX_CHECK_FIX',
+
+  // system rpc
+  RELOAD_APP = 'RELOAD_APP',
+  OPEN_FILE = 'OPEN_FILE',
+  COPY_TEXT = 'COPY_TEXT'
 }
 
 export enum IToolboxItemType {
@@ -65,4 +78,11 @@ export enum IToolboxItemType {
   IS_GALLERY_FILE_BROKEN = 'IS_GALLERY_FILE_BROKEN',
   HAS_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD = 'HAS_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD',
   HAS_PROBLEM_WITH_PROXY = 'HAS_PROBLEM_WITH_PROXY',
+}
+
+export enum IToolboxItemCheckStatus {
+  INIT = 'init',
+  LOADING = 'loading',
+  SUCCESS = 'success',
+  ERROR = 'error',
 }

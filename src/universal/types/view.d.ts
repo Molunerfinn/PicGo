@@ -20,8 +20,15 @@ interface IShortKeyMap {
 }
 
 interface IToolboxItem {
-  id: import('#/types/enum').IToolboxItemType
   title: string
-  status: 'loading' | 'success' | 'error' | 'init'
-  errorTips?: string[]
+  status: import('#/types/enum').IToolboxItemCheckStatus
+  msg?: string
+  value?: any // for handler
+  hasNoFixMethod?: boolean
+  handler?: (value: any) => Promise<void> | void
+  handlerText?: string
+}
+
+type IToolboxMap = {
+  [id in import('#/types/enum').IToolboxItemType]: IToolboxItem
 }

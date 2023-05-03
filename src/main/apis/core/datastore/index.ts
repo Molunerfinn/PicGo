@@ -9,7 +9,7 @@ if (!fs.pathExistsSync(STORE_PATH)) {
   fs.mkdirpSync(STORE_PATH)
 }
 const CONFIG_PATH: string = dbPathChecker()
-const DB_PATH: string = getGalleryDBPath().dbPath
+export const DB_PATH: string = getGalleryDBPath().dbPath
 
 class ConfigStore {
   private db: JSONStore
