@@ -1,3 +1,36 @@
+# :tada: 2.4.0-beta.1 (2023-05-03)
+
+
+### :sparkles: Features
+
+* add picgo toolbox for auto detect & fix problems ([dfbc96f](https://github.com/Molunerfinn/PicGo/commit/dfbc96f))
+* add settings.encodeOutputURL options ([f75514d](https://github.com/Molunerfinn/PicGo/commit/f75514d)), closes [#731](https://github.com/Molunerfinn/PicGo/issues/731)
+* add showDockIcon option ([46f54e1](https://github.com/Molunerfinn/PicGo/commit/46f54e1)), closes [#1045](https://github.com/Molunerfinn/PicGo/issues/1045)
+* add showDockIcon option ([32eb176](https://github.com/Molunerfinn/PicGo/commit/32eb176)), closes [#1045](https://github.com/Molunerfinn/PicGo/issues/1045)
+* support dragging any type of file to upload ([520d6d3](https://github.com/Molunerfinn/PicGo/commit/520d6d3)), closes [#1052](https://github.com/Molunerfinn/PicGo/issues/1052)
+
+
+### :bug: Bug Fixes
+
+* console.log EPIPE error ([7363be7](https://github.com/Molunerfinn/PicGo/commit/7363be7)), closes [#1101](https://github.com/Molunerfinn/PicGo/issues/1101)
+* custom url template encode bug ([063962d](https://github.com/Molunerfinn/PicGo/commit/063962d)), closes [#1112](https://github.com/Molunerfinn/PicGo/issues/1112)
+* fix copy link encoding bug ([34657ae](https://github.com/Molunerfinn/PicGo/commit/34657ae)), closes [#731](https://github.com/Molunerfinn/PicGo/issues/731)
+* i18n bug ([911e34e](https://github.com/Molunerfinn/PicGo/commit/911e34e))
+* isDarkMode() error when dragging file to tray icon ([b7d2edb](https://github.com/Molunerfinn/PicGo/commit/b7d2edb)), closes [#1107](https://github.com/Molunerfinn/PicGo/issues/1107)
+* typescript nightly build bug ([455cb49](https://github.com/Molunerfinn/PicGo/commit/455cb49)), closes [#1082](https://github.com/Molunerfinn/PicGo/issues/1082)
+
+
+### :package: Chore
+
+* change version files' upload dest & dist files' upload dest ([4f392f3](https://github.com/Molunerfinn/PicGo/commit/4f392f3))
+
+
+### :pencil: Documentation
+
+* update FAQ ([6801334](https://github.com/Molunerfinn/PicGo/commit/6801334)), closes [#1067](https://github.com/Molunerfinn/PicGo/issues/1067)
+
+
+
 # :tada: 2.4.0-beta.0 (2023-01-05)
 
 
