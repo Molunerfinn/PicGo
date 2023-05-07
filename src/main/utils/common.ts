@@ -1,6 +1,7 @@
 import fs from 'fs-extra'
 import db from '~/main/apis/core/datastore'
 import { clipboard, Notification, dialog } from 'electron'
+import { handleUrlEncode } from '~/universal/utils/common'
 
 export const handleCopyUrl = (str: string): void => {
   if (db.get('settings.autoCopy') !== false) {
@@ -116,4 +117,11 @@ export const getClipboardFilePath = (): string => {
     }
   }
   return ''
+}
+
+export const handleUrlEncodeWithSetting = (url: string) => {
+  if (db.get('settings.encodeOutputURL') === true) {
+    url = handleUrlEncode(url)
+  }
+  return url
 }

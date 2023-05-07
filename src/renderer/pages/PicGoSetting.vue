@@ -663,7 +663,7 @@ async function initData () {
     form.checkBetaUpdate = settings.checkBetaUpdate === undefined ? true : settings.checkBetaUpdate
     form.useBuiltinClipboard = settings.useBuiltinClipboard === undefined ? false : settings.useBuiltinClipboard
     form.language = settings.language ?? 'zh-CN'
-    form.encodeOutputURL = settings.encodeOutputURL === undefined ? true : settings.encodeOutputURL
+    form.encodeOutputURL = settings.encodeOutputURL === undefined ? false : settings.encodeOutputURL
     currentLanguage.value = settings.language ?? 'zh-CN'
     customLink.value = settings.customLink || '$url'
     shortKey.upload = settings.shortKey.upload

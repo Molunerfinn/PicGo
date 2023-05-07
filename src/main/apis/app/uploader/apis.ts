@@ -7,8 +7,7 @@ import { IWindowList } from '#/types/enum'
 import uploader from '.'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
-import { handleCopyUrl } from '~/main/utils/common'
-import { handleUrlEncode } from '#/utils/common'
+import { handleCopyUrl, handleUrlEncodeWithSetting } from '~/main/utils/common'
 import { T } from '~/main/i18n/index'
 // import dayjs from 'dayjs'
 
@@ -44,7 +43,7 @@ export const uploadClipboardFiles = async (): Promise<string> => {
       if (windowManager.has(IWindowList.SETTING_WINDOW)) {
         windowManager.get(IWindowList.SETTING_WINDOW)!.webContents?.send('updateGallery')
       }
-      return handleUrlEncode(img[0].imgUrl as string)
+      return handleUrlEncodeWithSetting(img[0].imgUrl as string)
     } else {
       const notification = new Notification({
         title: T('UPLOAD_FAILED'),
@@ -76,7 +75,7 @@ export const uploadChoosedFiles = async (webContents: WebContents, files: IFileW
         notification.show()
       }, i * 100)
       await GalleryDB.getInstance().insert(imgs[i])
-      result.push(handleUrlEncode(imgs[i].imgUrl!))
+      result.push(handleUrlEncodeWithSetting(imgs[i].imgUrl!))
     }
     handleCopyUrl(pasteText.join('\n'))
     // trayWindow just be created in mac/windows, not in linux
