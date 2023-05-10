@@ -79,7 +79,7 @@
             <el-col :span="4">
               <div
                 class="item-base copy round"
-                :class="{ active: isMultiple(choosedList)}"
+                :class="{ active: isMultiple(choosedList) }"
                 @click="multiCopy"
               >
                 {{ $T('COPY') }}
@@ -88,7 +88,7 @@
             <el-col :span="4">
               <div
                 class="item-base delete round"
-                :class="{ active: isMultiple(choosedList)}"
+                :class="{ active: isMultiple(choosedList) }"
                 @click="multiRemove"
               >
                 {{ $T('DELETE') }}
@@ -97,7 +97,7 @@
             <el-col :span="4">
               <div
                 class="item-base all-pick round"
-                :class="{ active: filterList.length > 0}"
+                :class="{ active: filterList.length > 0 }"
                 @click="toggleSelectAll"
               >
                 {{ isAllSelected ? $T('CANCEL') : $T('SELECT_ALL') }}
@@ -187,9 +187,7 @@
       :modal-append-to-body="false"
     >
       <el-input v-model="imgInfo.imgUrl" />
-      <template
-        #footer
-      >
+      <template #footer>
         <el-button @click="dialogVisible = false">
           {{ $T('CANCEL') }}
         </el-button>
@@ -330,7 +328,12 @@ function getGallery (): IGalleryItem[] {
 }
 
 async function updateGallery () {
-  images.value = (await $$db.get({ orderBy: 'desc' })).data
+  const picBedConfig: any = await getConfig('picBed')
+  const type = picBedConfig.current
+  images.value = (await $$db.get({ orderBy: 'desc' })).data.map((item: ImgInfo) => {
+    item.imgUrl = picBedConfig[type].customUrl + '/' + item.fileName
+    return item
+  })
 }
 
 watch(() => filterList, () => {
@@ -554,6 +557,7 @@ onBeforeUnmount(() => {
 })
 
 onActivated(async () => {
+  updateGallery()
   pasteStyle.value = (await getConfig('settings.pasteStyle')) || 'markdown'
 })
 
