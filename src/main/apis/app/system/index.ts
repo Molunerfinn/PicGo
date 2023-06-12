@@ -23,6 +23,7 @@ import { buildPicBedListMenu } from '~/main/events/remotes/menu'
 let contextMenu: Menu | null
 let menu: Menu | null
 let tray: Tray | null
+// need to build new menu
 export function createContextMenu () {
   if (process.platform === 'darwin' || process.platform === 'win32') {
     const submenu = buildPicBedListMenu()
@@ -131,6 +132,7 @@ export function createContextMenu () {
       }
     ])
   }
+  return contextMenu!
 }
 
 const getTrayIcon = () => {
@@ -252,7 +254,21 @@ export function createTray () {
   }
 }
 
+export function handleDockIcon () {
+  if (process.platform === 'darwin') {
+    if (db.get('settings.showDockIcon') !== false) {
+      app.dock.show()
+      app.dock.setMenu(createContextMenu())
+    } else {
+      app.dock.hide()
+    }
+  }
+}
+
 export function createMenu () {
+  if (menu) {
+    return menu
+  }
   if (process.env.NODE_ENV !== 'development') {
     const template = [{
       label: 'Edit',

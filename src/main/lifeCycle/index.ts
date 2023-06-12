@@ -23,7 +23,7 @@ import {
   uploadClipboardFiles
 } from 'apis/app/uploader/apis'
 import {
-  createTray
+  createTray, handleDockIcon
 } from 'apis/app/system'
 import server from '~/main/server/index'
 import updateChecker from '~/main/utils/updateChecker'
@@ -36,6 +36,7 @@ import picgo from 'apis/core/picgo'
 import fixPath from './fixPath'
 import { initI18n } from '~/main/utils/handleI18n'
 import { remoteNoticeHandler } from 'apis/app/remoteNotice'
+import { isMacOS } from '../utils/getMacOSVersion'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -84,6 +85,7 @@ class LifeCycle {
       windowManager.create(IWindowList.TRAY_WINDOW)
       windowManager.create(IWindowList.SETTING_WINDOW)
       createTray()
+      handleDockIcon()
       db.set('needReload', false)
       updateChecker()
       // 不需要阻塞
@@ -129,6 +131,13 @@ class LifeCycle {
       }
       if (!windowManager.has(IWindowList.SETTING_WINDOW)) {
         windowManager.create(IWindowList.SETTING_WINDOW)
+      }
+      // click dock to open setting window
+      if (isMacOS) {
+        handleDockIcon()
+        if (db.get('settings.showDockIcon') !== false) {
+          windowManager.get(IWindowList.SETTING_WINDOW)?.show()
+        }
       }
     })
     app.setLoginItemSettings({

@@ -66,7 +66,7 @@ const config = {
         mac: {
           icon: 'build/icons/icon.icns',
           extendInfo: {
-            LSUIElement: 1
+            LSUIElement: 0
           },
           target: [{
             target: 'dmg',

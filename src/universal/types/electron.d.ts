@@ -17,3 +17,5 @@ declare interface IWindowManager {
   deleteById: (id: number) => void
   getAvailableWindow: () => BrowserWindow
 }
+
+type IpcRendererListener = (event: import('electron').IpcRendererEvent, ...args: any[]) => void

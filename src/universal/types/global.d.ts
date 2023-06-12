@@ -3,3 +3,7 @@
 declare var PICGO_GUI_VERSION: string
 declare var PICGO_CORE_VERSION: string
 declare var notificationList: IAppNotification[]
+
+declare module 'epipebomb' {
+  export default function epipebomb(stream: NodeJS.Process['stdout'], callback: () => void): void
+}

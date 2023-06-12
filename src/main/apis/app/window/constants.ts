@@ -15,3 +15,7 @@ export const MINI_WINDOW_URL = isDevelopment
 export const RENAME_WINDOW_URL = process.env.NODE_ENV === 'development'
   ? `${(process.env.WEBPACK_DEV_SERVER_URL as string)}#rename-page`
   : 'picgo://./index.html#rename-page'
+
+export const TOOLBOX_WINDOW_URL = process.env.NODE_ENV === 'development'
+  ? `${(process.env.WEBPACK_DEV_SERVER_URL as string)}#toolbox-page`
+  : 'picgo://./index.html#toolbox-page'

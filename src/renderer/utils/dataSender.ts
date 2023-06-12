@@ -49,6 +49,19 @@ export function triggerRPC<T> (action: IRPCActionType, ...args: any[]): Promise<
   })
 }
 
+/**
+ * send a rpc request & do not need to wait for the response
+ *
+ * or the response will be handled by other listener
+ */
+export function sendRPC (action: IRPCActionType, ...args: any[]): void {
+  const data = getRawData(args)
+  ipcRenderer.send(RPC_ACTIONS, action, data)
+}
+
+/**
+ * @deprecated will be replaced by sendRPC in the future
+ */
 export function sendToMain (channel: string, ...args: any[]) {
   const data = getRawData(args)
   ipcRenderer.send(channel, ...data)

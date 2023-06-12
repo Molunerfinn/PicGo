@@ -25,7 +25,6 @@ import {
   SHOW_UPLOAD_PAGE_MENU,
   OPEN_USER_STORE_FILE,
   OPEN_URL,
-  RELOAD_APP,
   SHOW_PLUGIN_PAGE_MENU,
   SET_MINI_WINDOW_POS,
   GET_PICBEDS
@@ -217,10 +216,6 @@ export default {
     })
     ipcMain.on(OPEN_URL, (evt: IpcMainEvent, url: string) => {
       shell.openExternal(url)
-    })
-    ipcMain.on(RELOAD_APP, () => {
-      app.relaunch()
-      app.exit(0)
     })
     ipcMain.on(SET_MINI_WINDOW_POS, (evt: IpcMainEvent, pos: IMiniWindowPos) => {
       const window = BrowserWindow.getFocusedWindow()
