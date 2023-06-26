@@ -119,6 +119,7 @@ import { ipcRenderer, IpcRendererEvent } from 'electron'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { onBeforeUnmount, onBeforeMount, ref, watch } from 'vue'
 import { getConfig, sendToMain } from '@/utils/dataSender'
+import { T as $T } from '@/i18n/index'
 
 const list = ref<IShortKeyConfig[]>([])
 const keyBindingVisible = ref(false)

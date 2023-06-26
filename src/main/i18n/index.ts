@@ -7,14 +7,14 @@ import { builtinI18nList } from '#/i18n'
 class I18nManager {
   private i18n: I18n | null = null
   private builtinI18nFolder = path.join(__static, 'i18n')
-  private outterI18nFolder = ''
+  private outerI18nFolder = ''
   private localesMap: Map<string, ILocales> = new Map()
   private currentLanguage: string = 'zh-CN'
   readonly defaultLanguage: string = 'zh-CN'
   private i18nFileList: II18nItem[] = builtinI18nList
 
-  setOutterI18nFolder (folder: string) {
-    this.outterI18nFolder = folder
+  setOuterI18nFolder (folder: string) {
+    this.outerI18nFolder = folder
   }
 
   addI18nFile (file: string, label: string) {
@@ -30,7 +30,7 @@ class I18nManager {
     }
     let localesPath = path.join(this.builtinI18nFolder, `${lang}.yml`)
     if (!fs.existsSync(localesPath)) {
-      localesPath = path.join(this.outterI18nFolder, `${lang}.yml`)
+      localesPath = path.join(this.outerI18nFolder, `${lang}.yml`)
       if (!fs.existsSync(localesPath)) {
         localesPath = path.join(this.builtinI18nFolder, `${this.defaultLanguage}.yml`)
       }

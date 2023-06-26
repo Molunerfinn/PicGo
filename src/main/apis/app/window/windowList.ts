@@ -5,13 +5,12 @@ import {
   RENAME_WINDOW_URL,
   TOOLBOX_WINDOW_URL
 } from './constants'
-import { IRemoteNoticeTriggerHook, IWindowList } from '#/types/enum'
+import { IWindowList } from '#/types/enum'
 import bus from '@core/bus'
 import { CREATE_APP_MENU } from '@core/bus/constants'
 import db from '~/main/apis/core/datastore'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { app } from 'electron'
-import { remoteNoticeHandler } from '../remoteNotice'
 import { T } from '~/main/i18n'
 // import { URLSearchParams } from 'url'
 
@@ -93,9 +92,6 @@ windowList.set(IWindowList.SETTING_WINDOW, {
     return options
   },
   callback (window, windowManager) {
-    window.once('show', () => {
-      remoteNoticeHandler.triggerHook(IRemoteNoticeTriggerHook.SETTING_WINDOW_OPEN)
-    })
     window.loadURL(handleWindowParams(SETTING_WINDOW_URL))
     window.on('closed', () => {
       bus.emit(TOGGLE_SHORTKEY_MODIFIED_MODE, false)
@@ -132,7 +128,7 @@ windowList.set(IWindowList.MINI_WINDOW, {
       }
     }
 
-    if (db.get('settings.miniWindowOntop')) {
+    if (db.get('settings.miniWindowOnTop')) {
       obj.alwaysOnTop = true
     }
     return obj

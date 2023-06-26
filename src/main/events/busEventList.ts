@@ -21,7 +21,6 @@ import {
 } from '@core/bus/constants'
 function initEventCenter () {
   const eventList: any = {
-    'picgo:upload': uploadClipboardFiles,
     [UPLOAD_WITH_CLIPBOARD_FILES]: busCallUploadClipboardFiles,
     [UPLOAD_WITH_FILES]: busCallUploadFiles,
     [GET_WINDOW_ID]: busCallGetWindowId,

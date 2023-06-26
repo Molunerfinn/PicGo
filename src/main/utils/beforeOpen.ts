@@ -88,7 +88,7 @@ function resolveOtherI18nFiles () {
   if (!fs.pathExistsSync(i18nFolder)) {
     fs.mkdirSync(i18nFolder)
   }
-  i18nManager.setOutterI18nFolder(i18nFolder)
+  i18nManager.setOuterI18nFolder(i18nFolder)
   const i18nFiles = fs.readdirSync(path.join(CONFIG_DIR, 'i18n'), {
     withFileTypes: true
   })

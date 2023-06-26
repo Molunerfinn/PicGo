@@ -83,7 +83,10 @@ class LifeCycle {
         }
       }
       windowManager.create(IWindowList.TRAY_WINDOW)
-      windowManager.create(IWindowList.SETTING_WINDOW)
+      const settingWindow = windowManager.create(IWindowList.SETTING_WINDOW)
+      settingWindow?.once('show', () => {
+        remoteNoticeHandler.triggerHook(IRemoteNoticeTriggerHook.SETTING_WINDOW_OPEN)
+      })
       createTray()
       handleDockIcon()
       db.set('needReload', false)

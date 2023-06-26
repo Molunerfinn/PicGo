@@ -1,3 +1,4 @@
+import './renderer/assets/css/tailwind.css'
 import { createApp } from 'vue'
 import App from './renderer/App.vue'
 import router from './renderer/router'

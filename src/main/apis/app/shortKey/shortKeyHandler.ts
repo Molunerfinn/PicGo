@@ -8,6 +8,8 @@ import db from '~/main/apis/core/datastore'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import shortKeyService from './shortKeyService'
 import picgo from '@core/picgo'
+import { BuiltinShortKeyMap } from './builtin'
+import { SHORTKEY_BUILTIN_PREFIX } from '../../core/bus/constants'
 
 class ShortKeyHandler {
   private isInModifiedMode: boolean = false
@@ -29,10 +31,14 @@ class ShortKeyHandler {
       .forEach(command => {
         const config = commands[command]
         // if disabled, don't register #534
+        logger.info(`register builtin shortKey command: [${command}] - [${config.key}]`)
         if (config.enable) {
+          logger.info(`register builtin shortKey command: [${command}] - [${config.key}] successfully`)
           globalShortcut.register(config.key, () => {
             this.handler(command)
           })
+        } else {
+          logger.warn(`builtin shortKey command: [${command}] - [${config.key}] register failed, it's disabled`)
         }
       })
   }
@@ -76,7 +82,7 @@ class ShortKeyHandler {
     } else {
       logger.warn(`${command} do not provide a key to bind`)
     }
-    // if the configfile already had this command
+    // if the config file already had this command
     // then writeFlag -> false
     if (writeFlag) {
       picgo.saveConfig({
@@ -130,17 +136,25 @@ class ShortKeyHandler {
 
   private async handler (command: string) {
     if (this.isInModifiedMode) {
+      logger.warn(`in modified mode, ignore shortKey command: [${command}]`)
       return
     }
-    if (command.includes('picgo:')) {
-      bus.emit(command)
+    if (command.includes(SHORTKEY_BUILTIN_PREFIX)) {
+      const handler = BuiltinShortKeyMap[command]
+      if (handler) {
+        logger.info(`get builtin shortKey handler for command: [${command}]`)
+        return handler()
+      } else {
+        logger.warn(`can't find builtin shortKey handler for command: [${command}]`)
+      }
     } else if (command.includes('picgo-plugin-')) {
       const handler = shortKeyService.getShortKeyHandler(command)
       if (handler) {
+        logger.info(`get plugin shortKey handler for command: [${command}]`)
         return handler(picgo, GuiApi.getInstance())
       }
     } else {
-      logger.warn(`can not find command: ${command}`)
+      logger.warn(`can not find command: [${command}]`)
     }
   }
 

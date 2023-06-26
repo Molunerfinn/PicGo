@@ -2,7 +2,7 @@
   <el-form-item>
     <template #label>
       <el-row align="middle">
-        {{ props.settingText }}
+        {{ props.label }}
         <template v-if="props.tooltips">
           <el-tooltip
             class="item"
@@ -10,7 +10,7 @@
             :content="props.tooltips"
             placement="right"
           >
-            <el-icon style="margin-left: 4px">
+            <el-icon class="ml-[4px] cursor-pointer hover:text-blue">
               <QuestionFilled />
             </el-icon>
           </el-tooltip>
@@ -28,37 +28,35 @@
 <script lang="ts" setup>
 import { T as $T } from '@/i18n'
 import { saveConfig } from '@/utils/dataSender'
-import { ref, watch } from 'vue'
 import { QuestionFilled } from '@element-plus/icons-vue'
+import { showNotification } from '@/utils/common'
+import { useVModel } from '@/hooks/useVModel'
 
 interface IProps {
   tooltips?: string
-  settingProps: string
-  settingText: string
-  defaultValue: boolean
+  settingProps: keyof ISettingForm
+  label: string
+  modelValue: boolean
 }
 
 const props = defineProps<IProps>()
 
-// to fix v-model blank bug
-watch(() => props.defaultValue, (v) => {
-  value.value = v
-})
+const emit = defineEmits(['update:modelValue', 'change'])
 
-const value = ref<boolean>(props.defaultValue)
-const emit = defineEmits(['change'])
+const value = useVModel(props, 'modelValue')
 
-const handleChange = (val: ICheckBoxValueType) => {
-  saveConfig(props.settingProps, val)
-  emit('change', val)
+const handleChange = (value: ISwitchValueType) => {
+  saveConfig(`settings.${props.settingProps}`, value)
+  emit('update:modelValue', value)
+  emit('change', value)
+  showNotification(props.label, $T('TIPS_SET_SUCCEED'))
 }
 
 </script>
 <script lang="ts">
 export default {
-  name: 'CheckboxFormItem'
+  name: 'SwitchFormItem'
 }
-
 </script>
 <style lang='stylus'>
 </style>

@@ -5,7 +5,7 @@
         :span="20"
         :offset="2"
       >
-        <div class="view-title">
+        <div class="view-title text-[22px]">
           {{ $T('PICTURE_UPLOAD') }} - {{ picBedName }}
           <el-icon
             style="cursor: pointer; margin-left: 4px;"

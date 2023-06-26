@@ -1,11 +1,11 @@
 interface ISettingForm {
-  updateHelper: boolean
+  showUpdateTip: boolean
   showPicBedList: string[]
   autoStart: boolean
   rename: boolean
   autoRename: boolean
   uploadNotification: boolean
-  miniWindowOntop: boolean
+  miniWindowOnTop: boolean
   logLevel: string[]
   autoCopyUrl: boolean
   checkBetaUpdate: boolean
@@ -14,6 +14,14 @@ interface ISettingForm {
   logFileSizeLimit: number
   encodeOutputURL: boolean
   showDockIcon: boolean
+  customLink: string
+  npmProxy: string
+  npmRegistry: string
+  server: {
+    port: number
+    host: string
+    enable: boolean
+  }
 }
 
 interface IShortKeyMap {

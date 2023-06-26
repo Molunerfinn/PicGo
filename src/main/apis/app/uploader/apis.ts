@@ -9,6 +9,7 @@ import pasteTemplate from '~/main/utils/pasteTemplate'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
 import { handleCopyUrl, handleUrlEncodeWithSetting } from '~/main/utils/common'
 import { T } from '~/main/i18n/index'
+import logger from '@core/picgo/logger'
 // import dayjs from 'dayjs'
 
 const handleClipboardUploading = async (): Promise<false | ImgInfo[]> => {
@@ -21,8 +22,8 @@ const handleClipboardUploading = async (): Promise<false | ImgInfo[]> => {
 }
 
 export const uploadClipboardFiles = async (): Promise<string> => {
+  logger.info('upload clipboard file')
   const img = await handleClipboardUploading()
-  console.log(img)
   if (img !== false) {
     if (img.length > 0) {
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)

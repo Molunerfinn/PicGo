@@ -1,4 +1,7 @@
 // global
+
+type FN = (...args: any) => any
+
 interface IObj {
   [propName: string]: any
 }
@@ -430,4 +433,4 @@ interface IUploaderConfigItem {
 
 type IUploaderConfigListItem = IStringKeyMap & IUploaderListItemMetaInfo
 
-type ICheckBoxValueType = boolean | string | number
+type ISwitchValueType = boolean | string | number

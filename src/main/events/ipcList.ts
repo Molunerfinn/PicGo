@@ -137,7 +137,7 @@ export default {
       const miniWindow = windowManager.get(IWindowList.MINI_WINDOW)!
       const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)!
 
-      if (db.get('settings.miniWindowOntop')) {
+      if (db.get('settings.miniWindowOnTop')) {
         miniWindow.setAlwaysOnTop(true)
       }
 

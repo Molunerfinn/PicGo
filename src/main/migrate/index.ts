@@ -4,6 +4,7 @@ import path from 'path'
 import fse from 'fs-extra'
 import { PicGo as PicGoCore } from 'picgo'
 import { T } from '~/main/i18n'
+import { SHORTKEY_COMMAND_UPLOAD } from 'apis/core/bus/constants'
 // from v2.1.2
 const updateShortKeyFromVersion212 = (db: typeof ConfigStore, shortKeyConfig: IShortKeyConfigs | IOldShortKeyConfigs) => {
   // #557 极端情况可能会出现配置不存在，需要重新写入
@@ -19,7 +20,7 @@ const updateShortKeyFromVersion212 = (db: typeof ConfigStore, shortKeyConfig: IS
   }
   if (shortKeyConfig.upload) {
     // @ts-ignore
-    shortKeyConfig['picgo:upload'] = {
+    shortKeyConfig[SHORTKEY_COMMAND_UPLOAD] = {
       enable: true,
       key: shortKeyConfig.upload,
       name: 'upload',
