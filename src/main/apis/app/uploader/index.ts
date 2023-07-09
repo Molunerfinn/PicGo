@@ -13,7 +13,7 @@ import { IWindowList } from '#/types/enum'
 import util from 'util'
 import { IPicGo } from 'picgo'
 import { showNotification, calcDurationRange, getClipboardFilePath } from '~/main/utils/common'
-import { RENAME_FILE_NAME, TALKING_DATA_EVENT } from '~/universal/events/constants'
+import { GET_RENAME_FILE_NAME, RENAME_FILE_NAME, TALKING_DATA_EVENT } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
 import { T } from '~/main/i18n'
 import fse from 'fs-extra'
@@ -21,14 +21,6 @@ import path from 'path'
 import { privacyManager } from '~/main/utils/privacyManager'
 import writeFile from 'write-file-atomic'
 import { CLIPBOARD_IMAGE_FOLDER } from '~/universal/utils/static'
-
-const waitForShow = (webcontent: WebContents) => {
-  return new Promise<void>((resolve) => {
-    webcontent.on('did-finish-load', () => {
-      resolve()
-    })
-  })
-}
 
 const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> => {
   return new Promise((resolve) => {
@@ -99,8 +91,13 @@ class Uploader {
             }
             if (rename) {
               const window = windowManager.create(IWindowList.RENAME_WINDOW)!
-              await waitForShow(window.webContents)
-              window.webContents.send(RENAME_FILE_NAME, fileName, item.fileName, window.webContents.id)
+              logger.info('wait for rename window ready...')
+              ipcMain.on(GET_RENAME_FILE_NAME, (evt) => {
+                if (evt.sender.id === window.webContents.id) {
+                  logger.info('rename window ready, wait for rename...')
+                  window.webContents.send(RENAME_FILE_NAME, fileName, item.fileName, window.webContents.id)
+                }
+              })
               name = await waitForRename(window, window.webContents.id)
             }
             item.fileName = name || fileName
@@ -177,6 +174,8 @@ class Uploader {
         })
       }, 500)
       return false
+    } finally {
+      ipcMain.removeAllListeners(GET_RENAME_FILE_NAME)
     }
   }
 }
