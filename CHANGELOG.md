@@ -1,3 +1,12 @@
+# :tada: 2.4.0-beta.2 (2023-07-09)
+
+
+### :bug: Bug Fixes
+
+* fileName encode bug ([8d9a400](https://github.com/Molunerfinn/PicGo/commit/8d9a400)), closes [#1121](https://github.com/Molunerfinn/PicGo/issues/1121)
+
+
+
 # :tada: 2.4.0-beta.1 (2023-05-03)
 
 
