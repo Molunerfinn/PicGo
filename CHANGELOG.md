@@ -1,3 +1,13 @@
+# :tada: 2.4.0-beta.3 (2023-07-09)
+
+
+### :bug: Bug Fixes
+
+* rename page bug ([bc2e928](https://github.com/Molunerfinn/PicGo/commit/bc2e928)), closes [#1130](https://github.com/Molunerfinn/PicGo/issues/1130)
+* tailwind css bug ([e3566b5](https://github.com/Molunerfinn/PicGo/commit/e3566b5))
+
+
+
 # :tada: 2.4.0-beta.2 (2023-07-09)
 
 
