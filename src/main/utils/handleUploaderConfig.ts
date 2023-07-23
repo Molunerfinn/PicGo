@@ -1,6 +1,6 @@
-import { uuid } from 'uuidv4'
 import { trimValues } from '#/utils/common'
 import picgo from '@core/picgo'
+import { v4 as uuid } from 'uuid'
 
 export const handleConfigWithFunction = (config: IPicGoPluginOriginConfig[]): IPicGoPluginConfig[] => {
   for (const i in config) {

@@ -6,7 +6,7 @@
         :offset="2"
       >
         <div class="view-title text-[22px]">
-          {{ $T('PICTURE_UPLOAD') }} - {{ picBedName }}
+          {{ $T('PICTURE_UPLOAD') }} - {{ picBedName }} - {{ configName }}
           <el-icon
             style="cursor: pointer; margin-left: 4px;"
             @click="handleChangePicBed"
@@ -23,7 +23,7 @@
         >
           <div
             id="upload-dragger"
-            @click="openUplodWindow"
+            @click="openUploadWindow"
           >
             <el-icon>
               <UploadFilled />
@@ -100,25 +100,25 @@
 </template>
 <script lang="ts" setup>
 // import { Component, Vue, Watch } from 'vue-property-decorator'
-import { UploadFilled, CaretBottom } from '@element-plus/icons-vue'
-import {
-  ipcRenderer,
-  IpcRendererEvent
-} from 'electron'
-import { ref, onBeforeMount, onBeforeUnmount, watch } from 'vue'
 import { T as $T } from '@/i18n'
 import $bus from '@/utils/bus'
+import { getConfig, saveConfig, sendToMain } from '@/utils/dataSender'
+import { CaretBottom, UploadFilled } from '@element-plus/icons-vue'
 import {
+  IpcRendererEvent,
+  ipcRenderer
+} from 'electron'
+import { ElMessage as $message } from 'element-plus'
+import { onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
+import {
+  GET_PICBEDS,
   SHOW_INPUT_BOX,
   SHOW_INPUT_BOX_RESPONSE,
-  SHOW_UPLOAD_PAGE_MENU,
-  GET_PICBEDS
+  SHOW_UPLOAD_PAGE_MENU
 } from '~/universal/events/constants'
 import {
   isUrl
 } from '~/universal/utils/common'
-import { ElMessage as $message } from 'element-plus'
-import { getConfig, saveConfig, sendToMain } from '@/utils/dataSender'
 const dragover = ref(false)
 const progress = ref(0)
 const showProgress = ref(false)
@@ -126,6 +126,7 @@ const showError = ref(false)
 const pasteStyle = ref('')
 const picBed = ref<IPicBedType[]>([])
 const picBedName = ref('')
+const configName = ref('')
 onBeforeMount(() => {
   ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, _progress: number) => {
     if (_progress !== -1) {
@@ -205,7 +206,7 @@ function handleURLDrag (items: DataTransferItemList, dataTransfer: DataTransfer)
   }
 }
 
-function openUplodWindow () {
+function openUploadWindow () {
   document.getElementById('file-uploader')!.click()
 }
 
@@ -262,11 +263,13 @@ function handleInputBoxValue (val: string) {
 
 async function getDefaultPicBed () {
   const currentPicBed = await getConfig<string>('picBed.current')
+  const currentConfigName = await getConfig<string>(`picBed.${currentPicBed}._configName`) || 'Default'
   picBed.value.forEach(item => {
     if (item.type === currentPicBed) {
       picBedName.value = item.name
     }
   })
+  configName.value = currentConfigName
 }
 
 function getPicBeds (event: Event, picBeds: IPicBedType[]) {
