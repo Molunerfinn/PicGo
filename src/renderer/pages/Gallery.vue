@@ -83,6 +83,7 @@
               @multi-copy="multiCopy"
               @multi-remove="multiRemove"
               @toggle-select-all="toggleSelectAll"
+              @select-more="selectMore"
             />
           </el-row>
         </el-col>
@@ -438,6 +439,10 @@ function toggleSelectAll () {
   })
 }
 
+function selectMore () {
+  // TODO: select more menus
+}
+
 function multiRemove () {
   // selectedList -> { [id]: true or false }; true means selected. false means not selected.
   const multiRemoveNumber = Object.values(selectedList).filter(item => item).length
@@ -555,36 +560,6 @@ export default {
   height 100%
   .cursor-pointer
     cursor pointer
-.item-base
-  background #2E2E2E
-  text-align center
-  padding 5px 0
-  cursor pointer
-  font-size 13px
-  transition all .2s ease-in-out
-  height: 28px
-  box-sizing: border-box
-  &.copy
-    cursor not-allowed
-    background #49B1F5
-    &.active
-      cursor pointer
-      background #1B9EF3
-      color #fff
-  &.delete
-    cursor not-allowed
-    background #F47466
-    &.active
-      cursor pointer
-      background #F15140
-      color #fff
-  &.all-pick
-    cursor not-allowed
-    background #69C282
-    &.active
-      cursor pointer
-      background #44B363
-      color #fff
 #gallery-view
   position relative
   .round
