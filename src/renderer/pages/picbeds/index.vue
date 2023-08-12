@@ -81,6 +81,12 @@ const handleConfirm = async () => {
 }
 
 function getPicBeds (event: IpcRendererEvent, _config: IPicGoPluginConfig[], name: string) {
+  _config.push({
+    alias: '极智压缩',
+    name: 'compress',
+    type: 'switch',
+    required: false
+  })
   config.value = _config
   picBedName.value = name
 }
