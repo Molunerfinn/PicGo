@@ -2,7 +2,7 @@
   <ButtonFormItem
     :label="$T('SETTINGS_OPEN_CONFIG_FILE')"
     :button-label="$T('SETTINGS_CLICK_TO_OPEN')"
-    @click="openFile('picgo.log')"
+    @click="openFile('data.json')"
   />
   <ButtonFormItem
     :label="$T('SETTINGS_SET_LOG_FILE')"
