@@ -64,9 +64,20 @@
         <el-switch
           v-else-if="item.type === 'confirm'"
           v-model="ruleForm[item.name]"
-          active-text="yes"
-          inactive-text="no"
+          :active-text="item.confirmText || 'yes'"
+          :inactive-text="item.cancelText || 'no'"
         />
+        <div v-if="item.tips" class="common-tips" @mouseenter="() => isHoverTips = true" @mouseleave="() => isHoverTips = false">
+            <el-tooltip
+              :content="item.tips"
+              placement="top"
+              raw-content
+              effect="light"
+            >
+              <el-button v-if="isHoverTips" type="primary" :icon="Warning" circle />
+              <el-button v-if="!isHoverTips" type="info" :icon="Warning" circle />
+            </el-tooltip>
+          </div>
       </el-form-item>
       <slot />
     </el-form>
@@ -78,6 +89,7 @@ import { cloneDeep, union } from 'lodash'
 import { getConfig } from '@/utils/dataSender'
 import { useRoute } from 'vue-router'
 import type { FormInstance } from 'element-plus'
+import { Warning } from '@element-plus/icons-vue'
 
 interface IProps {
   config: any[]
@@ -89,7 +101,7 @@ interface IProps {
 const props = defineProps<IProps>()
 const $route = useRoute()
 const $form = ref<FormInstance>()
-
+const isHoverTips = ref(false)
 const configList = ref<IPicGoPluginConfig[]>([])
 const ruleForm = reactive<IStringKeyMap>({})
 
@@ -198,4 +210,7 @@ defineExpose({
   &.white
     .el-form-item
       border-bottom 1px solid #ddd
+  .common-tips
+    margin-left 10px
+    display inline-block
 </style>
