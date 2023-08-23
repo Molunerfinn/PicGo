@@ -67,14 +67,15 @@
             active-text="开启"
             inactive-text="关闭"
           />
-          <div class="tcyun-tips">
+          <div class="tcyun-tips" @mouseenter="() => isHoverTips = true" @mouseleave="() => isHoverTips = false">
             <el-tooltip
               content="<div>图片极智压缩，详情请参考<a target='_blank' href='https://cloud.tencent.com/document/product/436/49259'>文档说明</a></div>"
               placement="top"
               raw-content
               effect="light"
             >
-            <el-button type="primary" :icon="Warning" circle />
+            <el-button v-if="isHoverTips" type="primary" :icon="Warning" circle />
+            <el-button v-if="!isHoverTips" type="info" :icon="Warning" circle />
           </el-tooltip>
           </div>
         </div>
@@ -107,7 +108,7 @@ interface IProps {
 const props = defineProps<IProps>()
 const $route = useRoute()
 const $form = ref<FormInstance>()
-
+const isHoverTips = ref(false)
 const configList = ref<IPicGoPluginConfig[]>([])
 const ruleForm = reactive<IStringKeyMap>({})
 
