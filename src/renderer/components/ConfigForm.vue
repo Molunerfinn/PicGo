@@ -67,7 +67,7 @@
           :active-text="item.confirmText || 'yes'"
           :inactive-text="item.cancelText || 'no'"
         />
-        <div v-if="item.tips" class="tcyun-tips" @mouseenter="() => isHoverTips = true" @mouseleave="() => isHoverTips = false">
+        <div v-if="item.tips" class="common-tips" @mouseenter="() => isHoverTips = true" @mouseleave="() => isHoverTips = false">
             <el-tooltip
               :content="item.tips"
               placement="top"
@@ -210,7 +210,7 @@ defineExpose({
   &.white
     .el-form-item
       border-bottom 1px solid #ddd
-  .tcyun-tips
+  .common-tips
     margin-left 10px
     display inline-block
 </style>
