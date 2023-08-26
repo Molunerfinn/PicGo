@@ -15,7 +15,7 @@ declare module 'vue/types/vue' {
   }
 }
 
-declare module '@vue/runtime-core' {
+declare module 'vue' {
   interface ComponentCustomProperties {
     $http: typeof axios
     $builtInPicBed: string[]

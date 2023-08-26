@@ -8980,6 +8980,11 @@ map-obj@^4.0.0:
   resolved "https://registry.npmjs.org/map-obj/-/map-obj-4.3.0.tgz#9304f906e93faae70880da102a9f1df0ea8bb05a"
   integrity sha512-hdN1wVrZbb29eBGiGjJbeP8JbKjq1urkHJ/LIP/NY48MZ1QVXUsQBV1G1zvYFHn1XE06cwjBsOI2K3Ulnj1YXQ==
 
+marked@^7.0.4:
+  version "7.0.4"
+  resolved "https://registry.npmmirror.com/marked/-/marked-7.0.4.tgz#e2558ee2d535b9df6a27c6e282dc603a18388a6d"
+  integrity sha512-t8eP0dXRJMtMvBojtkcsA7n48BkauktUKzfkPSCq85ZMTJ0v76Rke4DYz01omYpPTUh4p/f7HePgRo3ebG8+QQ==
+
 matcher@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/matcher/-/matcher-3.0.0.tgz#bd9060f4c5b70aa8041ccc6f80368760994f30ca"
@@ -9965,10 +9970,10 @@ pend@~1.2.0:
   resolved "https://registry.npmjs.org/pend/-/pend-1.2.0.tgz#7a57eb550a6783f9115331fcf4663d5c8e007a50"
   integrity sha1-elfrVQpng/kRUzH89GY9XI4AelA=
 
-picgo@^1.5.4:
-  version "1.5.4"
-  resolved "https://registry.yarnpkg.com/picgo/-/picgo-1.5.4.tgz#3c15b8a82b7941db2aa9535d7acf8384be4c47d5"
-  integrity sha512-lU4WmYsqyhIiXvSlROv+iPxgGzupbMJENYhsHNtnScMogH4DHnmiqCWTylVsW2EqW7qQANDv9G9vgnuUkNShYA==
+picgo@^1.5.5:
+  version "1.5.5"
+  resolved "https://registry.npmmirror.com/picgo/-/picgo-1.5.5.tgz#fa9a5d07d3552036c2cc8b1455bec1c3a2086183"
+  integrity sha512-GSfDVR+b6SgibYDQ0eqNKmhmiMWDyNVppq+qKNKyf38VATX/U0ompSS2XgoPAn8Lr7pTddbXgqxfmFiLLXN7LA==
   dependencies:
     "@picgo/i18n" "^1.0.0"
     "@picgo/store" "^2.0.2"

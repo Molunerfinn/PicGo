@@ -11,6 +11,9 @@ import { getConfig } from './utils/dataSender'
 import type { IConfig } from 'picgo'
 import bus from './utils/bus'
 import { FORCE_UPDATE } from '~/universal/events/constants'
+import { useATagClick } from './hooks/useATagClick'
+
+useATagClick()
 
 const store = useStore()
 onBeforeMount(async () => {

@@ -165,6 +165,8 @@ interface IPicGoPluginConfig {
     name?: string
     value?: any
   }[]
+  /** support markdown */
+  tips?: string
   [propName: string]: any
 }
 

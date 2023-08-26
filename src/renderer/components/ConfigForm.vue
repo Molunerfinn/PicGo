@@ -25,10 +25,31 @@
       <el-form-item
         v-for="(item, index) in configList"
         :key="item.name + index"
-        :label="item.alias || item.name"
         :required="item.required"
         :prop="item.name"
       >
+        <template #label>
+          <el-row align="middle">
+            {{ item.alias || item.name }}
+            <template v-if="item.tips">
+              <el-tooltip
+                class="item"
+                effect="dark"
+                placement="right"
+              >
+                <template #content>
+                  <span
+                    class="config-form-common-tips"
+                    v-html="transformMarkdownToHTML(item.tips)"
+                  />
+                </template>
+                <el-icon class="ml-[4px] cursor-pointer hover:text-blue">
+                  <QuestionFilled />
+                </el-icon>
+              </el-tooltip>
+            </template>
+          </el-row>
+        </template>
         <el-input
           v-if="item.type === 'input' || item.type === 'password'"
           v-model="ruleForm[item.name]"
@@ -67,17 +88,6 @@
           :active-text="item.confirmText || 'yes'"
           :inactive-text="item.cancelText || 'no'"
         />
-        <div v-if="item.tips" class="common-tips" @mouseenter="() => isHoverTips = true" @mouseleave="() => isHoverTips = false">
-            <el-tooltip
-              :content="item.tips"
-              placement="top"
-              raw-content
-              effect="light"
-            >
-              <el-button v-if="isHoverTips" type="primary" :icon="Warning" circle />
-              <el-button v-if="!isHoverTips" type="info" :icon="Warning" circle />
-            </el-tooltip>
-          </div>
       </el-form-item>
       <slot />
     </el-form>
@@ -89,7 +99,8 @@ import { cloneDeep, union } from 'lodash'
 import { getConfig } from '@/utils/dataSender'
 import { useRoute } from 'vue-router'
 import type { FormInstance } from 'element-plus'
-import { Warning } from '@element-plus/icons-vue'
+import { QuestionFilled } from '@element-plus/icons-vue'
+import { marked } from 'marked'
 
 interface IProps {
   config: any[]
@@ -101,7 +112,6 @@ interface IProps {
 const props = defineProps<IProps>()
 const $route = useRoute()
 const $form = ref<FormInstance>()
-const isHoverTips = ref(false)
 const configList = ref<IPicGoPluginConfig[]>([])
 const ruleForm = reactive<IStringKeyMap>({})
 
@@ -145,6 +155,14 @@ function getConfigType () {
   }
 }
 
+function transformMarkdownToHTML (markdown: string) {
+  try {
+    return marked.parse(markdown)
+  } catch (e) {
+    return markdown
+  }
+}
+
 async function handleConfig (val: IPicGoPluginConfig[]) {
   const config = await getCurConfigFormData()
   const configId = $route.params.configId
@@ -184,6 +202,10 @@ defineExpose({
 })
 </script>
 <style lang='stylus'>
+.config-form-common-tips
+  a
+    color #409EFF
+    text-decoration none
 #config-form
   .el-form
     label
@@ -210,7 +232,4 @@ defineExpose({
   &.white
     .el-form-item
       border-bottom 1px solid #ddd
-  .common-tips
-    margin-left 10px
-    display inline-block
 </style>
