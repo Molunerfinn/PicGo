@@ -1,3 +1,19 @@
+# :tada: 2.4.0-beta.4 (2023-08-26)
+
+
+### :sparkles: Features
+
+* add configName for upload page ([894d0a2](https://github.com/Molunerfinn/PicGo/commit/894d0a2))
+* support "tips" option for uploader ([1b92f20](https://github.com/Molunerfinn/PicGo/commit/1b92f20))
+* **tcyun:** add slim section ([#1165](https://github.com/Molunerfinn/PicGo/issues/1165)) ([a2320c3](https://github.com/Molunerfinn/PicGo/commit/a2320c3))
+
+
+### :bug: Bug Fixes
+
+* open config file bug ([2db0fea](https://github.com/Molunerfinn/PicGo/commit/2db0fea)), closes [#1163](https://github.com/Molunerfinn/PicGo/issues/1163)
+
+
+
 # :tada: 2.4.0-beta.3 (2023-07-09)
 
 
