@@ -72,6 +72,10 @@ export enum IRPCActionType {
   OPEN_FILE = 'OPEN_FILE',
   COPY_TEXT = 'COPY_TEXT',
   SHOW_DOCK_ICON = 'SHOW_DOCK_ICON',
+
+  // gallery toolbox rpc
+  GET_GALLERY_MENU_LIST = 'GET_GALLERY_MENU_LIST',
+  OPEN_CHANGE_HOST_DIALOG = 'OPEN_CHANGE_HOST_DIALOG',
 }
 
 export enum IToolboxItemType {

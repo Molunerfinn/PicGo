@@ -196,11 +196,12 @@ import {
   IpcRendererEvent
 } from 'electron'
 import { computed, nextTick, onActivated, onBeforeUnmount, onBeforeMount, reactive, ref, watch } from 'vue'
-import { getConfig, saveConfig, sendToMain } from '@/utils/dataSender'
+import { getConfig, saveConfig, sendToMain, triggerRPC } from '@/utils/dataSender'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { T as $T } from '@/i18n/index'
 import $$db from '@/utils/db'
 import GalleryToolbar from './components/gallery/GalleryToolbar.vue'
+import { IRPCActionType } from '~/universal/types/enum'
 const images = ref<ImgInfo[]>([])
 const dialogVisible = ref(false)
 const imgInfo = reactive({
@@ -440,7 +441,7 @@ function toggleSelectAll () {
 }
 
 function selectMore () {
-  // TODO: select more menus
+  triggerRPC(IRPCActionType.GET_GALLERY_MENU_LIST)
 }
 
 function multiRemove () {

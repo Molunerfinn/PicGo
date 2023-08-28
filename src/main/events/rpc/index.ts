@@ -5,6 +5,7 @@ import { configRouter } from './routes/config'
 import { versionRouter } from './routes/version'
 import { toolboxRouter } from './routes/toolbox'
 import { systemRouter } from './routes/system'
+import { galleryToolboxRouter } from './routes/galleryToolbox'
 
 class RPCServer implements IRPCServer {
   private routes: IRPCRoutes = new Map()
@@ -53,6 +54,7 @@ rpcServer.use(configRouter.routes())
 rpcServer.use(versionRouter.routes())
 rpcServer.use(toolboxRouter.routes())
 rpcServer.use(systemRouter.routes())
+rpcServer.use(galleryToolboxRouter.routes())
 
 export {
   rpcServer
