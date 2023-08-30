@@ -32,11 +32,13 @@
         </el-icon>
       </div>
     </div>
+    <GalleryChangeHostDialog />
   </el-col>
 </template>
 <script lang="ts" setup>
 import { T as $T } from '@/i18n'
 import { MoreFilled } from '@element-plus/icons-vue'
+import GalleryChangeHostDialog from './GalleryChangeHostDialog.vue'
 
 interface IProps {
   selectedList: IObjT<boolean>

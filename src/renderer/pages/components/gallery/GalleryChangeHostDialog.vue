@@ -1,20 +1,30 @@
 <template>
   <div class="">
-    <ElDialog title="批量修改URL域名">
-      <ElForm>
-        <ElFormItem>
-          123
-        </ElFormItem>
-      </ElForm>
-    </ElDialog>
+    <ConfirmDialog
+      v-model="visible"
+      title="修改HOST"
+      @confirm="handleConfirm"
+    >
+      <template #body>
+        123
+      </template>
+    </ConfirmDialog>
   </div>
 </template>
 <script lang="ts" setup>
+import { ref } from 'vue'
+import ConfirmDialog from '../dialog/ConfirmDialog.vue'
+import { useIPCOn } from '@/hooks/useIPC'
+import { IRPCActionType } from '~/universal/types/enum'
 
-interface IProps {
-
+const visible = ref(false)
+useIPCOn(IRPCActionType.OPEN_CHANGE_HOST_DIALOG, () => {
+  visible.value = true
+})
+const handleConfirm = () => {
+  visible.value = false
 }
-defineProps<IProps>()
+
 </script>
 <script lang="ts">
 export default {
