@@ -16,7 +16,7 @@
     "postuninstall": "electron-builder install-app-deps",
     "release": "vue-cli-service electron:build --publish always",
     "upload-dist": "node ./scripts/upload-dist.js",
-    "lint:dpdm": "dpdm -T --no-tree --no-warning --exit-code circular:1 src/background.ts;"
+    "lint:dpdm": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/background.ts"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.10",
