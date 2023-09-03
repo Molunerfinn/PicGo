@@ -226,7 +226,7 @@ import {
   IpcRendererEvent,
   clipboard
 } from 'electron'
-import InputBoxDialog from '@/components/InputBoxDialog.vue'
+import InputBoxDialog from '@/components/dialog/InputBoxDialog.vue'
 import {
   MINIMIZE_WINDOW,
   CLOSE_WINDOW,

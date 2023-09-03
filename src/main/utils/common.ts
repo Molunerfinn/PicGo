@@ -125,3 +125,15 @@ export const handleUrlEncodeWithSetting = (url: string) => {
   }
   return url
 }
+
+export const replaceHost = (url: string, oldHost: string, newHost: string) => {
+  try {
+    const parsedUrl = new URL(url)
+    if (parsedUrl.hostname === oldHost) {
+      parsedUrl.hostname = newHost
+    }
+    return parsedUrl.toString()
+  } catch {
+    return url
+  }
+}

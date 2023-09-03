@@ -41,3 +41,7 @@ interface IToolboxItem {
 type IToolboxMap = {
   [id in import('#/types/enum').IToolboxItemType]: IToolboxItem
 }
+
+interface IFormInstance {
+  validate: () => Promise<IStringKeyMap | false>
+}

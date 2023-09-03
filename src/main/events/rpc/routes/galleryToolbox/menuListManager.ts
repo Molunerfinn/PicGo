@@ -11,8 +11,8 @@ class GalleryMenuListManager {
       label: 'Change URL Host',
       click () {
         const win = windowManager.get(IWindowList.SETTING_WINDOW)!
-        console.log('win', win.webContents, IRPCActionType.OPEN_CHANGE_HOST_DIALOG)
-        win.webContents.send(IRPCActionType.OPEN_CHANGE_HOST_DIALOG)
+        console.log('win', win.webContents, IRPCActionType.OPEN_CONFIG_DIALOG)
+        win.webContents.send(IRPCActionType.OPEN_CONFIG_DIALOG)
       }
     }
     this.menuList.push(openChangeHostDialog)

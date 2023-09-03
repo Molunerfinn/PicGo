@@ -13,12 +13,12 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue'
-import ConfirmDialog from '../dialog/ConfirmDialog.vue'
+import ConfirmDialog from '@/components/dialog/ConfirmDialog.vue'
 import { useIPCOn } from '@/hooks/useIPC'
 import { IRPCActionType } from '~/universal/types/enum'
 
 const visible = ref(false)
-useIPCOn(IRPCActionType.OPEN_CHANGE_HOST_DIALOG, () => {
+useIPCOn(IRPCActionType.OPEN_CONFIG_DIALOG, () => {
   visible.value = true
 })
 const handleConfirm = () => {

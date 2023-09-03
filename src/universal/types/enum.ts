@@ -75,7 +75,7 @@ export enum IRPCActionType {
 
   // gallery toolbox rpc
   GET_GALLERY_MENU_LIST = 'GET_GALLERY_MENU_LIST',
-  OPEN_CHANGE_HOST_DIALOG = 'OPEN_CHANGE_HOST_DIALOG',
+  OPEN_CONFIG_DIALOG = 'OPEN_CONFIG_DIALOG',
 }
 
 export enum IToolboxItemType {

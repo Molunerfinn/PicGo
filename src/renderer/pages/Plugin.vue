@@ -179,7 +179,7 @@
       <template #footer>
         <el-button
           round
-          @click="dialogVisible = false"
+          @click="handleCancelConfig"
         >
           {{ $T('CANCEL') }}
         </el-button>
@@ -448,6 +448,11 @@ async function handleConfirmConfig () {
     dialogVisible.value = false
     getPluginList()
   }
+}
+
+function handleCancelConfig () {
+  dialogVisible.value = false
+  $configForm.value?.resetConfig()
 }
 
 function _getSearchResult (val: string) {
