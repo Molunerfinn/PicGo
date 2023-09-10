@@ -23,7 +23,7 @@
           >
             <el-col :span="12">
               <el-select
-                v-model="choosedPicBed"
+                v-model="selectedPicBed"
                 multiple
                 collapse-tags
                 size="small"
@@ -76,33 +76,15 @@
                 </template>
               </el-input>
             </el-col>
-            <el-col :span="4">
-              <div
-                class="item-base copy round"
-                :class="{ active: isMultiple(choosedList)}"
-                @click="multiCopy"
-              >
-                {{ $T('COPY') }}
-              </div>
-            </el-col>
-            <el-col :span="4">
-              <div
-                class="item-base delete round"
-                :class="{ active: isMultiple(choosedList)}"
-                @click="multiRemove"
-              >
-                {{ $T('DELETE') }}
-              </div>
-            </el-col>
-            <el-col :span="4">
-              <div
-                class="item-base all-pick round"
-                :class="{ active: filterList.length > 0}"
-                @click="toggleSelectAll"
-              >
-                {{ isAllSelected ? $T('CANCEL') : $T('SELECT_ALL') }}
-              </div>
-            </el-col>
+            <GalleryToolbar
+              :selected-list="selectedList"
+              :filter-list="filterList"
+              :is-all-selected="isAllSelected"
+              @multi-copy="multiCopy"
+              @multi-remove="multiRemove"
+              @toggle-select-all="toggleSelectAll"
+              @select-more="selectMore"
+            />
           </el-row>
         </el-col>
       </el-row>
@@ -172,7 +154,7 @@
                 </el-icon>
               </el-row>
               <el-checkbox
-                v-model="choosedList[item.id ? item.id : '']"
+                v-model="selectedList[item.id ? item.id : '']"
                 @change="(val) => handleChooseImage(val, index)"
               />
             </el-row>
@@ -214,10 +196,12 @@ import {
   IpcRendererEvent
 } from 'electron'
 import { computed, nextTick, onActivated, onBeforeUnmount, onBeforeMount, reactive, ref, watch } from 'vue'
-import { getConfig, saveConfig, sendToMain } from '@/utils/dataSender'
+import { getConfig, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { T as $T } from '@/i18n/index'
 import $$db from '@/utils/db'
+import GalleryToolbar from './components/gallery/GalleryToolbar.vue'
+import { IRPCActionType } from '~/universal/types/enum'
 const images = ref<ImgInfo[]>([])
 const dialogVisible = ref(false)
 const imgInfo = reactive({
@@ -225,13 +209,13 @@ const imgInfo = reactive({
   imgUrl: ''
 })
 const $confirm = ElMessageBox.confirm
-const choosedList: IObjT<boolean> = reactive({})
+const selectedList: IObjT<boolean> = reactive({})
 const gallerySliderControl = reactive({
   visible: false,
   index: 0
 })
-const choosedPicBed = ref<string[]>([])
-const lastChoosed = ref<number>(-1)
+const selectedPicBed = ref<string[]>([])
+const lastSelected = ref<number>(-1)
 const isShiftKeyPress = ref<boolean>(false)
 const searchText = ref<string>('')
 const handleBarActive = ref<boolean>(false)
@@ -246,7 +230,7 @@ const pasteStyleMap = {
 const picBed = ref<IPicBedType[]>([])
 onBeforeRouteUpdate((to, from) => {
   if (from.name === 'gallery') {
-    clearChoosedList()
+    clearSelectedList()
   }
   if (to.name === 'gallery') {
     updateGallery()
@@ -254,7 +238,7 @@ onBeforeRouteUpdate((to, from) => {
 })
 
 onBeforeMount(async () => {
-  ipcRenderer.on('updateGallery', () => {
+  ipcRenderer.on(IRPCActionType.UPDATE_GALLERY, () => {
     nextTick(async () => {
       updateGallery()
     })
@@ -282,12 +266,12 @@ const filterList = computed(() => {
 })
 
 const isAllSelected = computed(() => {
-  const values = Object.values(choosedList)
+  const values = Object.values(selectedList)
   if (values.length === 0) {
     return false
   } else {
     return filterList.value.every(item => {
-      return choosedList[item.id!]
+      return selectedList[item.id!]
     })
   }
 })
@@ -297,18 +281,18 @@ function getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
 }
 
 function getGallery (): IGalleryItem[] {
-  if (searchText.value || choosedPicBed.value.length > 0) {
+  if (searchText.value || selectedPicBed.value.length > 0) {
     return images.value
       .filter(item => {
-        let isInChoosedPicBed = true
+        let isInSelectedPicBed = true
         let isIncludesSearchText = true
-        if (choosedPicBed.value.length > 0) {
-          isInChoosedPicBed = choosedPicBed.value.some(type => type === item.type)
+        if (selectedPicBed.value.length > 0) {
+          isInSelectedPicBed = selectedPicBed.value.some(type => type === item.type)
         }
         if (searchText.value) {
           isIncludesSearchText = item.fileName?.includes(searchText.value) || false
         }
-        return isIncludesSearchText && isInChoosedPicBed
+        return isIncludesSearchText && isInSelectedPicBed
       }).map(item => {
         return {
           ...item,
@@ -334,30 +318,30 @@ async function updateGallery () {
 }
 
 watch(() => filterList, () => {
-  clearChoosedList()
+  clearSelectedList()
 })
 
 function handleChooseImage (val: CheckboxValueType, index: number) {
   if (val === true) {
     handleBarActive.value = true
-    if (lastChoosed.value !== -1 && isShiftKeyPress.value) {
-      const min = Math.min(lastChoosed.value, index)
-      const max = Math.max(lastChoosed.value, index)
+    if (lastSelected.value !== -1 && isShiftKeyPress.value) {
+      const min = Math.min(lastSelected.value, index)
+      const max = Math.max(lastSelected.value, index)
       for (let i = min + 1; i < max; i++) {
         const id = filterList.value[i].id!
-        choosedList[id] = true
+        selectedList[id] = true
       }
     }
-    lastChoosed.value = index
+    lastSelected.value = index
   }
 }
 
-function clearChoosedList () {
+function clearSelectedList () {
   isShiftKeyPress.value = false
-  Object.keys(choosedList).forEach(key => {
-    choosedList[key] = false
+  Object.keys(selectedList).forEach(key => {
+    selectedList[key] = false
   })
-  lastChoosed.value = -1
+  lastSelected.value = -1
 }
 
 function zoomImage (index: number) {
@@ -445,33 +429,26 @@ async function confirmModify () {
   updateGallery()
 }
 
-// function choosePicBed (type: string) {
-//   const idx = choosedPicBed.value.indexOf(type)
-//   if (idx !== -1) {
-//     choosedPicBed.value.splice(idx, 1)
-//   } else {
-//     choosedPicBed.value.push(type)
-//   }
-// }
-
 function cleanSearch () {
   searchText.value = ''
-}
-
-function isMultiple (obj: IObj) {
-  return Object.values(obj).some(item => item)
 }
 
 function toggleSelectAll () {
   const result = !isAllSelected.value
   filterList.value.forEach(item => {
-    choosedList[item.id!] = result
+    selectedList[item.id!] = result
   })
 }
 
+function selectMore () {
+  sendRPC(IRPCActionType.GET_GALLERY_MENU_LIST, filterList.value.filter(item => {
+    return selectedList[item.id!]
+  }))
+}
+
 function multiRemove () {
-  // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
-  const multiRemoveNumber = Object.values(choosedList).filter(item => item).length
+  // selectedList -> { [id]: true or false }; true means selected. false means not selected.
+  const multiRemoveNumber = Object.values(selectedList).filter(item => item).length
   if (multiRemoveNumber) {
     $confirm($T('TIPS_WILL_REMOVE_CHOOSED_IMAGES', {
       m: multiRemoveNumber
@@ -481,10 +458,10 @@ function multiRemove () {
       type: 'warning'
     }).then(async () => {
       const files: IResult<ImgInfo>[] = []
-      const imageIDList = Object.keys(choosedList)
+      const imageIDList = Object.keys(selectedList)
       for (let i = 0; i < imageIDList.length; i++) {
         const key = imageIDList[i]
-        if (choosedList[key]) {
+        if (selectedList[key]) {
           const file = await $$db.getById<ImgInfo>(key)
           if (file) {
             files.push(file)
@@ -492,9 +469,9 @@ function multiRemove () {
           }
         }
       }
-      clearChoosedList()
+      clearSelectedList()
       // TODO: check this
-      // choosedList = {} // 只有删除才能将这个置空
+      // selectedList = {} // 只有删除才能将这个置空
       const obj = {
         title: $T('OPERATION_SUCCEED'),
         body: ''
@@ -512,18 +489,18 @@ function multiRemove () {
 }
 
 async function multiCopy () {
-  if (Object.values(choosedList).some(item => item)) {
+  if (Object.values(selectedList).some(item => item)) {
     const copyString: string[] = []
-    // choosedList -> { [id]: true or false }; true means choosed. false means not choosed.
-    const imageIDList = Object.keys(choosedList)
+    // selectedList -> { [id]: true or false }; true means selected. false means not selected.
+    const imageIDList = Object.keys(selectedList)
     for (let i = 0; i < imageIDList.length; i++) {
       const key = imageIDList[i]
-      if (choosedList[key]) {
+      if (selectedList[key]) {
         const item = await $$db.getById<ImgInfo>(key)
         if (item) {
           const txt = await ipcRenderer.invoke(PASTE_TEXT, item)
           copyString.push(txt)
-          choosedList[key] = false
+          selectedList[key] = false
         }
       }
     }
@@ -586,36 +563,6 @@ export default {
   height 100%
   .cursor-pointer
     cursor pointer
-.item-base
-  background #2E2E2E
-  text-align center
-  padding 5px 0
-  cursor pointer
-  font-size 13px
-  transition all .2s ease-in-out
-  height: 28px
-  box-sizing: border-box
-  &.copy
-    cursor not-allowed
-    background #49B1F5
-    &.active
-      cursor pointer
-      background #1B9EF3
-      color #fff
-  &.delete
-    cursor not-allowed
-    background #F47466
-    &.active
-      cursor pointer
-      background #F15140
-      color #fff
-  &.all-pick
-    cursor not-allowed
-    background #69C282
-    &.active
-      cursor pointer
-      background #44B363
-      color #fff
 #gallery-view
   position relative
   .round

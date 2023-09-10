@@ -214,7 +214,7 @@ import {
   Close
 } from '@element-plus/icons-vue'
 import { ElMessage as $message } from 'element-plus'
-import { T } from '@/i18n/index'
+import { T as $T } from '@/i18n/index'
 import { ref, onBeforeUnmount, Ref, onBeforeMount, watch, nextTick, reactive } from 'vue'
 import { onBeforeRouteUpdate, useRouter } from 'vue-router'
 import QrcodeVue from 'qrcode.vue'
@@ -226,7 +226,7 @@ import {
   IpcRendererEvent,
   clipboard
 } from 'electron'
-import InputBoxDialog from '@/components/InputBoxDialog.vue'
+import InputBoxDialog from '@/components/dialog/InputBoxDialog.vue'
 import {
   MINIMIZE_WINDOW,
   CLOSE_WINDOW,
@@ -324,7 +324,7 @@ function openMiniWindow () {
 
 function handleCopyPicBedConfig () {
   clipboard.writeText(picBedConfigString.value)
-  $message.success(T('COPY_PICBED_CONFIG_SUCCEED'))
+  $message.success($T('COPY_PICBED_CONFIG_SUCCEED'))
 }
 
 function getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {

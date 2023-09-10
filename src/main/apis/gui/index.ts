@@ -18,6 +18,7 @@ import {
 } from '~/universal/events/constants'
 import { DBStore } from '@picgo/store'
 import { T } from '~/main/i18n'
+import { IRPCActionType } from '~/universal/types/enum'
 
 // Cross-process support may be required in the future
 class GuiApi implements IGuiApi {
@@ -26,7 +27,7 @@ class GuiApi implements IGuiApi {
   private windowId: number = -1
   private settingWindowId: number = -1
   private constructor () {
-    console.log('init guiapi')
+    console.log('init gui api')
   }
 
   public static getInstance (): GuiApi {
@@ -50,7 +51,7 @@ class GuiApi implements IGuiApi {
     })
   }
 
-  private getWebcontentsByWindowId (id: number) {
+  private getWebContentsByWindowId (id: number) {
     return BrowserWindow.fromId(id)?.webContents
   }
 
@@ -59,7 +60,7 @@ class GuiApi implements IGuiApi {
     placeholder: ''
   }) {
     await this.showSettingWindow()
-    this.getWebcontentsByWindowId(this.settingWindowId)?.send(SHOW_INPUT_BOX, options)
+    this.getWebContentsByWindowId(this.settingWindowId)?.send(SHOW_INPUT_BOX, options)
     return new Promise<string>((resolve) => {
       ipcMain.once(SHOW_INPUT_BOX, (event: Event, value: string) => {
         resolve(value)
@@ -75,7 +76,7 @@ class GuiApi implements IGuiApi {
 
   async upload (input: IUploadOption) {
     this.windowId = await getWindowId()
-    const webContents = this.getWebcontentsByWindowId(this.windowId)
+    const webContents = this.getWebContentsByWindowId(this.windowId)
     const imgs = await uploader.setWebContents(webContents!).upload(input)
     if (imgs !== false) {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
@@ -94,7 +95,7 @@ class GuiApi implements IGuiApi {
       }
       handleCopyUrl(pasteText.join('\n'))
       webContents?.send('uploadFiles', imgs)
-      webContents?.send('updateGallery')
+      webContents?.send(IRPCActionType.UPDATE_GALLERY)
       return imgs
     }
     return []
@@ -127,6 +128,20 @@ class GuiApi implements IGuiApi {
           result: res.response,
           checkboxChecked: res.checkboxChecked
         })
+      })
+    })
+  }
+
+  /**
+   * v2.4.0+
+   * @param options
+   */
+  async showConfigDialog<T extends IStringKeyMap> (options: IPicGoPluginShowConfigDialogOption) {
+    await this.showSettingWindow()
+    this.getWebContentsByWindowId(this.settingWindowId)?.send(IRPCActionType.OPEN_CONFIG_DIALOG, options)
+    return new Promise<T | false>((resolve) => {
+      ipcMain.once(IRPCActionType.OPEN_CONFIG_DIALOG, (event: Event, value: T | false) => {
+        resolve(value)
       })
     })
   }

@@ -7,7 +7,7 @@ import {
   BrowserWindow
 } from 'electron'
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from '#/types/enum'
+import { IRPCActionType, IWindowList } from '#/types/enum'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
@@ -62,7 +62,7 @@ export default {
         await GalleryDB.getInstance().insert(img[0])
         trayWindow.webContents.send('clipboardFiles', [])
         if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-          windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('updateGallery')
+          windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send(IRPCActionType.UPDATE_GALLERY)
         }
       }
       trayWindow.webContents.send('uploadFiles')

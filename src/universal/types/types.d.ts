@@ -170,6 +170,14 @@ interface IPicGoPluginConfig {
   [propName: string]: any
 }
 
+interface IPicGoPluginShowConfigDialogOption {
+  title: string
+  config: IPicGoPluginConfig[]
+  tips?: string
+  confirmText?: string
+  cancelText?: string
+}
+
 interface IPicGoPluginOriginConfig {
   name: string
   type: string
@@ -224,6 +232,8 @@ interface IGuiApi {
   upload: (input: IUploadOption) => Promise<ImgInfo[]>
   showNotification: (options?: IShowNotificationOption) => void
   showMessageBox: (options?: IShowMessageBoxOption) => Promise<IShowMessageBoxResult>
+  showConfigDialog: <T extends IStringKeyMap>(options: IPicGoPluginShowConfigDialogOption) => Promise<T | false>
+  galleryDB: import('@picgo/store').DBStore
 }
 interface IShowInputBoxOption {
   value?: string

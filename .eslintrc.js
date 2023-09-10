@@ -20,7 +20,8 @@ module.exports = {
     'no-async-promise-executor': 'off',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
-    '@typescript-eslint/indent': ['error', 2]
+    '@typescript-eslint/indent': ['error', 2],
+    'vue/no-v-html': 'off'
   },
   parserOptions: {
     parser: '@typescript-eslint/parser'

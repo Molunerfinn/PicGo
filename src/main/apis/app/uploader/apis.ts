@@ -3,7 +3,7 @@ import {
   WebContents
 } from 'electron'
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from '#/types/enum'
+import { IRPCActionType, IWindowList } from '#/types/enum'
 import uploader from '.'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
@@ -42,7 +42,7 @@ export const uploadClipboardFiles = async (): Promise<string> => {
       trayWindow?.webContents?.send('clipboardFiles', [])
       trayWindow?.webContents?.send('uploadFiles', img)
       if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-        windowManager.get(IWindowList.SETTING_WINDOW)!.webContents?.send('updateGallery')
+        windowManager.get(IWindowList.SETTING_WINDOW)!.webContents?.send(IRPCActionType.UPDATE_GALLERY)
       }
       return handleUrlEncodeWithSetting(img[0].imgUrl as string)
     } else {
@@ -82,7 +82,7 @@ export const uploadChoosedFiles = async (webContents: WebContents, files: IFileW
     // trayWindow just be created in mac/windows, not in linux
     windowManager.get(IWindowList.TRAY_WINDOW)?.webContents?.send('uploadFiles', imgs)
     if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-      windowManager.get(IWindowList.SETTING_WINDOW)!.webContents?.send('updateGallery')
+      windowManager.get(IWindowList.SETTING_WINDOW)!.webContents?.send(IRPCActionType.UPDATE_GALLERY)
     }
     return result
   } else {

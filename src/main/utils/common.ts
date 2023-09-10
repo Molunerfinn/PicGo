@@ -125,3 +125,31 @@ export const handleUrlEncodeWithSetting = (url: string) => {
   }
   return url
 }
+
+export const replaceHost = (url: string, oldHost: string, newHost: string) => {
+  try {
+    const parsedUrl = new URL(url)
+    if (parsedUrl.host === oldHost) {
+      parsedUrl.host = newHost
+    }
+    return parsedUrl.toString()
+  } catch {
+    return url
+  }
+}
+
+export const getHost = (url: string = '') => {
+  try {
+    const parsedUrl = new URL(url)
+    return parsedUrl.host
+  } catch {
+    return ''
+  }
+}
+
+/**
+ * remove protocol and suffix
+ */
+export const removeProtocolAndSuffix = (url: string = '') => {
+  return url.replace(/^(https?:\/\/)?/, '').replace(/\/$/, '')
+}
