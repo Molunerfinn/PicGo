@@ -1,3 +1,12 @@
+# :tada: 2.4.0-beta.5 (2023-09-10)
+
+
+### :sparkles: Features
+
+* add gallery toolbox menu ([#1177](https://github.com/Molunerfinn/PicGo/issues/1177)) ([0f7b07d](https://github.com/Molunerfinn/PicGo/commit/0f7b07d))
+
+
+
 # :tada: 2.4.0-beta.4 (2023-08-26)
 
 
