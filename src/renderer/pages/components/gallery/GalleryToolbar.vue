@@ -1,8 +1,8 @@
 <template>
   <el-col :span="12">
-    <div class="w-full flex justify-between">
+    <div class="w-full flex justify-between gap-x-[6px]">
       <div
-        class="item-base copy round"
+        class="item-base copy round gap-x-[10px]"
         :class="{ active: isMultiple(selectedList)}"
         @click="$emit('multiCopy')"
       >
@@ -23,7 +23,7 @@
         {{ isAllSelected ? $T('CANCEL') : $T('SELECT_ALL') }}
       </div>
       <div
-        class="item-base select-more round"
+        class="item-base select-more round !w-[18%]"
         :class="{ active: filterList.length > 0}"
         @click="$emit('selectMore')"
       >
@@ -64,6 +64,7 @@ export default {
   background #2E2E2E
   text-align center
   width: 22%
+  flex-grow: 1
   cursor pointer
   font-size 12px
   transition all .2s ease-in-out
