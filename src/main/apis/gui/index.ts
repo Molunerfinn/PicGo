@@ -27,7 +27,7 @@ class GuiApi implements IGuiApi {
   private windowId: number = -1
   private settingWindowId: number = -1
   private constructor () {
-    console.log('init guiapi')
+    console.log('init gui api')
   }
 
   public static getInstance (): GuiApi {
@@ -95,7 +95,7 @@ class GuiApi implements IGuiApi {
       }
       handleCopyUrl(pasteText.join('\n'))
       webContents?.send('uploadFiles', imgs)
-      webContents?.send('updateGallery')
+      webContents?.send(IRPCActionType.UPDATE_GALLERY)
       return imgs
     }
     return []

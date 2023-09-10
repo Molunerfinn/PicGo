@@ -54,6 +54,8 @@ interface ILocales {
   FILE_RENAME: string
   COPY_FILE_PATH: string
   OPEN_FILE_PATH: string
+  SUCCESS: string
+  FAILED: string
   SETTINGS: string
   SETTINGS_OPEN_CONFIG_FILE: string
   SETTINGS_CLICK_TO_OPEN: string
@@ -125,6 +127,11 @@ interface ILocales {
   SHORTCUT_DISABLE: string
   SHORTCUT_EDIT: string
   SHORTCUT_CHANGE_UPLOAD: string
+  CHANGE_IMAGE_URL_HOST: string
+  NEW_IMAGE_URL_HOST: string
+  SELECTED_IMAGE_URL_HOST: string
+  CHANGE_IMAGE_URL_HOST_RESULT: string
+  CHANGE_IMAGE_URL_HOST_WARN: string
   WAIT_TO_UPLOAD: string
   ALREADY_UPLOAD: string
   PICTURE_UPLOAD: string

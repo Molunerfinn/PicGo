@@ -5,9 +5,10 @@ import { galleryMenuListManager } from './menuListManager'
 
 const galleryToolboxRouter = new RPCRouter()
 
-galleryToolboxRouter.add(IRPCActionType.GET_GALLERY_MENU_LIST, async () => {
+galleryToolboxRouter.add(IRPCActionType.GET_GALLERY_MENU_LIST, async (args) => {
+  const [selectedList] = args as IGetGalleryMenuListArgs
   const win = windowManager.get(IWindowList.SETTING_WINDOW)!
-  const menu = galleryMenuListManager.getMenu()
+  const menu = galleryMenuListManager.getMenu(selectedList)
 
   menu.popup({
     window: win

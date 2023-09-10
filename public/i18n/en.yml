@@ -56,6 +56,8 @@ BATCH_COPY_LINK_SUCCEED: Batch Copy Link Succeed
 FILE_RENAME: File Rename
 COPY_FILE_PATH: Copy file path
 OPEN_FILE_PATH: Open file path
+SUCCESS: Success
+FAILED: Failed
 
 # settings
 
@@ -133,6 +135,13 @@ SHORTCUT_ENABLE: Enable
 SHORTCUT_DISABLE: Disable
 SHORTCUT_EDIT: Edit
 SHORTCUT_CHANGE_UPLOAD: Change Upload Shortcut
+
+# gallery-page
+CHANGE_IMAGE_URL_HOST: Change Image URL HOST
+NEW_IMAGE_URL_HOST: New Image URL HOST
+SELECTED_IMAGE_URL_HOST: Selected Image URL HOST
+CHANGE_IMAGE_URL_HOST_RESULT: The result of changing image URL HOST
+CHANGE_IMAGE_URL_HOST_WARN: You must select at least one picture first
 
 # tray-page
 

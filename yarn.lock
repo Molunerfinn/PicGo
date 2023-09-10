@@ -2551,10 +2551,26 @@
     chalk "4.1.2"
     tslib "^2.3.1"
 
-"@picgo/store@^2.0.2", "@picgo/store@^2.0.4":
+"@picgo/store@^2.0.2":
   version "2.0.4"
   resolved "https://registry.npmjs.org/@picgo/store/-/store-2.0.4.tgz#6360ccf7dfaa90f8db6ee5115f96f5e8bf094113"
   integrity sha512-QWBF/vxLkCOCwFmjPPwPW8ZJdcko+kFY4dBSJYi8spsKp/7FmKCHmSWIkOpkdH/ww0Gh7UbtSBveKgm5u4t42w==
+  dependencies:
+    "@commonify/lowdb" "^3.0.0"
+    "@commonify/steno" "^2.1.0"
+    "@types/bson" "^4.0.1"
+    "@types/graceful-fs" "^4.1.3"
+    "@types/lodash" "^4.14.182"
+    comment-json "^4.2.3"
+    fflate "^0.7.3"
+    lodash "^4.17.21"
+    lodash-id "^0.14.0"
+    write-file-atomic "^4.0.1"
+
+"@picgo/store@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmmirror.com/@picgo/store/-/store-2.1.0.tgz#542cd37c2f4f139a9701d602322e7971fa8aa6df"
+  integrity sha512-oD/+4hGaioSVqWmaV5/LEXJ/xfpDrwUYPDGgJx3gEYoNPG2IdIZiO++asSZsafAc03TGPlvtR3L9eOTqPaKj9w==
   dependencies:
     "@commonify/lowdb" "^3.0.0"
     "@commonify/steno" "^2.1.0"

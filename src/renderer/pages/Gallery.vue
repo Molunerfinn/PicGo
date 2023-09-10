@@ -196,7 +196,7 @@ import {
   IpcRendererEvent
 } from 'electron'
 import { computed, nextTick, onActivated, onBeforeUnmount, onBeforeMount, reactive, ref, watch } from 'vue'
-import { getConfig, saveConfig, sendToMain, triggerRPC } from '@/utils/dataSender'
+import { getConfig, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { T as $T } from '@/i18n/index'
 import $$db from '@/utils/db'
@@ -238,7 +238,7 @@ onBeforeRouteUpdate((to, from) => {
 })
 
 onBeforeMount(async () => {
-  ipcRenderer.on('updateGallery', () => {
+  ipcRenderer.on(IRPCActionType.UPDATE_GALLERY, () => {
     nextTick(async () => {
       updateGallery()
     })
@@ -441,7 +441,9 @@ function toggleSelectAll () {
 }
 
 function selectMore () {
-  triggerRPC(IRPCActionType.GET_GALLERY_MENU_LIST)
+  sendRPC(IRPCActionType.GET_GALLERY_MENU_LIST, filterList.value.filter(item => {
+    return selectedList[item.id!]
+  }))
 }
 
 function multiRemove () {

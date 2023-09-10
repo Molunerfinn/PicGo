@@ -1,5 +1,8 @@
 <template>
-  <div id="base-config-form">
+  <div
+    id="base-config-form"
+    :class="theme ?? 'dark'"
+  >
     <el-form
       ref="$form"
       label-position="left"
@@ -14,6 +17,7 @@
         :key="item.name + index"
         :required="item.required"
         :prop="item.name"
+        :class="index !== config.length - 1 ? 'has-border' : ''"
       >
         <template #label>
           <el-row align="middle">
@@ -91,6 +95,7 @@ const $form = ref<FormInstance>()
 interface IProps {
   config: IPicGoPluginConfig[]
   formModel: IStringKeyMap
+  theme?: 'light' | 'dark'
 }
 
 const props = defineProps<IProps>()
@@ -109,7 +114,6 @@ async function validate (): Promise<IStringKeyMap | false> {
   return new Promise((resolve) => {
     $form.value?.validate((valid: boolean) => {
       if (valid) {
-        console.log('!!!!!!valid', form)
         resolve(form.value)
       } else {
         resolve(false)
@@ -153,7 +157,7 @@ export default {
     .el-switch__label
       &.is-active
         color #409EFF
-  &.white
-    .el-form-item
+  &.light
+    .el-form-item.has-border
       border-bottom 1px solid #ddd
 </style>

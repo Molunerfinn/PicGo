@@ -22,6 +22,7 @@
           />
         </el-form-item>
       </template>
+      <slot />
     </BaseConfigForm>
   </div>
 </template>

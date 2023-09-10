@@ -171,7 +171,7 @@ interface IPicGoPluginConfig {
 }
 
 interface IPicGoPluginShowConfigDialogOption {
-  title?: string
+  title: string
   config: IPicGoPluginConfig[]
   tips?: string
   confirmText?: string
