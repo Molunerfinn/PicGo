@@ -43,16 +43,17 @@
 </template>
 <script lang="ts" setup>
 import { IRPCActionType } from '~/universal/types/enum'
-import { ref, onBeforeUnmount, onBeforeMount } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import { T as $T } from '@/i18n/index'
 import { sendToMain, triggerRPC } from '@/utils/dataSender'
 import { useRoute, useRouter } from 'vue-router'
 import ConfigForm from '@/components/ConfigForm.vue'
 // import mixin from '@/utils/ConfirmButtonMixin'
 import {
-  ipcRenderer,
   IpcRendererEvent
 } from 'electron'
+import { GET_PICBED_CONFIG } from '~/universal/events/constants'
+import { useIPCOn } from '@/hooks/useIPC'
 const type = ref('')
 const config = ref<IPicGoPluginConfig[]>([])
 const picBedName = ref('')
@@ -61,9 +62,10 @@ const $router = useRouter()
 const $configForm = ref<InstanceType<typeof ConfigForm> | null>(null)
 type.value = $route.params.type as string
 
+useIPCOn(GET_PICBED_CONFIG, getPicBeds)
+
 onBeforeMount(() => {
-  sendToMain('getPicBedConfig', $route.params.type)
-  ipcRenderer.on('getPicBedConfig', getPicBeds)
+  sendToMain(GET_PICBED_CONFIG, $route.params.type)
 })
 
 const handleConfirm = async () => {
@@ -84,10 +86,6 @@ function getPicBeds (event: IpcRendererEvent, _config: IPicGoPluginConfig[], nam
   config.value = _config
   picBedName.value = name
 }
-
-onBeforeUnmount(() => {
-  ipcRenderer.removeListener('getPicBedConfig', getPicBeds)
-})
 
 </script>
 <script lang="ts">

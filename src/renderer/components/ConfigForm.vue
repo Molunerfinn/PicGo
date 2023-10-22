@@ -45,13 +45,7 @@ const $route = useRoute()
 const $form = ref<IFormInstance>()
 const configList = ref<IPicGoPluginConfig[]>([])
 const formModel = reactive<IStringKeyMap>({})
-
-watch(toRefs(props.config), (val: IPicGoPluginConfig[]) => {
-  handleConfig(val)
-}, {
-  deep: true,
-  immediate: true
-})
+const isUploader = props.type === 'uploader'
 
 async function validate (): Promise<IStringKeyMap | false> {
   const res = await $form.value?.validate() || false
@@ -74,14 +68,13 @@ function getConfigType () {
   }
 }
 
-const isUploader = props.type === 'uploader'
-
 const handleConfigForm = useConfigForm()
 
 async function handleConfig (inputConfig: IPicGoPluginConfig[]) {
   const currentConfig = await getCurConfigFormData()
+  const resetConfig = isUploader && !$route.params.configId
   Object.assign(formModel, currentConfig)
-  configList.value = handleConfigForm(inputConfig, formModel, currentConfig)
+  configList.value = handleConfigForm(inputConfig, formModel, currentConfig, resetConfig)
 }
 
 async function getCurConfigFormData () {
@@ -100,6 +93,13 @@ async function resetConfig () {
   const config = await getCurConfigFormData()
   Object.assign(formModel, config)
 }
+
+watch(toRefs(props.config), (val: IPicGoPluginConfig[]) => {
+  handleConfig(val)
+}, {
+  deep: true,
+  immediate: true
+})
 
 defineExpose({
   validate,

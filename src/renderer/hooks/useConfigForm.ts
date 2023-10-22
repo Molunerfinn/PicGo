@@ -4,13 +4,15 @@ import { cloneDeep, union } from 'lodash'
  * @param configList origin config list
  * @param formModel el-form form model for default value
  * @param currentConfig current config
+ * @param resetConfigForm reset form model -> clear default value
  * @returns transformed config list
  */
 export const useConfigForm = () => {
-  return (configList: IPicGoPluginConfig[], formModel: IStringKeyMap, currentConfig?: IStringKeyMap) => {
+  return (configList: IPicGoPluginConfig[], formModel: IStringKeyMap, currentConfig?: IStringKeyMap, resetConfigForm?: boolean) => {
     if (configList.length > 0) {
       return cloneDeep(configList).map((item) => {
         // if (!configId) return item
+        if (resetConfigForm) return item
         let defaultValue = item.default !== undefined
           ? item.default
           : item.type === 'checkbox'

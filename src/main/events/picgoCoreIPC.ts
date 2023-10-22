@@ -29,7 +29,8 @@ import {
   OPEN_WINDOW,
   GET_LANGUAGE_LIST,
   SET_CURRENT_LANGUAGE,
-  GET_CURRENT_LANGUAGE
+  GET_CURRENT_LANGUAGE,
+  GET_PICBED_CONFIG
 } from '#/events/constants'
 
 import { GalleryDB } from 'apis/core/datastore'
@@ -223,14 +224,14 @@ const handleNPMError = (): IDispose => {
 }
 
 const handleGetPicBedConfig = () => {
-  ipcMain.on('getPicBedConfig', (event: IpcMainEvent, type: string) => {
+  ipcMain.on(GET_PICBED_CONFIG, (event: IpcMainEvent, type: string) => {
     const name = picgo.helper.uploader.get(type)?.name || type
     if (picgo.helper.uploader.get(type)?.config) {
       const _config = picgo.helper.uploader.get(type)!.config!(picgo)
       const config = handleConfigWithFunction(_config)
-      event.sender.send('getPicBedConfig', config, name)
+      event.sender.send(GET_PICBED_CONFIG, config, name)
     } else {
-      event.sender.send('getPicBedConfig', [], name)
+      event.sender.send(GET_PICBED_CONFIG, [], name)
     }
   })
 }
