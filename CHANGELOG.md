@@ -1,3 +1,13 @@
+# :tada: 2.4.0-beta.6 (2023-11-19)
+
+
+### :bug: Bug Fixes
+
+* app.asar directroy copy error ([#1180](https://github.com/Molunerfinn/PicGo/issues/1180)) ([cd07b33](https://github.com/Molunerfinn/PicGo/commit/cd07b33)), closes [#1179](https://github.com/Molunerfinn/PicGo/issues/1179)
+* can't add new config for picbed ([050a3dd](https://github.com/Molunerfinn/PicGo/commit/050a3dd)), closes [#1184](https://github.com/Molunerfinn/PicGo/issues/1184)
+
+
+
 # :tada: 2.4.0-beta.5 (2023-09-10)
 
 
