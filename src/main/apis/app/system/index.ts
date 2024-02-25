@@ -137,7 +137,9 @@ export function createContextMenu () {
 const getTrayIcon = () => {
   if (process.platform === 'darwin') {
     const isMacOSGreaterThan11 = isMacOSVersionGreaterThanOrEqualTo('11')
-    return isMacOSGreaterThan11 ? `${__static}/menubar-newdarwinTemplate.png` : `${__static}/menubar.png`
+    return isMacOSGreaterThan11
+      ? `${__static}/menubar-newdarwinTemplate.png`
+      : `${__static}/menubar.png`
   } else {
     return `${__static}/menubar-nodarwin.png`
   }
@@ -153,7 +155,9 @@ export function createTray () {
         windowManager.get(IWindowList.TRAY_WINDOW)!.hide()
       }
       createContextMenu()
-      tray!.popUpContextMenu(contextMenu!)
+      setTimeout(() => {
+        tray!.popUpContextMenu(contextMenu!)
+      }, 0)
     })
     tray.on('click', (event, bounds) => {
       if (process.platform === 'darwin') {
@@ -174,7 +178,10 @@ export function createTray () {
               } else {
                 if (decodePath !== '') {
                   // 带有中文的路径，无法直接被img.src所使用，会被转义
-                  const base64 = await fs.readFile(decodePath.replace('file://', ''), { encoding: 'base64' })
+                  const base64 = await fs.readFile(
+                    decodePath.replace('file://', ''),
+                    { encoding: 'base64' }
+                  )
                   obj.push({
                     imgUrl: `data:image/png;base64,${base64}`
                   })
@@ -190,7 +197,9 @@ export function createTray () {
               })
             }
           }
-          windowManager.get(IWindowList.TRAY_WINDOW)!.webContents.send('clipboardFiles', obj)
+          windowManager
+            .get(IWindowList.TRAY_WINDOW)!
+            .webContents.send('clipboardFiles', obj)
         }, 0)
       } else {
         if (windowManager.has(IWindowList.TRAY_WINDOW)) {
@@ -229,7 +238,9 @@ export function createTray () {
       if (imgs !== false) {
         const pasteText: string[] = []
         for (let i = 0; i < imgs.length; i++) {
-          pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
+          pasteText.push(
+            pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink'))
+          )
           const notification = new Notification({
             title: T('UPLOAD_SUCCEED'),
             body: imgs[i].imgUrl!
@@ -246,8 +257,8 @@ export function createTray () {
     })
     // toggleWindow()
   } else if (process.platform === 'linux') {
-  // click事件在Ubuntu上无法触发，Unity不支持（在Mac和Windows上可以触发）
-  // 需要使用 setContextMenu 设置菜单
+    // click事件在Ubuntu上无法触发，Unity不支持（在Mac和Windows上可以触发）
+    // 需要使用 setContextMenu 设置菜单
     createContextMenu()
     tray!.setContextMenu(contextMenu)
   }
@@ -269,25 +280,35 @@ export function createMenu () {
     return menu
   }
   if (process.env.NODE_ENV !== 'development') {
-    const template = [{
-      label: 'Edit',
-      submenu: [
-        { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
-        { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
-        { type: 'separator' },
-        { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
-        { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
-        { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
-        { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' },
-        {
-          label: 'Quit',
-          accelerator: 'CmdOrCtrl+Q',
-          click () {
-            app.quit()
+    const template = [
+      {
+        label: 'Edit',
+        submenu: [
+          { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
+          {
+            label: 'Redo',
+            accelerator: 'Shift+CmdOrCtrl+Z',
+            selector: 'redo:'
+          },
+          { type: 'separator' },
+          { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
+          { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
+          { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
+          {
+            label: 'Select All',
+            accelerator: 'CmdOrCtrl+A',
+            selector: 'selectAll:'
+          },
+          {
+            label: 'Quit',
+            accelerator: 'CmdOrCtrl+Q',
+            click () {
+              app.quit()
+            }
           }
-        }
-      ]
-    }]
+        ]
+      }
+    ]
     // @ts-ignore
     menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
