@@ -92,3 +92,9 @@ export enum IToolboxItemCheckStatus {
   SUCCESS = 'success',
   ERROR = 'error',
 }
+
+export enum IStartupMode {
+  SHOW_MAIN_WINDOW = 'SHOW_SETTING_WINDOW',
+  SHOW_MINI_WINDOW = 'SHOW_MINI_WINDOW',
+  HIDE = 'HIDE'
+}

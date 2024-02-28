@@ -1,4 +1,4 @@
-LANG_DISPLAY_LABEL: 'English'
+LANG_DISPLAY_LABEL: "English"
 ABOUT: About
 OPEN_MAIN_WINDOW: Open Main Window
 CHOOSE_DEFAULT_PICBED: Choose Default Picbed
@@ -28,7 +28,7 @@ OPEN_TOOLBOX: Open Toolbox
 
 # ---renderer i18n begin---
 
-CHOOSE_YOUR_DEFAULT_PICBED: 'Choose ${d} as your default picbed:'
+CHOOSE_YOUR_DEFAULT_PICBED: "Choose ${d} as your default picbed:"
 UPLOAD_AREA: Upload Area
 GALLERY: Gallery
 PICBEDS_SETTINGS: Picbeds Settings
@@ -85,7 +85,7 @@ SETTINGS_AUTO_COPY_URL_AFTER_UPLOAD: Auto Copy URL After Upload
 SETTINGS_TIPS_PLACEHOLDER_URL: Use $url to represent url position
 SETTINGS_TIPS_PLACEHOLDER_FILENAME: Use $fileName to represent file name position
 SETTINGS_TIPS_PLACEHOLDER_EXTNAME: Use $extName to represent file's ext position
-SETTINGS_TIPS_SUCH_AS: 'Such as: $url/$fileName'
+SETTINGS_TIPS_SUCH_AS: "Such as: $url/$fileName"
 SETTINGS_UPLOAD_PROXY: Upload Proxy
 SETTINGS_PLUGIN_INSTALL_PROXY: Proxy for Plugin Install
 SETTINGS_PLUGIN_INSTALL_MIRROR: Mirror for Plugin Install
@@ -121,6 +121,10 @@ UPLOADER_CONFIG_PLACEHOLDER: Please Enter Configuration Name
 SELECTED_SETTING_HINT: Selected
 SETTINGS_ENCODE_OUTPUT_URL: Encode Output(or Copyed) URL
 SETTINGS_SHOW_DOCK_ICON: Show Dock icon
+SETTINGS_STARTUP_MODE: Startup Mode
+SETTINGS_STARTUP_MODE_MAIN_WINDOW: Open Main Window
+SETTINGS_STARTUP_MODE_MINI_WINDOW: Open Mini Window
+SETTINGS_STARTUP_MODE_HIDE: Silent Startup
 
 # shortcut-page
 
@@ -202,10 +206,10 @@ UPDATE_PLUGIN: Update Plugin
 
 # toolbox
 TOOLBOX: Toolbox
-TOOLBOX_TITLE: Troubleshoot PicGo runtime issues  
+TOOLBOX_TITLE: Troubleshoot PicGo runtime issues
 TOOLBOX_SUB_TITLE: Scan the following items immediately to fix usage issues
 TOOLBOX_CHECK_CONFIG_FILE_BROKEN: Check if the configuration file is damaged
-TOOLBOX_CHECK_GALLERY_FILE_BROKEN: Check if the album file is damaged 
+TOOLBOX_CHECK_GALLERY_FILE_BROKEN: Check if the album file is damaged
 TOOLBOX_CHECK_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD: Check if there is a problem with clipboard picture upload
 TOOLBOX_CHECK_PROBLEM_WITH_PROXY: Check if the proxy settings are normal
 TOOLBOX_FIX_DONE_NEED_RELOAD: Repair completed, need to restart to take effect, restart or not
@@ -236,7 +240,7 @@ TIPS_PLUGIN_OVERWRITE_GALLERY: Plugin is trying to overwrite the album gallery, 
 TIPS_UPLOAD_NOT_PICTURES: The latest clipboard item is not a picture
 TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_DEFAULT: PicGo config file broken, has been restored to default
 TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_BACKUP: PicGo config file broken, has been restored to backup
-TIPS_PICGO_BACKUP_FILE_VERSION: 'Backup file version: ${v}'
+TIPS_PICGO_BACKUP_FILE_VERSION: "Backup file version: ${v}"
 TIPS_CUSTOM_CONFIG_FILE_PATH_ERROR: Custom config file parse error, please check the path content
 TIPS_SHORTCUT_MODIFIED_SUCCEED: Shortcut modified successfully
 TIPS_SHORTCUT_MODIFIED_CONFLICT: Shortcut conflict, please reset

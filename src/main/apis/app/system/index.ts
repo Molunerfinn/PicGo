@@ -19,6 +19,7 @@ import { privacyManager } from '~/main/utils/privacyManager'
 import { T } from '~/main/i18n'
 import { isMacOSVersionGreaterThanOrEqualTo } from '~/main/utils/getMacOSVersion'
 import { buildPicBedListMenu } from '~/main/events/remotes/menu'
+import { isLinux, isMacOS } from '~/universal/utils/common'
 let contextMenu: Menu | null
 let menu: Menu | null
 let tray: Tray | null
@@ -256,7 +257,7 @@ export function createTray () {
       }
     })
     // toggleWindow()
-  } else if (process.platform === 'linux') {
+  } else if (isLinux) {
     // click事件在Ubuntu上无法触发，Unity不支持（在Mac和Windows上可以触发）
     // 需要使用 setContextMenu 设置菜单
     createContextMenu()
@@ -265,7 +266,7 @@ export function createTray () {
 }
 
 export function handleDockIcon () {
-  if (process.platform === 'darwin') {
+  if (isMacOS) {
     if (db.get('settings.showDockIcon') !== false) {
       app.dock.show()
       app.dock.setMenu(createContextMenu())

@@ -37,6 +37,7 @@ import fixPath from './fixPath'
 import { initI18n } from '~/main/utils/handleI18n'
 import { remoteNoticeHandler } from 'apis/app/remoteNotice'
 import { isMacOS } from '../utils/getMacOSVersion'
+import { isWindowShouldShowOnStartup } from '../apis/app/window/windowList'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -79,7 +80,7 @@ class LifeCycle {
         try {
           await installExtension(VUEJS_DEVTOOLS)
         } catch (e: any) {
-          console.error('Vue Devtools failed to install:', e.toString())
+          console.error('Vue Devtools failed to install:', e?.toString())
         }
       }
       windowManager.create(IWindowList.TRAY_WINDOW)
@@ -87,6 +88,17 @@ class LifeCycle {
       settingWindow?.once('show', () => {
         remoteNoticeHandler.triggerHook(IRemoteNoticeTriggerHook.SETTING_WINDOW_OPEN)
       })
+      if (isWindowShouldShowOnStartup(IWindowList.SETTING_WINDOW)) {
+        settingWindow?.show()
+        settingWindow?.focus()
+      }
+      if (!isMacOS) {
+        if (isWindowShouldShowOnStartup(IWindowList.MINI_WINDOW)) {
+          const miniWindow = windowManager.create(IWindowList.MINI_WINDOW)
+          miniWindow?.show()
+          miniWindow?.focus()
+        }
+      }
       createTray()
       handleDockIcon()
       db.set('needReload', false)

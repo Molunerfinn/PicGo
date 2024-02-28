@@ -48,7 +48,7 @@ import { ElForm } from 'element-plus'
 import { Reading } from '@element-plus/icons-vue'
 import { IConfig } from 'picgo'
 import { T as $T } from '@/i18n/index'
-import { enforceNumber } from '~/universal/utils/common'
+import { enforceNumber, isLinux } from '~/universal/utils/common'
 import { onBeforeMount, reactive, ref } from 'vue'
 import { getConfig } from '@/utils/dataSender'
 import ButtonAreaSettings from './components/settings/buttonArea/ButtonAreaSettings.vue'
@@ -56,6 +56,7 @@ import SwitchAreaSettings from './components/settings/switchArea/SwitchAreaSetti
 import CustomAreaSettings from './components/settings/customArea/CustomAreaSettings.vue'
 import SelectAreaSettings from './components/settings/selectArea/SelectAreaSettings.vue'
 import { openURL } from '@/utils/common'
+import { IStartupMode } from '#/types/enum'
 
 const form = reactive<ISettingForm>({
   showUpdateTip: false,
@@ -80,7 +81,8 @@ const form = reactive<ISettingForm>({
     port: 36677,
     host: '127.0.0.1',
     enable: true
-  }
+  },
+  startupMode: IStartupMode.HIDE
 })
 
 const proxy = ref('')
@@ -113,6 +115,7 @@ async function initData () {
     form.server = settings.server
     form.logFileSizeLimit = enforceNumber(settings.logFileSizeLimit) || 10
     form.showDockIcon = settings.showDockIcon === undefined ? true : settings.showDockIcon
+    form.startupMode = settings.startupMode || (isLinux ? IStartupMode.SHOW_MINI_WINDOW : IStartupMode.HIDE)
   }
 }
 

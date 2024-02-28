@@ -22,6 +22,7 @@ interface ISettingForm {
     host: string
     enable: boolean
   }
+  startupMode: import('#/types/enum').IStartupMode
 }
 
 interface IShortKeyMap {

@@ -5,13 +5,14 @@ import {
   RENAME_WINDOW_URL,
   TOOLBOX_WINDOW_URL
 } from './constants'
-import { IWindowList } from '#/types/enum'
+import { IStartupMode, IWindowList } from '#/types/enum'
 import bus from '@core/bus'
 import { CREATE_APP_MENU } from '@core/bus/constants'
 import db from '~/main/apis/core/datastore'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { app } from 'electron'
 import { T } from '~/main/i18n'
+import { isLinux } from '~/universal/utils/common'
 // import { URLSearchParams } from 'url'
 
 const windowList = new Map<IWindowList, IWindowListItem>()
@@ -23,6 +24,21 @@ const handleWindowParams = (windowURL: string) => {
   // search.append('lang', lang)
   // return `${baseURL}?${search.toString()}#${hash}`
   return windowURL
+}
+
+export const isWindowShouldShowOnStartup = (currentWindow: IWindowList) => {
+  const startupMode = db.get('settings.startupMode') || (isLinux ? IStartupMode.SHOW_MINI_WINDOW : IStartupMode.HIDE)
+  switch (currentWindow) {
+    case IWindowList.MINI_WINDOW: {
+      return startupMode === IStartupMode.SHOW_MINI_WINDOW
+    }
+    case IWindowList.SETTING_WINDOW: {
+      return startupMode === IStartupMode.SHOW_MAIN_WINDOW
+    }
+    default: {
+      return false
+    }
+  }
 }
 
 windowList.set(IWindowList.TRAY_WINDOW, {
@@ -113,7 +129,7 @@ windowList.set(IWindowList.MINI_WINDOW, {
     const obj: IBrowserWindowOptions = {
       height: 64,
       width: 64,
-      show: process.platform === 'linux',
+      show: isLinux,
       frame: false,
       fullscreenable: false,
       skipTaskbar: true,
