@@ -21,6 +21,7 @@ import path from 'path'
 import { privacyManager } from '~/main/utils/privacyManager'
 import writeFile from 'write-file-atomic'
 import { CLIPBOARD_IMAGE_FOLDER } from '~/universal/utils/static'
+import {v4 as uuidv4} from 'uuid'
 
 const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> => {
   return new Promise((resolve) => {
@@ -80,12 +81,15 @@ class Uploader {
       handle: async (ctx: IPicGo) => {
         const rename = db.get('settings.rename')
         const autoRename = db.get('settings.autoRename')
-        if (autoRename || rename) {
+        const autoUUIDRename = db.get('settings.autoUUIDRename')
+        if (autoRename || rename || autoUUIDRename) {
           await Promise.all(ctx.output.map(async (item, index) => {
             let name: undefined | string | null
             let fileName: string | undefined
             if (autoRename) {
               fileName = dayjs().add(index, 'ms').format('YYYYMMDDHHmmSSS') + item.extname
+            } else if (autoUUIDRename) {
+              fileName = uuidv4() + item.extname
             } else {
               fileName = item.fileName
             }

@@ -64,6 +64,7 @@ const form = reactive<ISettingForm>({
   autoStart: false,
   rename: false,
   autoRename: false,
+  autoUUIDRename: false,
   uploadNotification: false,
   miniWindowOnTop: false,
   logLevel: ['all'],

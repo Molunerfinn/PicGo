@@ -27,6 +27,11 @@
     :label="$T('SETTINGS_TIMESTAMP_RENAME')"
   />
   <SwitchFormItem
+    v-model="form.autoUUIDRename"
+    setting-props="autoUUIDRename"
+    :label="$T('SETTINGS_UUID_RENAME')"
+  />
+  <SwitchFormItem
     v-model="form.uploadNotification"
     setting-props="uploadNotification"
     :label="$T('SETTINGS_OPEN_UPLOAD_TIPS')"

@@ -4,6 +4,7 @@ interface ISettingForm {
   autoStart: boolean
   rename: boolean
   autoRename: boolean
+  autoUUIDRename: boolean
   uploadNotification: boolean
   miniWindowOnTop: boolean
   logLevel: string[]
