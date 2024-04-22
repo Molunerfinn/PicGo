@@ -1,3 +1,18 @@
+# :tada: 2.4.0-beta.7 (2024-04-22)
+
+
+### :sparkles: Features
+
+* add startup mode ([aaec99f](https://github.com/Molunerfinn/PicGo/commit/aaec99f)), closes [#915](https://github.com/Molunerfinn/PicGo/issues/915)
+
+
+### :bug: Bug Fixes
+
+* config page scroll bug ([8e91582](https://github.com/Molunerfinn/PicGo/commit/8e91582)), closes [#1237](https://github.com/Molunerfinn/PicGo/issues/1237)
+* tray menu open bug ([50e0a64](https://github.com/Molunerfinn/PicGo/commit/50e0a64)), closes [#1217](https://github.com/Molunerfinn/PicGo/issues/1217)
+
+
+
 # :tada: 2.4.0-beta.6 (2023-11-19)
 
 
