@@ -9986,10 +9986,10 @@ pend@~1.2.0:
   resolved "https://registry.npmjs.org/pend/-/pend-1.2.0.tgz#7a57eb550a6783f9115331fcf4663d5c8e007a50"
   integrity sha1-elfrVQpng/kRUzH89GY9XI4AelA=
 
-picgo@^1.5.6:
-  version "1.5.6"
-  resolved "https://registry.npmmirror.com/picgo/-/picgo-1.5.6.tgz#77e0422ed291ee8dd978b34aabb5cede61557e13"
-  integrity sha512-eJ+Jevv30TlIjkOO/rg1MNou8eYOeRADBZVUxuYnfXomuFVestm+IZoufHIUQlqAgf3bYprRnXRLImhs21JETQ==
+picgo@^1.5.7:
+  version "1.5.7"
+  resolved "https://registry.yarnpkg.com/picgo/-/picgo-1.5.7.tgz#7d7dab596ede2b88c919313c54854738b1c0853d"
+  integrity sha512-3KUxfl3jAfDynOo9ByrX/8Ob1KBxGKvyvBDdUxxA0HDq1vtchbBwsckuqnN99jCOZatY/00eXzElry3UyItaHA==
   dependencies:
     "@picgo/i18n" "^1.0.0"
     "@picgo/store" "^2.0.2"
