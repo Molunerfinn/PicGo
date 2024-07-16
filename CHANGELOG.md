@@ -1,3 +1,12 @@
+# :tada: 2.4.0-beta.8 (2024-07-16)
+
+
+### :bug: Bug Fixes
+
+* tencent cos url encode bug ([ff7336b](https://github.com/Molunerfinn/PicGo/commit/ff7336b)), closes [#1265](https://github.com/Molunerfinn/PicGo/issues/1265)
+
+
+
 # :tada: 2.4.0-beta.7 (2024-04-22)
 
 
