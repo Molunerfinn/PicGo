@@ -10,6 +10,17 @@
         <CaretBottom v-show="!handleBarActive" />
         <CaretTop v-show="handleBarActive" />
       </el-icon>
+      <el-switch
+        v-model="imgObjectFitType"
+        inline-prompt
+        style="position: absolute; right: 1rem; --el-switch-off-color: #13ce66"
+        width="5rem"
+        size="large"
+        :active-value="ImgObjectFitTypeEnum.contain"
+        :inactive-value="ImgObjectFitTypeEnum.cover"
+        active-text="Contain"
+        inactive-text="Cover"
+      />
     </div>
     <transition name="el-zoom-in-top">
       <el-row v-show="handleBarActive">
@@ -120,6 +131,9 @@
               <img
                 v-lazy="item.imgUrl"
                 class="gallery-list__item-img"
+                :style="{
+                  objectFit: imgObjectFitType,
+                }"
               >
             </div>
             <div
@@ -220,6 +234,11 @@ const isShiftKeyPress = ref<boolean>(false)
 const searchText = ref<string>('')
 const handleBarActive = ref<boolean>(false)
 const pasteStyle = ref<string>('')
+enum ImgObjectFitTypeEnum {
+  'contain' = 'contain',
+  'cover' = 'cover',
+}
+const imgObjectFitType = ref<ImgObjectFitTypeEnum>(ImgObjectFitTypeEnum.contain)
 const pasteStyleMap = {
   Markdown: 'markdown',
   HTML: 'HTML',
@@ -563,6 +582,8 @@ export default {
   height 100%
   .cursor-pointer
     cursor pointer
+    width 14px
+    color #999999
 #gallery-view
   position relative
   .round
@@ -595,6 +616,8 @@ export default {
       overflow hidden
       display flex
       margin-bottom 6px
+      border: 1px solid rgba(255,255,255,0.1)
+      border-radius: 0.5rem
       &-fake
         position absolute
         top 0
