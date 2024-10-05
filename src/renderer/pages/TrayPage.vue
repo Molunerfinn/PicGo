@@ -70,6 +70,7 @@ import { IResult } from '@picgo/store/dist/types'
 import { PASTE_TEXT, OPEN_WINDOW } from '#/events/constants'
 import { IWindowList } from '#/types/enum'
 import { sendToMain } from '@/utils/dataSender'
+import { getRawData } from '@/utils/common'
 
 const files = ref<IResult<ImgInfo>[]>([])
 const notification = reactive({
@@ -92,8 +93,8 @@ async function getData () {
 
 async function copyTheLink (item: ImgInfo) {
   notification.body = item.imgUrl!
+  await ipcRenderer.invoke(PASTE_TEXT, getRawData(item))
   const myNotification = new Notification(notification.title, notification)
-  ipcRenderer.invoke(PASTE_TEXT, item)
   myNotification.onclick = () => {
     return true
   }

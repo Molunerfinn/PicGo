@@ -217,6 +217,7 @@ import $$db from '@/utils/db'
 import GalleryToolbar from './components/gallery/GalleryToolbar.vue'
 import { IRPCActionType } from '~/universal/types/enum'
 import GalleryImage from './components/gallery/GalleryImage.vue'
+import { getRawData } from '@/utils/common'
 const images = ref<ImgInfo[]>([])
 const dialogVisible = ref(false)
 const imgInfo = reactive({
@@ -387,7 +388,7 @@ function handleClose () {
 }
 
 async function copy (item: ImgInfo) {
-  const copyLink = await ipcRenderer.invoke(PASTE_TEXT, item)
+  const copyLink = await ipcRenderer.invoke(PASTE_TEXT, getRawData(item))
   const obj = {
     title: $T('COPY_LINK_SUCCEED'),
     body: copyLink
@@ -518,7 +519,7 @@ async function multiCopy () {
       if (selectedList[key]) {
         const item = await $$db.getById<ImgInfo>(key)
         if (item) {
-          const txt = await ipcRenderer.invoke(PASTE_TEXT, item)
+          const txt = await ipcRenderer.invoke(PASTE_TEXT, getRawData(item))
           copyString.push(txt)
           selectedList[key] = false
         }
