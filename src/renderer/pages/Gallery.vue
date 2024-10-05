@@ -125,16 +125,20 @@
             class="gallery-list__img"
           >
             <div
-              class="gallery-list__item"
+              class="gallery-list__item relative group/checkbox"
               @click="zoomImage(index)"
             >
-              <img
-                v-lazy="item.imgUrl"
+              <GalleryImage
+                :lazy-src="item.imgUrl"
                 class="gallery-list__item-img"
-                :style="{
-                  objectFit: imgObjectFitType,
-                }"
-              >
+                :object-fit="imgObjectFitType"
+              />
+              <el-checkbox
+                v-model="selectedList[item.id ? item.id : '']"
+                class="!absolute !h-fit bottom-1 right-1 [&_.el-checkbox\_\_input]:duration-150 [&_.el-checkbox\_\_input]:opacity-0 [&_.el-checkbox\_\_input.is-checked]:opacity-100 group-hover/checkbox:[&_.el-checkbox\_\_input]:opacity-100"
+                @change="(val: boolean) => handleChooseImage(val, index)"
+                @click.stop
+              />
             </div>
             <div
               class="gallery-list__file-name"
@@ -160,17 +164,13 @@
                 >
                   <Edit />
                 </el-icon>
-                <el-icon
-                  class="cursor-pointer delete"
-                  @click="remove(item.id)"
-                >
-                  <Delete />
-                </el-icon>
               </el-row>
-              <el-checkbox
-                v-model="selectedList[item.id ? item.id : '']"
-                @change="(val) => handleChooseImage(val, index)"
-              />
+              <el-icon
+                class="cursor-pointer delete justify-self-end"
+                @click="remove(item.id)"
+              >
+                <Delete />
+              </el-icon>
             </el-row>
           </el-col>
         </el-row>
@@ -216,6 +216,7 @@ import { T as $T } from '@/i18n/index'
 import $$db from '@/utils/db'
 import GalleryToolbar from './components/gallery/GalleryToolbar.vue'
 import { IRPCActionType } from '~/universal/types/enum'
+import GalleryImage from './components/gallery/GalleryImage.vue'
 const images = ref<ImgInfo[]>([])
 const dialogVisible = ref(false)
 const imgInfo = reactive({
