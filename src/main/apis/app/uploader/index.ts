@@ -85,7 +85,7 @@ class Uploader {
             let name: undefined | string | null
             let fileName: string | undefined
             if (autoRename) {
-              fileName = dayjs().add(index, 'ms').format('YYYYMMDDHHmmSSS') + item.extname
+              fileName = dayjs().add(index, 'ms').format('YYYYMMDDHHmmssSSS') + item.extname
             } else {
               fileName = item.fileName
             }
@@ -126,7 +126,7 @@ class Uploader {
         }
         const buffer = nativeImage.toPNG()
         const baseDir = picgo.baseDir
-        const fileName = `${dayjs().format('YYYYMMDDHHmmSSS')}.png`
+        const fileName = `${dayjs().format('YYYYMMDDHHmmssSSS')}.png`
         filePath = path.join(baseDir, CLIPBOARD_IMAGE_FOLDER, fileName)
         await writeFile(filePath, buffer)
         return await this.upload([filePath])
