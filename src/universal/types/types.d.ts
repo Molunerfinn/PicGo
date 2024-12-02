@@ -213,9 +213,10 @@ interface INPMSearchResultObject {
     version: string
     description: string
     keywords: string[]
-    author: {
-      name: string
-    }
+    maintainers: Array<{
+      email: string
+      username: string
+    }>
     links: {
       npm: string
       homepage: string
