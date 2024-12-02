@@ -1,3 +1,19 @@
+# :tada: 2.4.0-beta.9 (2024-12-02)
+
+
+### :bug: Bug Fixes
+
+* clipboard filename missing second ([c9fe402](https://github.com/Molunerfinn/PicGo/commit/c9fe402)), closes [#1293](https://github.com/Molunerfinn/PicGo/issues/1293)
+* copy text bug ([c8ba547](https://github.com/Molunerfinn/PicGo/commit/c8ba547)), closes [#1210](https://github.com/Molunerfinn/PicGo/issues/1210) [#1280](https://github.com/Molunerfinn/PicGo/issues/1280)
+* plugin list search bug ([04140de](https://github.com/Molunerfinn/PicGo/commit/04140de)), closes [#1297](https://github.com/Molunerfinn/PicGo/issues/1297)
+
+
+### :package: Chore
+
+* update ci macos version ([316928e](https://github.com/Molunerfinn/PicGo/commit/316928e))
+
+
+
 # :tada: 2.4.0-beta.8 (2024-07-16)
 
 
