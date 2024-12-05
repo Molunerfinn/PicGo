@@ -4,7 +4,7 @@ import { clipboard, Notification, dialog } from 'electron'
 import { handleUrlEncode } from '~/universal/utils/common'
 
 export const handleCopyUrl = (str: string): void => {
-  if (db.get('settings.autoCopy') !== false) {
+  if (db.get('settings.autoCopyUrl') !== false) {
     clipboard.writeText(str)
   }
 }

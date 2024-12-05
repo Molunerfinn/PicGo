@@ -103,7 +103,7 @@ async function initData () {
     form.uploadNotification = settings.uploadNotification || false
     form.miniWindowOnTop = settings.miniWindowOnTop || false
     form.logLevel = initLogLevel(settings.logLevel || [])
-    form.autoCopyUrl = settings.autoCopy === undefined ? true : settings.autoCopy
+    form.autoCopyUrl = settings.autoCopyUrl === undefined ? true : settings.autoCopyUrl
     form.checkBetaUpdate = settings.checkBetaUpdate === undefined ? true : settings.checkBetaUpdate
     form.useBuiltinClipboard = settings.useBuiltinClipboard === undefined ? false : settings.useBuiltinClipboard
     form.language = settings.language ?? 'zh-CN'
