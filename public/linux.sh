@@ -17,18 +17,13 @@ if [ "$XDG_SESSION_TYPE" = "x11" ]; then
     echo $filePath
   fi
 elif [ "$XDG_SESSION_TYPE" = "wayland" ]; then
-  command -v wl-copy >/dev/null 2>&1 || { echo >&1 "no wl-clipboard"; exit 1; }
-  filePath=`wl-copy -o 2>/dev/null | grep ^file:// | cut -c8-`
-  if [ ! -n "$filePath" ] ;then
-    if
-        wl-copy -t image/png -o >/dev/null 2>&1
-      then
-        wl-copy -t image/png image/png -o >$1 2>/dev/null
-        echo $1
-    else
-        echo "no image"
-    fi
+  command -v wl-paste >/dev/null 2>&1 || { echo >&1 "no wl-clipboard"; exit 1; }
+  isImage=`wl-paste --list-types | grep image`
+  if [ -n "$isImage" ]; then
+    wl-paste --type image/png > $1 2>/dev/null
+    echo $1
   else
-    echo $filePath
+    echo "no image"
+    exit 1
   fi
 fi
