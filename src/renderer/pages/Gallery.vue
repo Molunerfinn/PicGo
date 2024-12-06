@@ -10,6 +10,17 @@
         <CaretBottom v-show="!handleBarActive" />
         <CaretTop v-show="handleBarActive" />
       </el-icon>
+      <el-switch
+        v-model="imgObjectFitType"
+        inline-prompt
+        style="position: absolute; right: 1rem; --el-switch-off-color: #13ce66"
+        width="5rem"
+        size="large"
+        :active-value="ImgObjectFitTypeEnum.contain"
+        :inactive-value="ImgObjectFitTypeEnum.cover"
+        active-text="Contain"
+        inactive-text="Cover"
+      />
     </div>
     <transition name="el-zoom-in-top">
       <el-row v-show="handleBarActive">
@@ -114,13 +125,20 @@
             class="gallery-list__img"
           >
             <div
-              class="gallery-list__item"
+              class="gallery-list__item relative group/checkbox"
               @click="zoomImage(index)"
             >
-              <img
-                v-lazy="item.imgUrl"
+              <GalleryImage
+                :lazy-src="item.imgUrl"
                 class="gallery-list__item-img"
-              >
+                :object-fit="imgObjectFitType"
+              />
+              <el-checkbox
+                v-model="selectedList[item.id ? item.id : '']"
+                class="!absolute !h-fit bottom-1 right-1 [&_.el-checkbox\_\_input]:duration-150 [&_.el-checkbox\_\_input]:opacity-0 [&_.el-checkbox\_\_input.is-checked]:opacity-100 group-hover/checkbox:[&_.el-checkbox\_\_input]:opacity-100"
+                @change="(val: boolean) => handleChooseImage(val, index)"
+                @click.stop
+              />
             </div>
             <div
               class="gallery-list__file-name"
@@ -146,17 +164,13 @@
                 >
                   <Edit />
                 </el-icon>
-                <el-icon
-                  class="cursor-pointer delete"
-                  @click="remove(item.id)"
-                >
-                  <Delete />
-                </el-icon>
               </el-row>
-              <el-checkbox
-                v-model="selectedList[item.id ? item.id : '']"
-                @change="(val) => handleChooseImage(val, index)"
-              />
+              <el-icon
+                class="cursor-pointer delete justify-self-end"
+                @click="remove(item.id)"
+              >
+                <Delete />
+              </el-icon>
             </el-row>
           </el-col>
         </el-row>
@@ -202,6 +216,7 @@ import { T as $T } from '@/i18n/index'
 import $$db from '@/utils/db'
 import GalleryToolbar from './components/gallery/GalleryToolbar.vue'
 import { IRPCActionType } from '~/universal/types/enum'
+import GalleryImage from './components/gallery/GalleryImage.vue'
 import { getRawData } from '@/utils/common'
 const images = ref<ImgInfo[]>([])
 const dialogVisible = ref(false)
@@ -221,6 +236,11 @@ const isShiftKeyPress = ref<boolean>(false)
 const searchText = ref<string>('')
 const handleBarActive = ref<boolean>(false)
 const pasteStyle = ref<string>('')
+enum ImgObjectFitTypeEnum {
+  'contain' = 'contain',
+  'cover' = 'cover',
+}
+const imgObjectFitType = ref<ImgObjectFitTypeEnum>(ImgObjectFitTypeEnum.contain)
 const pasteStyleMap = {
   Markdown: 'markdown',
   HTML: 'HTML',
@@ -564,6 +584,8 @@ export default {
   height 100%
   .cursor-pointer
     cursor pointer
+    width 14px
+    color #999999
 #gallery-view
   position relative
   .round
@@ -596,6 +618,8 @@ export default {
       overflow hidden
       display flex
       margin-bottom 6px
+      border: 1px solid rgba(255,255,255,0.1)
+      border-radius: 0.5rem
       &-fake
         position absolute
         top 0
