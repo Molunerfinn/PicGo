@@ -4,9 +4,33 @@ import {
   handleResponse,
   ensureHTTPLink
 } from './utils'
+import { dbPathDir } from 'apis/core/datastore/dbChecker'
 import picgo from '@core/picgo'
 import logger from '@core/picgo/logger'
 import axios from 'axios'
+import multer from 'multer'
+import path from 'path'
+import fs from 'fs'
+
+const STORE_PATH = dbPathDir()
+const formImagesPath = path.join(STORE_PATH, 'picgo-form-images')
+if (!fs.existsSync(formImagesPath)) {
+  fs.mkdirSync(formImagesPath, { recursive: true })
+}
+
+// 使用 multer 处理表单文件
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, formImagesPath)
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname))
+  }
+})
+
+const upload = multer({
+  storage
+})
 
 class Server {
   private httpServer: http.Server
@@ -54,6 +78,51 @@ class Server {
           statusCode: 404,
           body: {
             success: false
+          }
+        })
+      } else if (request.headers['content-type'] && request.headers['content-type'].includes('multipart/form-data')) {
+        logger.info('[PicGo Server] handling file upload')
+        upload.array('files')(request as any, response as any, async (err) => {
+          if (err) {
+            logger.error('[PicGo Server] file upload error', err)
+            return handleResponse({
+              response,
+              body: {
+                success: false,
+                message: 'File upload failed'
+              }
+            })
+          }
+
+          try {
+            const files = (request as any).files
+            if (!files || files.length === 0) {
+              return handleResponse({
+                response,
+                body: {
+                  success: false,
+                  message: 'No files were uploaded'
+                }
+              })
+            }
+
+            const filePaths = files.map((file: any) => file.path)
+            logger.info('[PicGo Server] files uploaded:', filePaths)
+
+            const handler = routers.getHandler(request.url!)
+            handler!({
+              list: filePaths,
+              response
+            })
+          } catch (error: any) {
+            logger.error('[PicGo Server] process upload files error', error)
+            handleResponse({
+              response,
+              body: {
+                success: false,
+                message: 'Failed to process uploaded files'
+              }
+            })
           }
         })
       } else {
