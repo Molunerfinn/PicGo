@@ -12,6 +12,37 @@ import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
 
+// 扩展原生 IncomingMessage，添加 multer 字段
+declare module 'http' {
+  interface IncomingMessage {
+    files?: {
+      path: string;
+      originalname: string;
+      mimetype: string;
+      size: number;
+      [key: string]: any;
+    }[];
+    body?: any;
+  }
+}
+
+// Multer 中间件适配器类型
+export type MulterMiddleware = (
+  req: http.IncomingMessage,
+  res: http.ServerResponse,
+  callback: (error?: any) => void
+) => void;
+
+// 扩展 multer 函数的返回类型
+declare module 'multer' {
+  interface Multer {
+    array(fieldname: string, maxCount?: number): MulterMiddleware;
+    single(fieldname: string): MulterMiddleware;
+    fields(fields: { name: string; maxCount?: number }[]): MulterMiddleware;
+    none(): MulterMiddleware;
+  }
+}
+
 const STORE_PATH = dbPathDir()
 const formImagesPath = path.join(STORE_PATH, 'picgo-form-images')
 if (!fs.existsSync(formImagesPath)) {
@@ -82,7 +113,7 @@ class Server {
         })
       } else if (request.headers['content-type'] && request.headers['content-type'].includes('multipart/form-data')) {
         logger.info('[PicGo Server] handling file upload')
-        upload.array('files')(request as any, response as any, async (err) => {
+        upload.array('files')(request, response, async (err) => {
           if (err) {
             logger.error('[PicGo Server] file upload error', err)
             return handleResponse({
@@ -95,7 +126,7 @@ class Server {
           }
 
           try {
-            const files = (request as any).files
+            const files = (request).files
             if (!files || files.length === 0) {
               return handleResponse({
                 response,
@@ -106,16 +137,16 @@ class Server {
               })
             }
 
-            const filePaths = files.map((file: any) => file.path)
-            logger.info('[PicGo Server] files uploaded:', filePaths)
+            const filePaths = files.map((file) => file.path)
+            logger.info('[PicGo Server] files uploaded: ' + filePaths.join(', '))
 
             const handler = routers.getHandler(request.url!)
             handler!({
               list: filePaths,
               response
             })
-          } catch (error: any) {
-            logger.error('[PicGo Server] process upload files error', error)
+          } catch (err: any) {
+            logger.error('[PicGo Server] process upload files error', err)
             handleResponse({
               response,
               body: {
