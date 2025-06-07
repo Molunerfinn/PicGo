@@ -21,6 +21,7 @@ import path from 'path'
 import { privacyManager } from '~/main/utils/privacyManager'
 import writeFile from 'write-file-atomic'
 import { CLIPBOARD_IMAGE_FOLDER } from '~/universal/utils/static'
+import { cleanupFormUploaderFiles } from '~/main/utils/cleanUpFormUploaderFiles'
 
 const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> => {
   return new Promise((resolve) => {
@@ -176,6 +177,7 @@ class Uploader {
       return false
     } finally {
       ipcMain.removeAllListeners(GET_RENAME_FILE_NAME)
+      cleanupFormUploaderFiles(img)
     }
   }
 }

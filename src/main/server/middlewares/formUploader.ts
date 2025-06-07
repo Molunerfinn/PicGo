@@ -6,6 +6,7 @@ import { dbPathDir } from 'apis/core/datastore/dbChecker'
 import logger from '@core/picgo/logger'
 import { handleResponse } from '../utils'
 import routers from '../routerManager'
+import { FORM_IMAGE_FOLDER } from '~/universal/utils/static'
 
 // Multer 错误类型定义
 export interface MulterError extends Error {
@@ -42,7 +43,7 @@ class FormUploader {
 
   private initializeStorage () {
     const STORE_PATH = dbPathDir()
-    this.formImagesPath = path.join(STORE_PATH, 'picgo-form-images')
+    this.formImagesPath = path.join(STORE_PATH, FORM_IMAGE_FOLDER)
     if (!fs.existsSync(this.formImagesPath)) {
       fs.mkdirSync(this.formImagesPath, { recursive: true })
     }
@@ -54,7 +55,7 @@ class FormUploader {
         cb(null, this.formImagesPath)
       },
       filename: (req: http.IncomingMessage, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
-        cb(null, Date.now() + path.extname(file.originalname))
+        cb(null, file.originalname || Date.now() + path.extname(file.originalname))
       }
     })
 

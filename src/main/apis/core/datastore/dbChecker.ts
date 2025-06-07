@@ -5,6 +5,7 @@ import { app as APP } from 'electron'
 import { getLogger } from '@core/utils/localLogger'
 import dayjs from 'dayjs'
 import { T } from '~/main/i18n'
+import { FORM_IMAGE_FOLDER } from '~/universal/utils/static'
 const STORE_PATH = APP.getPath('userData')
 const configFilePath = path.join(STORE_PATH, 'data.json')
 const configFileBackupPath = path.join(STORE_PATH, 'data.bak.json')
@@ -131,9 +132,19 @@ function getGalleryDBPath (): {
   }
 }
 
+function getFormImageFolderPath (): string {
+  const STORE_PATH = dbPathDir()
+  const formImagesPath = path.join(STORE_PATH, FORM_IMAGE_FOLDER)
+  if (!fs.existsSync(formImagesPath)) {
+    fs.mkdirSync(formImagesPath, { recursive: true })
+  }
+  return formImagesPath
+}
+
 export {
   dbChecker,
   dbPathChecker,
   dbPathDir,
-  getGalleryDBPath
+  getGalleryDBPath,
+  getFormImageFolderPath
 }
