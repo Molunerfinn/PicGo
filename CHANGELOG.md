@@ -1,3 +1,20 @@
+# :tada: 2.4.0-beta.10 (2025-06-08)
+
+
+### :sparkles: Features
+
+* finish form uploader for picgo server ([9841418](https://github.com/Molunerfinn/PicGo/commit/9841418))
+* **server:** add support for form upload in PicGo Server ([#1327](https://github.com/Molunerfinn/PicGo/issues/1327)) ([a928b4c](https://github.com/Molunerfinn/PicGo/commit/a928b4c)), closes [#428](https://github.com/Molunerfinn/PicGo/issues/428)
+
+
+### :bug: Bug Fixes
+
+* auto-copy url can't be turned off ([#1300](https://github.com/Molunerfinn/PicGo/issues/1300)) ([dacb926](https://github.com/Molunerfinn/PicGo/commit/dacb926))
+* encoded url filename unreadable ([2bd5d06](https://github.com/Molunerfinn/PicGo/commit/2bd5d06))
+* unable to use clip in wayland ([#1301](https://github.com/Molunerfinn/PicGo/issues/1301)) ([7df37a2](https://github.com/Molunerfinn/PicGo/commit/7df37a2))
+
+
+
 # :tada: 2.4.0-beta.9 (2024-12-02)
 
 
