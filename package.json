@@ -35,7 +35,7 @@
     "marked": "^7.0.4",
     "mitt": "^3.0.0",
     "multer": "^1.4.5-lts.1",
-    "picgo": "^1.5.8",
+    "picgo": "^1.5.9",
     "qrcode.vue": "^3.3.3",
     "shell-path": "2.1.0",
     "uuid": "^9.0.0",
