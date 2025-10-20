@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "home": "ホーム",
+    "features": "機能",
+    "plugins": "プラグイン",
+    "download": "ダウンロード",
+    "docs": "ドキュメント",
+    "github": "GitHub"
+  },
+  "hero": {
+    "title": "PicGo",
+    "subtitle": "究極の画像アップロード＆管理ツール",
+    "description": "美しいクロスプラットフォームインターフェースで、複数のクラウドストレージサービスに画像をシームレスにアップロード。20以上の画像ホスティングサービスをサポートし、強力なプラグインシステムを搭載。",
+    "download": "無料ダウンロード",
+    "viewDocs": "ドキュメントを見る",
+    "currentVersion": "現在のバージョン"
+  },
+  "features": {
+    "title": "強力な機能",
+    "subtitle": "効率的な画像管理に必要なすべて",
+    "multiPicbed": {
+      "title": "マルチピクベッドサポート",
+      "description": "GitHub、SMMS、Alibaba Cloud OSS、Qiniu、Tencent COSなど、20以上の画像ホスティングサービスをサポート。異なるピクベッド間をシームレスに切り替え。"
+    },
+    "pluginSystem": {
+      "title": "プラグインシステム",
+      "description": "強力なプラグインでPicGoの機能を拡張。カスタムアップローダーから高度な画像処理まで、可能性は無限大。"
+    },
+    "crossPlatform": {
+      "title": "クロスプラットフォーム",
+      "description": "macOS、Windows、Linuxで利用可能。すべてのプラットフォームでネイティブパフォーマンスと一貫したユーザー体験を提供。"
+    },
+    "clipboardUpload": {
+      "title": "クリップボードアップロード",
+      "description": "単一のショートカットでクリップボードから画像を直接アップロード。スクリーンショットやキャプチャーに最適。"
+    },
+    "batchUpload": {
+      "title": "バッチ操作",
+      "description": "複数の画像を一度にアップロードし、ファイルを自動的にリネーム。バッチ操作で効率的にアップロードを管理。"
+    },
+    "galleryManagement": {
+      "title": "ギャラリー管理",
+      "description": "内蔵ギャラリーですべてのアップロード画像を追跡。検索、プレビュー、画像履歴を簡単に管理。"
+    }
+  },
+  "plugins": {
+    "title": "プラグインエコシステム",
+    "subtitle": "想像を超えてPicGoを拡張",
+    "description": "強力なプラグインシステムにより、新しい画像ホスティングサービスを追加したり、アップロードワークフローをカスタマイズしたり、他のツールと統合したり、さらに多くのことが可能。",
+    "viewPlugins": "プラグインを見る",
+    "createPlugin": "独自のプラグインを作成"
+  },
+  "supportedServices": {
+    "title": "サポートされているサービス",
+    "subtitle": "お気に入りの画像ホスティングサービスと接続",
+    "github": "GitHub",
+    "smms": "SM.MS",
+    "aliyun": "Alibaba Cloud OSS",
+    "qiniu": "Qiniu",
+    "tencent": "Tencent COS",
+    "upyun": "Upyun",
+    "imgur": "Imgur",
+    "weibo": "Weibo",
+    "andMore": "さらに15以上..."
+  },
+  "download": {
+    "title": "PicGoをダウンロード",
+    "subtitle": "すべての主要プラットフォームで利用可能",
+    "macos": "macOS版をダウンロード",
+    "windows": "Windows版をダウンロード",
+    "linux": "Linux版をダウンロード",
+    "or": "または",
+    "viewReleases": "すべてのリリースを見る"
+  },
+  "footer": {
+    "copyright": "© 2017-2024 PicGo。オープンソースプロジェクト、メンテナ：",
+    "author": "Molunerfinn",
+    "license": "MITライセンスの下で提供",
+    "links": {
+      "github": "GitHub",
+      "issues": "問題報告",
+      "discussions": "ディスカッション",
+      "sponsor": "スポンサー"
+    }
+  },
+  "language": {
+    "switch": "言語を切り替え",
+    "english": "English",
+    "chinese": "中文"
+  }
+}

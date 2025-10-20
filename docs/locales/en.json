@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "plugins": "Plugins",
+    "download": "Download",
+    "docs": "Docs",
+    "github": "GitHub"
+  },
+  "hero": {
+    "title": "PicGo",
+    "subtitle": "The Ultimate Image Upload & Management Tool",
+    "description": "Seamlessly upload images to multiple cloud storage services with a beautiful, cross-platform interface. Supports 20+ image hosting services with powerful plugin system.",
+    "download": "Download Free",
+    "viewDocs": "View Documentation",
+    "currentVersion": "Current Version"
+  },
+  "features": {
+    "title": "Powerful Features",
+    "subtitle": "Everything you need for efficient image management",
+    "multiPicbed": {
+      "title": "Multi-Picbed Support",
+      "description": "Support for 20+ image hosting services including GitHub, SMMS, Aliyun OSS, Qiniu, Tencent COS, and more. Switch between different picbeds seamlessly."
+    },
+    "pluginSystem": {
+      "title": "Plugin System",
+      "description": "Extend PicGo's functionality with powerful plugins. From custom uploaders to advanced image processing, the possibilities are endless."
+    },
+    "crossPlatform": {
+      "title": "Cross-Platform",
+      "description": "Available on macOS, Windows, and Linux with native performance and consistent user experience across all platforms."
+    },
+    "clipboardUpload": {
+      "title": "Clipboard Upload",
+      "description": "Upload images directly from your clipboard with a single shortcut. Perfect for quick screenshots and captures."
+    },
+    "batchUpload": {
+      "title": "Batch Operations",
+      "description": "Upload multiple images at once, rename files automatically, and manage your uploads efficiently with batch operations."
+    },
+    "galleryManagement": {
+      "title": "Gallery Management",
+      "description": "Keep track of all your uploaded images with a built-in gallery. Search, preview, and manage your image history with ease."
+    }
+  },
+  "plugins": {
+    "title": "Plugin Ecosystem",
+    "subtitle": "Extend PicGo beyond imagination",
+    "description": "With our powerful plugin system, you can add new image hosting services, customize upload workflows, integrate with other tools, and much more.",
+    "viewPlugins": "Browse Plugins",
+    "createPlugin": "Create Your Own Plugin"
+  },
+  "supportedServices": {
+    "title": "Supported Services",
+    "subtitle": "Connect with your favorite image hosting services",
+    "github": "GitHub",
+    "smms": "SM.MS",
+    "aliyun": "Aliyun OSS",
+    "qiniu": "Qiniu",
+    "tencent": "Tencent COS",
+    "upyun": "Upyun",
+    "imgur": "Imgur",
+    "weibo": "Weibo",
+    "andMore": "And 15+ more..."
+  },
+  "download": {
+    "title": "Download PicGo",
+    "subtitle": "Available for all major platforms",
+    "macos": "Download for macOS",
+    "windows": "Download for Windows",
+    "linux": "Download for Linux",
+    "or": "or",
+    "viewReleases": "View all releases"
+  },
+  "footer": {
+    "copyright": "© 2017-2024 PicGo. Open source project maintained by",
+    "author": "Molunerfinn",
+    "license": "Licensed under MIT License",
+    "links": {
+      "github": "GitHub",
+      "issues": "Issues",
+      "discussions": "Discussions",
+      "sponsor": "Sponsor"
+    }
+  },
+  "language": {
+    "switch": "Switch Language",
+    "english": "English",
+    "chinese": "中文"
+  }
+}

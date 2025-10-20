@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "home": "首页",
+    "features": "特性",
+    "plugins": "插件",
+    "download": "下载",
+    "docs": "文档",
+    "github": "GitHub"
+  },
+  "hero": {
+    "title": "PicGo",
+    "subtitle": "终极图片上传与管理工具",
+    "description": "无缝上传图片到多个云存储服务，拥有美观的跨平台界面。支持20多种图床服务，配备强大的插件系统。",
+    "download": "免费下载",
+    "viewDocs": "查看文档",
+    "currentVersion": "当前版本"
+  },
+  "features": {
+    "title": "强大特性",
+    "subtitle": "高效图片管理所需的一切",
+    "multiPicbed": {
+      "title": "多图床支持",
+      "description": "支持20多种图床服务，包括GitHub、SMMS、阿里云OSS、七牛云、腾讯云COS等。无缝切换不同图床。"
+    },
+    "pluginSystem": {
+      "title": "插件系统",
+      "description": "通过强大的插件系统扩展PicGo功能。从自定义上传器到高级图片处理，可能性无限。"
+    },
+    "crossPlatform": {
+      "title": "跨平台",
+      "description": "支持macOS、Windows和Linux，原生性能，所有平台提供一致的用户体验。"
+    },
+    "clipboardUpload": {
+      "title": "剪贴板上传",
+      "description": "通过快捷键直接从剪贴板上传图片。完美适用于快速截图和捕获。"
+    },
+    "batchUpload": {
+      "title": "批量操作",
+      "description": "一次性上传多张图片，自动重命名文件，通过批量操作高效管理上传。"
+    },
+    "galleryManagement": {
+      "title": "相册管理",
+      "description": "通过内置相册跟踪所有上传图片。轻松搜索、预览和管理图片历史记录。"
+    }
+  },
+  "plugins": {
+    "title": "插件生态",
+    "subtitle": "让PicGo超越想象",
+    "description": "凭借强大的插件系统，您可以添加新的图床服务、自定义上传工作流、集成其他工具等等。",
+    "viewPlugins": "浏览插件",
+    "createPlugin": "创建您的插件"
+  },
+  "supportedServices": {
+    "title": "支持的服务",
+    "subtitle": "连接您喜爱的图床服务",
+    "github": "GitHub",
+    "smms": "SM.MS",
+    "aliyun": "阿里云OSS",
+    "qiniu": "七牛云",
+    "tencent": "腾讯云COS",
+    "upyun": "又拍云",
+    "imgur": "Imgur",
+    "weibo": "微博图床",
+    "andMore": "以及15+更多..."
+  },
+  "download": {
+    "title": "下载PicGo",
+    "subtitle": "支持所有主流平台",
+    "macos": "下载macOS版",
+    "windows": "下载Windows版",
+    "linux": "下载Linux版",
+    "or": "或",
+    "viewReleases": "查看所有版本"
+  },
+  "footer": {
+    "copyright": "© 2017-2024 PicGo。由",
+    "author": "Molunerfinn",
+    "license": "维护的开源项目，MIT许可证",
+    "links": {
+      "github": "GitHub",
+      "issues": "问题反馈",
+      "discussions": "讨论",
+      "sponsor": "赞助"
+    }
+  },
+  "language": {
+    "switch": "切换语言",
+    "english": "English",
+    "chinese": "中文"
+  }
+}
