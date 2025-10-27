@@ -4,7 +4,6 @@
   <a href="https://www.warp.dev/?utm_source=github&utm_medium=referral&utm_campaign=PicGo">
     <img alt="Warp sponsorship" width="400" src="https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Github/Sponsor/Warp-Github-LG-03.png">
   </a>
-</div>
 
 ### [Warp, the intelligent terminal for developers](https://www.warp.dev/?utm_source=github&utm_medium=referral&utm_campaign=PicGo)
 [Available for MacOS, Linux, & Windows](https://www.warp.dev/?utm_source=github&utm_medium=referral&utm_campaign=PicGo)<br>
