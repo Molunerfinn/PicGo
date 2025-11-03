@@ -1,12 +1,12 @@
 <div align="center" markdown="1">
   <sup>Special thanks to:</sup>
   <br>
-  <a href="https://www.warp.dev/?utm_source=github&utm_medium=referral&utm_campaign=picgo">
+  <a href="https://go.warp.dev/picgo">
     <img alt="Warp sponsorship" width="400" src="https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Github/Sponsor/Warp-Github-LG-03.png">
   </a>
 
-### [Warp, the intelligent terminal for developers](https://www.warp.dev/?utm_source=github&utm_medium=referral&utm_campaign=picgo)
-[Available for MacOS, Linux, & Windows](https://www.warp.dev/?utm_source=github&utm_medium=referral&utm_campaign=picgo)<br>
+### [Warp, the intelligent terminal for developers](https://go.warp.dev/picgo)
+[Available for MacOS, Linux, & Windows](https://go.warp.dev/picgo)<br>
 
 </div>
 
@@ -68,15 +68,14 @@ PicGo 本体支持如下图床：
 
 ## 下载安装
 
-| 下载源                                             | 地址/安装方式                                                  | 平台       | 备注                                                                   |
-| -------------------------------------------------- | -------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------- |
-| GitHub Release                                     | https://github.com/Molunerfinn/PicGo/releases                  | All        | 国内下载速度可能会慢                                                   |
-| [腾讯云COS](https://cloud.tencent.com/product/cos) | https://github.com/Molunerfinn/PicGo/releases 附在更新日志结尾 | All        | 感谢 [腾讯云COS](https://cloud.tencent.com/product/cos) 提供的赞助支持 |
-| [山东大学镜像站](https://mirrors.sdu.edu.cn/)      | https://mirrors.sdu.edu.cn/github-release/Molunerfinn_PicGo    | All        | 感谢 [山东大学镜像站](https://mirrors.sdu.edu.cn/) 提供的镜像支持      |
-| [Scoop](https://scoop.sh/)                         | `scoop bucket add extras` & `scoop install picgo`              | Windows    | 感谢 @huangnauh 和 @Gladtbam 的贡献                                    |
-| [Chocolatey](https://chocolatey.org/)              | `choco install picgo`                                          | Windows    | 感谢 @iYato 的贡献                                                     |
-| [Homebrew](https://brew.sh/)                       | `brew install picgo --cask`                                    | macOS      | 感谢 @womeimingzi11 的贡献                                             |
-| [AUR](https://aur.archlinux.org/packages/yay)      | `yay -S picgo-appimage`                                        | Arch-Linux | 感谢 @houbaron 的贡献                                                  |
+| 下载源                                        | 地址/安装方式                                               | 平台       | 备注                                                              |
+| --------------------------------------------- | ----------------------------------------------------------- | ---------- | ----------------------------------------------------------------- |
+| GitHub Release                                | https://github.com/Molunerfinn/PicGo/releases               | All        | 国内下载速度可能会慢                                              |
+| [山东大学镜像站](https://mirrors.sdu.edu.cn/) | https://mirrors.sdu.edu.cn/github-release/Molunerfinn_PicGo | All        | 感谢 [山东大学镜像站](https://mirrors.sdu.edu.cn/) 提供的镜像支持 |
+| [Scoop](https://scoop.sh/)                    | `scoop bucket add extras` & `scoop install picgo`           | Windows    | 感谢 @huangnauh 和 @Gladtbam 的贡献                               |
+| [Chocolatey](https://chocolatey.org/)         | `choco install picgo`                                       | Windows    | 感谢 @iYato 的贡献                                                |
+| [Homebrew](https://brew.sh/)                  | `brew install picgo --cask`                                 | macOS      | 感谢 @womeimingzi11 的贡献                                        |
+| [AUR](https://aur.archlinux.org/packages/yay) | `yay -S picgo-appimage`                                     | Arch-Linux | 感谢 @houbaron 的贡献                                             |
 
 ## 应用截图
 
