@@ -26,4 +26,9 @@ elif [ "$XDG_SESSION_TYPE" = "wayland" ]; then
     echo "no image"
     exit 1
   fi
+else
+  # fallback for unsupported session types
+  echo >&2 "Error: Unsupported session type '$XDG_SESSION_TYPE'."
+  echo >&2 "Solution: The variable of XDG_SESSION_TYPE must set as 'x11' or 'wayland'."
+  exit 1
 fi

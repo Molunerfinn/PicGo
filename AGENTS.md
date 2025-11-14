@@ -1,0 +1,24 @@
+# Repository Guidelines
+
+## Project Structure & Module Organization
+PicGo is an Electron + Vue 3 desktop client. Source lives in `src/`: `src/main` for main-process and IPC logic, `src/renderer` for Vue views, and `src/universal` for shared helpers (`types/`, `events/constants.ts`). `background.ts` wires Electron Builder. Static assets and locale YAML files stay in `public/` (add languages under `public/i18n/`), while `docs/` hosts user-facing guides. Automation scripts live in `scripts/`, and legacy tests sit under `test/unit` (Karma) and `test/e2e` (Spectron).
+
+## Build, Test, and Development Commands
+- `yarn install` — install dependencies; `npm install` is unsupported because native modules are patched for Yarn.
+- `yarn dev` / `yarn electron:serve` — start the hot-reload dev environment for both processes.
+- `yarn build` / `yarn electron:build` — package the app into `dist_electron/`; set `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/` when downloads are slow.
+- `yarn lint` / `yarn lint:fix` — run or auto-fix ESLint (Standard, TypeScript, Vue rules).
+- `yarn lint:dpdm` — fail fast on circular dependencies in `src/`.
+- `yarn gen-i18n` — regenerate typed locales after touching `public/i18n/*.yml`.
+
+## Coding Style & Naming Conventions
+Follow ESLint Standard defaults: two-space indentation, single quotes, trailing commas where allowed, and no stray semicolons. Author new modules in TypeScript. Keep renderer files browser-safe; route Node APIs through IPC helpers such as `src/main/events/picgoCoreIPC.ts`. Name Vue components in PascalCase (`UploadPanel.vue`) and use camelCase for utilities. Centralize IPC event names inside `src/universal/events/constants.ts`, and store enums/types under `src/universal/types/` so they stay reusable.
+
+## Testing Guidelines
+Place renderer unit specs in `test/unit/specs` with the `.spec.js` suffix; Karma picks them up via `require.context`. Run them with `npx karma start test/unit/karma.conf.js --single-run` and ensure new renderer folders are covered. Spectron e2e cases live in `test/e2e/specs`; build first (`yarn build`), then run `npx mocha test/e2e/index.js` so Spectron can launch `dist/electron/main.js`. Document any test data, IPC stubs, or fixtures you add to keep suites reproducible.
+
+## Commit & Pull Request Guidelines
+Commits follow the PicGo conventional preset enforced by Husky (`yarn lint:dpdm` + Commitlint). Stage your changes and run `yarn cz` to craft messages that pass CI. Pull requests should explain the change, link related issues, and attach UI screenshots or recordings. Note how you validated the work (dev server, build, Karma, Spectron) and call out migration or configuration steps reviewers must perform.
+
+## Internationalization Tips
+Add locales by creating `public/i18n/<locale>.yml`, exposing its `LANG_DISPLAY_LABEL`, and registering it in `src/universal/i18n/index.ts`. Finish with `yarn gen-i18n` so the generated typings stay in sync.
