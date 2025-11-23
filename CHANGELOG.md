@@ -1,3 +1,23 @@
+# :tada: 2.4.0 (2025-11-23)
+
+
+### :pencil: Documentation
+
+* add 2.4.0 changelog ([cccd295](https://github.com/Molunerfinn/PicGo/commit/cccd295))
+* add warp sponsor shoutout ([e0d45fa](https://github.com/Molunerfinn/PicGo/commit/e0d45fa))
+* add warp sponsor shoutout ([de441a8](https://github.com/Molunerfinn/PicGo/commit/de441a8))
+* update docs ([4a29bf2](https://github.com/Molunerfinn/PicGo/commit/4a29bf2))
+* update docs ([24e4a82](https://github.com/Molunerfinn/PicGo/commit/24e4a82))
+* update readme & warp sponsor link ([45b3227](https://github.com/Molunerfinn/PicGo/commit/45b3227))
+
+
+### :package: Chore
+
+* change funding yml ([2450a52](https://github.com/Molunerfinn/PicGo/commit/2450a52))
+* update picgo core to 1.5.11 to solve url encode bug ([cfb6146](https://github.com/Molunerfinn/PicGo/commit/cfb6146))
+
+
+
 # :tada: 2.4.0-beta.10 (2025-06-08)
 
 
