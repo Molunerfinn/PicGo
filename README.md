@@ -64,7 +64,7 @@ PicGo 本体支持如下图床：
   - 开发进度可以查看 [Projects](https://github.com/Molunerfinn/PicGo/projects)，会同步更新开发进度
   <!-- - 欢迎加入 [官方讨论区](https://github.com/Molunerfinn/PicGo/discussions) 与我交流 -->
 
-**如果第一次使用，请参考应用 [使用文档](https://picgo.github.io/PicGo-Doc/zh/guide/getting-started.html)。遇到问题了还可以看看 [FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md) 以及被关闭的 [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)。**
+**如果第一次使用，请参考应用 [使用文档](https://picgo.github.io/PicGo-Doc/guide/getting-started.html)。遇到问题了还可以看看 [FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md) 以及被关闭的 [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)。**
 
 ## 下载安装
 

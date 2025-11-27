@@ -131,7 +131,7 @@ function initLogLevel (logLevel: string | string[]) {
 }
 
 function goConfigPage () {
-  openURL('https://picgo.github.io/PicGo-Doc/zh/guide/config.html#picgo设置')
+  openURL('https://picgo.github.io/PicGo-Doc/guide/config.html#picgo设置')
 }
 
 </script>

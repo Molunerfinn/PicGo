@@ -7,13 +7,13 @@
         small(v-if="version") {{ version }}
       h2.desc 图片上传+管理新体验
       button.download(@click="goLink('https://github.com/Molunerfinn/picgo/releases')") 免费下载
-      button.download(@click="goLink('https://picgo.github.io/PicGo-Doc/zh/guide/')") 查看文档
+      button.download(@click="goLink('https://picgo.github.io/PicGo-Doc/guide/')") 查看文档
       h3.desc
         | 基于#[a(href="https://github.com/SimulatedGREG/electron-vue" target="_blank") electron-vue]开发
       h3.desc
         | 支持macOS,Windows,Linux
       h3.desc
-        | 支持#[a(href="https://picgo.github.io/PicGo-Doc/zh/guide/config.html#%E6%8F%92%E4%BB%B6%E8%AE%BE%E7%BD%AE%EF%BC%88v2-0%EF%BC%89" target="_blank") 插件系统]，让PicGo更强大
+        | 支持#[a(href="https://picgo.github.io/PicGo-Doc/guide/config.html#%E6%8F%92%E4%BB%B6%E8%AE%BE%E7%BD%AE%EF%BC%88v2-0%EF%BC%89" target="_blank") 插件系统]，让PicGo更强大
     #container.container-fluid
       .row.ex-width
         img.gallery.col-xs-10.col-xs-offset-1.col-md-offset-2.col-md-8(src="https://cdn.jsdelivr.net/gh/Molunerfinn/test/picgo-site/first.png")

@@ -1,6 +1,6 @@
 ## 常见问题
 
-> 在使用 PicGo 期间你会遇到很多问题，不过很多问题其实之前就有人提问过，也被解决，所以你可以先看看 [使用文档](https://picgo.github.io/PicGo-Doc/zh/guide/getting-started.html#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B)，这份 FAQ，以及那些被关闭的 [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)，应该能找到答案。
+> 在使用 PicGo 期间你会遇到很多问题，不过很多问题其实之前就有人提问过，也被解决，所以你可以先看看 [使用文档](https://picgo.github.io/PicGo-Doc/guide/getting-started.html#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B)，这份 FAQ，以及那些被关闭的 [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)，应该能找到答案。
 
 ## 1. 七牛图床上传图片成功后，相册里无法显示或图片无`http://`前缀
 
