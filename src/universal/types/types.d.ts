@@ -244,7 +244,7 @@ interface IShowInputBoxOption {
 
 type IShowFileExplorerOption = IObj
 
-type IUploadOption = string[]
+type IUploadOption = string[] | ImgInfo[]
 
 interface IShowNotificationOption {
   title: string
