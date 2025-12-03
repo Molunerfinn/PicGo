@@ -3607,6 +3607,60 @@ cli-width@^2.0.0:
   resolved "https://registry.npmjs.org/cli-width/-/cli-width-2.2.1.tgz#b0433d0b4e9c847ef18868a4ef16fd5fc8271c48"
   integrity sha512-GRMWDxpOB6Dgk2E5Uo+3eEBvtOOlimMmpbFiKuLFnQzYDavtLFY3K5ona41jgN/WdRZtG7utuVSVTL4HbZHGkw==
 
+clip-filepaths-darwin-arm64@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/clip-filepaths-darwin-arm64/-/clip-filepaths-darwin-arm64-0.3.0.tgz#e0553a7a0e47776a7ac9553e5af313c574e48f82"
+  integrity sha512-MNsead3rwMUg/i2+Qn4XUK/O2wPmR+viMwAB2ogd10YdKgAjNqRnVYYMSw3ZAbHy+mIg2xK/sQXsTefwXXMHng==
+
+clip-filepaths-darwin-x64@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/clip-filepaths-darwin-x64/-/clip-filepaths-darwin-x64-0.3.0.tgz#9a2207d7a8754da5a0234d023002b5fb9d9a1343"
+  integrity sha512-Ged3iEL8V32XGRUi8zhel3xu3dWkq2ILmWRBurA6vMX+dm6izQvwB+hDNVfozEXSbpsUiXaD8Lx1K2FNQePykA==
+
+clip-filepaths-linux-arm64-gnu@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/clip-filepaths-linux-arm64-gnu/-/clip-filepaths-linux-arm64-gnu-0.3.0.tgz#7ec0e36ac74bad9dc918d7fc50678e9aa8212a69"
+  integrity sha512-ytyiSkiOSe/erIiNILZf8BW+1lpE0KKDA0n2OjWHvq8/VXxxmseNRqiORb+xZUV0tfn2Nz/0QknqcaAjBmpa2w==
+
+clip-filepaths-linux-arm64-musl@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/clip-filepaths-linux-arm64-musl/-/clip-filepaths-linux-arm64-musl-0.3.0.tgz#9553463e7655354b0ef575006ffc23975d18ce65"
+  integrity sha512-0JiZ4bBNhv8Hv6fh88E6M4bPzdFR3MDUiu/Y/jvC012DZRUUTRh6Mk+zcrol8A0zjFMha/VofO7wtXI4yVIJMw==
+
+clip-filepaths-linux-x64-gnu@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/clip-filepaths-linux-x64-gnu/-/clip-filepaths-linux-x64-gnu-0.3.0.tgz#4f7c2cddd16ac085027316f8dde0046cdda5f5af"
+  integrity sha512-Cq+go0MfeNh+KSiWla0uYFZ2nOSsCI2MF7qcvyd2r7DGDpd02nNeAYXO6kGr4WYgy1z7JRCYyjwrbsPi/KFcrw==
+
+clip-filepaths-linux-x64-musl@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/clip-filepaths-linux-x64-musl/-/clip-filepaths-linux-x64-musl-0.3.0.tgz#862aa3193952943915294c87e64e4d7a6f91b850"
+  integrity sha512-yZP8/FXT7ca4KKxnTFapJINf8uMUWRqLmW3NBcs2DUJ/Z5merc7vJu3aaGnzMO9+IFwWk6Wl4UFSHD3l5OX2Qg==
+
+clip-filepaths-win32-arm64-msvc@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/clip-filepaths-win32-arm64-msvc/-/clip-filepaths-win32-arm64-msvc-0.3.0.tgz#69932570854c220900325fda4ad4898b5d8d8d9e"
+  integrity sha512-IuzhKedlG8jvfuK2Np6pcjeAherzGTldPiNcodslaSyPJT5tBwSvQp4a9jN/B4vp9QTlPDpDMFeUcjgOmZ41RQ==
+
+clip-filepaths-win32-x64-msvc@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/clip-filepaths-win32-x64-msvc/-/clip-filepaths-win32-x64-msvc-0.3.0.tgz#0ad61c748c21ca832fa8a95f49075405b728d19c"
+  integrity sha512-FERY7lIHMXBD2JMTC9LT96G5wMKF0Vky5reM6ZtNvBDvbe6GwSMC843LjKupoiP/DptosG7d0o3ecaFRyeySdg==
+
+clip-filepaths@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/clip-filepaths/-/clip-filepaths-0.3.0.tgz#43bf2816345808af72c5a7ec8c9f5bc13c763588"
+  integrity sha512-RTvOf16co5+Xqpn9ioDKDHYG2Ie7qhL0CSHstrC2u1hCHpb5QxUOnti4rO8hF+uwqonr/KriO6PfXf1zLSGBqA==
+  optionalDependencies:
+    clip-filepaths-darwin-arm64 "0.3.0"
+    clip-filepaths-darwin-x64 "0.3.0"
+    clip-filepaths-linux-arm64-gnu "0.3.0"
+    clip-filepaths-linux-arm64-musl "0.3.0"
+    clip-filepaths-linux-x64-gnu "0.3.0"
+    clip-filepaths-linux-x64-musl "0.3.0"
+    clip-filepaths-win32-arm64-msvc "0.3.0"
+    clip-filepaths-win32-x64-msvc "0.3.0"
+
 cliui@^7.0.2:
   version "7.0.4"
   resolved "https://registry.npmjs.org/cliui/-/cliui-7.0.4.tgz#a0265ee655476fc807aea9df3df8df7783808b4f"

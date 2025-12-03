@@ -12,7 +12,7 @@ import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
 import util from 'util'
 import { IPicGo } from 'picgo'
-import { showNotification, calcDurationRange, getClipboardFilePath } from '~/main/utils/common'
+import { showNotification, calcDurationRange, getClipboardFilePathList } from '~/main/utils/common'
 import { GET_RENAME_FILE_NAME, RENAME_FILE_NAME, TALKING_DATA_EVENT } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
 import { T } from '~/main/i18n'
@@ -120,8 +120,8 @@ class Uploader {
   async uploadWithBuildInClipboard (): Promise<ImgInfo[]|false> {
     let filePath = ''
     try {
-      const imgPath = getClipboardFilePath()
-      if (!imgPath) {
+      const imgPath = getClipboardFilePathList()
+      if (!imgPath.length) {
         const nativeImage = clipboard.readImage()
         if (nativeImage.isEmpty()) {
           return false
@@ -133,7 +133,7 @@ class Uploader {
         await writeFile(filePath, buffer)
         return await this.upload([filePath])
       } else {
-        return await this.upload([imgPath])
+        return await this.upload(imgPath)
       }
     } catch (e: any) {
       logger.error(e)

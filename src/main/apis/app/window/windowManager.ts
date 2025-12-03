@@ -23,6 +23,10 @@ class WindowManager implements IWindowManager {
         this.windowIdMap.set(window.id, name)
       }
       windowConfig.callback(window, this)
+      // https://github.com/electron/electron/issues/1594
+      window.on('page-title-updated', (evt) => {
+        evt.preventDefault()
+      })
       window.on('close', () => {
         this.deleteById(id)
       })

@@ -36,6 +36,7 @@
     >
       <el-col
         class="side-bar-menu"
+        :class="{ 'darwin': os === 'darwin' }"
       >
         <el-menu
           class="picgo-sidebar"
@@ -435,6 +436,8 @@ $sideBg = transparentify(#000, 0.7)
       transition .2s all ease-in-out
       &:hover
         color #409EFF
+    &.darwin
+      background $darwinSideBg
   .el-menu
     border-right none
     background transparent

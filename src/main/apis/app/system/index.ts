@@ -1,4 +1,3 @@
-import fs from 'fs-extra'
 import {
   app,
   Menu,
@@ -14,7 +13,7 @@ import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import pkg from 'root/package.json'
-import { ensureFilePath, handleCopyUrl } from '~/main/utils/common'
+import { ensureFilePath, getClipboardFilePathList, handleCopyUrl } from '~/main/utils/common'
 import { privacyManager } from '~/main/utils/privacyManager'
 import { T } from '~/main/i18n'
 import { isMacOSVersionGreaterThanOrEqualTo } from '~/main/utils/getMacOSVersion'
@@ -165,33 +164,19 @@ export function createTray () {
       if (process.platform === 'darwin') {
         toggleWindow(bounds)
         setTimeout(async () => {
-          const img = clipboard.readImage()
           const obj: ImgInfo[] = []
-          if (!img.isEmpty()) {
-            // 从剪贴板来的图片默认转为png
-            // https://github.com/electron/electron/issues/9035
-            const imgPath = clipboard.read('public.file-url')
-            if (imgPath) {
+          const imgPathList = getClipboardFilePathList()
+          if (imgPathList.length > 0) {
+            for (const imgPath of imgPathList) {
               const decodePath = ensureFilePath(imgPath)
-              if (decodePath === imgPath) {
-                obj.push({
-                  imgUrl: imgPath
-                })
-              } else {
-                if (decodePath !== '') {
-                  // 带有中文的路径，无法直接被img.src所使用，会被转义
-                  const base64 = await fs.readFile(
-                    decodePath.replace('file://', ''),
-                    { encoding: 'base64' }
-                  )
-                  obj.push({
-                    imgUrl: `data:image/png;base64,${base64}`
-                  })
-                }
-              }
-            } else {
+              obj.push({
+                imgUrl: decodePath
+              })
+            }
+          } else {
+            const img = clipboard.readImage()
+            if (!img.isEmpty()) {
               const imgUrl = img.toDataURL()
-              // console.log(imgUrl)
               obj.push({
                 width: img.getSize().width,
                 height: img.getSize().height,
@@ -231,7 +216,7 @@ export function createTray () {
 
     // drop-files only be supported in macOS
     // so the tray window must be available
-    tray.on('drop-files', async (event: Event, files: string[]) => {
+    tray.on('drop-files', async (event, files: string[]) => {
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
       const imgs = await uploader
@@ -269,10 +254,10 @@ export function createTray () {
 export function handleDockIcon () {
   if (isMacOS) {
     if (db.get('settings.showDockIcon') !== false) {
-      app.dock.show()
-      app.dock.setMenu(createContextMenu())
+      app.dock?.show()
+      app.dock?.setMenu(createContextMenu())
     } else {
-      app.dock.hide()
+      app.dock?.hide()
     }
   }
 }
