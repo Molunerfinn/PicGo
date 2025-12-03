@@ -1,0 +1,44 @@
+appId: com.molunerfinn.picgo
+productName: PicGo
+publish:
+  - provider: github
+    owner: Molunerfinn
+    repo: PicGo
+    releaseType: draft
+dmg:
+  contents:
+    - x: 410
+      y: 150
+      type: link
+      path: /Applications
+    - x: 130
+      y: 150
+      type: file
+mac:
+  icon: build/icons/icon.icns
+  extendInfo:
+    LSUIElement: 0
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+  artifactName: "PicGo-${version}-${arch}.dmg"
+win:
+  icon: build/icons/icon.ico
+  artifactName: "PicGo-Setup-${version}-${arch}.exe"
+  target:
+    - target: nsis
+      arch:
+        - x64
+        - ia32
+nsis:
+  shortcutName: PicGo
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  include: build/installer.nsh
+linux:
+  icon: build/icons/
+snap:
+  publish:
+    - github

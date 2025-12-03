@@ -217,6 +217,7 @@ import { computed, ref, onBeforeMount, onBeforeUnmount, watch } from 'vue'
 import { getConfig, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
 import { ElMessageBox } from 'element-plus'
 import axios from 'axios'
+import { getRendererStaticFileUrl } from '@/utils/static'
 import { IRPCActionType } from '~/universal/types/enum'
 const $confirm = ElMessageBox.confirm
 const searchText = ref('')
@@ -232,7 +233,7 @@ const pluginListToolTip = $T('PLUGIN_LIST')
 const importLocalPluginToolTip = $T('PLUGIN_IMPORT_LOCAL')
 // const id = ref('')
 const os = ref('')
-const defaultLogo = ref(`this.src="file://${__static.replace(/\\/g, '/')}/roundLogo.png"`)
+const defaultLogo = ref(`this.src="${getRendererStaticFileUrl('roundLogo.png')}"`)
 const $configForm = ref<InstanceType<typeof ConfigForm> | null>(null)
 const npmSearchText = computed(() => {
   return searchText.value.match('picgo-plugin-')

@@ -71,6 +71,7 @@ import { PASTE_TEXT, OPEN_WINDOW } from '#/events/constants'
 import { IWindowList } from '#/types/enum'
 import { sendToMain } from '@/utils/dataSender'
 import { getRawData } from '@/utils/common'
+import { IpcRendererEvent } from 'electron/renderer'
 
 const files = ref<IResult<ImgInfo>[]>([])
 const notification = reactive({
@@ -126,14 +127,14 @@ function uploadClipboardFiles () {
 onBeforeMount(() => {
   disableDragFile()
   getData()
-  ipcRenderer.on('dragFiles', async (event: Event, _files: string[]) => {
+  ipcRenderer.on('dragFiles', async (event: IpcRendererEvent, _files: string[]) => {
     for (let i = 0; i < _files.length; i++) {
       const item = _files[i]
       await $$db.insert(item)
     }
     files.value = (await $$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
   })
-  ipcRenderer.on('clipboardFiles', (event: Event, files: ImgInfo[]) => {
+  ipcRenderer.on('clipboardFiles', (event: IpcRendererEvent, files: ImgInfo[]) => {
     clipboardFiles.value = files
   })
   ipcRenderer.on('uploadFiles', async () => {
@@ -163,7 +164,6 @@ export default {
 body::-webkit-scrollbar
   width 0px
 #tray-page
-  background-color transparent
   .open-main-window
     background #000
     height 20px
@@ -204,6 +204,7 @@ body::-webkit-scrollbar
     position absolute
     top 20px
     width 100%
+    background-color transparentify(#172426, #000, 0.9)
   .img-list
     padding 4px 8px
     display flex

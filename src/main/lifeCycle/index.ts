@@ -5,9 +5,6 @@ import {
   protocol,
   Notification
 } from 'electron'
-import {
-  createProtocol
-} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import beforeOpen from '~/main/utils/beforeOpen'
 import ipcList from '~/main/events/ipcList'
@@ -38,8 +35,9 @@ import { initI18n } from '~/main/utils/handleI18n'
 import { remoteNoticeHandler } from 'apis/app/remoteNotice'
 import { isMacOS } from '../utils/getMacOSVersion'
 import { isWindowShouldShowOnStartup } from '../apis/app/window/windowList'
+import { initStaticPath, isDev } from '../utils/env'
 
-const isDevelopment = process.env.NODE_ENV !== 'production'
+const isDevelopment = isDev
 
 const handleStartUpFiles = (argv: string[], cwd: string) => {
   const files = getUploadFiles(argv, cwd, logger)
@@ -74,7 +72,6 @@ class LifeCycle {
   private onReady () {
     const readyFunction = async () => {
       console.log('on ready')
-      createProtocol('picgo')
       if (isDevelopment && !process.env.IS_TEST) {
         // Install Vue Devtools
         try {
@@ -140,7 +137,6 @@ class LifeCycle {
       }
     })
     app.on('activate', () => {
-      createProtocol('picgo')
       if (!windowManager.has(IWindowList.TRAY_WINDOW)) {
         windowManager.create(IWindowList.TRAY_WINDOW)
       }
@@ -200,6 +196,7 @@ class LifeCycle {
     if (!gotTheLock) {
       app.quit()
     } else {
+      initStaticPath()
       await this.beforeReady()
       this.onReady()
       this.onRunning()

@@ -103,9 +103,10 @@ import { IToolboxItemType, IToolboxItemCheckStatus, IRPCActionType } from '~/uni
 import { T as $T } from '@/i18n'
 import ToolboxStatusIcon from '@/components/ToolboxStatusIcon.vue'
 import ToolboxHandler from '@/components/ToolboxHandler.vue'
+import { getRendererStaticFileUrl } from '@/utils/static'
 
 const $confirm = ElMessageBox.confirm
-const defaultLogo = ref(`file://${__static.replace(/\\/g, '/')}/roundLogo.png`)
+const defaultLogo = ref(getRendererStaticFileUrl('roundLogo.png'))
 const activeTypes = ref<IToolboxItemType[]>([])
 const fixList = reactive<IToolboxMap>({
   [IToolboxItemType.IS_CONFIG_FILE_BROKEN]: {

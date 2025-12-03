@@ -37,6 +37,7 @@
     >
       <el-col
         class="side-bar-menu"
+        :class="{ 'darwin': os === 'darwin' }"
       >
         <el-menu
           class="picgo-sidebar"
@@ -350,7 +351,8 @@ export default {
 }
 </script>
 <style lang='stylus'>
-$darwinBg = transparentify(#172426, #000, 0.7)
+$darwinBg = transparentify(#172426, #000, 0.9)
+$darwinSideBg = transparentify(#000, 0.7)
 .setting-list-scroll
   height 425px
   overflow-y auto
@@ -392,9 +394,9 @@ $darwinBg = transparentify(#172426, #000, 0.7)
       background transparent
       background-image linear-gradient(
         to right,
-        transparent 0%,
-        transparent 167px,
-        $darwinBg 167px,
+        $darwinSideBg 0%,
+        $darwinSideBg 170px,
+        $darwinBg 170px,
         $darwinBg 100%
       )
       .fake-title-bar__title
@@ -437,6 +439,8 @@ $darwinBg = transparentify(#172426, #000, 0.7)
       transition .2s all ease-in-out
       &:hover
         color #409EFF
+    &.darwin
+      background $darwinSideBg
   .el-menu
     border-right none
     background transparent

@@ -22,3 +22,5 @@ scripts/*.yml
 
 #Electron-builder output
 /dist_electron
+.serena/
+dist/*

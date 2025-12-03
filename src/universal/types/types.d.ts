@@ -18,7 +18,13 @@ declare interface ErrnoException extends Error {
   stack?: string;
 }
 
-declare let __static: string
+declare namespace NodeJS {
+  interface ProcessEnv {
+    STATIC_PATH?: string
+  }
+}
+
+declare const __static: string
 
 declare type ILogType = 'success' | 'info' | 'warn' | 'error'
 

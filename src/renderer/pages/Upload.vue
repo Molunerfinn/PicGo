@@ -220,6 +220,7 @@ function ipcSendFiles (files: FileList) {
   Array.from(files).forEach((item) => {
     const obj = {
       name: item.name,
+      // FIXME: electron doesn't support file path in renderer process
       path: item.path
     }
     sendFiles.push(obj)
@@ -272,7 +273,7 @@ async function getDefaultPicBed () {
   configName.value = currentConfigName
 }
 
-function getPicBeds (event: Event, picBeds: IPicBedType[]) {
+function getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
   picBed.value = picBeds
   getDefaultPicBed()
 }

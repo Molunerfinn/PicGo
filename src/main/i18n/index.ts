@@ -2,11 +2,12 @@ import yaml from 'js-yaml'
 import { ObjectAdapter, I18n } from '@picgo/i18n'
 import path from 'path'
 import fs from 'fs-extra'
+import { getStaticPath } from '#/utils/staticPath'
 import { builtinI18nList } from '#/i18n'
 
 class I18nManager {
   private i18n: I18n | null = null
-  private builtinI18nFolder = path.join(__static, 'i18n')
+  private builtinI18nFolder = getStaticPath('i18n')
   private outerI18nFolder = ''
   private localesMap: Map<string, ILocales> = new Map()
   private currentLanguage: string = 'zh-CN'

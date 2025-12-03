@@ -13,14 +13,15 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env",
+      "vite/client",
       "element-plus/global",
-      "vue3-photo-preview"
+      "vue3-photo-preview",
+      "electron"
     ],
     "typeRoots": [
       "./src/universal/types/",
       "./node_modules/@types",
-      "./node_modules",
+      "./node_modules"
     ],
     "paths": {
       "@/*": [

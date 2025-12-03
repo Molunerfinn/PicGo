@@ -5,14 +5,17 @@ PicGo is an Electron + Vue 3 desktop client. Source lives in `src/`: `src/main` 
 
 ## Build, Test, and Development Commands
 - `yarn install` — install dependencies; `npm install` is unsupported because native modules are patched for Yarn.
-- `yarn dev` / `yarn electron:serve` — start the hot-reload dev environment for both processes.
-- `yarn build` / `yarn electron:build` — package the app into `dist_electron/`; set `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/` when downloads are slow.
+- Always add/remove dependencies with `yarn` (never edit package.json versions by hand then install).
+- `yarn dev` — electron-vite dev server for main/preload/renderer.
+- `yarn build` — electron-vite build outputs to `dist/main`, `dist/preload`, `dist/renderer`; `yarn preview` for preview mode.
+- Packaging config lives in `electron-builder.yml` (read by electron-builder via package.json `build` field/extraResources); set `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/` if downloads are slow.
 - `yarn lint` / `yarn lint:fix` — run or auto-fix ESLint (Standard, TypeScript, Vue rules).
 - `yarn lint:dpdm` — fail fast on circular dependencies in `src/`.
 - `yarn gen-i18n` — regenerate typed locales after touching `public/i18n/*.yml`.
 
 ## Coding Style & Naming Conventions
-Follow ESLint Standard defaults: two-space indentation, single quotes, trailing commas where allowed, and no stray semicolons. Author new modules in TypeScript. Keep renderer files browser-safe; route Node APIs through IPC helpers such as `src/main/events/picgoCoreIPC.ts`. Name Vue components in PascalCase (`UploadPanel.vue`) and use camelCase for utilities. Centralize IPC event names inside `src/universal/events/constants.ts`, and store enums/types under `src/universal/types/` so they stay reusable.
+Follow ESLint Standard defaults: two-space indentation, single quotes, trailing commas where allowed, and no stray semicolons. Author new modules in TypeScript. Keep renderer files browser-safe; route Node APIs through IPC helpers such as `src/main/events/picgoCoreIPC.ts`. Name Vue components in PascalCase (`UploadPanel.vue`) and use camelCase for utilities. Centralize IPC event names inside `src/universal/events/constants.ts`, and store enums/types under `src/universal/types/` so they stay reusable. Static assets are served from `public/` and resolved via `getStaticPath`/`getStaticFileUrl` (`src/universal/utils/staticPath.ts`); avoid using `__static` directly.
+Static assets are served from `public/`. In the main process use `getStaticPath`/`getStaticFileUrl` (`src/universal/utils/staticPath.ts`). In the renderer, place assets under `public/` and resolve them via `import.meta.env.BASE_URL + filename` (helper: `src/renderer/utils/static.ts`); do not rely on `__static` in renderer code.
 
 ## Testing Guidelines
 Place renderer unit specs in `test/unit/specs` with the `.spec.js` suffix; Karma picks them up via `require.context`. Run them with `npx karma start test/unit/karma.conf.js --single-run` and ensure new renderer folders are covered. Spectron e2e cases live in `test/e2e/specs`; build first (`yarn build`), then run `npx mocha test/e2e/index.js` so Spectron can launch `dist/electron/main.js`. Document any test data, IPC stubs, or fixtures you add to keep suites reproducible.
