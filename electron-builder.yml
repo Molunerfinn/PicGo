@@ -15,7 +15,7 @@ dmg:
       y: 150
       type: file
 mac:
-  icon: build/icons/icon.icns
+  icon: build/icons/512x512.png
   extendInfo:
     LSUIElement: 0
   target:

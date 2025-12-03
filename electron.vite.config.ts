@@ -17,7 +17,7 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()],
     resolve: { alias },
     build: {
-      outDir: 'dist_electron/main',
+      outDir: 'dist/main',
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'src/background.ts')
@@ -29,7 +29,7 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()],
     resolve: { alias },
     build: {
-      outDir: 'dist_electron/preload',
+      outDir: 'dist/preload',
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'src/preload/index.ts')
@@ -43,7 +43,7 @@ export default defineConfig({
     resolve: { alias },
     plugins: [vue(), electronRenderer()],
     build: {
-      outDir: 'dist_electron/renderer',
+      outDir: 'dist/renderer',
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'src/renderer/index.html')

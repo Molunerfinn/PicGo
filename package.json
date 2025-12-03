@@ -2,9 +2,12 @@
   "name": "picgo",
   "version": "2.4.0",
   "private": true,
-  "main": "dist_electron/main/index.js",
+  "main": "dist/main/index.js",
   "scripts": {
     "build": "electron-vite build",
+    "build:win": "npm run build && electron-builder --win --config",
+    "build:mac": "npm run build && electron-builder --mac --config",
+    "build:linux": "npm run build && electron-builder --linux --config",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx,.vue src/",
     "bump": "bump-version",
     "cz": "git-cz",

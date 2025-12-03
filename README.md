@@ -103,21 +103,21 @@ PicGo 本体支持如下图床：
 
 ```bash
 ctrl+c # 退出开发模式
-npm run electron:serve # 重新进入开发模式
+npm run dev # 重新进入开发模式
 ```
 
 **注：Windows 开发模式运行之后会在底部任务栏的右下角应用区出现 PicGo 的应用图标。**
 
 ### 生产模式
 
-如果你需要自行构建，可以 `npm run electron:build` 开始进行构建。构建成功后，会在 `dist_electron` 目录里出现构建成功的相应安装文件。
+如果你需要自行构建，可以 `npm run build:win` or `npm run build:mac` or `npm run build:linux` 开始进行构建。构建成功后，会在 `dist` 目录里出现构建成功的相应安装文件。
 
-**注意**：如果你的网络环境不太好，可能会出现 `electron-builder` 下载 `electron` 二进制文件失败的情况。这个时候需要在 `npm run electron:build` 之前指定一下 `electron` 的源为国内源：
+**注意**：如果你的网络环境不太好，可能会出现 `electron-builder` 下载 `electron` 二进制文件失败的情况。这个时候需要在 build 之前指定一下 `electron` 的源为国内源：
 
 ```bash
 export ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
 # 在 Windows 上，则可以使用 set ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ （无需引号）
-npm run electron:build
+npm run build:win # or npm run build:mac or npm run build:linux
 ```
 
 只需第一次构建的时候指定一下国内源即可。后续构建不需要特地指定。二进制文件下载在 `~/.electron/` 目录下。如果想要更新 `electron` 构建版本，可以删除 `~/.electron/` 目录，然后重新运行上一步，让 `electron-builder `去下载最新的 `electron` 二进制文件。
