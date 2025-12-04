@@ -5,6 +5,16 @@ publish:
     owner: Molunerfinn
     repo: PicGo
     releaseType: draft
+files:
+  - dist_electron/**/*
+  - node_modules/**/*
+  - public/**/*
+  - package.json
+  - LICENSE
+  - README.md
+extraResources:
+  - from: public
+    to: public
 dmg:
   contents:
     - x: 410
@@ -23,7 +33,7 @@ mac:
       arch:
         - x64
         - arm64
-  artifactName: "PicGo-${version}-${arch}.dmg"
+  artifactName: "PicGo-${version}-${arch}.${ext}"
 win:
   icon: build/icons/icon.ico
   artifactName: "PicGo-Setup-${version}-${arch}.exe"
@@ -32,6 +42,7 @@ win:
       arch:
         - x64
         - ia32
+        - arm64
 nsis:
   shortcutName: PicGo
   oneClick: false

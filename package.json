@@ -2,12 +2,17 @@
   "name": "picgo",
   "version": "2.4.0",
   "private": true,
-  "main": "dist/main/index.js",
+  "main": "dist_electron/main/index.js",
+  "description": "A powerful & simple image uploader for creators.",
+  "author": {
+    "name": "Molunerfinn",
+    "email": "marksz@teamsz.xyz"
+  },
   "scripts": {
     "build": "electron-vite build",
-    "build:win": "npm run build && electron-builder --win --config",
-    "build:mac": "npm run build && electron-builder --mac --config",
-    "build:linux": "npm run build && electron-builder --linux --config",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "npm run build && electron-builder --mac",
+    "build:linux": "npm run build && electron-builder --linux",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx,.vue src/",
     "bump": "bump-version",
     "cz": "git-cz",
@@ -22,8 +27,6 @@
     "lint:dpdm": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/background.ts"
   },
   "dependencies": {
-    "@electron-toolkit/preload": "^3.0.2",
-    "@electron-toolkit/utils": "^4.0.0",
     "@element-plus/icons-vue": "^2.0.10",
     "@picgo/i18n": "^1.0.0",
     "@picgo/store": "^2.1.0",
@@ -78,7 +81,7 @@
     "dotenv": "^16.0.1",
     "dpdm": "^3.13.1",
     "electron": "^38",
-    "electron-builder": "^26",
+    "electron-builder": "26.0.12",
     "electron-devtools-installer": "^3.2.0",
     "electron-vite": "^4.0.1",
     "eslint": "^8.31.0",
@@ -112,13 +115,5 @@
     "hooks": {
       "commit-msg": "npm run lint:dpdm && commitlint -E HUSKY_GIT_PARAMS"
     }
-  },
-  "build": {
-    "extraResources": [
-      {
-        "from": "public",
-        "to": "public"
-      }
-    ]
   }
 }
