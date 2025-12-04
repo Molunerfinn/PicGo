@@ -133,13 +133,16 @@ function onChange (e: any) {
 
 function ipcSendFiles (files: FileList) {
   const sendFiles: IFileWithPath[] = []
+  const { getFilePath } = window.electronApi
   Array.from(files).forEach((item) => {
-    const obj = {
+    const filePath = getFilePath(item)
+    if (!filePath) return
+    sendFiles.push({
       name: item.name,
-      path: item.path
-    }
-    sendFiles.push(obj)
+      path: filePath
+    })
   })
+  if (!sendFiles.length) return
   sendToMain('uploadChoosedFiles', sendFiles)
 }
 

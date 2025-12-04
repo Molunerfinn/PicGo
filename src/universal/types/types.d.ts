@@ -107,6 +107,7 @@ interface IBrowserWindowOptions {
   fullscreenable: boolean,
   resizable: boolean,
   webPreferences: {
+    preload?: string
     nodeIntegration: boolean,
     nodeIntegrationInWorker: boolean,
     contextIsolation: boolean,

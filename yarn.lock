@@ -1369,6 +1369,16 @@
     ajv "^6.12.0"
     ajv-keywords "^3.4.1"
 
+"@electron-toolkit/preload@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@electron-toolkit/preload/-/preload-3.0.2.tgz#ee5bb33aba48741c5bc539a9a6faad0be455465e"
+  integrity sha512-TWWPToXd8qPRfSXwzf5KVhpXMfONaUuRAZJHsKthKgZR/+LqX1dZVSSClQ8OTAEduvLGdecljCsoT2jSshfoUg==
+
+"@electron-toolkit/utils@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@electron-toolkit/utils/-/utils-4.0.0.tgz#fd850c519a4ae692a2a6fb6a174010e6b377a113"
+  integrity sha512-qXSntwEzluSzKl4z5yFNBknmPGjPa3zFhE4mp9+h0cgokY5ornAeP+CJQDBhKsL1S58aOQfcwkD3NwLZCl+64g==
+
 "@electron/asar@3.2.18":
   version "3.2.18"
   resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.18.tgz#fa607f829209bab8b9e0ce6658d3fe81b2cba517"

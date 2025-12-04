@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es2019", // https://github.com/TypeStrong/ts-loader/issues/1061
+    "target": "esnext", // https://github.com/TypeStrong/ts-loader/issues/1061
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -55,7 +55,8 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "electron.vite.config.ts"
   ],
   "exclude": [
     "node_modules"
