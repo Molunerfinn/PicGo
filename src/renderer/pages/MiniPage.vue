@@ -42,6 +42,7 @@ import {
   isUrl
 } from '~/universal/utils/common'
 import { sendToMain } from '@/utils/dataSender'
+import { getFilePath } from '@/utils/common'
 const logo = require('../assets/squareLogo.png')
 const dragover = ref(false)
 const progress = ref(0)
@@ -133,7 +134,6 @@ function onChange (e: any) {
 
 function ipcSendFiles (files: FileList) {
   const sendFiles: IFileWithPath[] = []
-  const { getFilePath } = window.electronApi
   Array.from(files).forEach((item) => {
     const filePath = getFilePath(item)
     if (!filePath) return

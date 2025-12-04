@@ -102,6 +102,7 @@
 // import { Component, Vue, Watch } from 'vue-property-decorator'
 import { T as $T } from '@/i18n'
 import $bus from '@/utils/bus'
+import { getFilePath } from '@/utils/common'
 import { getConfig, saveConfig, sendToMain } from '@/utils/dataSender'
 import { CaretBottom, UploadFilled } from '@element-plus/icons-vue'
 import {
@@ -217,7 +218,6 @@ function onChange (e: any) {
 
 function ipcSendFiles (files: FileList) {
   const sendFiles: IFileWithPath[] = []
-  const { getFilePath } = window.electronApi
   Array.from(files).forEach((item) => {
     const filePath = getFilePath(item)
     if (!filePath) return

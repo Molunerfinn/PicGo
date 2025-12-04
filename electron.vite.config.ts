@@ -1,6 +1,7 @@
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import vue from '@vitejs/plugin-vue'
-import electronRenderer from 'vite-plugin-electron-renderer'
+// temp for webUtils
+import electronRenderer from '@molunerfinn/vite-plugin-electron-renderer'
 import { resolve } from 'path'
 
 const alias = {

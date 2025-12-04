@@ -1814,6 +1814,11 @@
     mkdirp "^0.5.1"
     rimraf "^2.5.2"
 
+"@molunerfinn/vite-plugin-electron-renderer@^0.14.7":
+  version "0.14.7"
+  resolved "https://registry.yarnpkg.com/@molunerfinn/vite-plugin-electron-renderer/-/vite-plugin-electron-renderer-0.14.7.tgz#21539491378b99e93ebff8cd1902f0a182fa60ac"
+  integrity sha512-aNnP9NjKQp7PbL9Rtmyv5RrBbOPAfh7jVGthiMw4oKJMQi5/OKum+H+pyFcl1Ye3smsOs4yq/U1CkO3bYi77NQ==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -10662,11 +10667,6 @@ verror@^1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
-
-vite-plugin-electron-renderer@^0.14.6:
-  version "0.14.6"
-  resolved "https://registry.yarnpkg.com/vite-plugin-electron-renderer/-/vite-plugin-electron-renderer-0.14.6.tgz#45fa5072d2ad39bcaa6d3eedf09f5bb9e04ac0a4"
-  integrity sha512-oqkWFa7kQIkvHXG7+Mnl1RTroA4sP0yesKatmAy0gjZC4VwUqlvF9IvOpHd1fpLWsqYX/eZlVxlhULNtaQ78Jw==
 
 vite@^7.2.6:
   version "7.2.6"

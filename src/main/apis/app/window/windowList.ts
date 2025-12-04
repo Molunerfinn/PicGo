@@ -1,4 +1,4 @@
-import path from 'path'
+// import path from 'path'
 import {
   SETTING_WINDOW_URL,
   TRAY_WINDOW_URL,
@@ -19,12 +19,10 @@ import { getStaticPath } from '#/utils/staticPath'
 
 const windowList = new Map<IWindowList, IWindowListItem>()
 
-console.log('!!!', path.join(__dirname, '../preload/index.js'))
-
 const defaultWebPreferences = {
-  preload: path.join(__dirname, '../preload/index.js'),
+  // preload: path.join(__dirname, '../preload/index.js'),
   nodeIntegration: true,
-  contextIsolation: true,
+  contextIsolation: false,
   nodeIntegrationInWorker: true,
   backgroundThrottling: false
 }
