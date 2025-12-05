@@ -103,8 +103,6 @@ windowList.set(IWindowList.SETTING_WINDOW, {
     if (process.platform !== 'darwin') {
       options.show = false
       options.frame = false
-      options.backgroundColor = '#3f3c37'
-      options.transparent = false
       options.icon = getStaticPath('logo.png')
       options.skipTaskbar = false
     }
@@ -171,9 +169,7 @@ windowList.set(IWindowList.RENAME_WINDOW, {
     }
     if (process.platform !== 'darwin') {
       options.show = true
-      options.backgroundColor = '#3f3c37'
       options.autoHideMenuBar = true
-      options.transparent = false
     }
     return options
   },
@@ -208,7 +204,6 @@ windowList.set(IWindowList.TOOLBOX_WINDOW, {
       center: true,
       fullscreenable: false,
       resizable: false,
-      // transparent: true,
       backgroundColor: 'rgba(26,40,42,0.9)',
       title: `PicGo-${T('TOOLBOX')}`,
       icon: getStaticPath('logo.png'),
@@ -218,9 +213,7 @@ windowList.set(IWindowList.TOOLBOX_WINDOW, {
       }
     }
     if (process.platform !== 'darwin') {
-      options.backgroundColor = '#3f3c37'
       options.autoHideMenuBar = true
-      options.transparent = false
     }
     return options
   },

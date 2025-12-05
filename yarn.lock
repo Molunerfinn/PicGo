@@ -1480,10 +1480,15 @@
     minimatch "^9.0.3"
     plist "^3.1.0"
 
-"@element-plus/icons-vue@^2.0.10", "@element-plus/icons-vue@^2.0.6":
+"@element-plus/icons-vue@^2.0.6":
   version "2.0.10"
   resolved "https://registry.npmjs.org/@element-plus/icons-vue/-/icons-vue-2.0.10.tgz#60808d613c3dbdad025577022be8a972739ade21"
   integrity sha512-ygEZ1mwPjcPo/OulhzLE7mtDrQBWI8vZzEWSNB2W/RNCRjoQGwbaK4N8lV4rid7Ts4qvySU3njMN7YCiSlSaTQ==
+
+"@element-plus/icons-vue@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/@element-plus/icons-vue/-/icons-vue-2.3.2.tgz#7e9cb231fb738b2056f33e22c3a29e214b538dcf"
+  integrity sha512-OzIuTaIfC8QXEPmJvB4Y4kw34rSXdCJzxcD1kFStBvr8bK6X1zQAYDo0CNMjojnfTqRQCJ0I7prlErcoRiET2A==
 
 "@esbuild/aix-ppc64@0.25.12":
   version "0.25.12"

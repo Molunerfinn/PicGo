@@ -58,7 +58,6 @@
       >
         <div
           class="plugin-item"
-          :class="{ 'darwin': os === 'darwin' }"
         >
           <div
             v-if="!item.gui"
@@ -232,7 +231,6 @@ const needReload = ref(false)
 const pluginListToolTip = $T('PLUGIN_LIST')
 const importLocalPluginToolTip = $T('PLUGIN_IMPORT_LOCAL')
 // const id = ref('')
-const os = ref('')
 const defaultLogo = ref(`this.src="${getRendererStaticFileUrl('roundLogo.png')}"`)
 const $configForm = ref<InstanceType<typeof ConfigForm> | null>(null)
 const npmSearchText = computed(() => {
@@ -265,7 +263,6 @@ watch(dialogVisible, (val: boolean) => {
 })
 
 onBeforeMount(async () => {
-  os.value = process.platform
   ipcRenderer.on('hideLoading', () => {
     loading.value = false
   })
@@ -550,7 +547,7 @@ export default {
 }
 </script>
 <style lang='stylus'>
-$darwinBg = #172426
+$bg = #172426
 #plugin-view
   position relative
   padding 0 20px 0
@@ -620,12 +617,9 @@ $darwinBg = #172426
       padding 3px 8px
       background #49B1F5
       color #eee
-    &.darwin
-      background transparentify($darwinBg, #000, 0.75)
-      &:hover
-        background transparentify($darwinBg, #000, 0.85)
+    background transparentify($bg, #000, 0.75)
     &:hover
-      background #333
+      background transparentify($bg, #000, 0.85)
     &__logo
       width 64px
       height 64px

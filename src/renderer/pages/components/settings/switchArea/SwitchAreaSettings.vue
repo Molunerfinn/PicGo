@@ -63,14 +63,15 @@
   />
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { reactive } from 'vue'
 import { T as $T } from '@/i18n/index'
 import { ElMessage as $message } from 'element-plus'
 import { sendRPC, sendToMain } from '@/utils/dataSender'
 import { IRPCActionType } from '~/universal/types/enum'
 import SwitchFormItem from '@/components/settings/SwitchFormItem.vue'
+import { useOS } from '@/hooks/useOS'
 
-const os = ref(process.platform)
+const os = useOS()
 
 interface IProps {
   settings: ISettingForm

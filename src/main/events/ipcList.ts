@@ -167,7 +167,9 @@ export default {
       server.restart()
     })
     ipcMain.on(OPEN_DEVTOOLS, (event: IpcMainEvent) => {
-      event.sender.openDevTools()
+      event.sender.openDevTools({
+        mode: 'detach'
+      })
     })
     // menu & window methods
     ipcMain.on(SHOW_MINI_PAGE_MENU, () => {
