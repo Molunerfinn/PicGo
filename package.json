@@ -9,10 +9,10 @@
     "email": "marksz@teamsz.xyz"
   },
   "scripts": {
-    "build": "electron-vite build",
-    "build:win": "npm run build && electron-builder --win",
-    "build:mac": "npm run build && electron-builder --mac",
-    "build:linux": "npm run build && electron-builder --linux",
+    "build": "electron-vite build && electron-builder --config electron-builder.config.ts",
+    "build:win": "npm run build && electron-builder --config electron-builder.config.ts --win",
+    "build:mac": "npm run build && electron-builder --config electron-builder.config.ts --mac",
+    "build:linux": "npm run build && electron-builder --config electron-builder.config.ts --linux",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx,.vue src/",
     "bump": "bump-version",
     "cz": "git-cz",
@@ -22,7 +22,6 @@
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx,.vue src/",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
-    "release": "electron-vite build",
     "upload-dist": "node ./scripts/upload-dist.js",
     "lint:dpdm": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/background.ts"
   },

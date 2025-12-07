@@ -56,7 +56,8 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "electron.vite.config.ts"
+    "electron.vite.config.ts",
+    "electron-builder.config.ts"
   ],
   "exclude": [
     "node_modules"
