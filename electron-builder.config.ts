@@ -56,7 +56,7 @@ const config: Configuration = {
   },
   win: {
     icon: 'build/icons/icon.ico',
-    artifactName: 'PicGo-Setup-${version}-${arch}.exe',
+    artifactName: 'PicGo-${version}-${arch}.exe',
     target: [
       {
         target: 'nsis',
