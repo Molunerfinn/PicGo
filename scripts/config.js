@@ -22,7 +22,7 @@ const linux = [{
 }, {
   appNameWithPrefix: 'PicGo-',
   ext: '.AppImage',
-  arch: '-x64',
+  arch: 'x86_64',
   'version-file': 'latest-linux.yml'
 }, {
   appNameWithPrefix: 'PicGo-',
@@ -32,12 +32,12 @@ const linux = [{
 }, {
   appNameWithPrefix: 'PicGo-',
   ext: '.deb',
-  arch: '-x64',
+  arch: 'amd64',
   'version-file': 'latest-linux.yml'
 }, {
   appNameWithPrefix: 'PicGo-',
   ext: '.snap',
-  arch: '-x64',
+  arch: 'amd64',
   'version-file': 'latest-linux.yml'
 }]
 
