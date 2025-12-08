@@ -2,6 +2,7 @@ import fs from 'fs-extra'
 import db from '~/main/apis/core/datastore'
 import { clipboard, Notification, dialog } from 'electron'
 import { handleUrlEncode } from '~/universal/utils/common'
+import { readClipboardFilePaths } from 'clip-filepaths'
 
 export const handleCopyUrl = (str: string): void => {
   if (db.get('settings.autoCopyUrl') !== false) {
@@ -97,26 +98,9 @@ export const ensureFilePath = (filePath: string, prefix = 'file://'): string => 
  * for builtin clipboard to get image path from clipboard
  * @returns
  */
-export const getClipboardFilePath = (): string => {
-  // TODO: linux support
-  const img = clipboard.readImage()
-  if (img.isEmpty()) {
-    if (process.platform === 'win32') {
-      const imgPath = clipboard.readBuffer('FileNameW')?.toString('ucs2')?.replace(RegExp(String.fromCharCode(0), 'g'), '')
-      if (imgPath) {
-        return imgPath
-      }
-    }
-  } else {
-    if (process.platform === 'darwin') {
-      let imgPath = clipboard.read('public.file-url') // will get file://xxx/xxx
-      imgPath = ensureFilePath(imgPath)
-      if (imgPath) {
-        return imgPath.replace('file://', '')
-      }
-    }
-  }
-  return ''
+export const getClipboardFilePathList = (): string[] => {
+  const { filePaths } = readClipboardFilePaths()
+  return filePaths
 }
 
 export const handleUrlEncodeWithSetting = (url: string) => {

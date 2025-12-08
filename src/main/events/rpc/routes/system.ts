@@ -20,7 +20,7 @@ systemRouter
   })
   .add(IRPCActionType.SHOW_DOCK_ICON, async (args) => {
     const [visible] = args as IShowDockIconArgs
-    app.dock[visible ? 'show' : 'hide']()
+    app.dock?.[visible ? 'show' : 'hide']()
     const win = windowManager.get(IWindowList.SETTING_WINDOW)
     if (!visible) {
       win?.show()
