@@ -2,7 +2,6 @@
   <div id="main-page">
     <div
       class="fake-title-bar"
-      :class="{ 'darwin': os === 'darwin' }"
     >
       <div class="fake-title-bar__title">
         PicGo - {{ version }}
@@ -103,7 +102,6 @@
         :offset="5"
         style="height: 428px"
         class="main-wrapper"
-        :class="{ 'darwin': os === 'darwin' }"
       >
         <router-view
           v-slot="{ Component }"
@@ -236,11 +234,12 @@ import {
   GET_PICBEDS
 } from '~/universal/events/constants'
 import { getConfig, sendToMain } from '@/utils/dataSender'
+import { useOS } from '@/hooks/useOS'
 const version = ref(process.env.NODE_ENV === 'production' ? pkg.version : 'Dev')
 const routerConfig = reactive(config)
 const defaultActive = ref(routerConfig.UPLOAD_PAGE)
 const visible = ref(false)
-const os = ref('')
+const os = useOS()
 const $router = useRouter()
 const picBed: Ref<IPicBedType[]> = ref([])
 const qrcodeVisible = ref(false)
@@ -250,7 +249,6 @@ const choosedPicBedForQRCode: Ref<string[]> = ref([])
 const keepAlivePages = $router.getRoutes().filter(item => item.meta.keepAlive).map(item => item.name as string)
 
 onBeforeMount(() => {
-  os.value = process.platform
   sendToMain(GET_PICBEDS)
   ipcRenderer.on(GET_PICBEDS, getPicBeds)
   handleGetPicPeds()
@@ -350,7 +348,8 @@ export default {
 }
 </script>
 <style lang='stylus'>
-$darwinBg = transparentify(#172426, #000, 0.7)
+$bg = transparentify(#172426, #000, 0.9)
+$sideBg = transparentify(#000, 0.7)
 .setting-list-scroll
   height 425px
   overflow-y auto
@@ -388,17 +387,16 @@ $darwinBg = transparentify(#172426, #000, 0.7)
     line-height h
     position fixed
     z-index 100
-    &.darwin
-      background transparent
-      background-image linear-gradient(
-        to right,
-        transparent 0%,
-        transparent 167px,
-        $darwinBg 167px,
-        $darwinBg 100%
-      )
-      .fake-title-bar__title
-        padding-left 167px
+    background transparent
+    background-image linear-gradient(
+      to right,
+      $sideBg 0%,
+      $sideBg 170px,
+      $bg 170px,
+      $bg 100%
+    )
+    .fake-title-bar__title
+      padding-left 167px
     .handle-bar
       position absolute
       top 2px
@@ -419,14 +417,14 @@ $darwinBg = transparentify(#172426, #000, 0.7)
         &:hover
           color #69C282
   .main-wrapper
-    &.darwin
-      background $darwinBg
+    background $bg
   .side-bar-menu
     position fixed
     height calc(100vh - 22px)
     overflow-x hidden
     overflow-y auto
     width 170px
+    background $sideBg
     .info-window
       cursor pointer
       position fixed

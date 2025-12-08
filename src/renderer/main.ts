@@ -1,26 +1,24 @@
-import './renderer/assets/css/tailwind.css'
+import './assets/css/tailwind.css'
 import { createApp } from 'vue'
-import App from './renderer/App.vue'
-import router from './renderer/router'
+import { webFrame } from 'electron'
+import App from './App.vue'
+import router from './router'
 import ElementUI from 'element-plus'
 import 'element-plus/dist/index.css'
-import { webFrame } from 'electron'
 import VueLazyLoad from 'vue3-lazyload'
 import axios from 'axios'
-import { mainMixin } from './renderer/utils/mainMixin'
+import { mainMixin } from './utils/mainMixin'
 import { dragMixin } from '@/utils/mixin'
-import { initTalkingData } from './renderer/utils/analytics'
-import db from './renderer/utils/db'
-import { i18nManager, T } from './renderer/i18n/index'
+import { initTalkingData } from './utils/analytics'
+import db from './utils/db'
+import { i18nManager, T } from './i18n/index'
 import { getConfig, saveConfig, sendToMain, triggerRPC } from '@/utils/dataSender'
 import { store } from '@/store'
 import vue3PhotoPreview from 'vue3-photo-preview'
 import 'vue3-photo-preview/dist/index.css'
+import { getRendererStaticFileUrl } from './utils/static'
 
 webFrame.setVisualZoomLevelLimits(1, 1)
-
-// do here before vue init
-// handleURLParams()
 
 const app = createApp(App)
 
@@ -48,7 +46,7 @@ app.mixin(mainMixin)
 app.mixin(dragMixin)
 
 app.use(VueLazyLoad, {
-  error: `file://${__static.replace(/\\/g, '/')}/unknown-file-type.svg`
+  error: getRendererStaticFileUrl('unknown-file-type.svg')
 })
 app.use(ElementUI)
 app.use(router)

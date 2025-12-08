@@ -9,14 +9,14 @@ const pkg = require('../package.json')
 const configList = require('./config')
 const mime = require('mime-types')
 const path = require('path')
-const distPath = path.join(__dirname, '../dist_electron')
+const distPath = path.join(__dirname, '../dist')
 const S3Client = require('@aws-sdk/client-s3').S3Client
 const Upload = require('@aws-sdk/lib-storage').Upload
 // const BUCKET = 'picgo-1251750343'
 // const COS_SECRET_ID = process.env.PICGO_ENV_COS_SECRET_ID
 // const COS_SECRET_KEY = process.env.PICGO_ENV_COS_SECRET_KEY
 
-const S3_BUCKET = 'picgo'
+const S3_BUCKET = 'release'
 // const AREA = 'ap-chengdu'
 const VERSION = pkg.version
 const FILE_PATH = `${VERSION}/`
@@ -126,23 +126,24 @@ const uploadDist = async () => {
         if (VERSION.toLocaleLowerCase().includes('beta')) {
           versionFileName = versionFileName.replace('.yml', '.beta.yml')
         }
-
         const client = new S3Client(S3Options)
-        const uploadDistToS3 = new Upload({
-          client,
-          params: {
-            Bucket: S3_BUCKET,
-            Key: `${FILE_PATH}${fileName}`,
-            Body: fs.createReadStream(filePath),
-            ContentType: 'application/octet-stream'
-          }
-        })
-        // upload dist file
-        console.log('[PicGo Dist] Uploading...', fileName, `${index + 1}/${configList[platform].length}`)
-        uploadDistToS3.on('httpUploadProgress', progress => {
-          console.log(`[PicGo Dist] Uploading... ${progress.loaded}/${progress.total}`)
-        })
-        await uploadDistToS3.done()
+        if (fs.existsSync(filePath)) {
+          const uploadDistToS3 = new Upload({
+            client,
+            params: {
+              Bucket: S3_BUCKET,
+              Key: `${FILE_PATH}${fileName}`,
+              Body: fs.createReadStream(filePath),
+              ContentType: 'application/octet-stream'
+            }
+          })
+          // upload dist file
+          console.log('[PicGo Dist] Uploading...', fileName, `${index + 1}/${configList[platform].length}`)
+          uploadDistToS3.on('httpUploadProgress', progress => {
+            console.log(`[PicGo Dist] Uploading... ${progress.loaded}/${progress.total}`)
+          })
+          await uploadDistToS3.done()
+        }
 
         // upload version file
         if (!versionFileHasUploaded) {
@@ -158,6 +159,7 @@ const uploadDist = async () => {
           console.log('[PicGo Version File] Uploading...', versionFileName)
           await uploadVersionFileToS3.done()
           versionFileHasUploaded = true
+          console.log('[PicGo Version File] Upload successfully')
         }
       }
     } else {

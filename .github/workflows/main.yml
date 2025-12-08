@@ -1,61 +1,136 @@
-# main.yml
+name: Build & Release
 
-# Workflow's name
-name: Build
-
-# Workflow's trigger
 on:
   push:
-    branches:
-      - master
+    tags:
+      - v*
+  workflow_dispatch:
+    inputs:
+      test_upload_dist:
+        description: "Test upload-dist.js script"
+        required: true
+        default: false
+        type: boolean
+env:
+  NODE_VERSION: 22.x
 
-# Workflow's jobs
 jobs:
-  # job's id
-  release:
-    # job's name
-    name: build and release electron app
-
-    # the type of machine to run the job on
+  # parallel build jobs
+  build:
+    name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-
-    # create a build matrix for jobs
     strategy:
+      # if one job fails, do not stop other jobs
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-14]
-
-    # create steps
+        os: [macos-latest, windows-latest, ubuntu-latest]
     steps:
-      # step1: check out repository
       - name: Check out git repository
-        uses: actions/checkout@v2
-
-      # step2: install node env
-      - name: Install Node.js
-        uses: actions/setup-node@v2
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          node-version: '16.x'
-
-      - name: Install system deps
-        if: matrix.os == 'ubuntu-latest'
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Clean workspace on Windows
+        if: runner.os == 'Windows'
         run: |
-          sudo apt-get install --no-install-recommends -y icnsutils graphicsmagick xz-utils
+          if (Test-Path dist) { Remove-Item -Recurse -Force dist }
+          if (Test-Path dist_electron) { Remove-Item -Recurse -Force dist_electron }
+          if (Test-Path node_modules) { Remove-Item -Recurse -Force node_modules }
 
-      # step3: yarn
-      - name: Yarn install
+          if (Test-Path "$env:LOCALAPPDATA\electron-builder") {
+            Remove-Item "$env:LOCALAPPDATA\electron-builder" -Recurse -Force -ErrorAction SilentlyContinue
+          }
+          if (Test-Path "$env:LOCALAPPDATA\electron") {
+            Remove-Item "$env:LOCALAPPDATA\electron" -Recurse -Force -ErrorAction SilentlyContinue
+          }
+      - name: Clean workspace on macOS & Linux
+        if: runner.os == 'macOS' || runner.os == 'Linux'
         run: |
-          yarn
-          yarn global add xvfb-maybe
-
-      - name: Build  & release app
-        run: |
-          yarn release
-          yarn upload-dist
+          rm -rf dist dist_electron node_modules ~/.cache/electron-builder ~/.cache/electron
+      - name: Install dependencies
+        run: yarn install
+      - name: Ubuntu Update with sudo
+        if: runner.os == 'Linux'
+        run: sudo apt-get update
+      - name: Build Windows x64 & ARM64 App
+        if: runner.os == 'Windows'
+        run: yarn build:win || true
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          PICGO_ENV_COS_SECRET_ID: ${{ secrets.PICGO_ENV_COS_SECRET_ID }}
-          PICGO_ENV_COS_SECRET_KEY: ${{ secrets.PICGO_ENV_COS_SECRET_KEY }}
+      - name: Build macOS Universal App
+        if: runner.os == 'macOS'
+        run: yarn build:mac || true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Build Linux x64 & ARM64 App
+        if: runner.os == 'Linux'
+        run: yarn build:linux || true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PicGo-${{ runner.os }}
+          path: dist/*.*
+      - name: Upload to release.picgo.app
+        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.test_upload_dist
+        run: |
+          yarn upload-dist
+        env:
           PICGO_ENV_S3_SECRET_ID: ${{ secrets.PICGO_ENV_S3_SECRET_ID }}
           PICGO_ENV_S3_SECRET_KEY: ${{ secrets.PICGO_ENV_S3_SECRET_KEY }}
           PICGO_ENV_S3_ACCOUNT_ID: ${{ secrets.PICGO_ENV_S3_ACCOUNT_ID }}
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Publish GitHub Dev Release
+        if: github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        continue-on-error: true
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          tag_name: dev
+          draft: true
+          prerelease: false
+          files: |
+            !artifacts/**/*-unpacked/**
+            artifacts/**/*.exe
+            artifacts/**/*.dmg
+            artifacts/**/*.zip
+            artifacts/**/*.AppImage
+            artifacts/**/*.deb
+            artifacts/**/*.snap
+            artifacts/**/*.tar.gz
+            artifacts/**/*.yml
+            artifacts/**/*.blockmap
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        continue-on-error: true
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          generate_release_notes: true
+          draft: true
+          prerelease: false
+          files: |
+            !artifacts/**/*-unpacked/**
+            artifacts/**/*.exe
+            artifacts/**/*.dmg
+            artifacts/**/*.zip
+            artifacts/**/*.AppImage
+            artifacts/**/*.deb
+            artifacts/**/*.snap
+            artifacts/**/*.tar.gz
+            artifacts/**/*.yml
+            artifacts/**/*.blockmap

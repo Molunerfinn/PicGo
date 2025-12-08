@@ -7,6 +7,7 @@ import {
   ipcMain,
   clipboard
 } from 'electron'
+import fs from 'fs-extra'
 import { IPasteStyle, IPicGoHelperType, IWindowList } from '#/types/enum'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import picgo from '@core/picgo'
@@ -39,11 +40,7 @@ import pasteTemplate from '../utils/pasteTemplate'
 import { i18nManager, T } from '~/main/i18n'
 import { rpcServer } from './rpc'
 
-// eslint-disable-next-line
-const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
-// const PluginHandler = requireFunc('picgo/lib/PluginHandler').default
 const STORE_PATH = path.dirname(dbPathChecker())
-// const CONFIG_PATH = path.join(STORE_PATH, '/data.json')
 
 interface GuiMenuItem {
   label: string
@@ -84,7 +81,7 @@ const getPluginList = (): IPicGoPlugin[] => {
   for (const i in pluginList) {
     const plugin = picgo.pluginLoader.getPlugin(pluginList[i])!
     const pluginPath = path.join(STORE_PATH, `/node_modules/${pluginList[i]}`)
-    const pluginPKG = requireFunc(path.join(pluginPath, 'package.json'))
+    const pluginPKG = fs.readJSONSync(path.join(pluginPath, 'package.json'), 'utf-8')
     const uploaderName = plugin.uploader || ''
     const transformerName = plugin.transformer || ''
     let menu: Omit<IGuiMenuItem, 'handle'>[] = []

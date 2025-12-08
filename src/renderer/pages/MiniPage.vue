@@ -42,7 +42,10 @@ import {
   isUrl
 } from '~/universal/utils/common'
 import { sendToMain } from '@/utils/dataSender'
-const logo = require('../assets/squareLogo.png')
+import { getFilePath } from '@/utils/common'
+import { getRendererStaticFileUrl } from '@/utils/static'
+import { useOS } from '@/hooks/useOS'
+const logo = ref(getRendererStaticFileUrl('squareLogo.png'))
 const dragover = ref(false)
 const progress = ref(0)
 const showProgress = ref(false)
@@ -52,10 +55,9 @@ const wX = ref(-1)
 const wY = ref(-1)
 const screenX = ref(-1)
 const screenY = ref(-1)
-const os = ref('')
+const os = useOS()
 
 onBeforeMount(() => {
-  os.value = process.platform
   ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, _progress: number) => {
     if (_progress !== -1) {
       showProgress.value = true
@@ -134,12 +136,14 @@ function onChange (e: any) {
 function ipcSendFiles (files: FileList) {
   const sendFiles: IFileWithPath[] = []
   Array.from(files).forEach((item) => {
-    const obj = {
+    const filePath = getFilePath(item)
+    if (!filePath) return
+    sendFiles.push({
       name: item.name,
-      path: item.path
-    }
-    sendFiles.push(obj)
+      path: filePath
+    })
   })
+  if (!sendFiles.length) return
   sendToMain('uploadChoosedFiles', sendFiles)
 }
 

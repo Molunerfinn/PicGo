@@ -1,6 +1,7 @@
 import { isReactive, isRef, toRaw, unref } from 'vue'
 import { sendToMain } from './dataSender'
 import { OPEN_URL, PICGO_OPEN_FILE } from '~/universal/events/constants'
+import { webUtils } from 'electron'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 /* eslint-disable camelcase */
@@ -69,4 +70,8 @@ export const openFile = (fileName: string) => {
 
 export const openURL = (url: string) => {
   sendToMain(OPEN_URL, url)
+}
+
+export const getFilePath = (file: File) => {
+  return webUtils.getPathForFile(file)
 }

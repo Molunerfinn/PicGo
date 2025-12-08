@@ -1,3 +1,4 @@
+// import path from 'path'
 import {
   SETTING_WINDOW_URL,
   TRAY_WINDOW_URL,
@@ -13,9 +14,18 @@ import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { app } from 'electron'
 import { T } from '~/main/i18n'
 import { isLinux } from '~/universal/utils/common'
+import { getStaticPath } from '#/utils/staticPath'
 // import { URLSearchParams } from 'url'
 
 const windowList = new Map<IWindowList, IWindowListItem>()
+
+const defaultWebPreferences = {
+  // preload: path.join(__dirname, '../preload/index.js'),
+  nodeIntegration: true,
+  contextIsolation: false,
+  nodeIntegrationInWorker: true,
+  backgroundThrottling: false
+}
 
 const handleWindowParams = (windowURL: string) => {
   // const [baseURL, hash = ''] = windowURL.split('#')
@@ -55,10 +65,7 @@ windowList.set(IWindowList.TRAY_WINDOW, {
       transparent: true,
       vibrancy: 'ultra-dark',
       webPreferences: {
-        nodeIntegration: !!process.env.ELECTRON_NODE_INTEGRATION,
-        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-        nodeIntegrationInWorker: true,
-        backgroundThrottling: false,
+        ...defaultWebPreferences,
         webSecurity: false
       }
     }
@@ -85,24 +92,18 @@ windowList.set(IWindowList.SETTING_WINDOW, {
       fullscreenable: false,
       resizable: false,
       title: 'PicGo',
-      vibrancy: 'ultra-dark',
       transparent: true,
       skipTaskbar: !showDockIcon,
       titleBarStyle: 'hidden',
       webPreferences: {
-        backgroundThrottling: false,
-        nodeIntegration: !!process.env.ELECTRON_NODE_INTEGRATION,
-        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-        nodeIntegrationInWorker: true,
+        ...defaultWebPreferences,
         webSecurity: false
       }
     }
     if (process.platform !== 'darwin') {
       options.show = false
       options.frame = false
-      options.backgroundColor = '#3f3c37'
-      options.transparent = false
-      options.icon = `${__static}/logo.png`
+      options.icon = getStaticPath('logo.png')
       options.skipTaskbar = false
     }
     return options
@@ -135,12 +136,9 @@ windowList.set(IWindowList.MINI_WINDOW, {
       skipTaskbar: true,
       resizable: false,
       transparent: process.platform !== 'linux',
-      icon: `${__static}/logo.png`,
+      icon: getStaticPath('logo.png'),
       webPreferences: {
-        backgroundThrottling: false,
-        nodeIntegration: !!process.env.ELECTRON_NODE_INTEGRATION,
-        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-        nodeIntegrationInWorker: true
+        ...defaultWebPreferences
       }
     }
 
@@ -164,19 +162,14 @@ windowList.set(IWindowList.RENAME_WINDOW, {
       show: true,
       fullscreenable: false,
       resizable: false,
-      vibrancy: 'ultra-dark',
+      backgroundColor: 'rgba(26,40,42,0.9)',
       webPreferences: {
-        nodeIntegration: !!process.env.ELECTRON_NODE_INTEGRATION,
-        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-        nodeIntegrationInWorker: true,
-        backgroundThrottling: false
+        ...defaultWebPreferences
       }
     }
     if (process.platform !== 'darwin') {
       options.show = true
-      options.backgroundColor = '#3f3c37'
       options.autoHideMenuBar = true
-      options.transparent = false
     }
     return options
   },
@@ -211,21 +204,16 @@ windowList.set(IWindowList.TOOLBOX_WINDOW, {
       center: true,
       fullscreenable: false,
       resizable: false,
-      title: `PicGo ${T('TOOLBOX')}`,
-      vibrancy: 'ultra-dark',
-      icon: `${__static}/logo.png`,
+      backgroundColor: 'rgba(26,40,42,0.9)',
+      title: `PicGo-${T('TOOLBOX')}`,
+      icon: getStaticPath('logo.png'),
       webPreferences: {
-        backgroundThrottling: false,
-        nodeIntegration: !!process.env.ELECTRON_NODE_INTEGRATION,
-        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-        nodeIntegrationInWorker: true,
+        ...defaultWebPreferences,
         webSecurity: false
       }
     }
     if (process.platform !== 'darwin') {
-      options.backgroundColor = '#3f3c37'
       options.autoHideMenuBar = true
-      options.transparent = false
     }
     return options
   },

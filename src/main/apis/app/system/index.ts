@@ -20,6 +20,7 @@ import { T } from '~/main/i18n'
 import { isMacOSVersionGreaterThanOrEqualTo } from '~/main/utils/getMacOSVersion'
 import { buildPicBedListMenu } from '~/main/events/remotes/menu'
 import { isLinux, isMacOS } from '~/universal/utils/common'
+import { getStaticPath } from '#/utils/staticPath'
 let contextMenu: Menu | null
 let menu: Menu | null
 let tray: Tray | null
@@ -139,10 +140,10 @@ const getTrayIcon = () => {
   if (process.platform === 'darwin') {
     const isMacOSGreaterThan11 = isMacOSVersionGreaterThanOrEqualTo('11')
     return isMacOSGreaterThan11
-      ? `${__static}/menubar-newdarwinTemplate.png`
-      : `${__static}/menubar.png`
+      ? getStaticPath('menubar-newdarwinTemplate.png')
+      : getStaticPath('menubar.png')
   } else {
-    return `${__static}/menubar-nodarwin.png`
+    return getStaticPath('menubar-nodarwin.png')
   }
 }
 
@@ -217,9 +218,9 @@ export function createTray () {
 
     tray.on('drag-enter', () => {
       if (nativeTheme.shouldUseDarkColors) {
-        tray!.setImage(`${__static}/upload-dark.png`)
+        tray!.setImage(getStaticPath('upload-dark.png'))
       } else {
-        tray!.setImage(`${__static}/upload.png`)
+        tray!.setImage(getStaticPath('upload.png'))
       }
     })
 

@@ -22,11 +22,12 @@ import { privacyManager } from '~/main/utils/privacyManager'
 import writeFile from 'write-file-atomic'
 import { CLIPBOARD_IMAGE_FOLDER } from '~/universal/utils/static'
 import { cleanupFormUploaderFiles } from '~/main/utils/cleanupFormUploaderFiles'
+import { IpcMainEvent } from 'electron/main'
 
 const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> => {
   return new Promise((resolve) => {
     const windowId = window.id
-    ipcMain.once(`${RENAME_FILE_NAME}${id}`, (evt: Event, newName: string) => {
+    ipcMain.once(`${RENAME_FILE_NAME}${id}`, (evt: IpcMainEvent, newName: string) => {
       resolve(newName)
       window.close()
     })

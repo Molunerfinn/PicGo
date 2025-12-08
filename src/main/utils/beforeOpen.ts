@@ -5,6 +5,7 @@ import { dbPathChecker } from 'apis/core/datastore/dbChecker'
 import yaml from 'js-yaml'
 import { i18nManager } from '~/main/i18n'
 // import { ILocales } from '~/universal/types/i18n'
+import { getStaticPath } from '#/utils/staticPath'
 
 const configPath = dbPathChecker()
 const CONFIG_DIR = path.dirname(configPath)
@@ -49,7 +50,7 @@ function resolveMacWorkFlow () {
     return true
   } else {
     try {
-      copyFileOutsideOfElectronAsar(path.join(__static, 'Upload pictures with PicGo.workflow'), dest)
+      copyFileOutsideOfElectronAsar(getStaticPath('Upload pictures with PicGo.workflow'), dest)
     } catch (e) {
       console.log(e)
     }
@@ -87,16 +88,16 @@ function resolveClipboardImageGenerator () {
 
   function getClipboardFiles () {
     const files = [
-      '/linux.sh',
-      '/mac.applescript',
-      '/windows.ps1',
-      '/windows10.ps1',
-      '/wsl.sh'
+      'linux.sh',
+      'mac.applescript',
+      'windows.ps1',
+      'windows10.ps1',
+      'wsl.sh'
     ]
 
     return files.map(item => {
       return {
-        origin: path.join(__static, item),
+        origin: getStaticPath(item),
         dest: path.join(CONFIG_DIR, item)
       }
     })

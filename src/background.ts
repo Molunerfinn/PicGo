@@ -1,5 +1,7 @@
+import { initStaticPath } from '~/main/utils/env'
 import { bootstrap } from '~/main/lifeCycle'
 
+initStaticPath()
 bootstrap.launchApp()
 
 /**
