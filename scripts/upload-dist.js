@@ -117,7 +117,7 @@ const uploadDist = async () => {
   try {
     const platform = process.platform
     if (configList[platform]) {
-      let versionFileHasUploaded = false
+      const uploadedVersionFiles = new Set()
       for (const [index, config] of configList[platform].entries()) {
         const fileName = `${config.appNameWithPrefix}${VERSION}${config.arch}${config.ext}`
         const filePath = path.join(distPath, fileName)
@@ -146,7 +146,7 @@ const uploadDist = async () => {
         }
 
         // upload version file
-        if (!versionFileHasUploaded) {
+        if (!uploadedVersionFiles.has(versionFileName) && fs.existsSync(versionFilePath)) {
           const uploadVersionFileToS3 = new Upload({
             client,
             params: {
@@ -158,7 +158,7 @@ const uploadDist = async () => {
           })
           console.log('[PicGo Version File] Uploading...', versionFileName)
           await uploadVersionFileToS3.done()
-          versionFileHasUploaded = true
+          uploadedVersionFiles.add(versionFileName)
           console.log('[PicGo Version File] Upload successfully')
         }
       }

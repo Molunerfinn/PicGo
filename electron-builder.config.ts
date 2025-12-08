@@ -60,7 +60,15 @@ const config: Configuration = {
     target: [
       {
         target: 'nsis',
-        arch: ['x64', 'ia32', 'arm64']
+        arch: ['x64']
+      },
+      {
+        target: 'nsis',
+        arch: ['ia32']
+      },
+      {
+        target: 'nsis',
+        arch: ['arm64']
       }
     ]
   },
