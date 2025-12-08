@@ -5,7 +5,12 @@ on:
     tags:
       - v*
   workflow_dispatch:
-
+    inputs:
+      test_upload_dist:
+        description: "Test upload-dist.js script"
+        required: true
+        default: false
+        type: boolean
 env:
   NODE_VERSION: 22.x
 
@@ -70,6 +75,14 @@ jobs:
         with:
           name: PicGo-${{ runner.os }}
           path: dist/*.*
+      - name: Upload to release.picgo.app
+        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.test_upload_dist
+        run: |
+          yarn upload-dist
+        env:
+          PICGO_ENV_S3_SECRET_ID: ${{ secrets.PICGO_ENV_S3_SECRET_ID }}
+          PICGO_ENV_S3_SECRET_KEY: ${{ secrets.PICGO_ENV_S3_SECRET_KEY }}
+          PICGO_ENV_S3_ACCOUNT_ID: ${{ secrets.PICGO_ENV_S3_ACCOUNT_ID }}
   release:
     name: Publish GitHub Release
     needs: build
@@ -121,11 +134,3 @@ jobs:
             artifacts/**/*.tar.gz
             artifacts/**/*.yml
             artifacts/**/*.blockmap
-      - name: Upload to R2
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          node ./scripts/upload-dist.js
-        env:
-          PICGO_ENV_S3_SECRET_ID: ${{ secrets.PICGO_ENV_S3_SECRET_ID }}
-          PICGO_ENV_S3_SECRET_KEY: ${{ secrets.PICGO_ENV_S3_SECRET_KEY }}
-          PICGO_ENV_S3_ACCOUNT_ID: ${{ secrets.PICGO_ENV_S3_ACCOUNT_ID }}
