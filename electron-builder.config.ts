@@ -4,14 +4,16 @@ import type { Configuration } from 'electron-builder'
 const config: Configuration = {
   appId: 'com.molunerfinn.picgo',
   productName: 'PicGo',
-  publish: [
-    {
-      provider: 'github',
-      owner: 'Molunerfinn',
-      repo: 'PicGo',
-      releaseType: 'draft'
-    }
-  ],
+  // publish: [
+  //   {
+  //     provider: 'github',
+  //     owner: 'Molunerfinn',
+  //     repo: 'PicGo',
+  //     releaseType: 'draft'
+  //   }
+  // ],
+  // temporarily disable auto update feature
+  publish: [],
   files: [
     'dist_electron/**/*',
     'node_modules/**/*',
@@ -98,7 +100,8 @@ const config: Configuration = {
       }
     ],
     maintainer: 'Molunerfinn',
-    category: 'Utility'
+    category: 'Utility',
+    publish: []
   }
 }
 
