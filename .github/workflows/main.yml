@@ -58,7 +58,7 @@ jobs:
         run: yarn build:win || true
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Build macOS Universal App
+      - name: Build macOS x64 & ARM64 App
         if: runner.os == 'macOS'
         run: yarn build:mac || true
         shell: bash

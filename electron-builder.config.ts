@@ -76,6 +76,7 @@ const config: Configuration = {
     shortcutName: 'PicGo',
     oneClick: false,
     allowToChangeInstallationDirectory: true,
+    buildUniversalInstaller: false,
     include: 'build/installer.nsh'
   },
   linux: {
