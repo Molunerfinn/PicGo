@@ -1,3 +1,23 @@
+## :tada: 2.4.1-beta.0 (2025-12-09)
+
+
+### :bug: Bug Fixes
+
+* fix docs link ([d6c0a85](https://github.com/Molunerfinn/PicGo/commit/d6c0a85))
+* pic-migrater post handler error ([b421c4b](https://github.com/Molunerfinn/PicGo/commit/b421c4b))
+* tray window clipboard image not show bug ([#1362](https://github.com/Molunerfinn/PicGo/issues/1362)) ([56f61d4](https://github.com/Molunerfinn/PicGo/commit/56f61d4))
+
+
+### :package: Chore
+
+* change release url ([9d4ea82](https://github.com/Molunerfinn/PicGo/commit/9d4ea82))
+* disabled build universal installer ([366ac11](https://github.com/Molunerfinn/PicGo/commit/366ac11))
+* fix some workflow bug ([db627a4](https://github.com/Molunerfinn/PicGo/commit/db627a4))
+* fix upload dist arch bug ([8e94b2a](https://github.com/Molunerfinn/PicGo/commit/8e94b2a))
+* upgrade electron version && migrate to electron-vite ([#1361](https://github.com/Molunerfinn/PicGo/issues/1361)) ([070ce2b](https://github.com/Molunerfinn/PicGo/commit/070ce2b))
+
+
+
 # :tada: 2.4.0 (2025-11-23)
 
 
