@@ -27,10 +27,16 @@ jobs:
     steps:
       - name: Check out git repository
         uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
       - name: Clean workspace on Windows
         if: runner.os == 'Windows'
         run: |
@@ -49,24 +55,24 @@ jobs:
         run: |
           rm -rf dist dist_electron node_modules ~/.cache/electron-builder ~/.cache/electron
       - name: Install dependencies
-        run: yarn install
+        run: pnpm install --frozen-lockfile
       - name: Ubuntu Update with sudo
         if: runner.os == 'Linux'
         run: sudo apt-get update
       - name: Build Windows x64 & ARM64 App
         if: runner.os == 'Windows'
-        run: yarn build:win || true
+        run: pnpm run build:win || true
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Build macOS x64 & ARM64 App
         if: runner.os == 'macOS'
-        run: yarn build:mac || true
+        run: pnpm run build:mac || true
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Build Linux x64 & ARM64 App
         if: runner.os == 'Linux'
-        run: yarn build:linux || true
+        run: pnpm run build:linux || true
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -78,7 +84,7 @@ jobs:
       - name: Upload to release.picgo.app
         if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.test_upload_dist
         run: |
-          yarn upload-dist
+          pnpm run upload-dist
         env:
           PICGO_ENV_S3_SECRET_ID: ${{ secrets.PICGO_ENV_S3_SECRET_ID }}
           PICGO_ENV_S3_SECRET_KEY: ${{ secrets.PICGO_ENV_S3_SECRET_KEY }}
