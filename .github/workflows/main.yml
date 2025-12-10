@@ -89,6 +89,9 @@ jobs:
           PICGO_ENV_S3_SECRET_ID: ${{ secrets.PICGO_ENV_S3_SECRET_ID }}
           PICGO_ENV_S3_SECRET_KEY: ${{ secrets.PICGO_ENV_S3_SECRET_KEY }}
           PICGO_ENV_S3_ACCOUNT_ID: ${{ secrets.PICGO_ENV_S3_ACCOUNT_ID }}
+          PICGO_ENV_S3_LEGACY_ACCOUNT_ID: ${{ secrets.PICGO_ENV_S3_LEGACY_ACCOUNT_ID }}
+          PICGO_ENV_S3_LEGACY_SECRET_ID: ${{ secrets.PICGO_ENV_S3_LEGACY_SECRET_ID }}
+          PICGO_ENV_S3_LEGACY_SECRET_KEY: ${{ secrets.PICGO_ENV_S3_LEGACY_SECRET_KEY }}
   release:
     name: Publish GitHub Release
     needs: build
