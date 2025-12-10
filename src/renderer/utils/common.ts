@@ -4,7 +4,6 @@ import { OPEN_URL, PICGO_OPEN_FILE } from '~/universal/events/constants'
 import { webUtils } from 'electron'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
-/* eslint-disable camelcase */
 export const handleTalkingDataEvent = (data: ITalkingDataOptions) => {
   const { EventId, Label = '', MapKv = {} } = data
   MapKv.from = window.location.href

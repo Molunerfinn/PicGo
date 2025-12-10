@@ -20,9 +20,7 @@ import { DBStore } from '@picgo/store'
 import { T } from '~/main/i18n'
 import { IRPCActionType } from '~/universal/types/enum'
 
-// Cross-process support may be required in the future
 class GuiApi implements IGuiApi {
-  // eslint-disable-next-line no-use-before-define
   private static instance: GuiApi
   private windowId: number = -1
   private settingWindowId: number = -1
@@ -62,7 +60,7 @@ class GuiApi implements IGuiApi {
     await this.showSettingWindow()
     this.getWebContentsByWindowId(this.settingWindowId)?.send(SHOW_INPUT_BOX, options)
     return new Promise<string>((resolve) => {
-      ipcMain.once(SHOW_INPUT_BOX, (event: Event, value: string) => {
+      ipcMain.once(SHOW_INPUT_BOX, (event, value: string) => {
         resolve(value)
       })
     })
@@ -140,7 +138,7 @@ class GuiApi implements IGuiApi {
     await this.showSettingWindow()
     this.getWebContentsByWindowId(this.settingWindowId)?.send(IRPCActionType.OPEN_CONFIG_DIALOG, options)
     return new Promise<T | false>((resolve) => {
-      ipcMain.once(IRPCActionType.OPEN_CONFIG_DIALOG, (event: Event, value: T | false) => {
+      ipcMain.once(IRPCActionType.OPEN_CONFIG_DIALOG, (event, value: T | false) => {
         resolve(value)
       })
     })

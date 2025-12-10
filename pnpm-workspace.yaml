@@ -1,0 +1,17 @@
+onlyBuiltDependencies:
+  - core-js
+  - ejs
+  - electron
+  - electron-winstaller
+  - esbuild
+  - husky
+  - vue-demi
+
+# for multi-arch builds, include both x64 and arm64 versions of electron
+# will be deprecated in future(use different arch machine to build different arch binaries)
+supportedArchitectures:
+  os:
+    - current
+  cpu:
+    - x64
+    - arm64

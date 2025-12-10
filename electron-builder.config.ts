@@ -1,4 +1,4 @@
-/* eslint-disable no-template-curly-in-string */
+ 
 import type { Configuration } from 'electron-builder'
 
 const config: Configuration = {
@@ -16,11 +16,10 @@ const config: Configuration = {
   publish: [],
   files: [
     'dist_electron/**/*',
-    'node_modules/**/*',
     'public/**/*',
     'package.json',
-    'LICENSE',
-    'README.md'
+    '!node_modules/@babel/**/*',
+    "!**/node_modules/typescript{,/**}"
   ],
   extraResources: [
     {

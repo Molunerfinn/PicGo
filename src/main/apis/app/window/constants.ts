@@ -1,4 +1,3 @@
-const isDevelopment = process.env.NODE_ENV !== 'production'
 import { buildRendererUrl } from '~/main/utils/env'
 
 export const TRAY_WINDOW_URL = buildRendererUrl()

@@ -24,7 +24,7 @@ function copyFileOutsideOfElectronAsar (
   if (fs.existsSync(sourceInAsarArchive)) {
     // file will be copied
     if (fs.statSync(sourceInAsarArchive).isFile()) {
-      const file = destOutsideAsarArchive;
+      const file = destOutsideAsarArchive
       const dir = path.dirname(file)
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true })
@@ -35,8 +35,8 @@ function copyFileOutsideOfElectronAsar (
         copyFileOutsideOfElectronAsar(
           `${sourceInAsarArchive}/${fileOrFolderName}`,
           `${destOutsideAsarArchive}/${fileOrFolderName}`
-        );
-      });
+        )
+      })
     }
   }
 }

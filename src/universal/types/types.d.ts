@@ -271,7 +271,7 @@ interface IPrivateShowNotificationOption extends IShowNotificationOption{
 interface IShowMessageBoxOption {
   title: string
   message: string
-  type: string
+  type: import('electron').MessageBoxOptions['type']
   buttons: string[]
 }
 
