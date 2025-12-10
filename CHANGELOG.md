@@ -1,3 +1,17 @@
+## :tada: 2.4.1-beta.1 (2025-12-10)
+
+
+### :bug: Bug Fixes
+
+* **custom:** the issue that x64 macOS app can't be opened ([54d15a6](https://github.com/Molunerfinn/PicGo/commit/54d15a6)), closes [#1363](https://github.com/Molunerfinn/PicGo/issues/1363)
+
+
+### :package: Chore
+
+* update builder config && add legacy version file upload process ([2cc2983](https://github.com/Molunerfinn/PicGo/commit/2cc2983))
+
+
+
 ## :tada: 2.4.1-beta.0 (2025-12-09)
 
 
