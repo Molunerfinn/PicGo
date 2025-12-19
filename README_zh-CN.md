@@ -59,15 +59,15 @@ PicGo 原生支持主流图床平台，并可通过插件系统无限扩展：
 
 PicGo 打造了全方位的上传体验，让“传图”这件事变得前所未有的简单：
 
-### 🚀 极速上传体验
-- **多维上传方式**：支持拖拽图片、剪贴板粘贴、快捷键上传，甚至在 macOS/Windows 上支持右键菜单直接上传。
-- **全局快捷键**：默认 `Command+Shift+P` (macOS) / `Ctrl+Shift+P` (Windows/Linux) 即可唤起上传，无需离开当前窗口。 快捷键可自定义。
-
 ### ⚡️ 无缝写作流
 - **自动复制链接**：上传成功后，链接会自动复制到你的剪贴板。
 - **格式随心定义**：支持 Markdown、HTML、URL、自定义等多种格式，粘贴即用，完美适配你的编辑器。
 - **零上下文切换**：无需切换窗口。在你常用的编辑器里直接粘贴图片，让 PicGo 在后台完成上传。
   - _通过原生支持或社区插件开启该工作流：_ [Obsidian](https://obsidian.md) \ [VS Code](https://code.visualstudio.com/) \ [Typora](https://typora.io/) \ [Neovim](https://neovim.io/) \ [MarkText](https://marktext.me/) \ [SiYuan](https://b3log.org/siyuan/en/) \ 等等……
+
+### 🚀 极速上传体验
+- **多维上传方式**：支持拖拽图片、剪贴板粘贴、快捷键上传，甚至在 macOS/Windows 上支持右键菜单直接上传。
+- **全局快捷键**：默认 `Command+Shift+P` (macOS) / `Ctrl+Shift+P` (Windows/Linux) 即可唤起上传，无需离开当前窗口。 快捷键可自定义。
 
 ### 🧩 强大的插件生态
 - **高度可扩展**：PicGo 拥有丰富的插件系统，已有插件支持 AWS S3、Cloudflare R2、MinIO 等第三方图床。

@@ -58,15 +58,15 @@ PicGo supports mainstream Image hosts out of the box, and can be extended indefi
 
 PicGo is built around a fast, low-friction image upload experience:
 
-### 🚀 Fast uploads
-- **Multiple ways to upload**: drag & drop, paste from clipboard, hotkeys, and even right-click context menu upload on macOS/Windows.
-- **Global hotkey**: press `Command+Shift+P` (macOS) / `Ctrl+Shift+P` (Windows/Linux) to open the upload window without leaving your current app. The global key can be customized.
-
 ### ⚡ Smooth writing flow
 - **Auto-copy links**: once an upload finishes, the link is copied to your clipboard automatically.
 - **Flexible formats**: Markdown, HTML, URL, custom templates—paste directly into any editor.
 - **Zero-Context Switching**: Don't switch windows. Just paste images directly into your favorite editor, and let PicGo handle the upload in the background.
   - _Enable this workflow via native support or community plugins:_ [Obsidian](https://obsidian.md) \ [VS Code](https://code.visualstudio.com/) \ [Typora](https://typora.io/) \ [Neovim](https://neovim.io/) \ [MarkText](https://marktext.me/) \ [SiYuan](https://b3log.org/siyuan/en/) \ And more...
+
+### 🚀 Fast uploads
+- **Multiple ways to upload**: drag & drop, paste from clipboard, hotkeys, and even right-click context menu upload on macOS/Windows.
+- **Global hotkey**: press `Command+Shift+P` (macOS) / `Ctrl+Shift+P` (Windows/Linux) to open the upload window without leaving your current app. The global key can be customized.
 
 ### 🧩 Powerful plugin ecosystem
 - **Highly extensible**: plugins already exist for AWS S3, Cloudflare R2, MinIO, and many other Image hosts.
