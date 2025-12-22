@@ -11,6 +11,9 @@ importers:
       '@element-plus/icons-vue':
         specifier: ^2.3.2
         version: 2.3.2(vue@3.5.25(typescript@5.9.3))
+      '@numairawan/video-duration':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@picgo/i18n':
         specifier: ^1.0.0
         version: 1.0.0
@@ -59,6 +62,9 @@ importers:
       marked:
         specifier: ^7.0.4
         version: 7.0.5
+      mime-types:
+        specifier: ^3.0.2
+        version: 3.0.2
       mitt:
         specifier: ^3.0.1
         version: 3.0.1
@@ -66,8 +72,8 @@ importers:
         specifier: ^1.4.5-lts.1
         version: 1.4.5-lts.2
       picgo:
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.2
+        version: 1.6.2
       qrcode.vue:
         specifier: ^3.3.3
         version: 3.6.0(vue@3.5.25(typescript@5.9.3))
@@ -77,6 +83,9 @@ importers:
       shell-path:
         specifier: 2.1.0
         version: 2.1.0
+      systeminformation:
+        specifier: ^5.27.14
+        version: 5.27.14
       tunnel:
         specifier: ^0.0.6
         version: 0.0.6
@@ -96,8 +105,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0(vue@3.5.25(typescript@5.9.3))
       write-file-atomic:
-        specifier: ^4.0.1
-        version: 4.0.2
+        specifier: ^7.0.0
+        version: 7.0.0
     devDependencies:
       '@aws-sdk/client-s3':
         specifier: ^3.276.0
@@ -1034,6 +1043,9 @@ packages:
     resolution: {integrity: sha512-/xGlezI6xfGO9NwuJlnwz/K14qD1kCSAGtacBHnGzeAIuJGazcp45KP5NuyARXoKb7cwulAGWVsbeSxdG/cb0Q==}
     engines: {node: ^18.17.0 || >=20.5.0}
 
+  '@numairawan/video-duration@1.0.0':
+    resolution: {integrity: sha512-C819BxippZk2ajzfJt/S8kD5NJqAxuDZc1W4rqHVjzgoUI5Wjo7ehoH4dTIGesUEOxTobIXh6iOKAhhvGEDYpg==}
+
   '@picgo/bump-version@2.0.0':
     resolution: {integrity: sha512-7ClH+1f0vNchLOzUq7OlYXic3dIDH154aC809BIwHFkVzoj4z4YPT5TrR1syICFDCJVixg8Tvlli0z891iO0vg==}
     engines: {node: '>=20.0.0'}
@@ -1852,6 +1864,9 @@ packages:
 
   axios@0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
+
+  axios@1.13.2:
+    resolution: {integrity: sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==}
 
   babel-polyfill@6.26.0:
     resolution: {integrity: sha512-F2rZGQnAdaHWQ8YAoeRbukc7HS9QgdgeyJ0rQDd485v9opwuPvjpPFcOOT/WmkKTdgy9ESgSPXDcTNpzrGr6iQ==}
@@ -3995,10 +4010,6 @@ packages:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
 
-  mime-db@1.50.0:
-    resolution: {integrity: sha512-9tMZCDlYHqeERXEHO9f/hKfNXhre5dK2eE/krIvUjZbS2KPcqGDfNShIWS1uW9XOTKQKqK6qbeOci18rbfW77A==}
-    engines: {node: '>= 0.6'}
-
   mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
@@ -4007,13 +4018,13 @@ packages:
     resolution: {integrity: sha512-aU5EJuIN2WDemCcAp2vFBfp/m4EAhWJnUNSSw0ixs7/kXbd6Pg64EmwJkNdFhB8aWt1sH2CTXrLxo/iAGV3oPQ==}
     engines: {node: '>= 0.6'}
 
-  mime-types@2.1.33:
-    resolution: {integrity: sha512-plLElXp7pRDd0bNZHw+nMd52vRYjLwQjygaNg7ddJ2uJtTlmnTCjWuPKxVu6//AdaRuME84SvLW91sIkBqGT0g==}
-    engines: {node: '>= 0.6'}
-
   mime-types@2.1.35:
     resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
     engines: {node: '>= 0.6'}
+
+  mime-types@3.0.2:
+    resolution: {integrity: sha512-Lbgzdk0h4juoQ9fCKXW4by0UJqj+nOOrI9MJ1sSj4nI8aI2eo1qmvQEie4VD1glsS250n15LsWsYtCugiStS5A==}
+    engines: {node: '>=18'}
 
   mime@2.6.0:
     resolution: {integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==}
@@ -4454,8 +4465,8 @@ packages:
   pend@1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
 
-  picgo@1.6.0:
-    resolution: {integrity: sha512-BwWsXfx7LJEFBTCVs1QcEyhmXKqcgSemx0fZpp1Jus/LoEaybLQy8yEdEftKSf9c5BdOYfqqskQfZQ8L1p79hA==}
+  picgo@1.6.2:
+    resolution: {integrity: sha512-8o7ldUGHNywDX3keHeuiuSZZHt/hCyHepzzGA3Y3OdAZLIWdHI7NRjgUIQ2fsspQnkKaB4bm5xphoENhDiHuig==}
     engines: {node: '>= 20.0.0'}
     hasBin: true
 
@@ -4590,6 +4601,9 @@ packages:
 
   proto-list@1.2.4:
     resolution: {integrity: sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==}
+
+  proxy-from-env@1.1.0:
+    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
 
   pseudomap@1.0.2:
     resolution: {integrity: sha512-b/YwNhb8lk1Zz2+bXXpS/LK9OisiZZ1SNsSLxN1x2OXVEhW2Ckr/7mWE5vrC1ZTiJlD9g19jWszTmJsB+oEpFQ==}
@@ -5189,6 +5203,12 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
+  systeminformation@5.27.14:
+    resolution: {integrity: sha512-3DoNDYSZBLxBwaJtQGWNpq0fonga/VZ47HY1+7/G3YoIPaPz93Df6egSzzTKbEMmlzUpy3eQ0nR9REuYIycXGg==}
+    engines: {node: '>=8.0.0'}
+    os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
+    hasBin: true
+
   tailwindcss@3.4.18:
     resolution: {integrity: sha512-6A2rnmW5xZMdw11LYjhcI5846rt9pbLSabY5XPxo+XWdxwZaFEn47Go4NzFiHu9sNNmr/kXivP1vStfvMaK1GQ==}
     engines: {node: '>=14.0.0'}
@@ -5618,6 +5638,10 @@ packages:
   write-file-atomic@4.0.2:
     resolution: {integrity: sha512-7KxauUdBmSdWnmpaGFg+ppNjKF8uNLry8LyzjauQDOVONfFLNKrKvQOxZ/VuTIcS/gge/YNahf5RIIQWTSarlg==}
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
+
+  write-file-atomic@7.0.0:
+    resolution: {integrity: sha512-YnlPC6JqnZl6aO4uRc+dx5PHguiR9S6WeoLtpxNT9wIG+BDya7ZNE1q7KOjVgaA73hKhKLpVPgJ5QA9THQ5BRg==}
+    engines: {node: ^20.17.0 || >=22.9.0}
 
   xml-name-validator@4.0.0:
     resolution: {integrity: sha512-ICP2e+jsHvAj2E2lIHxa5tjXRlKDJo4IdvPvCXbXQGdzSfmSpNVyIKMvoZHjDY9DP0zV17iI85o90vRFXNccRw==}
@@ -6862,6 +6886,13 @@ snapshots:
     dependencies:
       semver: 7.7.3
 
+  '@numairawan/video-duration@1.0.0':
+    dependencies:
+      axios: 1.13.2
+      mime-types: 2.1.35
+    transitivePeerDependencies:
+      - debug
+
   '@picgo/bump-version@2.0.0(@types/node@20.19.26)(typescript@5.9.3)':
     dependencies:
       '@commitlint/cli': 7.6.1
@@ -7892,6 +7923,14 @@ snapshots:
     dependencies:
       follow-redirects: 1.15.11
       form-data: 4.0.5
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.13.2:
+    dependencies:
+      follow-redirects: 1.15.11
+      form-data: 4.0.5
+      proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
 
@@ -9415,7 +9454,7 @@ snapshots:
       combined-stream: 1.0.8
       es-set-tostringtag: 2.1.0
       hasown: 2.0.2
-      mime-types: 2.1.33
+      mime-types: 2.1.35
 
   formstream@1.5.2:
     dependencies:
@@ -10431,19 +10470,17 @@ snapshots:
       braces: 3.0.3
       picomatch: 2.3.1
 
-  mime-db@1.50.0: {}
-
   mime-db@1.52.0: {}
 
   mime-db@1.54.0: {}
 
-  mime-types@2.1.33:
-    dependencies:
-      mime-db: 1.50.0
-
   mime-types@2.1.35:
     dependencies:
       mime-db: 1.52.0
+
+  mime-types@3.0.2:
+    dependencies:
+      mime-db: 1.54.0
 
   mime@2.6.0: {}
 
@@ -10862,7 +10899,7 @@ snapshots:
 
   pend@1.2.0: {}
 
-  picgo@1.6.0:
+  picgo@1.6.2:
     dependencies:
       '@picgo/i18n': 1.0.0
       '@picgo/store': 2.1.0
@@ -10883,7 +10920,7 @@ snapshots:
       js-yaml: 4.1.1
       lodash: 4.17.21
       md5: 2.3.0
-      mime-types: 2.1.33
+      mime-types: 3.0.2
       minimatch: 3.1.2
       minimist: 1.2.8
       qiniu: 7.14.0
@@ -10995,6 +11032,8 @@ snapshots:
       retry: 0.12.0
 
   proto-list@1.2.4: {}
+
+  proxy-from-env@1.1.0: {}
 
   pseudomap@1.0.2: {}
 
@@ -11672,6 +11711,8 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
+  systeminformation@5.27.14: {}
+
   tailwindcss@3.4.18:
     dependencies:
       '@alloc/quick-lru': 5.2.0
@@ -12137,6 +12178,11 @@ snapshots:
     dependencies:
       imurmurhash: 0.1.4
       signal-exit: 3.0.7
+
+  write-file-atomic@7.0.0:
+    dependencies:
+      imurmurhash: 0.1.4
+      signal-exit: 4.1.0
 
   xml-name-validator@4.0.0: {}
 

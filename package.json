@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "@numairawan/video-duration": "^1.0.0",
     "@picgo/i18n": "^1.0.0",
     "@picgo/store": "^2.1.0",
     "axios": "^0.19.0",
@@ -44,19 +45,21 @@
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0",
     "marked": "^7.0.4",
+    "mime-types": "^3.0.2",
     "mitt": "^3.0.1",
     "multer": "^1.4.5-lts.1",
-    "picgo": "^1.6.0",
+    "picgo": "^1.6.2",
     "qrcode.vue": "^3.3.3",
     "semver": "^7.7.3",
     "shell-path": "2.1.0",
+    "systeminformation": "^5.27.14",
     "tunnel": "^0.0.6",
     "uuid": "^9.0.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.2",
     "vue3-lazyload": "^0.3.6",
     "vue3-photo-preview": "^0.3.0",
-    "write-file-atomic": "^4.0.1"
+    "write-file-atomic": "^7.0.0"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.276.0",

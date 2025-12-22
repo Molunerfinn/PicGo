@@ -1,12 +1,11 @@
 import fs from 'fs-extra'
 import writeFile from 'write-file-atomic'
 import path from 'path'
-import { app as APP } from 'electron'
 import { getLogger } from '@core/utils/localLogger'
 import dayjs from 'dayjs'
 import { T } from '~/main/i18n'
 import { FORM_IMAGE_FOLDER } from '~/universal/utils/static'
-const STORE_PATH = APP.getPath('userData')
+import { STORE_PATH } from '~/main/utils/env'
 const configFilePath = path.join(STORE_PATH, 'data.json')
 const configFileBackupPath = path.join(STORE_PATH, 'data.bak.json')
 export const defaultConfigPath = configFilePath

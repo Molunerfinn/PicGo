@@ -10,13 +10,12 @@ import axios from 'axios'
 import windowManager from '../window/windowManager'
 import { showNotification } from '~/main/utils/common'
 import { isDev } from '~/universal/utils/common'
+import { STORE_PATH } from '~/main/utils/env'
 
 // for test
-const REMOTE_NOTICE_URL = isDev ? 'http://localhost:8181/remote-notice.json' : 'https://picgo-1251750343.cos.accelerate.myqcloud.com/remote-notice.yml'
+const REMOTE_NOTICE_URL = isDev ? 'http://localhost:8181/remote-notice.json' : 'https://release.picgo.app/remote-notice.yml'
 
 const REMOTE_NOTICE_LOCAL_STORAGE_FILE = 'picgo-remote-notice.json'
-
-const STORE_PATH = app.getPath('userData')
 
 const REMOTE_NOTICE_LOCAL_STORAGE_PATH = path.join(STORE_PATH, REMOTE_NOTICE_LOCAL_STORAGE_FILE)
 

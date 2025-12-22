@@ -31,15 +31,14 @@ import {
 } from '#/events/constants'
 import {
   uploadClipboardFiles,
-  uploadChoosedFiles
+  uploadSelectedFiles
 } from '~/main/apis/app/uploader/apis'
 import picgoCoreIPC from './picgoCoreIPC'
 import { handleCopyUrl } from '~/main/utils/common'
 import { buildMainPageMenu, buildMiniPageMenu, buildPluginPageMenu, buildPicBedListMenu } from './remotes/menu'
 import path from 'path'
 import { T } from '~/main/i18n'
-
-const STORE_PATH = app.getPath('userData')
+import { STORE_PATH } from '~/main/utils/env'
 
 export default {
   listen () {
@@ -74,7 +73,7 @@ export default {
     })
 
     ipcMain.on('uploadChoosedFiles', async (evt: IpcMainEvent, files: IFileWithPath[]) => {
-      return uploadChoosedFiles(evt.sender, files)
+      return uploadSelectedFiles(evt.sender, files)
     })
 
     ipcMain.on('updateShortKey', (evt: IpcMainEvent, item: IShortKeyConfig, oldKey: string, from: string) => {

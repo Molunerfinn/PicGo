@@ -58,7 +58,7 @@ export const uploadClipboardFiles = async (): Promise<string> => {
   }
 }
 
-export const uploadChoosedFiles = async (webContents: WebContents, files: IFileWithPath[]): Promise<string[]> => {
+export const uploadSelectedFiles = async (webContents: WebContents, files: IFileWithPath[]): Promise<string[]> => {
   const input = files.map(item => item.path)
   const imgs = await uploader.setWebContents(webContents).upload(input)
   const result = []

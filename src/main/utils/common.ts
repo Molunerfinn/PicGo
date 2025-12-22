@@ -3,6 +3,7 @@ import db from '~/main/apis/core/datastore'
 import { clipboard, Notification, dialog } from 'electron'
 import { handleUrlEncode } from '~/universal/utils/common'
 import { readClipboardFilePaths } from 'clip-filepaths'
+import crypto from 'node:crypto'
 
 export const handleCopyUrl = (str: string): void => {
   if (db.get('settings.autoCopyUrl') !== false) {
@@ -54,7 +55,7 @@ export const showMessageBox = (options: any) => {
   })
 }
 
-export const calcDurationRange = (duration: number) => {
+export const calcUploadProcessDurationRange = (duration: number) => {
   if (duration < 1000) {
     return 500
   } else if (duration < 1500) {
@@ -76,6 +77,44 @@ export const calcDurationRange = (duration: number) => {
   }
   // max range
   return 100000
+}
+
+// 1 2 3 4 5 6 7 8 9 10 20 30 40 50 60 70 80 90 100 200 300 ...
+export const calcUploadBigFileSizeRange = (fileSizeMB: number) => {
+  if (fileSizeMB < 10) {
+    // 3.2 -> 3, 3.6 -> 4
+    const result = Math.round(fileSizeMB);
+    return result === 0 && fileSizeMB > 0 ? 1 : result; 
+  } 
+  else if (fileSizeMB < 100) {
+    // 13 -> 1.3 -> 1 -> 10
+    // 17 -> 1.7 -> 2 -> 20
+    return Math.round(fileSizeMB / 10) * 10;
+  } 
+  else {
+    // 135 -> 1.35 -> 1 -> 100
+    // 160 -> 1.60 -> 2 -> 200
+    return Math.round(fileSizeMB / 100) * 100;
+  }
+}
+
+// 1 2 3 4 5 6 7 8 9 10 20 30 40 50 60 70 80 90 100 200 300 ...
+export const calcVideoDurationRange = (durationSec: number) => {
+  if (durationSec < 10) {
+    // 3.2 -> 3, 3.6 -> 4
+    const result = Math.round(durationSec);
+    return result === 0 && durationSec > 0 ? 1 : result; 
+  } 
+  else if (durationSec < 100) {
+    // 13 -> 1.3 -> 1 -> 10
+    // 17 -> 1.7 -> 2 -> 20
+    return Math.round(durationSec / 10) * 10;
+  } 
+  else {
+    // 135 -> 1.35 -> 1 -> 100
+    // 160 -> 1.60 -> 2 -> 200
+    return Math.round(durationSec / 100) * 100;
+  }
 }
 
 /**
@@ -136,4 +175,8 @@ export const getHost = (url: string = '') => {
  */
 export const removeProtocolAndSuffix = (url: string = '') => {
   return url.replace(/^(https?:\/\/)?/, '').replace(/\/$/, '')
+}
+
+export const md5 = (str: string): string => {
+  return crypto.createHash('md5').update(str).digest('hex')
 }

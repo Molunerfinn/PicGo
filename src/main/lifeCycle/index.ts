@@ -16,7 +16,7 @@ import {
   migrateGalleryFromVersion230
 } from '~/main/migrate'
 import {
-  uploadChoosedFiles,
+  uploadSelectedFiles,
   uploadClipboardFiles
 } from 'apis/app/uploader/apis'
 import {
@@ -48,7 +48,7 @@ const handleStartUpFiles = (argv: string[], cwd: string) => {
     } else {
       logger.info('cli -> uploading files from cli', ...files.map(item => item.path))
       const win = windowManager.getAvailableWindow()
-      uploadChoosedFiles(win.webContents, files)
+      uploadSelectedFiles(win.webContents, files)
     }
     return true
   } else {

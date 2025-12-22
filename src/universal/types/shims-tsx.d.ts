@@ -19,6 +19,14 @@ declare global {
     electronApi: ElectronApi
     TDAPP: {
       onEvent: (EventId: string, Label?: string, MapKv?: IStringKeyMap) => void
+      register: (opt: {
+        profileId: string,
+        profileType: number,
+      }) => void
+      login: (opt: {
+        profileId: string,
+        profileType: number,
+      }) => void
     }
   }
 }

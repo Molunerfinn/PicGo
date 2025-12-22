@@ -4,7 +4,7 @@ import {
 } from './utils'
 import logger from '@core/picgo/logger'
 import windowManager from 'apis/app/window/windowManager'
-import { uploadChoosedFiles, uploadClipboardFiles } from 'apis/app/uploader/apis'
+import { uploadSelectedFiles, uploadClipboardFiles } from 'apis/app/uploader/apis'
 import path from 'path'
 import { dbPathDir } from 'apis/core/datastore/dbChecker'
 const STORE_PATH = dbPathDir()
@@ -51,7 +51,7 @@ router.post('/upload', async ({
         }
       })
       const win = windowManager.getAvailableWindow()
-      const res = await uploadChoosedFiles(win.webContents, pathList)
+      const res = await uploadSelectedFiles(win.webContents, pathList)
       logger.info('[PicGo Server] upload result', res.join(' ; '))
       if (res.length) {
         handleResponse({

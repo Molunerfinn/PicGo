@@ -11,9 +11,9 @@ import db from '~/main/apis/core/datastore'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
 import util from 'util'
-import { IPicGo } from 'picgo'
-import { showNotification, calcDurationRange, getClipboardFilePathList } from '~/main/utils/common'
-import { GET_RENAME_FILE_NAME, RENAME_FILE_NAME, TALKING_DATA_EVENT } from '~/universal/events/constants'
+import type { IPicGo } from 'picgo'
+import { showNotification, getClipboardFilePathList } from '~/main/utils/common'
+import { GET_RENAME_FILE_NAME, RENAME_FILE_NAME } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
 import { T } from '~/main/i18n'
 import fse from 'fs-extra'
@@ -23,6 +23,7 @@ import writeFile from 'write-file-atomic'
 import { CLIPBOARD_IMAGE_FOLDER } from '~/universal/utils/static'
 import { cleanupFormUploaderFiles } from '~/main/utils/cleanupFormUploaderFiles'
 import { IpcMainEvent } from 'electron/main'
+import { dataReportManager } from '~/main/utils/dataReport'
 
 const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> => {
   return new Promise((resolve) => {
@@ -37,20 +38,6 @@ const waitForRename = (window: BrowserWindow, id: number): Promise<string|null> 
       windowManager.deleteById(windowId)
     })
   })
-}
-
-const handleTalkingData = (webContents: WebContents, options: IAnalyticsData) => {
-  const data: ITalkingDataOptions = {
-    EventId: 'upload',
-    Label: options.type,
-    MapKv: {
-      by: options.fromClipboard ? 'clipboard' : 'files', // 上传剪贴板图片还是选择的文文件
-      count: options.count, // 上传的数量
-      duration: calcDurationRange(options.duration || 0), // 上传耗时
-      type: options.type
-    }
-  }
-  webContents.send(TALKING_DATA_EVENT, data)
 }
 
 class Uploader {
@@ -155,12 +142,11 @@ class Uploader {
       const output = await picgo.upload(img)
       if (Array.isArray(output) && output.some((item: ImgInfo) => item.imgUrl)) {
         if (this.webContents) {
-          handleTalkingData(this.webContents, {
+          dataReportManager.reportUploadData(this.webContents, {
             fromClipboard: !img,
-            type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
-            count: img ? img.length : 1,
-            duration: Date.now() - startTime
-          } as IAnalyticsData)
+            duration: Date.now() - startTime,
+            outputList: output
+          });
         }
         return output.filter(item => item.imgUrl)
       } else {

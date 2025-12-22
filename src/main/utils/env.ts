@@ -29,3 +29,7 @@ export const buildRendererUrl = (hash?: string) => {
 }
 
 export const getStaticPath = () => process.env.STATIC_PATH || defaultStaticPath
+
+// paths
+export const STORE_PATH = app.getPath('userData')
+export const DEVICE_ID_PATH = path.join(STORE_PATH, 'picgo-device-id')

@@ -24,3 +24,4 @@ scripts/*.yml
 /dist_electron
 .serena/
 dist/*
+test.js
