@@ -51,11 +51,9 @@ class DataReportManager {
         count: fileList.length, // 上传的数量
         duration: calcUploadProcessDurationRange(duration || 0), // 上传耗时
         type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
-        deviceId: this.deviceId,
-        version: app.getVersion()
       }
     }
-    webContents.send(TALKING_DATA_EVENT, uploadEventData)
+    this.reportDataToWebContents(webContents, uploadEventData);
     fileList.forEach(async file => {
       if (file?.mimeType?.startsWith('video/') && file.filePath) {
         const metadata = await getVideoDuration(file.filePath);
@@ -65,26 +63,22 @@ class DataReportManager {
           EventId: 'upload_video',
           Label: '',
           MapKv: {
-            deviceId: this.deviceId,
             sizeRange: calcUploadBigFileSizeRange(sizeMB),
             durationRange: calcVideoDurationRange(durationSec),
-            version: app.getVersion()
           }
         };
-        webContents.send(TALKING_DATA_EVENT, videoEventData);
+        this.reportDataToWebContents(webContents, videoEventData);
       } else if (file?.mimeType?.startsWith('image/') || fromClipboard) {
         const imageEventData: ITalkingDataOptions = {
           EventId: 'upload_image',
           Label: '',
           MapKv: {
-            deviceId: this.deviceId,
-            version: app.getVersion(),
             type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
             mimeType: file.mimeType,
             sizeRange: calcUploadBigFileSizeRange(file.size / MB)
           }
         };
-        webContents.send(TALKING_DATA_EVENT, imageEventData);
+        this.reportDataToWebContents(webContents, imageEventData);
       }
     });
   }
@@ -94,6 +88,32 @@ class DataReportManager {
     await this.init();
     webContents.send(REGISTER_DEVICE_ID, this.deviceId);
   }
+
+  private reportDataToWebContents(webContents: WebContents, data: ITalkingDataOptions) {
+    webContents.send(TALKING_DATA_EVENT, {
+      ...data,
+      MapKv: {
+        ...data.MapKv,
+        deviceId: this.deviceId,
+        version: app.getVersion(),
+        area: this.getAreaFromTimezone()
+      }
+    });
+  }
+
+  private getAreaFromTimezone() {
+  try {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (!timeZone) return 'UNKNOWN';
+    
+    if (timeZone === 'Asia/Shanghai') return 'CN';
+    
+    const region = timeZone.split('/')[0]; // Asia, America, Europe
+    return region; 
+  } catch (e) {
+    return 'UNKNOWN';
+  }
+}
 }
 
 export const dataReportManager = new DataReportManager()
