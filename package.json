@@ -9,10 +9,10 @@
     "email": "marksz@teamsz.xyz"
   },
   "scripts": {
-    "build": "electron-vite build && electron-builder --config electron-builder.config.ts",
-    "build:win": "npm run build && electron-builder --config electron-builder.config.ts --win",
-    "build:mac": "npm run build && electron-builder --config electron-builder.config.ts --mac",
-    "build:linux": "npm run build && electron-builder --config electron-builder.config.ts --linux",
+    "build": "electron-vite build && electron-builder --config electron-builder.config.ts --publish never",
+    "build:win": "npm run build && electron-builder --config electron-builder.config.ts --win --publish never",
+    "build:mac": "npm run build && electron-builder --config electron-builder.config.ts --mac --publish never",
+    "build:linux": "npm run build && electron-builder --config electron-builder.config.ts --linux --publish never",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx,.vue src/",
     "tsc": "tsc --noEmit",
     "bump": "bump-version",

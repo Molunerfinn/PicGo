@@ -95,11 +95,14 @@ const config: Configuration = {
       },
       {
         target: 'snap',
-        arch: ['x64']
+        arch: ['x64'],
       }
     ],
     maintainer: 'Molunerfinn',
     category: 'Utility',
+    publish: []
+  },
+  snap: {
     publish: []
   }
 }

@@ -11,6 +11,16 @@ on:
         required: true
         default: false
         type: boolean
+      build_os:
+        description: "Build for specific OS: Windows, macOS, Linux, All"
+        required: false
+        default: "All"
+        type: choice
+        options:
+          - Windows
+          - macOS
+          - Linux
+          - All
 env:
   NODE_VERSION: 22.x
 
@@ -38,7 +48,7 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
       - name: Clean workspace on Windows
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && (github.event.inputs.build_os == 'Windows' || github.event.inputs.build_os == 'All')
         run: |
           if (Test-Path dist) { Remove-Item -Recurse -Force dist }
           if (Test-Path dist_electron) { Remove-Item -Recurse -Force dist_electron }
@@ -51,27 +61,29 @@ jobs:
             Remove-Item "$env:LOCALAPPDATA\electron" -Recurse -Force -ErrorAction SilentlyContinue
           }
       - name: Clean workspace on macOS & Linux
-        if: runner.os == 'macOS' || runner.os == 'Linux'
+        if: runner.os == 'macOS' || runner.os == 'Linux' && (github.event.inputs.build_os == 'macOS' || github.event.inputs.build_os == 'Linux' || github.event.inputs.build_os == 'All')
         run: |
           rm -rf dist dist_electron node_modules ~/.cache/electron-builder ~/.cache/electron
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Ubuntu Update with sudo
-        if: runner.os == 'Linux'
-        run: sudo apt-get update
+        if: runner.os == 'Linux' && (github.event.inputs.build_os == 'Linux' || github.event.inputs.build_os == 'All')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfuse2
       - name: Build Windows x64 & ARM64 App
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && (github.event.inputs.build_os == 'Windows' || github.event.inputs.build_os == 'All')
         run: pnpm run build:win || true
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Build macOS x64 & ARM64 App
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && (github.event.inputs.build_os == 'macOS' || github.event.inputs.build_os == 'All')
         run: pnpm run build:mac || true
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Build Linux x64 & ARM64 App
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && (github.event.inputs.build_os == 'Linux' || github.event.inputs.build_os == 'All')
         run: pnpm run build:linux || true
         shell: bash
         env:
