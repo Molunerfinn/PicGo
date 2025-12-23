@@ -14,7 +14,7 @@ This guide describes how to generate a consolidated changelog for any PicGo rele
 - Keep items in chronological order (early → late) within each section, mirroring the beta sequence.
 - Keep inline issue references, thanks, and notes as-is.
 - Remove download-link sections entirely.
-- After the Chinese sections, insert a line with `----------`, then add a full English translation with the same structure/content (including images).
+- After the English sections, insert a line with `----------`, then add a full Chinese translation with the same structure/content (including images).
 
 ## Formatting rules
 - Markdown, plain ASCII.
@@ -23,7 +23,7 @@ This guide describes how to generate a consolidated changelog for any PicGo rele
 - Keep inline HTML image tags from the releases (e.g., `<img width="...">`) untouched.
 - Keep line breaks and multi-line notes intact.
 - Do not reword or summarize; copy content verbatim except for removing beta headers and download sections.
-- English translation must mirror the Chinese bullets in order and content (keep images alongside the translated bullets).
+- Chinese translation must mirror the English bullets in order and content (keep images alongside the translated bullets).
 
 ## Regeneration steps
 1) Collect all release bodies for the target series (e.g., `vX.Y.Z-beta.0…N` and, if present, `vX.Y.Z`) from GitHub releases.
@@ -34,8 +34,8 @@ This guide describes how to generate a consolidated changelog for any PicGo rele
 3) Omit “国内可下载链接” (or any download links) entirely.
 4) Drop beta subheadings; keep only section-level bullets in chronological order.
 5) Ensure images remain adjacent to their bullets with indentation.
-6) After the Chinese sections are complete, insert `----------` on its own line.
-7) Append the English translation, preserving bullet order and images, under `## Features`, `## Bug Fixes`, `## Other` again (same section titles, just English content; no “(English)” suffix).
+6) After the English sections are complete, insert `----------` on its own line.
+7) Append the Chinese translation, preserving bullet order and images, under `## Features`, `## Bug Fixes`, `## Other` again (same section titles, just Chinese content; no “(Chinese)” suffix).
 8) Save the result to `changelog/X.Y.Z.md`.
 
 ## Quick checklist
@@ -45,4 +45,4 @@ This guide describes how to generate a consolidated changelog for any PicGo rele
 - [ ] No beta headers.
 - [ ] No download links.
 - [ ] Chronological ordering preserved.
-- [ ] English translation present with matching bullets/images after `----------`.
+- [ ] Chinese translation present with matching bullets/images after `----------`.
