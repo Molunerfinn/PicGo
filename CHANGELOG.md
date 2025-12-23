@@ -1,3 +1,32 @@
+## :tada: 2.4.1 (2025-12-23)
+
+
+### :sparkles: Features
+
+* add showMenubarIcon setting ([#1366](https://github.com/Molunerfinn/PicGo/issues/1366)) ([d0eb3da](https://github.com/Molunerfinn/PicGo/commit/d0eb3da))
+
+
+### :bug: Bug Fixes
+
+* **custom:** build workflow error ([a0db473](https://github.com/Molunerfinn/PicGo/commit/a0db473))
+* **custom:** data report ([eef736f](https://github.com/Molunerfinn/PicGo/commit/eef736f))
+* **custom:** workflow env bug ([f84f5f1](https://github.com/Molunerfinn/PicGo/commit/f84f5f1))
+
+
+### :pencil: Documentation
+
+* **custom:** update readme ([a671ea4](https://github.com/Molunerfinn/PicGo/commit/a671ea4))
+* **custom:** update readme ([c658b9b](https://github.com/Molunerfinn/PicGo/commit/c658b9b))
+* **custom:** update README ([c8c9122](https://github.com/Molunerfinn/PicGo/commit/c8c9122))
+* update 2.4.1 changelog ([d071957](https://github.com/Molunerfinn/PicGo/commit/d071957))
+
+
+### :package: Chore
+
+* **custom:** rm yarn.lock ([8c310e7](https://github.com/Molunerfinn/PicGo/commit/8c310e7))
+
+
+
 ## :tada: 2.4.1-beta.1 (2025-12-10)
 
 
