@@ -5,9 +5,7 @@ import type { IImgInfo } from "picgo";
 import { calcUploadBigFileSizeRange, calcUploadProcessDurationRange, calcVideoDurationRange } from "./common";
 import { app } from "electron/main";
 import db from "~/main/apis/core/datastore";
-import fs from 'fs-extra'
-// @ts-ignore
-import { videoDuration } from "@numairawan/video-duration";
+import { getVideoDuration } from "@picgo/video-duration";
 import { MB, SECOND } from "./constants";
 
 export interface IReportUploadDataOptions {
@@ -41,7 +39,8 @@ class DataReportManager {
       return {
         fileName: item.fileName,
         filePath: item.filePath,
-        mimeType: item.mimeType
+        mimeType: item.mimeType,
+        size: item.size || 0
       }
     })
     const uploadEventData: ITalkingDataOptions = {
@@ -59,13 +58,9 @@ class DataReportManager {
     webContents.send(TALKING_DATA_EVENT, uploadEventData)
     fileList.forEach(async file => {
       if (file?.mimeType?.startsWith('video/') && file.filePath) {
-        const [stats, metadata] = await Promise.all([
-          fs.stat(file.filePath),
-          videoDuration(file.filePath)
-        ]);
-        // report video duration and size range
-        const sizeMB = stats.size / MB;
-        const durationSec = (metadata.ms / SECOND) || 0;
+        const metadata = await getVideoDuration(file.filePath);
+        const sizeMB = metadata.size / MB;
+        const durationSec = (metadata.duration / SECOND) || 0;
         const videoEventData: ITalkingDataOptions = {
           EventId: 'upload_video',
           Label: '',
@@ -77,6 +72,19 @@ class DataReportManager {
           }
         };
         webContents.send(TALKING_DATA_EVENT, videoEventData);
+      } else if (file?.mimeType?.startsWith('image/') || fromClipboard) {
+        const imageEventData: ITalkingDataOptions = {
+          EventId: 'upload_image',
+          Label: '',
+          MapKv: {
+            deviceId: this.deviceId,
+            version: app.getVersion(),
+            type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
+            mimeType: file.mimeType,
+            sizeRange: calcUploadBigFileSizeRange(file.size / MB)
+          }
+        };
+        webContents.send(TALKING_DATA_EVENT, imageEventData);
       }
     });
   }

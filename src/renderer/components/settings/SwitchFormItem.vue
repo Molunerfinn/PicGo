@@ -7,9 +7,14 @@
           <el-tooltip
             class="item"
             effect="dark"
-            :content="props.tooltips"
+            :open="true"
             placement="right"
           >
+            <template #content>
+              <div class="picgo-tooltip-content">
+                {{ props.tooltips }}
+              </div>
+            </template>
             <el-icon class="ml-[4px] cursor-pointer hover:text-blue">
               <QuestionFilled />
             </el-icon>
@@ -59,4 +64,10 @@ export default {
 }
 </script>
 <style lang='stylus'>
+.picgo-tooltip-content
+  max-width: 360px
+  max-height: 200px
+  overflow: auto
+  white-space: normal
+  word-break: break-word
 </style>

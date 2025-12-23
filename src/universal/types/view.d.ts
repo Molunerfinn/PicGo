@@ -14,6 +14,7 @@ interface ISettingForm {
   logFileSizeLimit: number
   encodeOutputURL: boolean
   showDockIcon: boolean
+  showMenubarIcon: boolean
   customLink: string
   npmProxy: string
   npmRegistry: string

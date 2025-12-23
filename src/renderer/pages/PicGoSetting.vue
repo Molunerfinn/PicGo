@@ -74,6 +74,7 @@ const form = reactive<ISettingForm>({
   logFileSizeLimit: 10,
   encodeOutputURL: true,
   showDockIcon: true,
+  showMenubarIcon: true,
   customLink: '$url',
   npmProxy: '',
   npmRegistry: '',
@@ -115,6 +116,7 @@ async function initData () {
     form.server = settings.server
     form.logFileSizeLimit = enforceNumber(settings.logFileSizeLimit) || 10
     form.showDockIcon = settings.showDockIcon === undefined ? true : settings.showDockIcon
+    form.showMenubarIcon = settings.showMenubarIcon === undefined ? true : settings.showMenubarIcon
     form.startupMode = settings.startupMode || (isLinux ? IStartupMode.SHOW_MINI_WINDOW : IStartupMode.HIDE)
   }
 }

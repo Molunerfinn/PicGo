@@ -72,6 +72,7 @@ export enum IRPCActionType {
   OPEN_FILE = 'OPEN_FILE',
   COPY_TEXT = 'COPY_TEXT',
   SHOW_DOCK_ICON = 'SHOW_DOCK_ICON',
+  SHOW_MENUBAR_ICON = 'SHOW_MENUBAR_ICON',
 
   // gallery and toolbox rpc
   UPDATE_GALLERY = 'UPDATE_GALLERY',

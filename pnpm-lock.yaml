@@ -11,15 +11,15 @@ importers:
       '@element-plus/icons-vue':
         specifier: ^2.3.2
         version: 2.3.2(vue@3.5.25(typescript@5.9.3))
-      '@numairawan/video-duration':
-        specifier: ^1.0.0
-        version: 1.0.0
       '@picgo/i18n':
         specifier: ^1.0.0
         version: 1.0.0
       '@picgo/store':
         specifier: ^2.1.0
         version: 2.1.0
+      '@picgo/video-duration':
+        specifier: ^1.0.1
+        version: 1.0.1
       axios:
         specifier: ^0.19.0
         version: 0.19.2
@@ -72,8 +72,8 @@ importers:
         specifier: ^1.4.5-lts.1
         version: 1.4.5-lts.2
       picgo:
-        specifier: ^1.6.2
-        version: 1.6.2
+        specifier: ^1.6.4
+        version: 1.6.4
       qrcode.vue:
         specifier: ^3.3.3
         version: 3.6.0(vue@3.5.25(typescript@5.9.3))
@@ -181,8 +181,8 @@ importers:
         specifier: ^3.1.18
         version: 3.1.25
       cz-customizable:
-        specifier: ^6.2.0
-        version: 6.9.2
+        specifier: ^7.5.1
+        version: 7.5.1
       dotenv:
         specifier: ^16.0.1
         version: 16.6.1
@@ -1043,9 +1043,6 @@ packages:
     resolution: {integrity: sha512-/xGlezI6xfGO9NwuJlnwz/K14qD1kCSAGtacBHnGzeAIuJGazcp45KP5NuyARXoKb7cwulAGWVsbeSxdG/cb0Q==}
     engines: {node: ^18.17.0 || >=20.5.0}
 
-  '@numairawan/video-duration@1.0.0':
-    resolution: {integrity: sha512-C819BxippZk2ajzfJt/S8kD5NJqAxuDZc1W4rqHVjzgoUI5Wjo7ehoH4dTIGesUEOxTobIXh6iOKAhhvGEDYpg==}
-
   '@picgo/bump-version@2.0.0':
     resolution: {integrity: sha512-7ClH+1f0vNchLOzUq7OlYXic3dIDH154aC809BIwHFkVzoj4z4YPT5TrR1syICFDCJVixg8Tvlli0z891iO0vg==}
     engines: {node: '>=20.0.0'}
@@ -1056,6 +1053,10 @@ packages:
 
   '@picgo/store@2.1.0':
     resolution: {integrity: sha512-oD/+4hGaioSVqWmaV5/LEXJ/xfpDrwUYPDGgJx3gEYoNPG2IdIZiO++asSZsafAc03TGPlvtR3L9eOTqPaKj9w==}
+
+  '@picgo/video-duration@1.0.1':
+    resolution: {integrity: sha512-onab36wVAuEDSnyyXYwSrRt672urJnSeY5MwXwk6NLYLUU1UTld2uazfYAZVnCnR6u69sfUeDdefL51RG5jcoA==}
+    hasBin: true
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -1865,9 +1866,6 @@ packages:
   axios@0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
 
-  axios@1.13.2:
-    resolution: {integrity: sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==}
-
   babel-polyfill@6.26.0:
     resolution: {integrity: sha512-F2rZGQnAdaHWQ8YAoeRbukc7HS9QgdgeyJ0rQDd485v9opwuPvjpPFcOOT/WmkKTdgy9ESgSPXDcTNpzrGr6iQ==}
 
@@ -2423,10 +2421,6 @@ packages:
   cz-conventional-changelog@3.3.0:
     resolution: {integrity: sha512-U466fIzU5U22eES5lTNiNbZ+d8dfcHcssH4o7QsdWaCcRs/feIPCxKYSWkYBNs5mny7MvEfwpTLWjvbm94hecw==}
     engines: {node: '>= 10'}
-
-  cz-customizable@6.9.2:
-    resolution: {integrity: sha512-33Y0eHAp40sb7K346Shm07X+ZIckPKV8pBHUH5Lh2tI4fi0mjHkrYDrwQyJMS8095Ri+H+xkxOmblzQ64wT/Fg==}
-    hasBin: true
 
   cz-customizable@7.5.1:
     resolution: {integrity: sha512-eGUfpyD6/YdnPomAMMbbwmofeHAR9D4OsXS5Kmr9+uEOxdop32tdmHy6sx4Bhpms6V8HohQ17p/fYvlIllrdmQ==}
@@ -4465,8 +4459,8 @@ packages:
   pend@1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
 
-  picgo@1.6.2:
-    resolution: {integrity: sha512-8o7ldUGHNywDX3keHeuiuSZZHt/hCyHepzzGA3Y3OdAZLIWdHI7NRjgUIQ2fsspQnkKaB4bm5xphoENhDiHuig==}
+  picgo@1.6.4:
+    resolution: {integrity: sha512-3RIcRVArRNqZKeRvFnClqr+JzJI4tjtYjpdgpCAhdtqr5cpT6HTp0C0d5GMExTCXjXc313Vdo4/W4S0fQVw2Zw==}
     engines: {node: '>= 20.0.0'}
     hasBin: true
 
@@ -4601,9 +4595,6 @@ packages:
 
   proto-list@1.2.4:
     resolution: {integrity: sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==}
-
-  proxy-from-env@1.1.0:
-    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
 
   pseudomap@1.0.2:
     resolution: {integrity: sha512-b/YwNhb8lk1Zz2+bXXpS/LK9OisiZZ1SNsSLxN1x2OXVEhW2Ckr/7mWE5vrC1ZTiJlD9g19jWszTmJsB+oEpFQ==}
@@ -6886,13 +6877,6 @@ snapshots:
     dependencies:
       semver: 7.7.3
 
-  '@numairawan/video-duration@1.0.0':
-    dependencies:
-      axios: 1.13.2
-      mime-types: 2.1.35
-    transitivePeerDependencies:
-      - debug
-
   '@picgo/bump-version@2.0.0(@types/node@20.19.26)(typescript@5.9.3)':
     dependencies:
       '@commitlint/cli': 7.6.1
@@ -6928,6 +6912,8 @@ snapshots:
       lodash: 4.17.21
       lodash-id: 0.14.1
       write-file-atomic: 4.0.2
+
+  '@picgo/video-duration@1.0.1': {}
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
@@ -7926,14 +7912,6 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  axios@1.13.2:
-    dependencies:
-      follow-redirects: 1.15.11
-      form-data: 4.0.5
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-
   babel-polyfill@6.26.0:
     dependencies:
       babel-runtime: 6.26.0
@@ -8593,15 +8571,6 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
       - typescript
-
-  cz-customizable@6.9.2:
-    dependencies:
-      editor: 1.0.0
-      find-config: 1.0.0
-      inquirer: 6.5.2
-      lodash: 4.17.21
-      temp: 0.9.4
-      word-wrap: 1.2.5
 
   cz-customizable@7.5.1:
     dependencies:
@@ -10899,7 +10868,7 @@ snapshots:
 
   pend@1.2.0: {}
 
-  picgo@1.6.2:
+  picgo@1.6.4:
     dependencies:
       '@picgo/i18n': 1.0.0
       '@picgo/store': 2.1.0
@@ -11032,8 +11001,6 @@ snapshots:
       retry: 0.12.0
 
   proto-list@1.2.4: {}
-
-  proxy-from-env@1.1.0: {}
 
   pseudomap@1.0.2: {}
 

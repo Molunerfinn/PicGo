@@ -121,6 +121,8 @@ UPLOADER_CONFIG_PLACEHOLDER: Please Enter Configuration Name
 SELECTED_SETTING_HINT: Selected
 SETTINGS_ENCODE_OUTPUT_URL: Encode Output(or Copyed) URL
 SETTINGS_SHOW_DOCK_ICON: Show Dock icon
+SETTINGS_SHOW_MENUBAR_ICON: Show Menubar icon
+SETTINGS_SHOW_MENUBAR_ICON_TIPS: If both "Show Dock icon" and "Show Menubar icon" are turned off, you won't be able to find PicGo's main window. Edit the config file and set showDockIcon or showMenubarIcon to true to recover.
 SETTINGS_STARTUP_MODE: Startup Mode
 SETTINGS_STARTUP_MODE_MAIN_WINDOW: Open Main Window
 SETTINGS_STARTUP_MODE_MINI_WINDOW: Open Mini Window
