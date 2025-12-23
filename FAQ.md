@@ -10,11 +10,11 @@
 
 ## 2. 能否支持图床远端同步删除
 
-不能。有些图床（比如微博图床、SM.MS、Imgur 等）不支持后台管理，为了架构统一不支持远端删除。
+暂时不支持。有些图床（比如微博图床、SM.MS、Imgur 等）不支持后台管理，为了架构统一不支持远端删除。
 
 ## 3. 能否支持上传视频文件
 
-目前不能。如果有人开发了相应的插件理论可以支持任意文件上传。
+目前部分图床支持上传视频文件，但并非所有图床都支持，请以实际使用的图床以及插件为准。
 
 ## 4. 微博图床上传之后无法显示预览图
 
@@ -49,6 +49,27 @@
 ## 8. Mac 上无法打开 PicGo 的主窗口界面
 
 PicGo 在 Mac 上是一个顶部栏应用，在 dock 栏是不会有图标的。要打开主窗口，请右键或者双指点按顶部栏 PicGo 图标，选择「打开详细窗口」即可打开主窗口。
+
+从 v2.4.1 开始，PicGo 支持在 macOS 下分别隐藏 Dock 栏图标（`showDockIcon`）和顶部栏图标（`showMenubarIcon`）。如果你把这两个配置都关闭（都设为 `false`），将会导致你无法通过 Dock 或顶部栏找到 PicGo 主界面。
+
+手动恢复方法：
+
+1. 找到并编辑 PicGo 的配置文件 `data.json`。
+    - 如果还能打开设置页：PicGo 设置 -> 「打开配置文件」。
+    - 如果已经找不到界面：默认配置文件通常在 `~/Library/Application Support/PicGo/data.json`（如果你曾配置过自定义路径，则以配置里的 `configPath` 为准）。
+2. 把以下任意一个字段改为 `true`（建议至少保留一个为 `true`），同时不要删改其他字段：
+
+```json
+{
+   "settings": {
+      // other settings ...
+      "showDockIcon": true,
+      "showMenubarIcon": true
+   }
+}
+```
+
+3. 保存后重启 PicGo。
 
 ## 9. 上传失败，或者是服务器出错
 
@@ -116,12 +137,6 @@ options:
   -z: compress or decompress (if compressed) attribute value in zip format
 ```
 执行命令
-
-```
-xattr -c /Applications/PicGo.app/*
-```
-
-如果上述命令依然没有效果，可以尝试下面的命令：
 
 ```
 sudo xattr -d com.apple.quarantine /Applications/PicGo.app/

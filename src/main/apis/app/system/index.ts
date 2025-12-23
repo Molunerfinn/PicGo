@@ -17,7 +17,7 @@ import { ensureFilePath, getClipboardFilePathList, handleCopyUrl } from '~/main/
 import { privacyManager } from '~/main/utils/privacyManager'
 import { T } from '~/main/i18n'
 import { isMacOSVersionGreaterThanOrEqualTo } from '~/main/utils/getMacOSVersion'
-import { buildPicBedListMenu } from '~/main/events/remotes/menu'
+import { buildPicBedListMenu } from '~/main/events/remotes/picBedListMenu'
 import { isLinux, isMacOS } from '~/universal/utils/common'
 import { getStaticPath } from '#/utils/staticPath'
 let contextMenu: Menu | null
@@ -248,6 +248,38 @@ export function createTray () {
     // 需要使用 setContextMenu 设置菜单
     createContextMenu()
     tray!.setContextMenu(contextMenu)
+  }
+}
+
+const destroyTray = () => {
+  if (tray) {
+    tray.removeAllListeners()
+    tray.destroy()
+    tray = null
+  }
+  if (windowManager.has(IWindowList.TRAY_WINDOW)) {
+    windowManager.get(IWindowList.TRAY_WINDOW)!.hide()
+  }
+}
+
+/**
+ * macOS only: show/hide the menubar (tray) icon.
+ * For other platforms this keeps the existing behavior (always show tray).
+ */
+export function handleMenubarIcon (visible?: boolean) {
+  if (!isMacOS) {
+    if (!tray) {
+      createTray()
+    }
+    return
+  }
+  const shouldShow = visible !== undefined ? visible : (db.get('settings.showMenubarIcon') !== false)
+  if (shouldShow) {
+    if (!tray) {
+      createTray()
+    }
+  } else {
+    destroyTray()
   }
 }
 

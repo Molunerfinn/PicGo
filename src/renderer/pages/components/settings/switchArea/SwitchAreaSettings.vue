@@ -61,6 +61,14 @@
     :label="$T('SETTINGS_SHOW_DOCK_ICON')"
     @change="handleShowDockIcon"
   />
+  <SwitchFormItem
+    v-if="os === 'darwin'"
+    v-model="form.showMenubarIcon"
+    setting-props="showMenubarIcon"
+    :label="$T('SETTINGS_SHOW_MENUBAR_ICON')"
+    :tooltips="$T('SETTINGS_SHOW_MENUBAR_ICON_TIPS')"
+    @change="handleShowMenubarIcon"
+  />
 </template>
 <script lang="ts" setup>
 import { reactive } from 'vue'
@@ -90,6 +98,10 @@ function handleMiniWindowOnTop () {
 
 function handleShowDockIcon (val: ISwitchValueType) {
   sendRPC(IRPCActionType.SHOW_DOCK_ICON, val)
+}
+
+function handleShowMenubarIcon (val: ISwitchValueType) {
+  sendRPC(IRPCActionType.SHOW_MENUBAR_ICON, val)
 }
 
 </script>

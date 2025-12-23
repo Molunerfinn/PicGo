@@ -2,6 +2,7 @@ import { IRPCActionType, IWindowList } from '~/universal/types/enum'
 import { RPCRouter } from '../router'
 import { app, clipboard, shell } from 'electron'
 import windowManager from '~/main/apis/app/window/windowManager'
+import { handleMenubarIcon } from '~/main/apis/app/system'
 
 const systemRouter = new RPCRouter()
 
@@ -29,6 +30,10 @@ systemRouter
     } else {
       win?.setSkipTaskbar(false)
     }
+  })
+  .add(IRPCActionType.SHOW_MENUBAR_ICON, async (args) => {
+    const [visible] = args as IShowMenubarIconArgs
+    handleMenubarIcon(visible)
   })
 
 export {

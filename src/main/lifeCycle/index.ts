@@ -20,7 +20,7 @@ import {
   uploadClipboardFiles
 } from 'apis/app/uploader/apis'
 import {
-  createTray, handleDockIcon
+  handleDockIcon, handleMenubarIcon
 } from 'apis/app/system'
 import server from '~/main/server/index'
 import updateChecker from '~/main/utils/updateChecker'
@@ -96,7 +96,7 @@ class LifeCycle {
           miniWindow?.focus()
         }
       }
-      createTray()
+      handleMenubarIcon()
       handleDockIcon()
       db.set('needReload', false)
       updateChecker()
