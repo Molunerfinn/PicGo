@@ -1,3 +1,4 @@
+const globals = require('globals')
 const path = require('node:path')
 const eslintJs = require('@eslint/js')
 const tsPlugin = require('@typescript-eslint/eslint-plugin')
@@ -122,5 +123,16 @@ module.exports = [
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off'
     }
-  }
+  },
+  {
+    // 1. 针对所有 JS 文件（或者特定目录）启用 Node 全局变量
+    files: ["**/*.js", "scripts/*.js"], 
+    languageOptions: {
+      globals: {
+        ...globals.node, // 注入 process, require, module, __dirname 等
+        ...globals.browser // 如果你的项目是前端项目，可能还需要 browser
+      },
+      sourceType: "commonjs" // 如果你的项目代码主要是 CJS，加上这个；如果是 ESM 则设为 "module"
+    }
+  },
 ]

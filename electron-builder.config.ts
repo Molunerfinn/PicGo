@@ -1,9 +1,14 @@
- 
 import type { Configuration } from 'electron-builder'
+import dotenv from 'dotenv'
+ 
+dotenv.config()
+
+const shouldNotarize = process.env.SKIP_NOTARIZE !== 'true';
 
 const config: Configuration = {
   appId: 'com.molunerfinn.picgo',
   productName: 'PicGo',
+  afterSign: shouldNotarize ? 'scripts/notarize.js' : undefined,
   // publish: [
   //   {
   //     provider: 'github',
@@ -53,7 +58,11 @@ const config: Configuration = {
         arch: ['x64', 'arm64']
       }
     ],
-    artifactName: 'PicGo-${version}-${arch}.${ext}'
+    artifactName: 'PicGo-${version}-${arch}.${ext}',
+    hardenedRuntime: true,
+    entitlements: 'build/entitlements.mac.plist',
+    entitlementsInherit: 'build/entitlements.mac.plist',
+    notarize: false
   },
   win: {
     icon: 'build/icons/icon.ico',

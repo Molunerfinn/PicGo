@@ -21,6 +21,11 @@ on:
           - macOS
           - Linux
           - All
+      skip_notarize:
+        description: "Skip Notarization (true/false)"
+        required: false
+        default: false
+        type: boolean
 env:
   NODE_VERSION: 22.x
 
@@ -82,6 +87,16 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          # macOS Code Signing
+          # p12 证书的 Base64 字符串
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          # p12 证书密码
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+          # macOS Notarization (公证所需变量)
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          SKIP_NOTARIZE: ${{ inputs.skip_notarize }}
       - name: Build Linux x64 & ARM64 App
         if: runner.os == 'Linux' && (github.event.inputs.build_os == 'Linux' || github.event.inputs.build_os == 'All')
         run: pnpm run build:linux || true

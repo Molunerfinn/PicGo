@@ -4,6 +4,7 @@ dist/web/*
 build/*
 !build/icons
 !build/installer.nsh
+!build/entitlements.mac.plist
 coverage
 node_modules/
 npm-debug.log
