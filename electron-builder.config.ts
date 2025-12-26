@@ -48,14 +48,14 @@ const config: Configuration = {
     ]
   },
   mac: {
-    icon: 'build/icons/512x512.png',
+    icon: 'build/icons/icon.icns',
     extendInfo: {
       LSUIElement: 0
     },
     target: [
       {
         target: 'dmg',
-        arch: ['x64', 'arm64']
+        arch: ['arm64', 'x64']
       }
     ],
     artifactName: 'PicGo-${version}-${arch}.${ext}',
