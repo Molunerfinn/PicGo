@@ -1,4 +1,4 @@
-import { trimValues } from '#/utils/common'
+import { simpleClone, trimValues } from '#/utils/common'
 import picgo from '@core/picgo'
 import { v4 as uuid } from 'uuid'
 
@@ -118,6 +118,29 @@ export const deleteUploaderConfig = (type: string, id: string): IUploaderConfigI
   return {
     configList: updatedConfigList,
     defaultId: newDefaultId
+  }
+}
+
+/**
+ * copy uploader config by type & id
+ */
+export const copyUploaderConfig = (type: string, id: string): IUploaderConfigItem | void => {
+  const { configList, defaultId } = getUploaderConfigList(type)
+  const existConfig = configList.find((item: IStringKeyMap) => item._id === id)
+  if (!existConfig) {
+    return
+  }
+  const copiedConfig = completeUploaderMetaConfig({
+    ...simpleClone(existConfig),
+    _configName: `${existConfig._configName || 'Default'} - Copy`
+  })
+  configList.push(copiedConfig)
+  picgo.saveConfig({
+    [`uploader.${type}.configList`]: configList
+  })
+  return {
+    configList,
+    defaultId
   }
 }
 

@@ -248,6 +248,8 @@ TIPS_SHORTCUT_MODIFIED_SUCCEED: Shortcut modified successfully
 TIPS_SHORTCUT_MODIFIED_CONFLICT: Shortcut conflict, please reset
 TIPS_CUSTOM_LINK_STYLE_MODIFIED_SUCCEED: Custom link style modified successfully
 TIPS_FIND_NEW_VERSION: Find new version ${v}，update many new features, do you want to download the latest version?
+TIPS_DELETE_UPLOADER_CONFIG: Are you sure you want to delete this config?
+TIPS_COPY_UPLOADER_CONFIG: Are you sure you want to copy this config?
 
 # privacy
 PRIVACY: >
@@ -276,7 +278,6 @@ PRIVACY: >
   b) In accordance with the relevant provisions of the law, or the requirements of administrative or judicial institutions, disclose to third parties or administrative or judicial institutions;
 
 
-  c) If you violate relevant Chinese laws, regulations or relevant rules, you need to disclose it to a third party;
 
 
   4. Information Security

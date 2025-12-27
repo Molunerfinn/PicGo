@@ -1,6 +1,6 @@
 import { IRPCActionType } from '~/universal/types/enum'
 import { RPCRouter } from '../router'
-import { deleteUploaderConfig, getUploaderConfigList, selectUploaderConfig, updateUploaderConfig } from '~/main/utils/handleUploaderConfig'
+import { copyUploaderConfig, deleteUploaderConfig, getUploaderConfigList, selectUploaderConfig, updateUploaderConfig } from '~/main/utils/handleUploaderConfig'
 
 const configRouter = new RPCRouter()
 
@@ -13,6 +13,11 @@ configRouter
   .add(IRPCActionType.DELETE_PICBED_CONFIG, async (args) => {
     const [type, id] = args as IDeleteUploaderConfigArgs
     const config = deleteUploaderConfig(type, id)
+    return config
+  })
+  .add(IRPCActionType.COPY_UPLOADER_CONFIG, async (args) => {
+    const [type, id] = args as ICopyUploaderConfigArgs
+    const config = copyUploaderConfig(type, id)
     return config
   })
   .add(IRPCActionType.SELECT_UPLOADER, async (args) => {

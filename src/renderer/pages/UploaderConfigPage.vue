@@ -44,6 +44,12 @@
               <Edit />
             </el-icon>
             <el-icon
+              class="el-icon-copy"
+              @click.stop="() => copyConfig(item._id)"
+            >
+              <DocumentCopy />
+            </el-icon>
+            <el-icon
               class="el-icon-delete"
               :class="curConfigList.length <= 1 ? 'disabled' : ''"
               @click.stop="() => deleteConfig(item._id)"
@@ -89,7 +95,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { Edit, Delete, Plus } from '@element-plus/icons-vue'
+import { Delete, DocumentCopy, Edit, Plus } from '@element-plus/icons-vue'
+import { ElMessageBox } from 'element-plus'
 import { saveConfig, triggerRPC } from '@/utils/dataSender'
 import dayjs from 'dayjs'
 import { IRPCActionType } from '~/universal/types/enum'
@@ -105,6 +112,7 @@ const type = ref('')
 const curConfigList = ref<IStringKeyMap[]>([])
 const defaultConfigId = ref('')
 const store = useStore()
+const $confirm = ElMessageBox.confirm
 
 async function selectItem (id: string) {
   await triggerRPC<void>(IRPCActionType.SELECT_UPLOADER, type.value, id)
@@ -147,11 +155,39 @@ function formatTime (time: number): string {
   return dayjs(time).format('YYYY-MM-DD HH:mm:ss')
 }
 
-async function deleteConfig (id: string) {
-  const res = await triggerRPC<IUploaderConfigItem | undefined>(IRPCActionType.DELETE_PICBED_CONFIG, type.value, id)
-  if (!res) return
-  curConfigList.value = res.configList
-  defaultConfigId.value = res.defaultId
+function deleteConfig (id: string) {
+  if (curConfigList.value.length <= 1) {
+    return
+  }
+  $confirm($T('TIPS_DELETE_UPLOADER_CONFIG'), $T('TIPS_NOTICE'), {
+    confirmButtonText: $T('CONFIRM'),
+    cancelButtonText: $T('CANCEL'),
+    type: 'warning'
+  }).then(async () => {
+    const res = await triggerRPC<IUploaderConfigItem | undefined>(IRPCActionType.DELETE_PICBED_CONFIG, type.value, id)
+    if (!res) return
+    curConfigList.value = res.configList
+    defaultConfigId.value = res.defaultId
+  }).catch((e) => {
+    console.log(e)
+    return true
+  })
+}
+
+function copyConfig (id: string) {
+  $confirm($T('TIPS_COPY_UPLOADER_CONFIG'), $T('TIPS_NOTICE'), {
+    confirmButtonText: $T('CONFIRM'),
+    cancelButtonText: $T('CANCEL'),
+    type: 'warning'
+  }).then(async () => {
+    const res = await triggerRPC<IUploaderConfigItem | undefined>(IRPCActionType.COPY_UPLOADER_CONFIG, type.value, id)
+    if (!res) return
+    curConfigList.value = res.configList
+    defaultConfigId.value = res.defaultId
+  }).catch((e) => {
+    console.log(e)
+    return true
+  })
 }
 
 function addNewConfig () {
@@ -226,9 +262,11 @@ export default {
         align-items center
         color #eee
         .el-icon-edit
+        .el-icon-copy
         .el-icon-delete
           cursor pointer
         .el-icon-edit
+        .el-icon-copy
           margin-right 10px
         .disabled
           cursor not-allowed

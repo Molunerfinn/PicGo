@@ -248,6 +248,8 @@ TIPS_SHORTCUT_MODIFIED_SUCCEED: 快捷键已经修改成功
 TIPS_SHORTCUT_MODIFIED_CONFLICT: 快捷键冲突，请重新设置
 TIPS_CUSTOM_LINK_STYLE_MODIFIED_SUCCEED: 自定义链接格式已经修改成功
 TIPS_FIND_NEW_VERSION: 发现新版本${v}，更新了很多功能，是否去下载最新的版本？
+TIPS_DELETE_UPLOADER_CONFIG: 是否要删除这个配置？
+TIPS_COPY_UPLOADER_CONFIG: 是否要复制这个配置？
 
 # privacy
 PRIVACY: >
@@ -276,7 +278,6 @@ PRIVACY: >
   b)根据法律的有关规定，或者行政或司法机构的要求，向第三方或者行政、司法机构披露；
 
 
-  c)如您出现违反中国有关法律、法规或者相关规则的情况，需要向第三方披露；
 
 
   4.信息安全

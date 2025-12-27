@@ -25,4 +25,7 @@ Place renderer unit specs in `test/unit/specs` with the `.spec.js` suffix; Karma
 Commits follow the PicGo conventional preset enforced by Husky (`pnpm lint:dpdm` + Commitlint). Stage your changes and run `pnpm cz` to craft messages that pass CI. Pull requests should explain the change, link related issues, and attach UI screenshots or recordings. Note how you validated the work (dev server, build, Karma, Spectron) and call out migration or configuration steps reviewers must perform.
 
 ## Internationalization Tips
-Add locales by creating `public/i18n/<locale>.yml`, exposing its `LANG_DISPLAY_LABEL`, and registering it in `src/universal/i18n/index.ts`. Finish with `pnpm gen-i18n` so the generated typings stay in sync.
+Add locales by creating `public/i18n/<locale>.yml`, exposing its `LANG_DISPLAY_LABEL`, and registering it in `src/universal/i18n/index.ts`. After editing `public/i18n/*.yml`, run `pnpm gen-i18n` to regenerate TS typings and keep them in sync.
+
+## Serena MCP & Context7 Tools
+When starting work or if you hit issues, try checking MCP for Serena or Context7 tooling. If available, use those tools to navigate, edit, or fetch docs efficiently.
