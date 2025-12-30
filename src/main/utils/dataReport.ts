@@ -63,6 +63,8 @@ class DataReportManager {
           EventId: 'upload_video',
           Label: '',
           MapKv: {
+            type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
+            mimeType: file.mimeType,
             sizeRange: calcUploadBigFileSizeRange(sizeMB),
             durationRange: calcVideoDurationRange(durationSec),
           }
@@ -74,11 +76,22 @@ class DataReportManager {
           Label: '',
           MapKv: {
             type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
-            mimeType: file.mimeType,
+            mimeType: file.mimeType || 'image/png',
             sizeRange: calcUploadBigFileSizeRange(file.size / MB)
           }
         };
         this.reportDataToWebContents(webContents, imageEventData);
+      } else {
+        const otherEventData: ITalkingDataOptions = {
+          EventId: 'upload_file',
+          Label: '',
+          MapKv: {
+            type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
+            mimeType: file.mimeType || 'UNKNOWN',
+            sizeRange: calcUploadBigFileSizeRange(file.size / MB)
+          }
+        };
+        this.reportDataToWebContents(webContents, otherEventData);
       }
     });
   }

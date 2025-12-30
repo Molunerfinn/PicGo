@@ -461,6 +461,13 @@ function _getSearchResult (val: string) {
         .filter((item:INPMSearchResultObject) => {
           return item.package.name.includes('picgo-plugin-')
         })
+        .filter((item: INPMSearchResultObject) => {
+          // filter out fake picgo plugins from picgo.net
+          if (item.package.description.includes('picgo.net') || item.package.description.includes('PicGo官方')) {
+            return false
+          }
+          return true
+        })
         .map((item: INPMSearchResultObject) => {
           return handleSearchResult(item)
         })
