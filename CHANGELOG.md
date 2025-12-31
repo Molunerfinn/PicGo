@@ -1,3 +1,25 @@
+## :tada: 2.4.2-beta.0 (2025-12-31)
+
+
+### :sparkles: Features
+
+* **config:** add copy config \&\& add double confirm before copy \& delete config ([25f86a6](https://github.com/Molunerfinn/PicGo/commit/25f86a6))
+
+
+### :bug: Bug Fixes
+
+* **icon:** app icon too large in macOS 15.x ([840c33b](https://github.com/Molunerfinn/PicGo/commit/840c33b)), closes [#1367](https://github.com/Molunerfinn/PicGo/issues/1367)
+
+
+### :package: Chore
+
+* electron builder not publish with build command ([9269f96](https://github.com/Molunerfinn/PicGo/commit/9269f96))
+* fix workflow build ([a1d22e5](https://github.com/Molunerfinn/PicGo/commit/a1d22e5))
+* **signature:** add signature \& notarization process ([ee6ca02](https://github.com/Molunerfinn/PicGo/commit/ee6ca02))
+* update FAQ \&\& plugin filter logic ([f7f5804](https://github.com/Molunerfinn/PicGo/commit/f7f5804))
+
+
+
 ## :tada: 2.4.1 (2025-12-23)
 
 
