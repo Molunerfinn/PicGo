@@ -86,7 +86,10 @@ function confirmServerSetting () {
   saveConfig({
     'settings.server': form
   })
-  showNotification($T('SETTINGS_SET_PICGO_SERVER'), $T('TIPS_SET_SUCCEED'))
+  showNotification({
+    title: $T('SETTINGS_SET_PICGO_SERVER'),
+    body: $T('TIPS_SET_SUCCEED')
+  })
   dialogVisible.value = false
   sendToMain('updateServer')
   updateProps()

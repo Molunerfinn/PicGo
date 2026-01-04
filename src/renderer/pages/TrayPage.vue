@@ -70,7 +70,7 @@ import type { IResult } from '@picgo/store/dist/types'
 import { PASTE_TEXT, OPEN_WINDOW } from '#/events/constants'
 import { IWindowList } from '#/types/enum'
 import { sendToMain } from '@/utils/dataSender'
-import { getRawData } from '@/utils/common'
+import { getRawData, showNotification } from '@/utils/common'
 import { IpcRendererEvent } from 'electron/renderer'
 
 const files = ref<IResult<ImgInfo>[]>([])
@@ -95,10 +95,10 @@ async function getData () {
 async function copyTheLink (item: ImgInfo) {
   notification.body = item.imgUrl!
   await ipcRenderer.invoke(PASTE_TEXT, getRawData(item))
-  const myNotification = new Notification(notification.title, notification)
-  myNotification.onclick = () => {
-    return true
-  }
+  showNotification({
+    title: notification.title,
+    body: notification.body
+  })
 }
 
 // function calcHeight (width: number, height: number): number {

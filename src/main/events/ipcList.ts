@@ -2,7 +2,6 @@ import {
   app,
   ipcMain,
   shell,
-  Notification,
   IpcMainEvent,
   BrowserWindow
 } from 'electron'
@@ -34,7 +33,7 @@ import {
   uploadSelectedFiles
 } from '~/main/apis/app/uploader/apis'
 import picgoCoreIPC from './picgoCoreIPC'
-import { handleCopyUrl } from '~/main/utils/common'
+import { handleCopyUrl, showNotification } from '~/main/utils/common'
 import { buildMainPageMenu, buildMiniPageMenu, buildPluginPageMenu, buildPicBedListMenu } from './remotes/menu'
 import path from 'path'
 import { T } from '~/main/i18n'
@@ -51,13 +50,12 @@ export default {
       if (img !== false) {
         const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
         handleCopyUrl(pasteTemplate(pasteStyle, img[0], db.get('settings.customLink')))
-        const notification = new Notification({
+        showNotification({
           title: T('UPLOAD_SUCCEED'),
           body: img[0].imgUrl!
           // icon: file[0]
           // icon: img[0].imgUrl
         })
-        notification.show()
         await GalleryDB.getInstance().insert(img[0])
         trayWindow.webContents.send('clipboardFiles', [])
         if (windowManager.has(IWindowList.SETTING_WINDOW)) {
@@ -80,43 +78,38 @@ export default {
       const result = shortKeyHandler.updateShortKey(item, oldKey, from)
       evt.sender.send('updateShortKeyResponse', result)
       if (result) {
-        const notification = new Notification({
+        showNotification({
           title: T('OPERATION_SUCCEED'),
           body: T('TIPS_SHORTCUT_MODIFIED_SUCCEED')
         })
-        notification.show()
       } else {
-        const notification = new Notification({
+        showNotification({
           title: T('OPERATION_FAILED'),
           body: T('TIPS_SHORTCUT_MODIFIED_CONFLICT')
         })
-        notification.show()
       }
     })
 
     ipcMain.on('bindOrUnbindShortKey', (evt: IpcMainEvent, item: IShortKeyConfig, from: string) => {
       const result = shortKeyHandler.bindOrUnbindShortKey(item, from)
       if (result) {
-        const notification = new Notification({
+        showNotification({
           title: T('OPERATION_SUCCEED'),
           body: T('TIPS_SHORTCUT_MODIFIED_SUCCEED')
         })
-        notification.show()
       } else {
-        const notification = new Notification({
+        showNotification({
           title: T('OPERATION_FAILED'),
           body: T('TIPS_SHORTCUT_MODIFIED_CONFLICT')
         })
-        notification.show()
       }
     })
 
     ipcMain.on('updateCustomLink', () => {
-      const notification = new Notification({
+      showNotification({
         title: T('OPERATION_SUCCEED'),
         body: T('TIPS_CUSTOM_LINK_STYLE_MODIFIED_SUCCEED')
       })
-      notification.show()
     })
 
     ipcMain.on('autoStart', (evt: IpcMainEvent, val: boolean) => {

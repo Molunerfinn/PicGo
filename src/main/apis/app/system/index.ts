@@ -4,7 +4,6 @@ import {
   Tray,
   dialog,
   clipboard,
-  Notification,
   nativeTheme
 } from 'electron'
 import uploader from 'apis/app/uploader'
@@ -13,7 +12,7 @@ import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import pkg from 'root/package.json'
-import { ensureFilePath, getClipboardFilePathList, handleCopyUrl } from '~/main/utils/common'
+import { ensureFilePath, getClipboardFilePathList, handleCopyUrl, showNotification } from '~/main/utils/common'
 import { privacyManager } from '~/main/utils/privacyManager'
 import { T } from '~/main/i18n'
 import { isMacOSVersionGreaterThanOrEqualTo } from '~/main/utils/getMacOSVersion'
@@ -228,13 +227,12 @@ export function createTray () {
           pasteText.push(
             pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink'))
           )
-          const notification = new Notification({
-            title: T('UPLOAD_SUCCEED'),
-            body: imgs[i].imgUrl!
-            // icon: files[i]
-          })
           setTimeout(() => {
-            notification.show()
+            showNotification({
+              title: T('UPLOAD_SUCCEED'),
+              body: imgs[i].imgUrl!
+              // icon: files[i]
+            })
           }, i * 100)
           await GalleryDB.getInstance().insert(imgs[i])
         }

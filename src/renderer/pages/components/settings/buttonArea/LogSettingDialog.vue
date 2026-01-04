@@ -121,7 +121,10 @@ function confirmLogLevelSetting () {
     'settings.logLevel': form.logLevel,
     'settings.logFileSizeLimit': form.logFileSizeLimit
   })
-  showNotification($T('SETTINGS_SET_LOG_FILE'), $T('TIPS_SET_SUCCEED'))
+  showNotification({
+    title: $T('SETTINGS_SET_LOG_FILE'),
+    body: $T('TIPS_SET_SUCCEED')
+  })
   updateProps()
   dialogVisible.value = false
 }

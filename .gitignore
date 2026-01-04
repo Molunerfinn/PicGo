@@ -26,3 +26,4 @@ scripts/*.yml
 .serena/
 dist/*
 test.js
+specs/

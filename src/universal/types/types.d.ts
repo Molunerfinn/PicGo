@@ -256,7 +256,10 @@ type IUploadOption = string[] | ImgInfo[]
 interface IShowNotificationOption {
   title: string
   body: string
-  // icon?: string | import('electron').NativeImage
+  /**
+   * will log text
+   */
+  text?: string
 }
 
 interface IPrivateShowNotificationOption extends IShowNotificationOption{
@@ -265,7 +268,7 @@ interface IPrivateShowNotificationOption extends IShowNotificationOption{
    */
   clickToCopy?: boolean
   copyContent?: string // something to copy
-  clickFn?: () => void
+  callback?: () => void
 }
 
 interface IShowMessageBoxOption {
@@ -356,7 +359,7 @@ type ILoggerType = string | Error | boolean | number | undefined
 interface IAppNotification {
   title: string
   body: string
-  icon?: string
+  text?: string
 }
 
 interface ITalkingDataOptions {

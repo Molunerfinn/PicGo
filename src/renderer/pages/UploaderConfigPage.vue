@@ -98,6 +98,7 @@
 import { Delete, DocumentCopy, Edit, Plus } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import { saveConfig, triggerRPC } from '@/utils/dataSender'
+import { showNotification } from '@/utils/common'
 import dayjs from 'dayjs'
 import { IRPCActionType } from '~/universal/types/enum'
 import { T as $T } from '@/i18n/index'
@@ -207,12 +208,10 @@ function setDefaultPicBed (type: string) {
   })
 
   store?.setDefaultPicBed(type)
-  const successNotification = new Notification($T('SETTINGS_DEFAULT_PICBED'), {
+  showNotification({
+    title: $T('SETTINGS_DEFAULT_PICBED'),
     body: $T('TIPS_SET_SUCCEED')
   })
-  successNotification.onclick = () => {
-    return true
-  }
 }
 </script>
 <script lang="ts">

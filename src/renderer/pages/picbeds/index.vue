@@ -46,6 +46,7 @@ import { IRPCActionType } from '~/universal/types/enum'
 import { ref, onBeforeMount } from 'vue'
 import { T as $T } from '@/i18n/index'
 import { sendToMain, triggerRPC } from '@/utils/dataSender'
+import { showNotification } from '@/utils/common'
 import { useRoute, useRouter } from 'vue-router'
 import ConfigForm from '@/components/ConfigForm.vue'
 // import mixin from '@/utils/ConfirmButtonMixin'
@@ -72,12 +73,10 @@ const handleConfirm = async () => {
   const result = (await $configForm.value?.validate()) || false
   if (result !== false) {
     await triggerRPC<void>(IRPCActionType.UPDATE_UPLOADER_CONFIG, type.value, result?._id, result)
-    const successNotification = new Notification($T('SETTINGS_RESULT'), {
+    showNotification({
+      title: $T('SETTINGS_RESULT'),
       body: $T('TIPS_SET_SUCCEED')
     })
-    successNotification.onclick = () => {
-      return true
-    }
     $router.back()
   }
 }

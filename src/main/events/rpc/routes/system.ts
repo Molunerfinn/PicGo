@@ -3,6 +3,8 @@ import { RPCRouter } from '../router'
 import { app, clipboard, shell } from 'electron'
 import windowManager from '~/main/apis/app/window/windowManager'
 import { handleMenubarIcon } from '~/main/apis/app/system'
+import { PICGO_NOTIFICATION_CLICKED } from '~/universal/events/constants'
+import { showNotification } from '~/main/utils/common'
 
 const systemRouter = new RPCRouter()
 
@@ -34,6 +36,19 @@ systemRouter
   .add(IRPCActionType.SHOW_MENUBAR_ICON, async (args) => {
     const [visible] = args as IShowMenubarIconArgs
     handleMenubarIcon(visible)
+  })
+  .add(IRPCActionType.SHOW_NOTIFICATION, async (args, event) => {
+    const [title, body, id] = args as IShowNotificationArgs
+
+    showNotification({
+      title,
+      body,
+      callback: () => {
+        if (id && !event.sender.isDestroyed()) {
+          event.sender.send(PICGO_NOTIFICATION_CLICKED, id)
+        }
+      }
+    })
   })
 
 export {
