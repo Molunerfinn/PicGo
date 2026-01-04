@@ -40,15 +40,20 @@ systemRouter
   .add(IRPCActionType.SHOW_NOTIFICATION, async (args, event) => {
     const [title, body, id] = args as IShowNotificationArgs
 
-    showNotification({
+    const options: IPrivateShowNotificationOption = {
       title,
-      body,
-      callback: () => {
-        if (id && !event.sender.isDestroyed()) {
+      body
+    }
+
+    if (id) {
+      options.callback = () => {
+        if (!event.sender.isDestroyed()) {
           event.sender.send(PICGO_NOTIFICATION_CLICKED, id)
         }
       }
-    })
+    }
+    
+    showNotification(options)
   })
 
 export {
