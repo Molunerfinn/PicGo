@@ -1,5 +1,4 @@
 import {
-  Notification,
   WebContents
 } from 'electron'
 import windowManager from 'apis/app/window/windowManager'
@@ -7,7 +6,7 @@ import { IRPCActionType, IWindowList } from '#/types/enum'
 import uploader from '.'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import db, { GalleryDB } from '~/main/apis/core/datastore'
-import { handleCopyUrl, handleUrlEncodeWithSetting } from '~/main/utils/common'
+import { handleCopyUrl, handleUrlEncodeWithSetting, showNotification } from '~/main/utils/common'
 import { T } from '~/main/i18n/index'
 import logger from '@core/picgo/logger'
 // import dayjs from 'dayjs'
@@ -29,13 +28,12 @@ export const uploadClipboardFiles = async (): Promise<string> => {
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)
       const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
       handleCopyUrl(pasteTemplate(pasteStyle, img[0], db.get('settings.customLink')))
-      const notification = new Notification({
-        title: T('UPLOAD_SUCCEED'),
-        body: img[0].imgUrl!
-        // icon: img[0].imgUrl
-      })
       setTimeout(() => {
-        notification.show()
+        showNotification({
+          title: T('UPLOAD_SUCCEED'),
+          body: img[0].imgUrl!
+          // icon: img[0].imgUrl
+        })
       }, 100)
       await GalleryDB.getInstance().insert(img[0])
       // trayWindow just be created in mac/windows, not in linux
@@ -46,11 +44,10 @@ export const uploadClipboardFiles = async (): Promise<string> => {
       }
       return handleUrlEncodeWithSetting(img[0].imgUrl as string)
     } else {
-      const notification = new Notification({
+      showNotification({
         title: T('UPLOAD_FAILED'),
         body: T('TIPS_UPLOAD_NOT_PICTURES')
       })
-      notification.show()
       return ''
     }
   } else {
@@ -67,13 +64,12 @@ export const uploadSelectedFiles = async (webContents: WebContents, files: IFile
     const pasteText: string[] = []
     for (let i = 0; i < imgs.length; i++) {
       pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
-      const notification = new Notification({
-        title: T('UPLOAD_SUCCEED'),
-        body: imgs[i].imgUrl!
-        // icon: files[i].path
-      })
       setTimeout(() => {
-        notification.show()
+        showNotification({
+          title: T('UPLOAD_SUCCEED'),
+          body: imgs[i].imgUrl!
+          // icon: files[i].path
+        })
       }, i * 100)
       await GalleryDB.getInstance().insert(imgs[i])
       result.push(handleUrlEncodeWithSetting(imgs[i].imgUrl!))

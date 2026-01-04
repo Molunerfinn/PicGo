@@ -61,7 +61,7 @@ import { T as $T } from '@/i18n'
 import { useVModel } from '@/hooks/useVModel'
 import { saveConfig } from '@/utils/dataSender'
 import { useVModelValues } from '@/hooks/useVModelValues'
-import { showNotification } from '@/utils/common'
+import { showNotification } from '@/utils/notification'
 
 interface IProps {
   modelValue: boolean
@@ -82,7 +82,10 @@ function confirmProxy () {
     'settings.npmProxy': form.npmProxy,
     'settings.npmRegistry': form.npmRegistry
   })
-  showNotification($T('SETTINGS_SET_PROXY_AND_MIRROR'), $T('TIPS_SET_SUCCEED'))
+  showNotification({
+    title: $T('SETTINGS_SET_PROXY_AND_MIRROR'),
+    body: $T('TIPS_SET_SUCCEED')
+  })
   updateProps()
 }
 

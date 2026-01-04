@@ -2,8 +2,7 @@ import './errorHandler'
 import {
   app,
   globalShortcut,
-  protocol,
-  Notification
+  protocol
 } from 'electron'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import beforeOpen from '~/main/utils/beforeOpen'
@@ -35,6 +34,7 @@ import { initI18n } from '~/main/utils/handleI18n'
 import { remoteNoticeHandler } from 'apis/app/remoteNotice'
 import { isMacOS } from '../utils/getMacOSVersion'
 import { isWindowShouldShowOnStartup } from '../apis/app/window/windowList'
+import { showNotification } from '../utils/common'
 import { initStaticPath, isDev } from '../utils/env'
 
 const isDevelopment = isDev
@@ -112,8 +112,9 @@ class LifeCycle {
       if (global.notificationList && global.notificationList?.length > 0) {
         while (global.notificationList?.length) {
           const option = global.notificationList.pop()
-          const notice = new Notification(option!)
-          notice.show()
+          if (option) {
+            showNotification(option)
+          }
         }
       }
       await remoteNoticeHandler.init()

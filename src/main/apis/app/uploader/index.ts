@@ -1,5 +1,4 @@
 import {
-  Notification,
   BrowserWindow,
   ipcMain,
   WebContents,
@@ -48,9 +47,9 @@ class Uploader {
   }
 
   init () {
-    picgo.on('notification', (message: Electron.NotificationConstructorOptions | undefined) => {
-      const notification = new Notification(message)
-      notification.show()
+    picgo.on('notification', (message: IShowNotificationOption | undefined) => {
+      if (!message) return
+      showNotification(message)
     })
 
     picgo.on('uploadProgress', (progress: any) => {
@@ -58,11 +57,10 @@ class Uploader {
     })
     picgo.on('beforeTransform', () => {
       if (db.get('settings.uploadNotification')) {
-        const notification = new Notification({
+        showNotification({
           title: T('UPLOAD_PROGRESS'),
           body: T('UPLOADING')
         })
-        notification.show()
       }
     })
     picgo.helper.beforeUploadPlugins.register('renameFn', {

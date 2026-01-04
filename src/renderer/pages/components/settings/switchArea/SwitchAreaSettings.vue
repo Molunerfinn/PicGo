@@ -32,6 +32,11 @@
     :label="$T('SETTINGS_OPEN_UPLOAD_TIPS')"
   />
   <SwitchFormItem
+    v-model="form.notificationSound"
+    setting-props="notificationSound"
+    :label="$T('SETTINGS_NOTIFICATION_SOUND')"
+  />
+  <SwitchFormItem
     v-if="os !== 'darwin'"
     v-model="form.miniWindowOnTop"
     :label="$T('SETTINGS_MINI_WINDOW_ON_TOP')"

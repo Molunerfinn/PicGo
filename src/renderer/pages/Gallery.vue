@@ -203,6 +203,7 @@ import $$db from '@/utils/db'
 import GalleryToolbar from './components/gallery/GalleryToolbar.vue'
 import { IRPCActionType } from '~/universal/types/enum'
 import { getRawData } from '@/utils/common'
+import { showNotification } from '@/utils/notification'
 const images = ref<ImgInfo[]>([])
 const dialogVisible = ref(false)
 const imgInfo = reactive({
@@ -375,10 +376,10 @@ async function copy (item: ImgInfo) {
     // sometimes will cause lagging
     // icon: item.url || item.imgUrl
   }
-  const myNotification = new Notification(obj.title, obj)
-  myNotification.onclick = () => {
-    return true
-  }
+  showNotification({
+    title: obj.title,
+    body: obj.body
+  })
 }
 
 function remove (id?: string) {
@@ -395,10 +396,10 @@ function remove (id?: string) {
         title: $T('OPERATION_SUCCEED'),
         body: ''
       }
-      const myNotification = new Notification(obj.title, obj)
-      myNotification.onclick = () => {
-        return true
-      }
+      showNotification({
+        title: obj.title,
+        body: obj.body
+      })
       updateGallery()
     }).catch((e) => {
       console.log(e)
@@ -422,10 +423,10 @@ async function confirmModify () {
     body: imgInfo.imgUrl
     // icon: this.imgInfo.imgUrl
   }
-  const myNotification = new Notification(obj.title, obj)
-  myNotification.onclick = () => {
-    return true
-  }
+  showNotification({
+    title: obj.title,
+    body: obj.body
+  })
   dialogVisible.value = false
   updateGallery()
 }
@@ -478,10 +479,10 @@ function multiRemove () {
         body: ''
       }
       sendToMain('removeFiles', files)
-      const myNotification = new Notification(obj.title, obj)
-      myNotification.onclick = () => {
-        return true
-      }
+      showNotification({
+        title: obj.title,
+        body: obj.body
+      })
       updateGallery()
     }).catch(() => {
       return true
@@ -509,11 +510,11 @@ async function multiCopy () {
       title: $T('BATCH_COPY_LINK_SUCCEED'),
       body: copyString.join('\n')
     }
-    const myNotification = new Notification(obj.title, obj)
     clipboard.writeText(copyString.join('\n'))
-    myNotification.onclick = () => {
-      return true
-    }
+    showNotification({
+      title: obj.title,
+      body: obj.body
+    })
   }
 }
 

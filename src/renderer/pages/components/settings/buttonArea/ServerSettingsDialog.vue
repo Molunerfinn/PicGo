@@ -67,7 +67,7 @@ import { T as $T } from '@/i18n'
 import { useVModel } from '@/hooks/useVModel'
 import { useVModelValues } from '@/hooks/useVModelValues'
 import { saveConfig, sendToMain } from '@/utils/dataSender'
-import { showNotification } from '@/utils/common'
+import { showNotification } from '@/utils/notification'
 
 interface IProps {
   modelValue: boolean
@@ -86,7 +86,10 @@ function confirmServerSetting () {
   saveConfig({
     'settings.server': form
   })
-  showNotification($T('SETTINGS_SET_PICGO_SERVER'), $T('TIPS_SET_SUCCEED'))
+  showNotification({
+    title: $T('SETTINGS_SET_PICGO_SERVER'),
+    body: $T('TIPS_SET_SUCCEED')
+  })
   dialogVisible.value = false
   sendToMain('updateServer')
   updateProps()

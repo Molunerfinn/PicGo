@@ -1,9 +1,11 @@
 import fs from 'fs-extra'
 import db from '~/main/apis/core/datastore'
+import logger from '@core/picgo/logger'
 import { clipboard, Notification, dialog } from 'electron'
 import { handleUrlEncode } from '~/universal/utils/common'
 import { readClipboardFilePaths } from 'clip-filepaths'
 import crypto from 'node:crypto'
+import picgo from '@core/picgo'
 
 export const handleCopyUrl = (str: string): void => {
   if (db.get('settings.autoCopyUrl') !== false) {
@@ -18,21 +20,30 @@ export const handleCopyUrl = (str: string): void => {
 export const showNotification = (options: IPrivateShowNotificationOption = {
   title: '',
   body: '',
+  text: '',
   clickToCopy: false,
   copyContent: '',
-  clickFn: () => {}
+  callback: () => {}
 }) => {
+  if (options.text) {
+    logger.info('[PicGo Notification]', options.text)
+  }
+
+  const title = options.title || ''
+  const body = options.body || options.text || ''
+  const silent = picgo.getConfig('settings.notificationSound') === false
   const notification = new Notification({
-    title: options.title,
-    body: options.body
+    title,
+    body,
+    silent
     // icon: options.icon || undefined
   })
   const handleClick = () => {
     if (options.clickToCopy) {
-      clipboard.writeText(options.copyContent || options.body)
+      clipboard.writeText(options.copyContent || body)
     }
-    if (options.clickFn) {
-      options.clickFn()
+    if (options.callback) {
+      options.callback()
     }
   }
   notification.once('click', handleClick)

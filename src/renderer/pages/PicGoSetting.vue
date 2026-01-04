@@ -65,6 +65,7 @@ const form = reactive<ISettingForm>({
   rename: false,
   autoRename: false,
   uploadNotification: false,
+  notificationSound: true,
   miniWindowOnTop: false,
   logLevel: ['all'],
   autoCopyUrl: true,
@@ -102,6 +103,7 @@ async function initData () {
     form.rename = settings.rename || false
     form.autoRename = settings.autoRename || false
     form.uploadNotification = settings.uploadNotification || false
+    form.notificationSound = settings.notificationSound === undefined ? true : settings.notificationSound
     form.miniWindowOnTop = settings.miniWindowOnTop || false
     form.logLevel = initLogLevel(settings.logLevel || [])
     form.autoCopyUrl = settings.autoCopyUrl === undefined ? true : settings.autoCopyUrl

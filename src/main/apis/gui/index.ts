@@ -1,14 +1,13 @@
 import {
   dialog,
   BrowserWindow,
-  Notification,
   ipcMain
 } from 'electron'
 import db, { GalleryDB } from 'apis/core/datastore'
 import { dbPathChecker, defaultConfigPath, getGalleryDBPath } from 'apis/core/datastore/dbChecker'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '~/main/utils/pasteTemplate'
-import { handleCopyUrl } from '~/main/utils/common'
+import { handleCopyUrl, showNotification as showMainNotification } from '~/main/utils/common'
 import {
   getWindowId,
   getSettingWindowId
@@ -81,13 +80,12 @@ class GuiApi implements IGuiApi {
       const pasteText: string[] = []
       for (let i = 0; i < imgs.length; i++) {
         pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
-        const notification = new Notification({
-          title: T('UPLOAD_SUCCEED'),
-          body: imgs[i].imgUrl as string
-          // icon: imgs[i].imgUrl
-        })
         setTimeout(() => {
-          notification.show()
+          showMainNotification({
+            title: T('UPLOAD_SUCCEED'),
+            body: imgs[i].imgUrl as string
+            // icon: imgs[i].imgUrl
+          })
         }, i * 100)
         await GalleryDB.getInstance().insert(imgs[i])
       }
@@ -103,11 +101,7 @@ class GuiApi implements IGuiApi {
     title: '',
     body: ''
   }) {
-    const notification = new Notification({
-      title: options.title,
-      body: options.body
-    })
-    notification.show()
+    showMainNotification(options)
   }
 
   showMessageBox (options: IShowMessageBoxOption = {

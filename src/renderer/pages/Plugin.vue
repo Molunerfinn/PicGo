@@ -214,6 +214,7 @@ import {
 } from '#/events/constants'
 import { computed, ref, onBeforeMount, onBeforeUnmount, watch } from 'vue'
 import { getConfig, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
+import { showNotification } from '@/utils/notification'
 import { ElMessageBox } from 'element-plus'
 import axios from 'axios'
 import { getRendererStaticFileUrl } from '@/utils/static'
@@ -405,12 +406,11 @@ async function handleReload () {
     needReload: true
   })
   needReload.value = true
-  const successNotification = new Notification($T('PLUGIN_UPDATE_SUCCEED'), {
-    body: $T('TIPS_NEED_RELOAD')
+  showNotification({
+    title: $T('PLUGIN_UPDATE_SUCCEED'),
+    body: $T('TIPS_NEED_RELOAD'),
+    callback: reloadApp
   })
-  successNotification.onclick = () => {
-    reloadApp()
-  }
 }
 
 function cleanSearch () {
@@ -437,12 +437,10 @@ async function handleConfirmConfig () {
         })
         break
     }
-    const successNotification = new Notification($T('SETTINGS_RESULT'), {
+    showNotification({
+      title: $T('SETTINGS_RESULT'),
       body: $T('TIPS_SET_SUCCEED')
     })
-    successNotification.onclick = () => {
-      return true
-    }
     dialogVisible.value = false
     getPluginList()
   }

@@ -54,15 +54,6 @@ export const getRawData = (args: any): any => {
   return args
 }
 
-export const showNotification = (title: string, body: string) => {
-  const notification = new Notification(title, {
-    body
-  })
-  notification.onclick = () => {
-    return true
-  }
-}
-
 export const openFile = (fileName: string) => {
   sendToMain(PICGO_OPEN_FILE, fileName)
 }

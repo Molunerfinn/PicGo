@@ -34,7 +34,7 @@
 import { T as $T } from '@/i18n'
 import { saveConfig } from '@/utils/dataSender'
 import { QuestionFilled } from '@element-plus/icons-vue'
-import { showNotification } from '@/utils/common'
+import { showNotification } from '@/utils/notification'
 import { useVModel } from '@/hooks/useVModel'
 
 interface IProps {
@@ -50,11 +50,14 @@ const emit = defineEmits(['update:modelValue', 'change'])
 
 const value = useVModel(props, 'modelValue')
 
-const handleChange = (value: ISwitchValueType) => {
-  saveConfig(`settings.${props.settingProps}`, value)
+const handleChange = async (value: ISwitchValueType) => {
+  await saveConfig(`settings.${props.settingProps}`, value)
   emit('update:modelValue', value)
   emit('change', value)
-  showNotification(props.label, $T('TIPS_SET_SUCCEED'))
+  showNotification({
+    title: props.label,
+    body: $T('TIPS_SET_SUCCEED')
+  })
 }
 
 </script>

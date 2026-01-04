@@ -74,7 +74,8 @@
 import { T as $T } from '@/i18n'
 import { saveConfig } from '@/utils/dataSender'
 import { useVModel } from '@/hooks/useVModel'
-import { openFile, showNotification } from '@/utils/common'
+import { openFile } from '@/utils/common'
+import { showNotification } from '@/utils/notification'
 import { ElMessage as $message } from 'element-plus'
 import { useVModelValues } from '@/hooks/useVModelValues'
 
@@ -121,7 +122,10 @@ function confirmLogLevelSetting () {
     'settings.logLevel': form.logLevel,
     'settings.logFileSizeLimit': form.logFileSizeLimit
   })
-  showNotification($T('SETTINGS_SET_LOG_FILE'), $T('TIPS_SET_SUCCEED'))
+  showNotification({
+    title: $T('SETTINGS_SET_LOG_FILE'),
+    body: $T('TIPS_SET_SUCCEED')
+  })
   updateProps()
   dialogVisible.value = false
 }

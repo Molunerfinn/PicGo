@@ -257,8 +257,9 @@ const handleRemoveFiles = () => {
 }
 
 const handlePicGoSaveConfig = () => {
-  ipcMain.on(PICGO_SAVE_CONFIG, (event: IpcMainEvent, data: IObj) => {
+  ipcMain.handle(PICGO_SAVE_CONFIG, (_event, data: IObj) => {
     picgo.saveConfig(data)
+    return true
   })
 }
 

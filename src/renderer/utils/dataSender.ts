@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid'
 import { IRPCActionType } from '~/universal/types/enum'
 import { getRawData } from './common'
 
-export function saveConfig (_config: IObj | string, value?: any) {
+export async function saveConfig (_config: IObj | string, value?: any) {
   let config
   if (typeof _config === 'string') {
     config = {
@@ -13,7 +13,7 @@ export function saveConfig (_config: IObj | string, value?: any) {
   } else {
     config = getRawData(_config)
   }
-  ipcRenderer.send(PICGO_SAVE_CONFIG, config)
+  await ipcRenderer.invoke(PICGO_SAVE_CONFIG, config)
 }
 
 export function getConfig<T> (key?: string): Promise<T | undefined> {

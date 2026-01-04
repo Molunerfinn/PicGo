@@ -116,7 +116,7 @@ class RemoteNoticeHandler {
               body: action.data?.content || '',
               clickToCopy: !!action.data?.copyToClipboard,
               copyContent: action.data?.copyToClipboard || '',
-              clickFn () {
+              callback () {
                 if (action.data?.url) {
                   shell.openExternal(action.data.url)
                 }
