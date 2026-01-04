@@ -202,7 +202,8 @@ import { T as $T } from '@/i18n/index'
 import $$db from '@/utils/db'
 import GalleryToolbar from './components/gallery/GalleryToolbar.vue'
 import { IRPCActionType } from '~/universal/types/enum'
-import { getRawData, showNotification } from '@/utils/common'
+import { getRawData } from '@/utils/common'
+import { showNotification } from '@/utils/notification'
 const images = ref<ImgInfo[]>([])
 const dialogVisible = ref(false)
 const imgInfo = reactive({

@@ -67,7 +67,7 @@ import { T as $T } from '@/i18n'
 import { useVModel } from '@/hooks/useVModel'
 import { useVModelValues } from '@/hooks/useVModelValues'
 import { saveConfig, sendToMain } from '@/utils/dataSender'
-import { showNotification } from '@/utils/common'
+import { showNotification } from '@/utils/notification'
 
 interface IProps {
   modelValue: boolean

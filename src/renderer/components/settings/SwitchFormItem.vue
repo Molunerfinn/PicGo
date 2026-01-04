@@ -34,7 +34,7 @@
 import { T as $T } from '@/i18n'
 import { saveConfig } from '@/utils/dataSender'
 import { QuestionFilled } from '@element-plus/icons-vue'
-import { showNotification } from '@/utils/common'
+import { showNotification } from '@/utils/notification'
 import { useVModel } from '@/hooks/useVModel'
 
 interface IProps {

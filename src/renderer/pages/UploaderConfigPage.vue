@@ -98,7 +98,7 @@
 import { Delete, DocumentCopy, Edit, Plus } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import { saveConfig, triggerRPC } from '@/utils/dataSender'
-import { showNotification } from '@/utils/common'
+import { showNotification } from '@/utils/notification'
 import dayjs from 'dayjs'
 import { IRPCActionType } from '~/universal/types/enum'
 import { T as $T } from '@/i18n/index'

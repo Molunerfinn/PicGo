@@ -214,7 +214,7 @@ import {
 } from '#/events/constants'
 import { computed, ref, onBeforeMount, onBeforeUnmount, watch } from 'vue'
 import { getConfig, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
-import { showNotification } from '@/utils/common'
+import { showNotification } from '@/utils/notification'
 import { ElMessageBox } from 'element-plus'
 import axios from 'axios'
 import { getRendererStaticFileUrl } from '@/utils/static'

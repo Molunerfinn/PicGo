@@ -70,7 +70,8 @@ import type { IResult } from '@picgo/store/dist/types'
 import { PASTE_TEXT, OPEN_WINDOW } from '#/events/constants'
 import { IWindowList } from '#/types/enum'
 import { sendToMain } from '@/utils/dataSender'
-import { getRawData, showNotification } from '@/utils/common'
+import { getRawData } from '@/utils/common'
+import { showNotification } from '@/utils/notification'
 import { IpcRendererEvent } from 'electron/renderer'
 
 const files = ref<IResult<ImgInfo>[]>([])
