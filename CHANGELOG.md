@@ -1,3 +1,22 @@
+## :tada: 2.4.2 (2026-01-07)
+
+
+### :sparkles: Features
+
+* **notification:** refactor notification and add notificationSound settings ([#1370](https://github.com/Molunerfinn/PicGo/issues/1370)) ([2936b19](https://github.com/Molunerfinn/PicGo/commit/2936b19)), closes [#1229](https://github.com/Molunerfinn/PicGo/issues/1229)
+
+
+### :bug: Bug Fixes
+
+* **tray:** clamp image titles to two lines ([525492b](https://github.com/Molunerfinn/PicGo/commit/525492b))
+
+
+### :pencil: Documentation
+
+* **2.4.2:** update changelog ([2c9a188](https://github.com/Molunerfinn/PicGo/commit/2c9a188))
+
+
+
 ## :tada: 2.4.2-beta.0 (2025-12-31)
 
 
