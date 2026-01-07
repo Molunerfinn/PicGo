@@ -7,9 +7,10 @@ import {
   nativeTheme
 } from 'electron'
 import uploader from 'apis/app/uploader'
-import db, { GalleryDB } from '~/main/apis/core/datastore'
+import picgo from '@core/picgo'
+import { GalleryDB } from '~/main/apis/core/datastore'
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from '#/types/enum'
+import { IPasteStyle, IWindowList } from '#/types/enum'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import pkg from 'root/package.json'
 import { ensureFilePath, getClipboardFilePathList, handleCopyUrl, showNotification } from '~/main/utils/common'
@@ -58,10 +59,10 @@ export function createContextMenu () {
       {
         label: T('OPEN_UPDATE_HELPER'),
         type: 'checkbox',
-        checked: db.get('settings.showUpdateTip'),
+        checked: picgo.getConfig<boolean>('settings.showUpdateTip') !== false,
         click () {
-          const value = db.get('settings.showUpdateTip')
-          db.set('settings.showUpdateTip', !value)
+          const value = picgo.getConfig<boolean>('settings.showUpdateTip') !== false
+          picgo.saveConfig({ 'settings.showUpdateTip': !value })
         }
       },
       {
@@ -107,10 +108,10 @@ export function createContextMenu () {
       {
         label: T('OPEN_UPDATE_HELPER'),
         type: 'checkbox',
-        checked: db.get('settings.showUpdateTip'),
+        checked: picgo.getConfig<boolean>('settings.showUpdateTip') !== false,
         click () {
-          const value = db.get('settings.showUpdateTip')
-          db.set('settings.showUpdateTip', !value)
+          const value = picgo.getConfig<boolean>('settings.showUpdateTip') !== false
+          picgo.saveConfig({ 'settings.showUpdateTip': !value })
         }
       },
       {
@@ -216,7 +217,7 @@ export function createTray () {
     // drop-files only be supported in macOS
     // so the tray window must be available
     tray.on('drop-files', async (event, files: string[]) => {
-      const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
+      const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || 'markdown'
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
       const imgs = await uploader
         .setWebContents(trayWindow.webContents)
@@ -225,7 +226,7 @@ export function createTray () {
         const pasteText: string[] = []
         for (let i = 0; i < imgs.length; i++) {
           pasteText.push(
-            pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink'))
+            pasteTemplate(pasteStyle, imgs[i], picgo.getConfig<string>('settings.customLink'))
           )
           setTimeout(() => {
             showNotification({
@@ -271,7 +272,7 @@ export function handleMenubarIcon (visible?: boolean) {
     }
     return
   }
-  const shouldShow = visible !== undefined ? visible : (db.get('settings.showMenubarIcon') !== false)
+  const shouldShow = visible !== undefined ? visible : (picgo.getConfig<boolean>('settings.showMenubarIcon') !== false)
   if (shouldShow) {
     if (!tray) {
       createTray()
@@ -283,7 +284,7 @@ export function handleMenubarIcon (visible?: boolean) {
 
 export function handleDockIcon () {
   if (isMacOS) {
-    if (db.get('settings.showDockIcon') !== false) {
+    if (picgo.getConfig<boolean>('settings.showDockIcon') !== false) {
       app.dock?.show()
       app.dock?.setMenu(createContextMenu())
     } else {

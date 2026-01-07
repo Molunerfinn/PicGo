@@ -1,5 +1,5 @@
 import { dialog, shell } from 'electron'
-import db from '~/main/apis/core/datastore'
+import picgo from '@core/picgo'
 import pkg from 'root/package.json'
 import { lt } from 'semver'
 import { T } from '~/main/i18n'
@@ -10,13 +10,13 @@ const version = pkg.version
 const downloadUrl = 'https://github.com/Molunerfinn/PicGo/releases/latest'
 
 const checkVersion = async () => {
-  let showTip = db.get('settings.showUpdateTip')
+  let showTip = picgo.getConfig<boolean | undefined>('settings.showUpdateTip')
   if (showTip === undefined) {
-    db.set('settings.showUpdateTip', true)
+    picgo.saveConfig({ 'settings.showUpdateTip': true })
     showTip = true
   }
   if (showTip) {
-    const isCheckBetaUpdate = db.get('settings.checkBetaUpdate') !== false
+    const isCheckBetaUpdate = picgo.getConfig<boolean>('settings.checkBetaUpdate') !== false
     const res: string = await getLatestVersion(isCheckBetaUpdate)
     if (res !== '') {
       const latest = res
@@ -35,7 +35,7 @@ const checkVersion = async () => {
           if (res.response === 0) { // if selected yes
             shell.openExternal(downloadUrl)
           }
-          db.set('settings.showUpdateTip', !res.checkboxChecked)
+          picgo.saveConfig({ 'settings.showUpdateTip': !res.checkboxChecked })
         })
       }
     } else {
@@ -50,7 +50,7 @@ const checkVersion = async () => {
 const compareVersion2Update = (current: string, latest: string) => {
   try {
     if (latest.includes('beta')) {
-      const isCheckBetaUpdate = db.get('settings.checkBetaUpdate') !== false
+      const isCheckBetaUpdate = picgo.getConfig<boolean>('settings.checkBetaUpdate') !== false
       if (!isCheckBetaUpdate) {
         return false
       }

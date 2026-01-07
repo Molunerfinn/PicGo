@@ -3,7 +3,8 @@ import {
   BrowserWindow,
   ipcMain
 } from 'electron'
-import db, { GalleryDB } from 'apis/core/datastore'
+import picgo from '@core/picgo'
+import { GalleryDB } from 'apis/core/datastore'
 import { dbPathChecker, defaultConfigPath, getGalleryDBPath } from 'apis/core/datastore/dbChecker'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '~/main/utils/pasteTemplate'
@@ -17,7 +18,7 @@ import {
 } from '~/universal/events/constants'
 import { DBStore } from '@picgo/store'
 import { T } from '~/main/i18n'
-import { IRPCActionType } from '~/universal/types/enum'
+import { IPasteStyle, IRPCActionType } from '~/universal/types/enum'
 
 class GuiApi implements IGuiApi {
   private static instance: GuiApi
@@ -76,10 +77,10 @@ class GuiApi implements IGuiApi {
     const webContents = this.getWebContentsByWindowId(this.windowId)
     const imgs = await uploader.setWebContents(webContents!).upload(input)
     if (imgs !== false) {
-      const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
+      const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || 'markdown'
       const pasteText: string[] = []
       for (let i = 0; i < imgs.length; i++) {
-        pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
+        pasteText.push(pasteTemplate(pasteStyle, imgs[i], picgo.getConfig<string>('settings.customLink')))
         setTimeout(() => {
           showMainNotification({
             title: T('UPLOAD_SUCCEED'),

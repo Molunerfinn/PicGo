@@ -25,7 +25,7 @@ import server from '~/main/server/index'
 import updateChecker from '~/main/utils/updateChecker'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import { getUploadFiles } from '~/main/utils/handleArgv'
-import db, { GalleryDB } from '~/main/apis/core/datastore'
+import { GalleryDB } from '~/main/apis/core/datastore'
 import bus from '@core/bus'
 import logger from 'apis/core/picgo/logger'
 import picgo from 'apis/core/picgo'
@@ -65,8 +65,8 @@ class LifeCycle {
     initI18n()
     ipcList.listen()
     busEventList.listen()
-    updateShortKeyFromVersion212(db, db.get('settings.shortKey'))
-    await migrateGalleryFromVersion230(db, GalleryDB.getInstance(), picgo)
+    updateShortKeyFromVersion212(picgo)
+    await migrateGalleryFromVersion230(GalleryDB.getInstance(), picgo)
   }
 
   private onReady () {
@@ -98,7 +98,7 @@ class LifeCycle {
       }
       handleMenubarIcon()
       handleDockIcon()
-      db.set('needReload', false)
+      picgo.saveConfig({ needReload: false })
       updateChecker()
       // 不需要阻塞
       process.nextTick(() => {
@@ -147,13 +147,13 @@ class LifeCycle {
       // click dock to open setting window
       if (isMacOS) {
         handleDockIcon()
-        if (db.get('settings.showDockIcon') !== false) {
+        if (picgo.getConfig<boolean>('settings.showDockIcon') !== false) {
           windowManager.get(IWindowList.SETTING_WINDOW)?.show()
         }
       }
     })
     app.setLoginItemSettings({
-      openAtLogin: db.get('settings.autoStart') || false
+      openAtLogin: picgo.getConfig<boolean>('settings.autoStart') || false
     })
     if (process.platform === 'win32') {
       app.setAppUserModelId('com.molunerfinn.picgo')

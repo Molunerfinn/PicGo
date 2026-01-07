@@ -25,7 +25,7 @@ const getProxy = (proxyStr: string): AxiosRequestConfig['proxy'] | false => {
 const sendToolboxRes = sendToolboxResWithType(IToolboxItemType.HAS_PROBLEM_WITH_PROXY)
 
 export const checkProxyMap: IToolboxCheckerMap<
-IToolboxItemType.HAS_PROBLEM_WITH_PROXY
+  IToolboxItemType.HAS_PROBLEM_WITH_PROXY
 > = {
   [IToolboxItemType.HAS_PROBLEM_WITH_PROXY]: async (event) => {
     sendToolboxRes(event, {

@@ -4,13 +4,14 @@
 PicGo is an Electron + Vue 3 desktop client. Source lives in `src/`: `src/main` for main-process and IPC logic, `src/renderer` for Vue views, and `src/universal` for shared helpers (`types/`, `events/constants.ts`). `background.ts` wires Electron Builder. Static assets and locale YAML files stay in `public/` (add languages under `public/i18n/`), while `docs/` hosts user-facing guides. Automation scripts live in `scripts/`, and legacy tests sit under `test/unit` (Karma) and `test/e2e` (Spectron).
 
 ## Build, Test, and Development Commands
-- `pnpm install` — install dependencies; `npm install` is unsupported.
+- `pnpm install` — install dependencies; `npm install` is unsupported. Only run this when the user explicitly asks/coordinates it.
 - Always add/remove dependencies with `pnpm` (never edit package.json versions by hand then install).
 - `pnpm dev` — electron-vite dev server for main/preload/renderer.
 - `pnpm build` — electron-vite build outputs to `dist/main`, `dist/preload`, `dist/renderer`; `pnpm preview` for preview mode.
 - Packaging config lives in `electron-builder.yml` (read by electron-builder via package.json `build` field/extraResources); set `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/` if downloads are slow.
 - `pnpm lint` / `pnpm lint:fix` — run or auto-fix ESLint (Standard, TypeScript, Vue rules).
 - `pnpm lint:dpdm` — fail fast on circular dependencies in `src/`.
+- `pnpm check` — run `tsc` + `lint` (run once before finishing a task).
 - `pnpm gen-i18n` — regenerate typed locales after touching `public/i18n/*.yml`.
 
 ## Coding Style & Naming Conventions

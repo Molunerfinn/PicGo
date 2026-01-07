@@ -24,13 +24,13 @@ ipcRenderer.on(TALKING_DATA_EVENT, (_, data: ITalkingDataOptions) => {
 // 0：ANONYMOUS，匿名账号；
 // 1：REGISTERED，自有帐户显性注册；
 ipcRenderer.on(TALKING_DATA_DEVICE_ID_EVENT, (_, deviceId: string) => {
-   window.TDAPP.register({
+  window.TDAPP.register({
     profileId: deviceId,
     profileType: 1
-   })
-   window.TDAPP.login({
+  })
+  window.TDAPP.login({
     profileId: deviceId,
     profileType: 1
-   })
-   ipcRenderer.send(REGISTER_DEVICE_ID)
-});
+  })
+  ipcRenderer.send(REGISTER_DEVICE_ID)
+})

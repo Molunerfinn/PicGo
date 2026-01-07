@@ -27,3 +27,4 @@ scripts/*.yml
 dist/*
 test.js
 specs/
+.cache/

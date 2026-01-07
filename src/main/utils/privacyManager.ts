@@ -1,16 +1,16 @@
-import db from '~/main/apis/core/datastore'
+import picgo from '@core/picgo'
 import { showMessageBox } from '~/main/utils/common'
 import { T } from '~/main/i18n'
 
 class PrivacyManager {
   async check () {
-    if (db.get('settings.privacyEnsure') !== true) {
+    if (picgo.getConfig<boolean>('settings.privacyEnsure') !== true) {
       const res = await this.show(true)
       // cancel
       if (res.result === 1) {
         return false
       } else {
-        db.set('settings.privacyEnsure', true)
+        picgo.saveConfig({ 'settings.privacyEnsure': true })
         return true
       }
     }

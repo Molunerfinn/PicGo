@@ -1,5 +1,4 @@
 import fs from 'fs-extra'
-import db from '~/main/apis/core/datastore'
 import logger from '@core/picgo/logger'
 import { clipboard, Notification, dialog } from 'electron'
 import { handleUrlEncode } from '~/universal/utils/common'
@@ -8,7 +7,7 @@ import crypto from 'node:crypto'
 import picgo from '@core/picgo'
 
 export const handleCopyUrl = (str: string): void => {
-  if (db.get('settings.autoCopyUrl') !== false) {
+  if (picgo.getConfig<boolean>('settings.autoCopyUrl') !== false) {
     clipboard.writeText(str)
   }
 }
@@ -27,6 +26,7 @@ export const showNotification = (options: IPrivateShowNotificationOption = {
 }) => {
   if (options.text) {
     logger.info('[PicGo Notification]', options.text)
+    clipboard.writeText(options.text)
   }
 
   const title = options.title || ''
@@ -94,18 +94,18 @@ export const calcUploadProcessDurationRange = (duration: number) => {
 export const calcUploadBigFileSizeRange = (fileSizeMB: number) => {
   if (fileSizeMB < 10) {
     // 3.2 -> 3, 3.6 -> 4
-    const result = Math.round(fileSizeMB);
-    return result === 0 && fileSizeMB > 0 ? 1 : result; 
+    const result = Math.round(fileSizeMB)
+    return result === 0 && fileSizeMB > 0 ? 1 : result 
   } 
   else if (fileSizeMB < 100) {
     // 13 -> 1.3 -> 1 -> 10
     // 17 -> 1.7 -> 2 -> 20
-    return Math.round(fileSizeMB / 10) * 10;
+    return Math.round(fileSizeMB / 10) * 10
   } 
   else {
     // 135 -> 1.35 -> 1 -> 100
     // 160 -> 1.60 -> 2 -> 200
-    return Math.round(fileSizeMB / 100) * 100;
+    return Math.round(fileSizeMB / 100) * 100
   }
 }
 
@@ -113,18 +113,18 @@ export const calcUploadBigFileSizeRange = (fileSizeMB: number) => {
 export const calcVideoDurationRange = (durationSec: number) => {
   if (durationSec < 10) {
     // 3.2 -> 3, 3.6 -> 4
-    const result = Math.round(durationSec);
-    return result === 0 && durationSec > 0 ? 1 : result; 
+    const result = Math.round(durationSec)
+    return result === 0 && durationSec > 0 ? 1 : result 
   } 
   else if (durationSec < 100) {
     // 13 -> 1.3 -> 1 -> 10
     // 17 -> 1.7 -> 2 -> 20
-    return Math.round(durationSec / 10) * 10;
+    return Math.round(durationSec / 10) * 10
   } 
   else {
     // 135 -> 1.35 -> 1 -> 100
     // 160 -> 1.60 -> 2 -> 200
-    return Math.round(durationSec / 100) * 100;
+    return Math.round(durationSec / 100) * 100
   }
 }
 
@@ -154,7 +154,7 @@ export const getClipboardFilePathList = (): string[] => {
 }
 
 export const handleUrlEncodeWithSetting = (url: string) => {
-  if (db.get('settings.encodeOutputURL') === true) {
+  if (picgo.getConfig<boolean>('settings.encodeOutputURL') === true) {
     url = handleUrlEncode(url)
   }
   return url

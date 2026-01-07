@@ -4,7 +4,6 @@ import {
 } from 'electron'
 import logger from '@core/picgo/logger'
 import GuiApi from '../../gui'
-import db from '~/main/apis/core/datastore'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import shortKeyService from './shortKeyService'
 import picgo from '@core/picgo'
@@ -25,7 +24,7 @@ class ShortKeyHandler {
   }
 
   private initBuiltInShortKey () {
-    const commands = db.get('settings.shortKey') as IShortKeyConfigs
+    const commands = picgo.getConfig<IShortKeyConfigs>('settings.shortKey') || {}
     Object.keys(commands)
       .filter(item => item.includes('picgo:'))
       .forEach(command => {
@@ -57,8 +56,8 @@ class ShortKeyHandler {
         const commands = plugin.commands(picgo) as IPluginShortKeyConfig[]
         for (const cmd of commands) {
           const command = `${item}:${cmd.name}`
-          if (db.has(`settings.shortKey[${command}]`)) {
-            const commandConfig = db.get(`settings.shortKey.${command}`) as IShortKeyConfig
+          const commandConfig = picgo.getConfig<IShortKeyConfig | undefined>(`settings.shortKey.${command}`)
+          if (commandConfig) {
             // if disabled, don't register #534
             if (commandConfig.enable) {
               this.registerShortKey(commandConfig, command, cmd.handle, false)
@@ -168,8 +167,8 @@ class ShortKeyHandler {
       const commands = plugin.commands(picgo) as IPluginShortKeyConfig[]
       for (const cmd of commands) {
         const command = `${pluginName}:${cmd.name}`
-        if (db.has(`settings.shortKey[${command}]`)) {
-          const commandConfig = db.get(`settings.shortKey[${command}]`) as IShortKeyConfig
+        const commandConfig = picgo.getConfig<IShortKeyConfig | undefined>(`settings.shortKey.${command}`)
+        if (commandConfig) {
           this.registerShortKey(commandConfig, command, cmd.handle, false)
         } else {
           this.registerShortKey(cmd, command, cmd.handle, true)
@@ -179,7 +178,7 @@ class ShortKeyHandler {
   }
 
   unregisterPluginShortKey (pluginName: string) {
-    const commands = db.get('settings.shortKey') as IShortKeyConfigs
+    const commands = picgo.getConfig<IShortKeyConfigs>('settings.shortKey') || {}
     const keyList = Object.keys(commands)
       .filter(command => command.includes(pluginName))
       .map(command => {
@@ -191,7 +190,7 @@ class ShortKeyHandler {
     keyList.forEach(item => {
       globalShortcut.unregister(item.key)
       shortKeyService.unregisterCommand(item.command)
-      db.unset('settings.shortKey', item.command)
+      picgo.removeConfig('settings.shortKey', item.command)
     })
   }
 }

@@ -9,12 +9,12 @@ import {
 import { IStartupMode, IWindowList } from '#/types/enum'
 import bus from '@core/bus'
 import { CREATE_APP_MENU } from '@core/bus/constants'
-import db from '~/main/apis/core/datastore'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { app } from 'electron'
 import { T } from '~/main/i18n'
 import { isLinux } from '~/universal/utils/common'
 import { getStaticPath } from '#/utils/staticPath'
+import picgo from '@core/picgo'
 // import { URLSearchParams } from 'url'
 
 const windowList = new Map<IWindowList, IWindowListItem>()
@@ -37,7 +37,7 @@ const handleWindowParams = (windowURL: string) => {
 }
 
 export const isWindowShouldShowOnStartup = (currentWindow: IWindowList) => {
-  const startupMode = db.get('settings.startupMode') || (isLinux ? IStartupMode.SHOW_MINI_WINDOW : IStartupMode.HIDE)
+  const startupMode = picgo.getConfig<IStartupMode | undefined>('settings.startupMode') || (isLinux ? IStartupMode.SHOW_MINI_WINDOW : IStartupMode.HIDE)
   switch (currentWindow) {
     case IWindowList.MINI_WINDOW: {
       return startupMode === IStartupMode.SHOW_MINI_WINDOW
@@ -82,7 +82,7 @@ windowList.set(IWindowList.SETTING_WINDOW, {
   isValid: true,
   multiple: false,
   options () {
-    const showDockIcon = db.get('settings.showDockIcon') !== false
+    const showDockIcon = picgo.getConfig<boolean>('settings.showDockIcon') !== false
     const options: IBrowserWindowOptions = {
       height: 450,
       width: 800,
@@ -142,7 +142,7 @@ windowList.set(IWindowList.MINI_WINDOW, {
       }
     }
 
-    if (db.get('settings.miniWindowOnTop')) {
+    if (picgo.getConfig<boolean>('settings.miniWindowOnTop')) {
       obj.alwaysOnTop = true
     }
     return obj

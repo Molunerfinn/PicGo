@@ -11,7 +11,7 @@ const sendToolboxRes = sendToolboxResWithType(IToolboxItemType.HAS_PROBLEM_WITH_
 const defaultClipboardImagePath = path.join(defaultConfigPath, CLIPBOARD_IMAGE_FOLDER)
 
 export const checkClipboardUploadMap: IToolboxCheckerMap<
-IToolboxItemType.HAS_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD
+  IToolboxItemType.HAS_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD
 > = {
   [IToolboxItemType.HAS_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD]: async (event) => {
     sendToolboxRes(event, {
@@ -51,7 +51,7 @@ IToolboxItemType.HAS_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD
 }
 
 export const fixClipboardUploadMap: IToolboxFixMap<
-IToolboxItemType.HAS_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD
+  IToolboxItemType.HAS_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD
 > = {
   [IToolboxItemType.HAS_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD]: async () => {
     const configFilePath = dbPathChecker()

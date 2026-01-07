@@ -6,6 +6,7 @@ const tsParser = require('@typescript-eslint/parser')
 const importPlugin = require('eslint-plugin-import')
 const promisePlugin = require('eslint-plugin-promise')
 const vuePlugin = require('eslint-plugin-vue')
+const stylistic = require('@stylistic/eslint-plugin')
 
 const isProduction = process.env.NODE_ENV === 'production'
 const vueConfigs = vuePlugin.configs['flat/recommended'].map(config => ({
@@ -76,7 +77,8 @@ module.exports = [
     },
     plugins: {
       import: importPlugin,
-      promise: promisePlugin
+      promise: promisePlugin,
+      '@stylistic': stylistic
     },
     settings: {
       'import/resolver': {
@@ -98,7 +100,10 @@ module.exports = [
       'no-debugger': isProduction ? 'error' : 'off',
       'no-async-promise-executor': 'off',
       'no-empty': ['error', { allowEmptyCatch: true }],
-      'no-unused-vars': 'off'
+      'no-unused-vars': 'off',
+      '@stylistic/indent': ['error', 2],
+      '@stylistic/semi': ['error', 'never'],
+      'no-unexpected-multiline': 'error' 
     }
   },
   ...vueConfigs,
