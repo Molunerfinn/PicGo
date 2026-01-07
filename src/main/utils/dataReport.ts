@@ -1,12 +1,12 @@
-import { ipcMain, IpcMainEvent, type WebContents } from "electron";
-import { deviceIdManager } from "./deviceId";
-import { REGISTER_DEVICE_ID, TALKING_DATA_EVENT } from "~/universal/events/constants";
-import type { IImgInfo } from "picgo";
-import { calcUploadBigFileSizeRange, calcUploadProcessDurationRange, calcVideoDurationRange } from "./common";
-import { app } from "electron/main";
-import picgo from "@core/picgo";
-import { getVideoDuration } from "@picgo/video-duration";
-import { MB, SECOND } from "./constants";
+import { ipcMain, IpcMainEvent, type WebContents } from "electron"
+import { deviceIdManager } from "./deviceId"
+import { REGISTER_DEVICE_ID, TALKING_DATA_EVENT } from "~/universal/events/constants"
+import type { IImgInfo } from "picgo"
+import { calcUploadBigFileSizeRange, calcUploadProcessDurationRange, calcVideoDurationRange } from "./common"
+import { app } from "electron/main"
+import picgo from "@core/picgo"
+import { getVideoDuration } from "@picgo/video-duration"
+import { MB, SECOND } from "./constants"
 
 export interface IReportUploadDataOptions {
   fromClipboard: boolean;
@@ -15,26 +15,26 @@ export interface IReportUploadDataOptions {
 }
 
 class DataReportManager {
-  private deviceId: string | null = null;
-  private hasRegisterDeviceID: boolean = false;
+  private deviceId: string | null = null
+  private hasRegisterDeviceID: boolean = false
   constructor () {
     this.init()
     this.handleRegisterDeviceID()
   }
   private handleRegisterDeviceID() {
     ipcMain.once(REGISTER_DEVICE_ID, (_evt: IpcMainEvent) => {
-      this.hasRegisterDeviceID = true;
-      console.log('Device ID registered');
-    });
+      this.hasRegisterDeviceID = true
+      console.log('Device ID registered')
+    })
   }
   private async init () {
-    if (this.deviceId) return;
+    if (this.deviceId) return
     this.deviceId = await deviceIdManager.getId()
   }
   public async reportUploadData(webContents: WebContents, options: IReportUploadDataOptions) {
-    await this.init();
-    await this.registerDeviceID(webContents);
-    const { fromClipboard, duration, outputList } = options;
+    await this.init()
+    await this.registerDeviceID(webContents)
+    const { fromClipboard, duration, outputList } = options
     const fileList = outputList.map(item => {
       return {
         fileName: item.fileName,
@@ -53,12 +53,12 @@ class DataReportManager {
         type: picgo.getConfig<string>('picBed.uploader') || picgo.getConfig<string>('picBed.current') || 'smms',
       }
     }
-    this.reportDataToWebContents(webContents, uploadEventData);
+    this.reportDataToWebContents(webContents, uploadEventData)
     fileList.forEach(async file => {
       if (file?.mimeType?.startsWith('video/') && file.filePath) {
-        const metadata = await getVideoDuration(file.filePath);
-        const sizeMB = metadata.size / MB;
-        const durationSec = (metadata.duration / SECOND) || 0;
+        const metadata = await getVideoDuration(file.filePath)
+        const sizeMB = metadata.size / MB
+        const durationSec = (metadata.duration / SECOND) || 0
         const videoEventData: ITalkingDataOptions = {
           EventId: 'upload_video',
           Label: '',
@@ -68,8 +68,8 @@ class DataReportManager {
             sizeRange: calcUploadBigFileSizeRange(sizeMB),
             durationRange: calcVideoDurationRange(durationSec),
           }
-        };
-        this.reportDataToWebContents(webContents, videoEventData);
+        }
+        this.reportDataToWebContents(webContents, videoEventData)
       } else if (file?.mimeType?.startsWith('image/') || fromClipboard) {
         const imageEventData: ITalkingDataOptions = {
           EventId: 'upload_image',
@@ -79,8 +79,8 @@ class DataReportManager {
             mimeType: file.mimeType || 'image/png',
             sizeRange: calcUploadBigFileSizeRange(file.size / MB)
           }
-        };
-        this.reportDataToWebContents(webContents, imageEventData);
+        }
+        this.reportDataToWebContents(webContents, imageEventData)
       } else {
         const otherEventData: ITalkingDataOptions = {
           EventId: 'upload_file',
@@ -90,16 +90,16 @@ class DataReportManager {
             mimeType: file.mimeType || 'UNKNOWN',
             sizeRange: calcUploadBigFileSizeRange(file.size / MB)
           }
-        };
-        this.reportDataToWebContents(webContents, otherEventData);
+        }
+        this.reportDataToWebContents(webContents, otherEventData)
       }
-    });
+    })
   }
 
   public async registerDeviceID(webContents: WebContents) {
-    if (this.hasRegisterDeviceID) return;
-    await this.init();
-    webContents.send(REGISTER_DEVICE_ID, this.deviceId);
+    if (this.hasRegisterDeviceID) return
+    await this.init()
+    webContents.send(REGISTER_DEVICE_ID, this.deviceId)
   }
 
   private reportDataToWebContents(webContents: WebContents, data: ITalkingDataOptions) {
@@ -111,22 +111,22 @@ class DataReportManager {
         version: app.getVersion(),
         area: this.getAreaFromTimezone()
       }
-    });
+    })
   }
 
   private getAreaFromTimezone() {
-  try {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (!timeZone) return 'UNKNOWN';
+    try {
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+      if (!timeZone) return 'UNKNOWN'
     
-    if (timeZone === 'Asia/Shanghai') return 'CN';
+      if (timeZone === 'Asia/Shanghai') return 'CN'
     
-    const region = timeZone.split('/')[0]; // Asia, America, Europe
-    return region; 
-  } catch (e) {
-    return 'UNKNOWN';
+      const region = timeZone.split('/')[0] // Asia, America, Europe
+      return region 
+    } catch (e) {
+      return 'UNKNOWN'
+    }
   }
-}
 }
 
 export const dataReportManager = new DataReportManager()

@@ -164,15 +164,15 @@ class ShortKeyHandler {
         logger.warn(`${pluginName}'s commands is not a function`)
         return
       }
-    const commands = plugin.commands(picgo) as IPluginShortKeyConfig[]
-    for (const cmd of commands) {
-      const command = `${pluginName}:${cmd.name}`
-      const commandConfig = picgo.getConfig<IShortKeyConfig | undefined>(`settings.shortKey.${command}`)
-      if (commandConfig) {
-        this.registerShortKey(commandConfig, command, cmd.handle, false)
-      } else {
-        this.registerShortKey(cmd, command, cmd.handle, true)
-      }
+      const commands = plugin.commands(picgo) as IPluginShortKeyConfig[]
+      for (const cmd of commands) {
+        const command = `${pluginName}:${cmd.name}`
+        const commandConfig = picgo.getConfig<IShortKeyConfig | undefined>(`settings.shortKey.${command}`)
+        if (commandConfig) {
+          this.registerShortKey(commandConfig, command, cmd.handle, false)
+        } else {
+          this.registerShortKey(cmd, command, cmd.handle, true)
+        }
       }
     }
   }

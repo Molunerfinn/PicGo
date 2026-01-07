@@ -143,7 +143,7 @@ class Uploader {
             fromClipboard: !img,
             duration: Date.now() - startTime,
             outputList: output
-          });
+          })
         }
         return output.filter(item => item.imgUrl)
       } else {

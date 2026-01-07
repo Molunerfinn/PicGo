@@ -20,7 +20,7 @@ export type MulterMiddleware = (
   req: http.IncomingMessage,
   res: http.ServerResponse,
   callback: (error?: MulterError) => void
-) => void;
+) => void
 
 // 扩展 multer 函数的返回类型
 declare module 'multer' {
