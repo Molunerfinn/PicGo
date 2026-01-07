@@ -6,10 +6,11 @@ import {
   BrowserWindow
 } from 'electron'
 import windowManager from 'apis/app/window/windowManager'
-import { IRPCActionType, IWindowList } from '#/types/enum'
+import { IPasteStyle, IRPCActionType, IWindowList } from '#/types/enum'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '~/main/utils/pasteTemplate'
-import db, { GalleryDB } from '~/main/apis/core/datastore'
+import picgo from '@core/picgo'
+import { GalleryDB } from '~/main/apis/core/datastore'
 import server from '~/main/server'
 import getPicBeds from '~/main/utils/getPicBeds'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
@@ -48,8 +49,8 @@ export default {
       // macOS use builtin clipboard is OK
       const img = await uploader.setWebContents(trayWindow.webContents).uploadWithBuildInClipboard()
       if (img !== false) {
-        const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
-        handleCopyUrl(pasteTemplate(pasteStyle, img[0], db.get('settings.customLink')))
+        const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || 'markdown'
+        handleCopyUrl(pasteTemplate(pasteStyle, img[0], picgo.getConfig<string>('settings.customLink')))
         showNotification({
           title: T('UPLOAD_SUCCEED'),
           body: img[0].imgUrl!
@@ -129,7 +130,7 @@ export default {
       const miniWindow = windowManager.get(IWindowList.MINI_WINDOW)!
       const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)!
 
-      if (db.get('settings.miniWindowOnTop')) {
+      if (picgo.getConfig<boolean>('settings.miniWindowOnTop')) {
         miniWindow.setAlwaysOnTop(true)
       }
 

@@ -2,8 +2,8 @@ import fs from 'fs-extra'
 import { IpcMainEvent } from 'electron'
 import { IToolboxItemCheckStatus, IToolboxItemType } from '~/universal/types/enum'
 import { sendToolboxResWithType } from './utils'
-import { dbPathChecker } from '~/main/apis/core/datastore/dbChecker'
-import { GalleryDB, DB_PATH } from '~/main/apis/core/datastore'
+import { dbPathChecker, getGalleryDBPath } from '~/main/apis/core/datastore/dbChecker'
+import { GalleryDB } from '~/main/apis/core/datastore'
 import path from 'path'
 import { T } from '~/main/i18n'
 
@@ -40,20 +40,21 @@ IToolboxItemType.IS_CONFIG_FILE_BROKEN | IToolboxItemType.IS_GALLERY_FILE_BROKEN
     sendToolboxRes(event, {
       status: IToolboxItemCheckStatus.LOADING
     })
+    const { dbPath } = getGalleryDBPath()
     const galleryDB = GalleryDB.getInstance()
     if (galleryDB.errorList.length === 0) {
       sendToolboxRes(event, {
         status: IToolboxItemCheckStatus.SUCCESS,
         msg: T('TOOLBOX_CHECK_GALLERY_FILE_PATH_TIPS', {
-          path: DB_PATH
+          path: dbPath
         }),
-        value: path.dirname(DB_PATH)
+        value: path.dirname(dbPath)
       })
     } else {
       sendToolboxRes(event, {
         status: IToolboxItemCheckStatus.ERROR,
         msg: T('TOOLBOX_CHECK_GALLERY_FILE_BROKEN_TIPS'),
-        value: path.dirname(DB_PATH)
+        value: path.dirname(dbPath)
       })
     }
   }
@@ -75,7 +76,7 @@ IToolboxItemType.IS_CONFIG_FILE_BROKEN | IToolboxItemType.IS_GALLERY_FILE_BROKEN
   },
   [IToolboxItemType.IS_GALLERY_FILE_BROKEN]: async () => {
     try {
-      fs.unlinkSync(DB_PATH)
+      fs.unlinkSync(getGalleryDBPath().dbPath)
     } catch (e) {
       // do nothing
     }

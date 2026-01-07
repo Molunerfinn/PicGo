@@ -6,7 +6,6 @@ import {
 } from 'electron'
 import dayjs from 'dayjs'
 import picgo from '@core/picgo'
-import db from '~/main/apis/core/datastore'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
 import util from 'util'
@@ -56,7 +55,7 @@ class Uploader {
       this.webContents?.send('uploadProgress', progress)
     })
     picgo.on('beforeTransform', () => {
-      if (db.get('settings.uploadNotification')) {
+      if (picgo.getConfig<boolean>('settings.uploadNotification')) {
         showNotification({
           title: T('UPLOAD_PROGRESS'),
           body: T('UPLOADING')
@@ -65,8 +64,8 @@ class Uploader {
     })
     picgo.helper.beforeUploadPlugins.register('renameFn', {
       handle: async (ctx: IPicGo) => {
-        const rename = db.get('settings.rename')
-        const autoRename = db.get('settings.autoRename')
+        const rename = picgo.getConfig<boolean>('settings.rename')
+        const autoRename = picgo.getConfig<boolean>('settings.autoRename')
         if (autoRename || rename) {
           await Promise.all(ctx.output.map(async (item, index) => {
             let name: undefined | string | null

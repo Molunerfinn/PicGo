@@ -1,5 +1,4 @@
 import fs from 'fs-extra'
-import db from '~/main/apis/core/datastore'
 import logger from '@core/picgo/logger'
 import { clipboard, Notification, dialog } from 'electron'
 import { handleUrlEncode } from '~/universal/utils/common'
@@ -8,7 +7,7 @@ import crypto from 'node:crypto'
 import picgo from '@core/picgo'
 
 export const handleCopyUrl = (str: string): void => {
-  if (db.get('settings.autoCopyUrl') !== false) {
+  if (picgo.getConfig<boolean>('settings.autoCopyUrl') !== false) {
     clipboard.writeText(str)
   }
 }
@@ -27,6 +26,7 @@ export const showNotification = (options: IPrivateShowNotificationOption = {
 }) => {
   if (options.text) {
     logger.info('[PicGo Notification]', options.text)
+    clipboard.writeText(options.text)
   }
 
   const title = options.title || ''
@@ -154,7 +154,7 @@ export const getClipboardFilePathList = (): string[] => {
 }
 
 export const handleUrlEncodeWithSetting = (url: string) => {
-  if (db.get('settings.encodeOutputURL') === true) {
+  if (picgo.getConfig<boolean>('settings.encodeOutputURL') === true) {
     url = handleUrlEncode(url)
   }
   return url

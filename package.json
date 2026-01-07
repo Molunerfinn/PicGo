@@ -14,7 +14,7 @@
     "build:mac": "npm run build && electron-builder --config electron-builder.config.ts --mac --publish never",
     "build:linux": "npm run build && electron-builder --config electron-builder.config.ts --linux --publish never",
     "build:local": "dotenv -e .env -- electron-vite build && electron-builder --config electron-builder.config.ts --publish never",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx,.vue src/",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx,.vue src/ && pnpm lint:dpdm",
     "tsc": "tsc --noEmit",
     "bump": "bump-version",
     "cz": "git-cz",
@@ -25,7 +25,8 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "upload-dist": "node ./scripts/upload-dist.js",
-    "lint:dpdm": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/background.ts"
+    "lint:dpdm": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/background.ts",
+    "check": "pnpm run tsc && pnpm run lint"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",

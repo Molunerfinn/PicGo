@@ -2,17 +2,18 @@ import {
   WebContents
 } from 'electron'
 import windowManager from 'apis/app/window/windowManager'
-import { IRPCActionType, IWindowList } from '#/types/enum'
+import { IPasteStyle, IRPCActionType, IWindowList } from '#/types/enum'
 import uploader from '.'
 import pasteTemplate from '~/main/utils/pasteTemplate'
-import db, { GalleryDB } from '~/main/apis/core/datastore'
+import { GalleryDB } from '~/main/apis/core/datastore'
 import { handleCopyUrl, handleUrlEncodeWithSetting, showNotification } from '~/main/utils/common'
 import { T } from '~/main/i18n/index'
 import logger from '@core/picgo/logger'
+import picgo from '@core/picgo'
 // import dayjs from 'dayjs'
 
 const handleClipboardUploading = async (): Promise<false | ImgInfo[]> => {
-  const useBuiltinClipboard = !!db.get('settings.useBuiltinClipboard')
+  const useBuiltinClipboard = !!picgo.getConfig<boolean>('settings.useBuiltinClipboard')
   const win = windowManager.getAvailableWindow()
   if (useBuiltinClipboard) {
     return await uploader.setWebContents(win!.webContents).uploadWithBuildInClipboard()
@@ -26,8 +27,8 @@ export const uploadClipboardFiles = async (): Promise<string> => {
   if (img !== false) {
     if (img.length > 0) {
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)
-      const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
-      handleCopyUrl(pasteTemplate(pasteStyle, img[0], db.get('settings.customLink')))
+      const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || 'markdown'
+      handleCopyUrl(pasteTemplate(pasteStyle, img[0], picgo.getConfig<string>('settings.customLink')))
       setTimeout(() => {
         showNotification({
           title: T('UPLOAD_SUCCEED'),
@@ -60,10 +61,10 @@ export const uploadSelectedFiles = async (webContents: WebContents, files: IFile
   const imgs = await uploader.setWebContents(webContents).upload(input)
   const result = []
   if (imgs !== false) {
-    const pasteStyle = db.get('settings.pasteStyle') || 'markdown'
+    const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || 'markdown'
     const pasteText: string[] = []
     for (let i = 0; i < imgs.length; i++) {
-      pasteText.push(pasteTemplate(pasteStyle, imgs[i], db.get('settings.customLink')))
+      pasteText.push(pasteTemplate(pasteStyle, imgs[i], picgo.getConfig<string>('settings.customLink')))
       setTimeout(() => {
         showNotification({
           title: T('UPLOAD_SUCCEED'),

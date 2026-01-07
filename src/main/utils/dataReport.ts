@@ -4,7 +4,7 @@ import { REGISTER_DEVICE_ID, TALKING_DATA_EVENT } from "~/universal/events/const
 import type { IImgInfo } from "picgo";
 import { calcUploadBigFileSizeRange, calcUploadProcessDurationRange, calcVideoDurationRange } from "./common";
 import { app } from "electron/main";
-import db from "~/main/apis/core/datastore";
+import picgo from "@core/picgo";
 import { getVideoDuration } from "@picgo/video-duration";
 import { MB, SECOND } from "./constants";
 
@@ -50,7 +50,7 @@ class DataReportManager {
         by: fromClipboard ? 'clipboard' : 'files', // 上传剪贴板图片还是选择的文文件
         count: fileList.length, // 上传的数量
         duration: calcUploadProcessDurationRange(duration || 0), // 上传耗时
-        type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
+        type: picgo.getConfig<string>('picBed.uploader') || picgo.getConfig<string>('picBed.current') || 'smms',
       }
     }
     this.reportDataToWebContents(webContents, uploadEventData);
@@ -63,7 +63,7 @@ class DataReportManager {
           EventId: 'upload_video',
           Label: '',
           MapKv: {
-            type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
+            type: picgo.getConfig<string>('picBed.uploader') || picgo.getConfig<string>('picBed.current') || 'smms',
             mimeType: file.mimeType,
             sizeRange: calcUploadBigFileSizeRange(sizeMB),
             durationRange: calcVideoDurationRange(durationSec),
@@ -75,7 +75,7 @@ class DataReportManager {
           EventId: 'upload_image',
           Label: '',
           MapKv: {
-            type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
+            type: picgo.getConfig<string>('picBed.uploader') || picgo.getConfig<string>('picBed.current') || 'smms',
             mimeType: file.mimeType || 'image/png',
             sizeRange: calcUploadBigFileSizeRange(file.size / MB)
           }
@@ -86,7 +86,7 @@ class DataReportManager {
           EventId: 'upload_file',
           Label: '',
           MapKv: {
-            type: db.get('picBed.uploader') || db.get('picBed.current') || 'smms',
+            type: picgo.getConfig<string>('picBed.uploader') || picgo.getConfig<string>('picBed.current') || 'smms',
             mimeType: file.mimeType || 'UNKNOWN',
             sizeRange: calcUploadBigFileSizeRange(file.size / MB)
           }
