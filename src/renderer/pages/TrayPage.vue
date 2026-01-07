@@ -239,9 +239,14 @@ body::-webkit-scrollbar
         cursor not-allowed
     &__title
       text-align center
+      width 100%
       overflow hidden
       text-overflow ellipsis
-      white-space nowrap
+      white-space normal
+      word-break break-all
+      display -webkit-box
+      -webkit-box-orient vertical
+      -webkit-line-clamp 2
       color #ddd
       font-size 14px
       margin-top 4px
