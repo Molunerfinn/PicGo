@@ -31,7 +31,7 @@
                 :placeholder="$T('CHOOSE_SHOWED_PICBED')"
               >
                 <el-option
-                  v-for="item in picBed"
+                  v-for="item in visiblePicBedList"
                   :key="item.type"
                   :label="item.name"
                   :value="item.type"
@@ -230,6 +230,7 @@ const pasteStyleMap = {
   Custom: 'Custom'
 }
 const picBed = ref<IPicBedType[]>([])
+const visiblePicBedList = computed(() => picBed.value.filter(item => item.visible))
 onBeforeRouteUpdate((to, from) => {
   if (from.name === 'gallery') {
     clearSelectedList()
@@ -280,6 +281,9 @@ const isAllSelected = computed(() => {
 
 function getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
   picBed.value = picBeds
+  if (selectedPicBed.value.length === 0) return
+  const visibleTypes = new Set(picBeds.filter(item => item.visible).map(item => item.type))
+  selectedPicBed.value = selectedPicBed.value.filter(type => visibleTypes.has(type))
 }
 
 function getGallery (): IGalleryItem[] {
