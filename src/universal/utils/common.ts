@@ -1,4 +1,92 @@
 export const isUrl = (url: string): boolean => (url.startsWith('http://') || url.startsWith('https://'))
+
+export interface IParseNewlineSeparatedUrlsResult {
+  urls: string[]
+  invalidLines: string[]
+}
+
+export interface IParseNewlineSeparatedUrlsOptions {
+  source?: 'plain' | 'uri-list'
+}
+
+export const parseNewlineSeparatedUrls = (
+  input: string,
+  options: IParseNewlineSeparatedUrlsOptions = {}
+): IParseNewlineSeparatedUrlsResult => {
+  const source = options.source || 'plain'
+  const urls: string[] = []
+  const invalidLines: string[] = []
+  const seen = new Set<string>()
+
+  const splitConcatenatedUrls = (line: string): string[] => {
+    const indexes: number[] = []
+    const re = /https?:\/\//g
+    let match: RegExpExecArray | null = null
+    while ((match = re.exec(line))) {
+      const index = match.index
+      if (index === 0) {
+        indexes.push(index)
+        continue
+      }
+      const prevChar = line[index - 1]
+      if (prevChar === '=' || prevChar === '?' || prevChar === '&' || prevChar === '#') continue
+      indexes.push(index)
+    }
+
+    if (indexes.length <= 1) return [line]
+
+    return indexes.map((startIndex, i) => {
+      const endIndex = indexes[i + 1] || line.length
+      return line.slice(startIndex, endIndex)
+    })
+  }
+
+  const normalizedInput = input
+    .split('\u0000').join('\n')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+
+  normalizedInput.split('\n').forEach((rawLine) => {
+    const line = rawLine.trim()
+    if (!line) return
+    if (source === 'uri-list' && line.startsWith('#')) return
+
+    if (!isUrl(line)) {
+      invalidLines.push(rawLine)
+      return
+    }
+
+    const parts = splitConcatenatedUrls(line)
+    parts.forEach((part) => {
+      if (seen.has(part)) return
+      urls.push(part)
+      seen.add(part)
+    })
+  })
+
+  return {
+    urls,
+    invalidLines
+  }
+}
+
+export const extractHttpUrlsFromText = (text: string): string[] => {
+  const urls: string[] = []
+  const seen = new Set<string>()
+  const matches = text.match(/https?:\/\/[^\s<>"']+/g) || []
+
+  matches.forEach((match) => {
+    const maybeUrl = match.replace(/[)\]}>.,;:!?]+$/, '')
+
+    if (seen.has(maybeUrl)) return
+    if (!isUrl(maybeUrl)) return
+
+    urls.push(maybeUrl)
+    seen.add(maybeUrl)
+  })
+
+  return urls
+}
 export const isUrlEncode = (url: string): boolean => {
   url = url || ''
   try {

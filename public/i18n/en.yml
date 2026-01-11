@@ -165,7 +165,7 @@ CUSTOM: Custom
 CLIPBOARD_PICTURE: Clipboard
 TIPS_DRAG_VALID_PICTURE_OR_URL: Drag valid picture or url to here
 TIPS_INPUT_URL: Input URL
-TIPS_HTTP_PREFIX: http:// or https://
+TIPS_HTTP_PREFIX: Starts with http:// or https://. Multiple URLs supported (one per line)
 TIPS_INPUT_VALID_URL: Input valid URL
 
 # plugins
@@ -237,6 +237,9 @@ TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_ERROR_TIPS: "Please create the folder yourself
 TIPS_NOTICE: Tips
 TIPS_WARNING: Warning
 TIPS_ERROR: Error
+TIPS_SKIPPED_INVALID_URLS: Skipped ${n} invalid URL(s), see logs for details
+TIPS_TOO_MANY_URLS_CONFIRM: You are about to upload ${n} URLs at once. This may cause lag. It's recommended to upload in batches. Continue?
+TIPS_NO_VALID_URLS: No valid URL found
 TIPS_INSTALL_NODE_AND_RELOAD_PICGO: Please install Node.js and restart PicGo to continue
 TIPS_PLUGIN_REMOVE_GALLERY_ITEM: Plugin is trying to remove some images from the album gallery, continue?
 TIPS_PLUGIN_OVERWRITE_GALLERY: Plugin is trying to overwrite the album gallery, continue?

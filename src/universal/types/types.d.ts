@@ -247,6 +247,7 @@ interface IShowInputBoxOption {
   value?: string
   title: string
   placeholder: string
+  inputType?: 'text' | 'textarea'
 }
 
 type IShowFileExplorerOption = IObj
