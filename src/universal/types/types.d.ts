@@ -184,6 +184,10 @@ interface IPicGoPluginShowConfigDialogOption {
   tips?: string
   confirmText?: string
   cancelText?: string
+  /**
+   * default to 500
+   */
+  width?: number
 }
 
 interface IPicGoPluginOriginConfig {
@@ -249,6 +253,10 @@ interface IShowInputBoxOption {
   title: string
   placeholder: string
   inputType?: 'text' | 'textarea'
+  /**
+   * default to 400
+   */
+  width?: number
 }
 
 type IShowFileExplorerOption = IObj

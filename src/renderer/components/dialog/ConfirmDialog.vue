@@ -2,6 +2,8 @@
   <ElDialog
     v-model="visible"
     :title="title"
+    :width="width + 'px'"
+    :append-to-body="true"
     @close="handleClose"
   >
     <slot name="body" />
@@ -39,10 +41,12 @@ interface IProps {
   title: string
   confirmButtonText?: string
   cancelButtonText?: string
+  width?: number
 }
 const props = withDefaults(defineProps<IProps>(), {
   confirmButtonText: $T('CONFIRM'),
-  cancelButtonText: $T('CANCEL')
+  cancelButtonText: $T('CANCEL'),
+  width: 500
 })
 const $emit = defineEmits(['confirm', 'cancel', 'close'])
 

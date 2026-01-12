@@ -2,7 +2,8 @@
   <el-dialog
     v-model="showInputBoxVisible"
     :title="inputBoxOptions.title || $T('INPUT')"
-    :modal-append-to-body="false"
+    :append-to-body="true"
+    :width="inputBoxOptions.width + 'px'"
   >
     <el-input
       v-model="inputBoxValue"
@@ -42,7 +43,8 @@ const showInputBoxVisible = ref(false)
 const inputBoxOptions = reactive({
   title: '',
   placeholder: '',
-  inputType: 'text' as 'text' | 'textarea'
+  inputType: 'text' as 'text' | 'textarea',
+  width: 500
 })
 
 onBeforeMount(() => {
@@ -59,6 +61,7 @@ function initInputBoxValue (options: IShowInputBoxOption) {
   inputBoxOptions.title = options.title || ''
   inputBoxOptions.placeholder = options.placeholder || ''
   inputBoxOptions.inputType = options.inputType || 'text'
+  inputBoxOptions.width = options.width || 400
   showInputBoxVisible.value = true
 }
 

@@ -216,7 +216,8 @@
     <el-dialog
       v-model="editDialogVisible"
       :title="editDialogTitle"
-      :modal-append-to-body="false"
+      width="500px"
+      :append-to-body="true"
     >
       <el-form
         label-position="top"

@@ -3,6 +3,7 @@
     <ConfirmDialog
       v-model="visible"
       :title="title"
+      :width="width"
       @confirm="handleConfirm"
       @cancel="handleCancel"
       @close="handleCancel"
@@ -31,6 +32,7 @@ const configList = ref<IPicGoPluginConfig[]>([])
 const formModel = reactive<IStringKeyMap>({})
 const $form = ref<IFormInstance>()
 const title = ref('')
+const width = ref(500)
 
 const handleConfigForm = useConfigForm()
 
@@ -39,6 +41,7 @@ useIPCOn(IRPCActionType.OPEN_CONFIG_DIALOG, (event, options: IPicGoPluginShowCon
   visible.value = true
   configList.value = handleConfigForm(options.config, formModel)
   title.value = options.title
+  width.value = options.width || 500
 })
 const handleConfirm = async () => {
   const res = await $form.value?.validate() || false
