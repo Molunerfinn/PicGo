@@ -89,6 +89,7 @@ import { ref } from 'vue'
 import { marked } from 'marked'
 import type { FormInstance } from 'element-plus'
 import { useVModel } from '@/hooks/useVModel'
+import { QuestionFilled } from '@element-plus/icons-vue'
 
 const $form = ref<FormInstance>()
 
@@ -117,7 +118,6 @@ async function validate (): Promise<IStringKeyMap | false> {
         resolve(form.value)
       } else {
         resolve(false)
-        return false
       }
     })
   })

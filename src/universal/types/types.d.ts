@@ -55,6 +55,7 @@ interface ImgInfo {
   imgUrl?: string
   id?: string
   type?: string
+  originImgUrl?: string
   [propName: string]: any
 }
 
