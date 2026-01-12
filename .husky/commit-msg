@@ -1,0 +1,1 @@
+pnpm commitlint ${1}

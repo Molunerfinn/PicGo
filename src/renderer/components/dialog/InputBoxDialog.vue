@@ -7,6 +7,9 @@
     <el-input
       v-model="inputBoxValue"
       :placeholder="inputBoxOptions.placeholder"
+      :type="inputBoxOptions.inputType || 'text'"
+      :rows="inputBoxOptions.inputType === 'textarea' ? 6 : undefined"
+      :class="{ 'input-box__textarea': inputBoxOptions.inputType === 'textarea' }"
     />
     <template #footer>
       <el-button
@@ -38,7 +41,8 @@ const inputBoxValue = ref('')
 const showInputBoxVisible = ref(false)
 const inputBoxOptions = reactive({
   title: '',
-  placeholder: ''
+  placeholder: '',
+  inputType: 'text' as 'text' | 'textarea'
 })
 
 onBeforeMount(() => {
@@ -54,6 +58,7 @@ function initInputBoxValue (options: IShowInputBoxOption) {
   inputBoxValue.value = options.value || ''
   inputBoxOptions.title = options.title || ''
   inputBoxOptions.placeholder = options.placeholder || ''
+  inputBoxOptions.inputType = options.inputType || 'text'
   showInputBoxVisible.value = true
 }
 
@@ -82,4 +87,8 @@ export default {
 }
 </script>
 <style lang='stylus'>
+.input-box__textarea
+  .el-textarea__inner
+    resize vertical
+    max-height 240px
 </style>

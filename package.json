@@ -26,7 +26,10 @@
     "postuninstall": "electron-builder install-app-deps",
     "upload-dist": "node ./scripts/upload-dist.js",
     "lint:dpdm": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/background.ts",
-    "check": "pnpm run tsc && pnpm run lint"
+    "check": "pnpm run tsc && pnpm run lint",
+    "test": "vitest run src/__tests__",
+    "prepare": "husky",
+    "commitlint": "commitlint --edit"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
@@ -102,13 +105,14 @@
     "eslint-plugin-promise": "^7.2.1",
     "eslint-plugin-vue": "^10.6.2",
     "globals": "^16.5.0",
-    "husky": "^3.1.0",
+    "husky": "^9.1.7",
     "postcss": "^8.4.23",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
     "tailwindcss": "^3.3.2",
     "typescript": "^5.9.3",
-    "vite": "^7.2.6"
+    "vite": "^7.2.6",
+    "vitest": "^4.0.16"
   },
   "commitlint": {
     "extends": [

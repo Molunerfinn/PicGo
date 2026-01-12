@@ -7,11 +7,7 @@ import {
 
 type IEvent ={
   [SHOW_INPUT_BOX_RESPONSE]: string
-  [SHOW_INPUT_BOX]: {
-    value: string
-    title: string
-    placeholder: string
-  },
+  [SHOW_INPUT_BOX]: IShowInputBoxOption,
   [FORCE_UPDATE]: void
 }
 

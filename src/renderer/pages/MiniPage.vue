@@ -31,15 +31,16 @@
 // import mixin from '@/utils/mixin'
 // import { Component, Vue, Watch } from 'vue-property-decorator'
 import { T as $T } from '@/i18n/index'
-import { ElMessage as $message } from 'element-plus'
+import { showNotification } from '@/utils/notification'
 import {
   ipcRenderer,
   IpcRendererEvent
 } from 'electron'
 import { onBeforeUnmount, onBeforeMount, ref, watch } from 'vue'
-import { SHOW_MINI_PAGE_MENU, SET_MINI_WINDOW_POS } from '~/universal/events/constants'
+import { LOG_INVALID_URL_LINES, SHOW_MINI_PAGE_MENU, SET_MINI_WINDOW_POS } from '~/universal/events/constants'
 import {
-  isUrl
+  isUrl,
+  parseNewlineSeparatedUrls
 } from '~/universal/utils/common'
 import { sendToMain } from '@/utils/dataSender'
 import { getFilePath } from '@/utils/common'
@@ -84,42 +85,78 @@ watch(progress, (val) => {
   }
 })
 
-function onDrop (e: DragEvent) {
+async function onDrop (e: DragEvent) {
   dragover.value = false
-  const items = e.dataTransfer?.items!
   const files = e.dataTransfer?.files!
 
   // send files first
   if (files?.length) {
     ipcSendFiles(e.dataTransfer?.files!)
-  } else {
-    if (items.length === 2 && items[0].type === 'text/uri-list') {
-      handleURLDrag(items, e.dataTransfer!)
-    } else if (items[0].type === 'text/plain') {
-      const str = e.dataTransfer!.getData(items[0].type)
-      if (isUrl(str)) {
-        sendToMain('uploadChoosedFiles', [{ path: str }])
-      } else {
-        $message.error($T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
-      }
-    }
+    return
   }
+
+  const dataTransfer = e.dataTransfer
+  if (!dataTransfer) return
+
+  const uriList = dataTransfer.getData('text/uri-list')
+  if (uriList) {
+    await handleUriListDrop(uriList, dataTransfer.getData('text/html'))
+    return
+  }
+
+  const plainText = dataTransfer.getData('text/plain')
+  if (plainText) {
+    await handlePlainTextDrop(plainText)
+    return
+  }
+
+  showNotification({
+    title: $T('TIPS_ERROR'),
+    body: $T('TIPS_DRAG_VALID_PICTURE_OR_URL')
+  })
 }
 
-function handleURLDrag (items: DataTransferItemList, dataTransfer: DataTransfer) {
-  // text/html
-  // Use this data to get a more precise URL
-  const urlString = dataTransfer.getData(items[1].type)
-  const urlMatch = urlString.match(/<img.*src="(.*?)"/)
-  if (urlMatch) {
-    sendToMain('uploadChoosedFiles', [
-      {
-        path: urlMatch[1]
-      }
-    ])
-  } else {
-    $message.error($T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
+async function uploadUrls (urls: string[], invalidLines: string[]) {
+  if (invalidLines.length) {
+    sendToMain(LOG_INVALID_URL_LINES, invalidLines)
+    showNotification({
+      title: $T('TIPS_WARNING'),
+      body: $T('TIPS_SKIPPED_INVALID_URLS', { n: invalidLines.length })
+    })
   }
+
+  sendToMain('uploadChoosedFiles', urls.map((url) => ({ path: url })))
+}
+
+async function handlePlainTextDrop (plainText: string) {
+  const { urls, invalidLines } = parseNewlineSeparatedUrls(plainText, { source: 'plain' })
+  if (!urls.length) {
+    showNotification({
+      title: $T('TIPS_ERROR'),
+      body: $T('TIPS_DRAG_VALID_PICTURE_OR_URL')
+    })
+    return
+  }
+  await uploadUrls(urls, invalidLines)
+}
+
+async function handleUriListDrop (uriListText: string, urlString: string) {
+  const { urls, invalidLines } = parseNewlineSeparatedUrls(uriListText, { source: 'uri-list' })
+  if (urls.length) {
+    await uploadUrls(urls, invalidLines)
+    return
+  }
+
+  const urlMatch = urlString.match(/<img.*src="(.*?)"/)
+  if (urlMatch && isUrl(urlMatch[1])) {
+    await uploadUrls([urlMatch[1]], invalidLines)
+    return
+  }
+
+  showNotification({
+    title: $T('TIPS_ERROR'),
+    body: $T('TIPS_DRAG_VALID_PICTURE_OR_URL')
+  })
 }
 
 function openUploadWindow () {

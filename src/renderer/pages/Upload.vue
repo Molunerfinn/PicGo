@@ -109,16 +109,19 @@ import {
   IpcRendererEvent,
   ipcRenderer
 } from 'electron'
-import { ElMessage as $message } from 'element-plus'
+import { ElMessage as $message, ElMessageBox } from 'element-plus'
 import { onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
 import {
   GET_PICBEDS,
+  LOG_INVALID_URL_LINES,
   SHOW_INPUT_BOX,
   SHOW_INPUT_BOX_RESPONSE,
   SHOW_UPLOAD_PAGE_MENU
 } from '~/universal/events/constants'
 import {
-  isUrl
+  extractHttpUrlsFromText,
+  isUrl,
+  parseNewlineSeparatedUrls
 } from '~/universal/utils/common'
 const dragover = ref(false)
 const progress = ref(0)
@@ -128,6 +131,7 @@ const pasteStyle = ref('')
 const picBed = ref<IPicBedType[]>([])
 const picBedName = ref('')
 const configName = ref('')
+const $confirm = ElMessageBox.confirm
 onBeforeMount(() => {
   ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, _progress: number) => {
     if (_progress !== -1) {
@@ -169,42 +173,88 @@ onBeforeUnmount(() => {
   ipcRenderer.removeListener(GET_PICBEDS, getPicBeds)
 })
 
-function onDrop (e: DragEvent) {
+async function onDrop (e: DragEvent) {
   dragover.value = false
-  const items = e.dataTransfer?.items!
   const files = e.dataTransfer?.files!
 
   // send files first
   if (files?.length) {
     ipcSendFiles(e.dataTransfer?.files!)
-  } else {
-    if (items.length === 2 && items[0].type === 'text/uri-list') {
-      handleURLDrag(items, e.dataTransfer!)
-    } else if (items[0].type === 'text/plain') {
-      const str = e.dataTransfer!.getData(items[0].type)
-      if (isUrl(str)) {
-        sendToMain('uploadChoosedFiles', [{ path: str }])
-      } else {
-        $message.error($T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
+    return
+  }
+
+  const dataTransfer = e.dataTransfer
+  if (!dataTransfer) return
+
+  const uriList = dataTransfer.getData('text/uri-list')
+  if (uriList) {
+    await handleUriListDrop(uriList, dataTransfer.getData('text/html'))
+    return
+  }
+
+  const plainText = dataTransfer.getData('text/plain')
+  if (plainText) {
+    await handlePlainTextDrop(plainText)
+    return
+  }
+
+  $message.error($T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
+}
+
+async function confirmLargeUrlBatch (count: number, onCancel?: () => void): Promise<boolean> {
+  if (count <= 10) return true
+  try {
+    await $confirm(
+      $T('TIPS_TOO_MANY_URLS_CONFIRM', { n: count }),
+      $T('TIPS_WARNING'),
+      {
+        type: 'warning',
+        confirmButtonText: $T('CONFIRM'),
+        cancelButtonText: $T('CANCEL')
       }
-    }
+    )
+    return true
+  } catch (e) {
+    onCancel?.()
+    return false
   }
 }
 
-function handleURLDrag (items: DataTransferItemList, dataTransfer: DataTransfer) {
-  // text/html
-  // Use this data to get a more precise URL
-  const urlString = dataTransfer.getData(items[1].type)
-  const urlMatch = urlString.match(/<img.*src="(.*?)"/)
-  if (urlMatch) {
-    sendToMain('uploadChoosedFiles', [
-      {
-        path: urlMatch[1]
-      }
-    ])
-  } else {
-    $message.error($T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
+async function uploadUrls (urls: string[], invalidLines: string[], onCancel?: () => void) {
+  if (invalidLines.length) {
+    sendToMain(LOG_INVALID_URL_LINES, invalidLines)
+    $message.warning($T('TIPS_SKIPPED_INVALID_URLS', { n: invalidLines.length }))
   }
+
+  const canUpload = await confirmLargeUrlBatch(urls.length, onCancel)
+  if (!canUpload) return
+
+  sendToMain('uploadChoosedFiles', urls.map((url) => ({ path: url })))
+}
+
+async function handlePlainTextDrop (plainText: string) {
+  const { urls, invalidLines } = parseNewlineSeparatedUrls(plainText, { source: 'plain' })
+  if (!urls.length) {
+    $message.error($T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
+    return
+  }
+  await uploadUrls(urls, invalidLines)
+}
+
+async function handleUriListDrop (uriListText: string, urlString: string) {
+  const { urls, invalidLines } = parseNewlineSeparatedUrls(uriListText, { source: 'uri-list' })
+  if (urls.length) {
+    await uploadUrls(urls, invalidLines)
+    return
+  }
+
+  const urlMatch = urlString.match(/<img.*src="(.*?)"/)
+  if (urlMatch && isUrl(urlMatch[1])) {
+    await uploadUrls([urlMatch[1]], invalidLines)
+    return
+  }
+
+  $message.error($T('TIPS_DRAG_VALID_PICTURE_OR_URL'))
 }
 
 function openUploadWindow () {
@@ -234,7 +284,7 @@ async function getPasteStyle () {
   pasteStyle.value = await getConfig('settings.pasteStyle') || 'markdown'
 }
 
-function handlePasteStyleChange (val: string | number | boolean) {
+function handlePasteStyleChange (val: string | number | boolean | undefined) {
   saveConfig({
     'settings.pasteStyle': val
   })
@@ -244,24 +294,39 @@ function uploadClipboardFiles () {
   sendToMain('uploadClipboardFilesFromUploadPage')
 }
 
-async function uploadURLFiles () {
-  const str = await navigator.clipboard.readText()
+function openUrlInputBox (value: string) {
   $bus.emit(SHOW_INPUT_BOX, {
-    value: isUrl(str) ? str : '',
+    value,
     title: $T('TIPS_INPUT_URL'),
-    placeholder: $T('TIPS_HTTP_PREFIX')
+    placeholder: $T('TIPS_HTTP_PREFIX'),
+    inputType: 'textarea'
   })
 }
 
-function handleInputBoxValue (val: string) {
+async function uploadURLFiles () {
+  let str = ''
+  try {
+    str = await navigator.clipboard.readText()
+  } catch (e) {}
+  const urls = extractHttpUrlsFromText(str)
+  openUrlInputBox(urls.join('\n'))
+}
+
+async function handleInputBoxValue (val: string) {
   if (val === '') return
-  if (isUrl(val)) {
-    sendToMain('uploadChoosedFiles', [{
-      path: val
-    }])
-  } else {
-    $message.error($T('TIPS_INPUT_VALID_URL'))
+
+  const { urls, invalidLines } = parseNewlineSeparatedUrls(val, { source: 'plain' })
+  if (!urls.length) {
+    if (invalidLines.length) {
+      sendToMain(LOG_INVALID_URL_LINES, invalidLines)
+      $message.error($T('TIPS_SKIPPED_INVALID_URLS', { n: invalidLines.length }))
+      return
+    }
+    $message.error($T('TIPS_NO_VALID_URLS'))
+    return
   }
+
+  await uploadUrls(urls, invalidLines, () => openUrlInputBox(val))
 }
 
 async function getDefaultPicBed () {

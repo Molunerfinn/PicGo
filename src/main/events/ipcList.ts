@@ -10,6 +10,7 @@ import { IPasteStyle, IRPCActionType, IWindowList } from '#/types/enum'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import picgo from '@core/picgo'
+import logger from '@core/picgo/logger'
 import { GalleryDB } from '~/main/apis/core/datastore'
 import server from '~/main/server'
 import getPicBeds from '~/main/utils/getPicBeds'
@@ -27,7 +28,8 @@ import {
   OPEN_URL,
   SHOW_PLUGIN_PAGE_MENU,
   SET_MINI_WINDOW_POS,
-  GET_PICBEDS
+  GET_PICBEDS,
+  LOG_INVALID_URL_LINES
 } from '#/events/constants'
 import {
   uploadClipboardFiles,
@@ -215,6 +217,13 @@ export default {
     ipcMain.on(SET_MINI_WINDOW_POS, (evt: IpcMainEvent, pos: IMiniWindowPos) => {
       const window = BrowserWindow.getFocusedWindow()
       window?.setBounds(pos)
+    })
+
+    ipcMain.on(LOG_INVALID_URL_LINES, (_evt: IpcMainEvent, lines: string[]) => {
+      if (!Array.isArray(lines) || !lines.length) return
+      lines.forEach((line, index) => {
+        logger.warn(`[Batch URL Upload] invalid url line #${index + 1}: ${line}`)
+      })
     })
   },
   dispose () {}

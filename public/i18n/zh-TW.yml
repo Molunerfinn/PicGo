@@ -165,7 +165,7 @@ CUSTOM: 自訂
 CLIPBOARD_PICTURE: 剪貼簿圖片
 TIPS_DRAG_VALID_PICTURE_OR_URL: 請拖入合法的圖片檔案或者圖片URL地址
 TIPS_INPUT_URL: 請輸入URL
-TIPS_HTTP_PREFIX: http://或者https://開頭
+TIPS_HTTP_PREFIX: http:// 或者 https:// 開頭，支援上傳多條 URL（請換行輸入）
 TIPS_INPUT_VALID_URL: 請輸入合法的URL
 
 # plugins
@@ -237,6 +237,9 @@ TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_ERROR_TIPS: 請自行創建文件夾:${path}
 TIPS_NOTICE: 注意
 TIPS_WARNING: 警告
 TIPS_ERROR: 發生錯誤
+TIPS_SKIPPED_INVALID_URLS: 已跳過 ${n} 條非法 URL，請查看日誌了解詳情
+TIPS_TOO_MANY_URLS_CONFIRM: 你將一次上傳 ${n} 條 URL，可能會引起卡頓，建議分批上傳。是否繼續？
+TIPS_NO_VALID_URLS: 未偵測到合法的 URL
 TIPS_INSTALL_NODE_AND_RELOAD_PICGO: 請安裝Node.js並重新啟動PicGo再繼續操作
 TIPS_PLUGIN_REMOVE_GALLERY_ITEM: 有插件正在試圖刪除一些相簿圖片，是否繼續？
 TIPS_PLUGIN_OVERWRITE_GALLERY: 有插件正在試圖覆蓋相簿列表，是否繼續？

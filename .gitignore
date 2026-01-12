@@ -28,3 +28,4 @@ dist/*
 test.js
 specs/
 .cache/
+openspec/
