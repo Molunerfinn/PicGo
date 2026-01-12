@@ -1,3 +1,19 @@
+## :tada: 2.4.3 (2026-01-12)
+
+
+### :sparkles: Features
+
+* add global url rewrite support ([#1377](https://github.com/Molunerfinn/PicGo/issues/1377)) ([2ed1dd5](https://github.com/Molunerfinn/PicGo/commit/2ed1dd5)), closes [#1255](https://github.com/Molunerfinn/PicGo/issues/1255) [#1281](https://github.com/Molunerfinn/PicGo/issues/1281)
+* **upload:** add batch url upload support ([#1376](https://github.com/Molunerfinn/PicGo/issues/1376)) ([c84d542](https://github.com/Molunerfinn/PicGo/commit/c84d542)), closes [#1302](https://github.com/Molunerfinn/PicGo/issues/1302)
+
+
+### :bug: Bug Fixes
+
+* **gallery:** fix picbed list visible status not sync with gallery ([#1373](https://github.com/Molunerfinn/PicGo/issues/1373)) ([dfe92d4](https://github.com/Molunerfinn/PicGo/commit/dfe92d4)), closes [#1372](https://github.com/Molunerfinn/PicGo/issues/1372)
+* **ui:** some ui bugs ([089884b](https://github.com/Molunerfinn/PicGo/commit/089884b))
+
+
+
 ## :tada: 2.4.2 (2026-01-07)
 
 
