@@ -11,11 +11,7 @@
         :span="20"
         :offset="2"
       >
-        <el-row
-          class="mb-[12px]"
-          justify="space-between"
-          align="middle"
-        >
+        <div class="flex mb-[12px] justify-between align-middle">
           <div class="text-[12px] text-[#bbb] leading-[18px]">
             {{ $T('URL_REWRITE_HELP') }}
           </div>
@@ -29,7 +25,7 @@
             </el-icon>
             {{ $T('URL_REWRITE_ADD_RULE') }}
           </el-button>
-        </el-row>
+        </div>
 
         <el-table
           class="url-rewrite-table-border"
@@ -40,7 +36,7 @@
           :empty-text="$T('URL_REWRITE_EMPTY')"
         >
           <el-table-column
-            width="70px"
+            width="50px"
             :label="$T('URL_REWRITE_ORDER')"
           >
             <template #default="scope">
@@ -49,7 +45,7 @@
           </el-table-column>
 
           <el-table-column
-            min-width="220px"
+            min-width="300px"
             :label="$T('URL_REWRITE_MATCH')"
           >
             <template #default="scope">
@@ -60,7 +56,7 @@
           </el-table-column>
 
           <el-table-column
-            width="120px"
+            width="80px"
             :label="$T('URL_REWRITE_FLAGS')"
           >
             <template #default="scope">
@@ -82,7 +78,7 @@
           </el-table-column>
 
           <el-table-column
-            width="120px"
+            width="70px"
             :label="$T('URL_REWRITE_ENABLED')"
           >
             <template #default="scope">
@@ -227,15 +223,6 @@
         label-width="80px"
         size="small"
       >
-        <el-alert
-          v-if="editErrorMessage"
-          class="mb-[12px]"
-          :title="editErrorMessage"
-          type="error"
-          show-icon
-          :closable="false"
-        />
-
         <el-form-item
           :label="$T('URL_REWRITE_MATCH')"
         >
@@ -348,7 +335,6 @@ const rules = ref<IUrlRewriteRule[]>([])
 const editDialogVisible = ref(false)
 const editDialogMode = ref<'add' | 'edit'>('add')
 const editRuleIndex = ref(-1)
-const editErrorMessage = ref('')
 
 const previewInputUrl = ref('')
 const previewOutputUrl = ref('')
@@ -431,7 +417,6 @@ async function confirmDelete (index: number) {
 }
 
 function openAddDialog () {
-  editErrorMessage.value = ''
   editDialogMode.value = 'add'
   editRuleIndex.value = -1
   ruleForm.match = ''
@@ -443,7 +428,6 @@ function openAddDialog () {
 }
 
 function openEditDialog (rule: IUrlRewriteRule, index: number) {
-  editErrorMessage.value = ''
   editDialogMode.value = 'edit'
   editRuleIndex.value = index
   ruleForm.match = rule.match
@@ -456,7 +440,6 @@ function openEditDialog (rule: IUrlRewriteRule, index: number) {
 
 function cancelEditDialog () {
   editDialogVisible.value = false
-  editErrorMessage.value = ''
 }
 
 function buildRuleFlags (rule: Pick<IUrlRewriteRule, 'global' | 'ignoreCase'>) {
@@ -512,8 +495,6 @@ function runPreview () {
 }
 
 async function confirmEditDialog () {
-  editErrorMessage.value = ''
-
   const nextRule: IUrlRewriteRule = {
     match: ruleForm.match,
     replace: ruleForm.replace,
@@ -525,7 +506,7 @@ async function confirmEditDialog () {
   try {
     validateRuleOrThrow(nextRule)
   } catch (e) {
-    editErrorMessage.value = (e as Error).message || $T('URL_REWRITE_INVALID_REGEX')
+    $message.error((e as Error).message || $T('URL_REWRITE_INVALID_REGEX'))
     return
   }
 
