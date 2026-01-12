@@ -15,6 +15,11 @@
     @click="goShortCutPage"
   />
   <ButtonFormItem
+    :label="$T('SETTINGS_URL_REWRITE')"
+    :button-label="$T('SETTINGS_CLICK_TO_SET')"
+    @click="goUrlRewritePage"
+  />
+  <ButtonFormItem
     :label="$T('SETTINGS_CUSTOM_LINK_FORMAT')"
     :button-label="$T('SETTINGS_CLICK_TO_SET')"
     @click="customLinkDialogVisible = true"
@@ -72,7 +77,7 @@ import { reactive, ref } from 'vue'
 import { PICGO_OPEN_FILE } from '~/universal/events/constants'
 import LogSettingDialog from './LogSettingDialog.vue'
 import { useRouter } from 'vue-router'
-import { SHORTKEY_PAGE } from '@/router/config'
+import { SHORTKEY_PAGE, URL_REWRITE_PAGE } from '@/router/config'
 import { useVModel } from '@/hooks/useVModel'
 
 const $router = useRouter()
@@ -100,6 +105,12 @@ function openFile (file: string) {
 function goShortCutPage () {
   $router.push({
     name: SHORTKEY_PAGE
+  })
+}
+
+function goUrlRewritePage () {
+  $router.push({
+    name: URL_REWRITE_PAGE
   })
 }
 

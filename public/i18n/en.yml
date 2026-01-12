@@ -68,6 +68,7 @@ SETTINGS_SET_LOG_FILE: Set Log File
 SETTINGS_CLICK_TO_SET: Click to Set
 SETTINGS_CLICK_TO_CHECK: Click to Check
 SETTINGS_SET_SHORTCUT: Set Shortcut
+SETTINGS_URL_REWRITE: URL Rewrite
 SETTINGS_CUSTOM_LINK_FORMAT: Custom Link Format
 SETTINGS_SET_PROXY_AND_MIRROR: Set Proxy and Mirror
 SETTINGS_SET_SERVER: Set Server
@@ -118,6 +119,46 @@ SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD: Use Builtin Clipboard to Upload
 SETTINGS_CHOOSE_LANGUAGE: Choose Language
 UPLOADER_CONFIG_NAME: Configuration Name
 BUILTIN_CLIPBOARD_TIPS: Use builtin clipboard function to upload instead of using scripts
+
+# url rewrite
+
+URL_REWRITE_HELP: Rewrites uploaded image URLs. Rules are evaluated in order; the first matched rule wins.
+URL_REWRITE_ADD_RULE: Add Rule
+URL_REWRITE_EDIT_RULE: Edit Rule
+URL_REWRITE_EMPTY: No rules
+URL_REWRITE_ORDER: Order
+URL_REWRITE_MATCH: Match
+URL_REWRITE_REPLACE: Replace
+URL_REWRITE_FLAGS: Flags
+URL_REWRITE_ENABLED: Enabled
+URL_REWRITE_ACTIONS: Actions
+URL_REWRITE_MOVE_UP: Up
+URL_REWRITE_MOVE_DOWN: Down
+URL_REWRITE_EDIT: Edit
+URL_REWRITE_DELETE: Delete
+URL_REWRITE_DELETE_CONFIRM: Delete this rule?
+URL_REWRITE_MATCH_TIPS: Supports regex (JavaScript RegExp)
+URL_REWRITE_MATCH_PLACEHOLDER: https://example.com/path
+URL_REWRITE_REPLACE_TIPS: Replacement string (supports $1, $2, ...)
+URL_REWRITE_REPLACE_PLACEHOLDER: https://example.org/newpath
+URL_REWRITE_OPTIONS: Options
+URL_REWRITE_RULE_ENABLED: Enable this rule
+URL_REWRITE_FLAG_GLOBAL_LABEL: Global (g)
+URL_REWRITE_FLAG_GLOBAL_DESC: Replace all occurrences, not just the first one
+URL_REWRITE_FLAG_IGNORE_CASE_LABEL: Ignore case (i)
+URL_REWRITE_FLAG_IGNORE_CASE_DESC: Case-insensitive matching (e.g. JPG equals jpg)
+URL_REWRITE_MATCH_REQUIRED: Match is required
+URL_REWRITE_REPLACE_REQUIRED: Replace is required
+URL_REWRITE_INVALID_REGEX: Invalid regex
+URL_REWRITE_PREVIEW_TITLE: Preview
+URL_REWRITE_PREVIEW_TIPS: Enter a URL to see how the current rules rewrite it (matched in order; only the first match is applied)
+URL_REWRITE_PREVIEW_PLACEHOLDER: https://example.com/path/to/image.png
+URL_REWRITE_PREVIEW_RUN: Preview
+URL_REWRITE_PREVIEW_OUTPUT: Output URL
+URL_REWRITE_PREVIEW_INPUT_REQUIRED: Please enter a URL to preview
+URL_REWRITE_PREVIEW_RULE_INVALID: Invalid rule
+URL_REWRITE_PREVIEW_MATCHED_RULE: Matched rule
+URL_REWRITE_PREVIEW_NO_MATCH: No rules matched
 UPLOADER_CONFIG_PLACEHOLDER: Please Enter Configuration Name
 SELECTED_SETTING_HINT: Selected
 SETTINGS_ENCODE_OUTPUT_URL: Encode Output(or Copyed) URL

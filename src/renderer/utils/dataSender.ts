@@ -8,7 +8,7 @@ export async function saveConfig (_config: IObj | string, value?: any) {
   let config
   if (typeof _config === 'string') {
     config = {
-      [_config]: value
+      [_config]: getRawData(value)
     }
   } else {
     config = getRawData(_config)

@@ -58,6 +58,11 @@ export default createRouter({
           name: config.SHORTKEY_PAGE
         },
         {
+          path: 'urlRewrite',
+          component: () => import(/* webpackChunkName: "UrlRewritePage" */ '@/pages/UrlRewrite.vue'),
+          name: config.URL_REWRITE_PAGE
+        },
+        {
           path: 'uploader-config-page/:type',
           component: () => import(/* webpackChunkName: "Other" */ '@/pages/UploaderConfigPage.vue'),
           name: config.UPLOADER_CONFIG_PAGE

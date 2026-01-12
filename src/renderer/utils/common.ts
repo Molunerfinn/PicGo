@@ -25,13 +25,14 @@ export const trimValues = (obj: IStringKeyMap) => {
  * get raw data from reactive or ref
  */
 export const getRawData = (args: any): any => {
+  if (args === null) return args
   if (Array.isArray(args)) {
     const data = args.map((item: any) => {
       if (isRef(item)) {
-        return unref(item)
+        return getRawData(unref(item))
       }
       if (isReactive(item)) {
-        return toRaw(item)
+        return getRawData(toRaw(item))
       }
       return getRawData(item)
     })
@@ -42,9 +43,9 @@ export const getRawData = (args: any): any => {
     Object.keys(args).forEach(key => {
       const item = args[key]
       if (isRef(item)) {
-        data[key] = unref(item)
+        data[key] = getRawData(unref(item))
       } else if (isReactive(item)) {
-        data[key] = toRaw(item)
+        data[key] = getRawData(toRaw(item))
       } else {
         data[key] = getRawData(item)
       }
