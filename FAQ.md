@@ -148,106 +148,10 @@ If you run into upload issues with the Gitee image host, PicGo cannot help becau
 
 ## 12. On macOS, PicGo shows “App is damaged”, or it doesn’t respond after installation / macOS系统安装完PicGo显示「文件已损坏」或者安装完打开没有反应
 
-Because PicGo is not signed, it may be blocked by macOS Gatekeeper.
+Please try the version >= v2.4.2, which has fixed this issue.
 
-1. If you see “App is damaged” when opening after installation, do the following:
+请尝试使用 v2.4.2 及以上版本，已经修复该问题。
 
-Trust the developer (password required):
-
-```
-sudo spctl --master-disable
-```
-
-Then remove quarantine attributes from PicGo:
-
-```
-xattr -cr /Applications/PicGo.app
-```
-
-If you see the following message:
-
-```sh
-option -r not recognized
-
-usage: xattr [-slz] file [file ...]
-       xattr -p [-slz] attr_name file [file ...]
-       xattr -w [-sz] attr_name attr_value file [file ...]
-       xattr -d [-s] attr_name file [file ...]
-       xattr -c [-s] file [file ...]
-
-The first form lists the names of all xattrs on the given file(s).
-The second form (-p) prints the value of the xattr attr_name.
-The third form (-w) sets the value of the xattr attr_name to attr_value.
-The fourth form (-d) deletes the xattr attr_name.
-The fifth form (-c) deletes (clears) all xattrs.
-
-options:
-  -h: print this help
-  -s: act on symbolic links themselves rather than their targets
-  -l: print long format (attr_name: attr_value)
-  -z: compress or decompress (if compressed) attribute value in zip format
-```
-
-Run:
-
-```
-sudo xattr -d com.apple.quarantine /Applications/PicGo.app/
-```
-
-2. If PicGo doesn’t respond after installation, troubleshoot in this order:
-   1. PicGo won’t automatically pop up a main window on macOS — it’s designed as a menu bar app. If you can see the PicGo icon in the menu bar, the installation succeeded; click it to open the menu bar window. See FAQ #7.
-   2. If you’re on an Apple Silicon (M1) Mac and previously had the x64 build installed, then switched to the arm64 build and it doesn’t respond, reboot your Mac.
-
-因为 PicGo 没有签名，所以会被 macOS 的安全检查所拦下。
-
-1. 安装后打开遇到「文件已损坏」的情况，请按如下方式操作：
-
-信任开发者，会要求输入密码:
-
-```
-sudo spctl --master-disable
-```
-
-然后放行 PicGo :
-
-```
-xattr -cr /Applications/PicGo.app
-```
-
-然后就能正常打开。
-
-如果提示以下内容
-
-```sh
-option -r not recognized
-
-usage: xattr [-slz] file [file ...]
-       xattr -p [-slz] attr_name file [file ...]
-       xattr -w [-sz] attr_name attr_value file [file ...]
-       xattr -d [-s] attr_name file [file ...]
-       xattr -c [-s] file [file ...]
-
-The first form lists the names of all xattrs on the given file(s).
-The second form (-p) prints the value of the xattr attr_name.
-The third form (-w) sets the value of the xattr attr_name to attr_value.
-The fourth form (-d) deletes the xattr attr_name.
-The fifth form (-c) deletes (clears) all xattrs.
-
-options:
-  -h: print this help
-  -s: act on symbolic links themselves rather than their targets
-  -l: print long format (attr_name: attr_value)
-  -z: compress or decompress (if compressed) attribute value in zip format
-```
-执行命令
-
-```
-sudo xattr -d com.apple.quarantine /Applications/PicGo.app/
-```
-
-2. 如果安装打开后没有反应，请按下方顺序排查：
-   1. macOS安装好之后，PicGo 是不会弹出主窗口的，因为 PicGo 在 macOS 系统里设计是个顶部栏应用。注意看你顶部栏的图标，如果有 PicGo 的图标，说明安装成功了，点击图标即可打开顶部栏窗口。参考上述第七点。
-   2. 如果你是 M1 的系统，此前装过 PicGo 的 x64 版本，但是后来更新了 arm64 的版本发现打开后没反应，请重启电脑即可。
 
 ## 13. Are third-party plugins claiming to be “PicGo Official image host” trustworthy? / 所谓「PicGo 官方图床」的第三方插件是否可信
 
