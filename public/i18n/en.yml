@@ -185,11 +185,20 @@ SHORTCUT_EDIT: Edit
 SHORTCUT_CHANGE_UPLOAD: Change Upload Shortcut
 
 # gallery-page
-CHANGE_IMAGE_URL_HOST: Change Image URL HOST
-NEW_IMAGE_URL_HOST: New Image URL HOST
-SELECTED_IMAGE_URL_HOST: Selected Image URL HOST
-CHANGE_IMAGE_URL_HOST_RESULT: The result of changing image URL HOST
-CHANGE_IMAGE_URL_HOST_WARN: You must select at least one picture first
+GALLERY_URL_REWRITE_TITLE: Rewrite Selected Image URLs
+GALLERY_URL_REWRITE_RESULT_TITLE: Rewrite Image URL Result
+GALLERY_URL_REWRITE_WARN_NO_SELECTION: You must select at least one picture first
+
+GALLERY_URL_REWRITE_APPLY_GLOBAL_RULES: Apply global URL rewrite rules
+GALLERY_URL_REWRITE_GLOBAL_RULES_COUNT: Global rules
+GALLERY_URL_REWRITE_TEMP_RULE_TIPS: Optional. Leave empty to skip the temporary rule. Temporary rule has higher priority than global rules.
+GALLERY_URL_REWRITE_TEMP_RULE_REQUIRED: Match and Replace are required for the temporary rule
+GALLERY_URL_REWRITE_NO_RULES_TO_APPLY: No global rules enabled and no temporary rule provided
+GALLERY_URL_REWRITE_SAVE_TEMP_RULE_PROMPT: Save the temporary rule to global URL rewrite rules?
+GALLERY_URL_REWRITE_APPLY_AND_SAVE: Apply and Save
+GALLERY_URL_REWRITE_APPLY_ONLY: Apply Only
+GALLERY_URL_REWRITE_NO_CHANGES: No URLs were changed
+GALLERY_URL_REWRITE_EMPTY_RESULT_WARN: The rewrite result is empty; skipped
 
 # tray-page
 

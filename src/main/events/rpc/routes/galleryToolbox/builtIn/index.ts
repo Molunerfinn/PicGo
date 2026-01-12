@@ -1,6 +1,6 @@
-import { galleryMenu as changeHostGalleryMenu } from './changeHost'
+import { galleryMenu as changeURLGalleryMenu } from './changeURL'
 export const builtInGalleryToolboxMenu = () => {
-  const menuList = [...changeHostGalleryMenu()]
+  const menuList = [...changeURLGalleryMenu()]
 
   return menuList
 }

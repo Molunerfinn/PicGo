@@ -53,7 +53,7 @@
     "mime-types": "^3.0.2",
     "mitt": "^3.0.1",
     "multer": "^1.4.5-lts.1",
-    "picgo": "^1.6.4",
+    "picgo": "^1.8.1",
     "qrcode.vue": "^3.3.3",
     "semver": "^7.7.3",
     "shell-path": "2.1.0",
