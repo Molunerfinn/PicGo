@@ -40,8 +40,13 @@ function validateRuleOrThrow (rule: IUrlRewriteRule) {
   if (!rule.match.trim() || !rule.replace.trim()) {
     throw new Error(T('GALLERY_URL_REWRITE_TEMP_RULE_REQUIRED'))
   }
-  const regexp = new RegExp(rule.match, buildFlags(rule))
-  void regexp
+  try {
+    new RegExp(rule.match, buildFlags(rule))
+  } catch (error) {
+    const message = `Invalid URL rewrite regex pattern "${rule.match}": ${error instanceof Error ? error.message : String(error)}`
+    logger.error(message)
+    throw new Error(message)
+  }
 }
 
 function applyFirstMatchRewrite (ctx: IPicGo, imgItem: ImgInfo, rules: IUrlRewriteRule[]): ImgInfo {
