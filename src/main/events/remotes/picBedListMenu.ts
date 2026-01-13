@@ -4,7 +4,6 @@ import { Menu } from 'electron'
 import getPicBeds from '~/main/utils/getPicBeds'
 import picgo from '@core/picgo'
 import { T } from '~/main/i18n'
-import { changeCurrentUploader } from '~/main/utils/handleUploaderConfig'
 
 export const buildPicBedListMenu = () => {
   const picBeds = getPicBeds()
@@ -34,7 +33,11 @@ export const buildPicBedListMenu = () => {
             type: 'checkbox',
             checked: config._id === defaultId && (item.type === currentPicBed),
             click: function () {
-              changeCurrentUploader(item.type, config, config._id)
+              try {
+                picgo.uploaderConfig.use(item.type, config._configName)
+              } catch (e) {
+                picgo.log.error(e instanceof Error ? e : new Error(String(e)))
+              }
               if (windowManager.has(IWindowList.SETTING_WINDOW)) {
                 windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('syncPicBed')
               }

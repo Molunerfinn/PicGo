@@ -27,6 +27,10 @@ Commits follow the PicGo conventional preset enforced by Husky (`pnpm lint:dpdm`
 
 ## Internationalization Tips
 Add locales by creating `public/i18n/<locale>.yml`, exposing its `LANG_DISPLAY_LABEL`, and registering it in `src/universal/i18n/index.ts`. After editing `public/i18n/*.yml`, run `pnpm gen-i18n` to regenerate TS typings and keep them in sync.
+- Any user-facing copy (UI text, error messages, warnings, prompts, tips, notifications, etc.) MUST use i18n keys. Do not hardcode strings in code.
+  - Renderer: use `$T('KEY')` from `src/renderer/i18n/index.ts`.
+  - Main process: use `T('KEY')` from `src/main/i18n/index.ts`.
+  - Add new keys to all locales under `public/i18n/` (at least `en.yml`, `zh-CN.yml`, `zh-TW.yml`) and run `pnpm gen-i18n`.
 
 ## Serena MCP & Context7 Tools
 When starting work or if you hit issues, try checking MCP for Serena or Context7 tooling. If available, use those tools to navigate, edit, or fetch docs efficiently.
