@@ -1,34 +1,105 @@
 import { IRPCActionType } from '~/universal/types/enum'
 import { RPCRouter } from '../router'
-import { copyUploaderConfig, deleteUploaderConfig, getUploaderConfigList, selectUploaderConfig, updateUploaderConfig } from '~/main/utils/handleUploaderConfig'
+import picgo from '@core/picgo'
 
 const configRouter = new RPCRouter()
 
+const errorToMessage = (e: unknown): string => {
+  if (e instanceof Error) return e.message
+  return String(e)
+}
+
+const ok = <T>(data: T): IRPCResult<T> => ({
+  success: true,
+  data
+})
+
+const fail = <T>(e: unknown): IRPCResult<T> => ({
+  success: false,
+  error: errorToMessage(e)
+})
+
 configRouter
   .add(IRPCActionType.GET_PICBED_CONFIG_LIST, async (args) => {
-    const [type] = args as IGetUploaderConfigListArgs
-    const config = getUploaderConfigList(type)
-    return config
+    try {
+      const [type] = args as IGetUploaderConfigListArgs
+      const configList = picgo.uploaderConfig.getConfigList(type)
+      const activeConfig = picgo.uploaderConfig.getActiveConfig(type)
+      return ok({
+        configList,
+        defaultId: activeConfig?._id ?? ''
+      })
+    } catch (e) {
+      return fail(e)
+    }
   })
   .add(IRPCActionType.DELETE_PICBED_CONFIG, async (args) => {
-    const [type, id] = args as IDeleteUploaderConfigArgs
-    const config = deleteUploaderConfig(type, id)
-    return config
+    try {
+      const [type, configName] = args as IDeleteUploaderConfigArgs
+      const existing = picgo.uploaderConfig.getConfigList(type)
+      if (existing.length <= 1) {
+        throw new Error('Can not delete the last config')
+      }
+      picgo.uploaderConfig.remove(type, configName)
+      const configList = picgo.uploaderConfig.getConfigList(type)
+      const activeConfig = picgo.uploaderConfig.getActiveConfig(type)
+      return ok({
+        configList,
+        defaultId: activeConfig?._id ?? ''
+      })
+    } catch (e) {
+      return fail(e)
+    }
   })
   .add(IRPCActionType.COPY_UPLOADER_CONFIG, async (args) => {
-    const [type, id] = args as ICopyUploaderConfigArgs
-    const config = copyUploaderConfig(type, id)
-    return config
+    try {
+      const [type, configName, newConfigName] = args as ICopyUploaderConfigArgs
+      picgo.uploaderConfig.copy(type, configName, newConfigName)
+      const configList = picgo.uploaderConfig.getConfigList(type)
+      const activeConfig = picgo.uploaderConfig.getActiveConfig(type)
+      return ok({
+        configList,
+        defaultId: activeConfig?._id ?? ''
+      })
+    } catch (e) {
+      return fail(e)
+    }
   })
   .add(IRPCActionType.SELECT_UPLOADER, async (args) => {
-    const [type, id] = args as ISelectUploaderConfigArgs
-    selectUploaderConfig(type, id)
-    return true
+    try {
+      const [type, configName] = args as ISelectUploaderConfigArgs
+      const activeConfig = picgo.uploaderConfig.use(type, configName)
+      return ok(activeConfig._id)
+    } catch (e) {
+      return fail(e)
+    }
   })
   .add(IRPCActionType.UPDATE_UPLOADER_CONFIG, async (args) => {
-    const [type, id, config] = args as IUpdateUploaderConfigArgs
-    updateUploaderConfig(type, id, config)
-    return true
+    try {
+      const [type, configId, config] = args as IUpdateUploaderConfigArgs
+      const configName = typeof config._configName === 'string' ? config._configName : ''
+      if (configId && !configName) {
+        throw new Error('Config name can not be empty')
+      }
+
+      let oldConfigName = ''
+      if (configId) {
+        const configList = picgo.uploaderConfig.getConfigList(type)
+        const existConfig = configList.find(item => item._id === configId)
+        if (!existConfig) {
+          throw new Error('Config not found')
+        }
+        oldConfigName = existConfig._configName
+      }
+
+      if (oldConfigName && oldConfigName !== configName) {
+        picgo.uploaderConfig.rename(type, oldConfigName, configName)
+      }
+      picgo.uploaderConfig.createOrUpdate(type, configName, config)
+      return ok(true)
+    } catch (e) {
+      return fail(e)
+    }
   })
 
 export {

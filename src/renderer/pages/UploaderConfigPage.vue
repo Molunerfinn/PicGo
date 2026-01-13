@@ -22,7 +22,7 @@
       >
         <div
           :class="`config-item ${defaultConfigId === item._id ? 'selected' : ''}`"
-          @click="() => selectItem(item._id)"
+          @click="() => selectItem(item._configName)"
         >
           <div class="config-name">
             {{ item._configName }}
@@ -39,20 +39,20 @@
           <div class="operation-container">
             <el-icon
               class="el-icon-edit"
-              @click="openEditPage(item._id)"
+              @click.stop="openEditPage(item._id)"
             >
               <Edit />
             </el-icon>
             <el-icon
               class="el-icon-copy"
-              @click.stop="() => copyConfig(item._id)"
+              @click.stop="() => copyConfig(item._configName)"
             >
               <DocumentCopy />
             </el-icon>
             <el-icon
               class="el-icon-delete"
               :class="curConfigList.length <= 1 ? 'disabled' : ''"
-              @click.stop="() => deleteConfig(item._id)"
+              @click.stop="() => deleteConfig(item._configName)"
             >
               <Delete />
             </el-icon>
@@ -96,7 +96,7 @@
 </template>
 <script lang="ts" setup>
 import { Delete, DocumentCopy, Edit, Plus } from '@element-plus/icons-vue'
-import { ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { saveConfig, triggerRPC } from '@/utils/dataSender'
 import { showNotification } from '@/utils/notification'
 import dayjs from 'dayjs'
@@ -110,14 +110,27 @@ const $router = useRouter()
 const $route = useRoute()
 
 const type = ref('')
-const curConfigList = ref<IStringKeyMap[]>([])
+const curConfigList = ref<IUploaderConfigListItem[]>([])
 const defaultConfigId = ref('')
 const store = useStore()
 const $confirm = ElMessageBox.confirm
+const $prompt = ElMessageBox.prompt
 
-async function selectItem (id: string) {
-  await triggerRPC<void>(IRPCActionType.SELECT_UPLOADER, type.value, id)
-  defaultConfigId.value = id
+type MessageBoxAction = 'confirm' | 'cancel' | 'close'
+
+interface PromptBoxState {
+  inputValue?: string
+  confirmButtonLoading?: boolean
+}
+
+async function selectItem (configName: string) {
+  const res = await triggerRPC<IRPCResult<string>>(IRPCActionType.SELECT_UPLOADER, type.value, configName)
+  if (!res) return
+  if (!res.success) {
+    ElMessage.warning(res.error)
+    return
+  }
+  defaultConfigId.value = res.data
 }
 
 onBeforeRouteUpdate((to, from, next) => {
@@ -134,9 +147,14 @@ onBeforeMount(() => {
 })
 
 async function getCurrentConfigList () {
-  const configList = await triggerRPC<IUploaderConfigItem>(IRPCActionType.GET_PICBED_CONFIG_LIST, type.value)
-  curConfigList.value = configList?.configList ?? []
-  defaultConfigId.value = configList?.defaultId ?? ''
+  const configList = await triggerRPC<IRPCResult<IUploaderConfigItem>>(IRPCActionType.GET_PICBED_CONFIG_LIST, type.value)
+  if (!configList) return
+  if (!configList.success) {
+    ElMessage.warning(configList.error)
+    return
+  }
+  curConfigList.value = configList.data?.configList ?? []
+  defaultConfigId.value = configList.data?.defaultId ?? ''
 }
 
 function openEditPage (configId: string) {
@@ -156,7 +174,7 @@ function formatTime (time: number): string {
   return dayjs(time).format('YYYY-MM-DD HH:mm:ss')
 }
 
-function deleteConfig (id: string) {
+function deleteConfig (configName: string) {
   if (curConfigList.value.length <= 1) {
     return
   }
@@ -165,26 +183,51 @@ function deleteConfig (id: string) {
     cancelButtonText: $T('CANCEL'),
     type: 'warning'
   }).then(async () => {
-    const res = await triggerRPC<IUploaderConfigItem | undefined>(IRPCActionType.DELETE_PICBED_CONFIG, type.value, id)
+    const res = await triggerRPC<IRPCResult<IUploaderConfigItem>>(IRPCActionType.DELETE_PICBED_CONFIG, type.value, configName)
     if (!res) return
-    curConfigList.value = res.configList
-    defaultConfigId.value = res.defaultId
+    if (!res.success) {
+      ElMessage.warning(res.error)
+      return
+    }
+    curConfigList.value = res.data.configList
+    defaultConfigId.value = res.data.defaultId
   }).catch((e) => {
     console.log(e)
     return true
   })
 }
 
-function copyConfig (id: string) {
-  $confirm($T('TIPS_COPY_UPLOADER_CONFIG'), $T('TIPS_NOTICE'), {
+function copyConfig (configName: string) {
+  $prompt($T('TIPS_COPY_UPLOADER_CONFIG'), $T('TIPS_NOTICE'), {
     confirmButtonText: $T('CONFIRM'),
     cancelButtonText: $T('CANCEL'),
-    type: 'warning'
-  }).then(async () => {
-    const res = await triggerRPC<IUploaderConfigItem | undefined>(IRPCActionType.COPY_UPLOADER_CONFIG, type.value, id)
-    if (!res) return
-    curConfigList.value = res.configList
-    defaultConfigId.value = res.defaultId
+    inputValue: `${configName} - Copy`,
+    inputPlaceholder: $T('UPLOADER_CONFIG_PLACEHOLDER'),
+    beforeClose: async (action: MessageBoxAction, instance: PromptBoxState, done: () => void) => {
+      if (action !== 'confirm') {
+        done()
+        return
+      }
+
+      const newConfigName = String(instance.inputValue ?? '').trim()
+      if (!newConfigName) {
+        ElMessage.warning('Config name can not be empty')
+        return
+      }
+
+      instance.confirmButtonLoading = true
+      const res = await triggerRPC<IRPCResult<IUploaderConfigItem>>(IRPCActionType.COPY_UPLOADER_CONFIG, type.value, configName, newConfigName)
+      instance.confirmButtonLoading = false
+
+      if (!res) return
+      if (!res.success) {
+        ElMessage.warning(res.error)
+        return
+      }
+      curConfigList.value = res.data.configList
+      defaultConfigId.value = res.data.defaultId
+      done()
+    }
   }).catch((e) => {
     console.log(e)
     return true

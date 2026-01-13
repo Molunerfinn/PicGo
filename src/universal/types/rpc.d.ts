@@ -1,9 +1,13 @@
 
+type IRPCResult<T> =
+  | { success: true, data: T }
+  | { success: false, error: string }
+
 type IGetUploaderConfigListArgs = [type: string]
-type IDeleteUploaderConfigArgs = [type: string, id: string]
-type ISelectUploaderConfigArgs = [type: string, id: string]
-type IUpdateUploaderConfigArgs = [type: string, id: string, config: IStringKeyMap]
-type ICopyUploaderConfigArgs = [type: string, id: string]
+type IDeleteUploaderConfigArgs = [type: string, configName: string]
+type ISelectUploaderConfigArgs = [type: string, configName: string]
+type IUpdateUploaderConfigArgs = [type: string, configId: string, config: IStringKeyMap]
+type ICopyUploaderConfigArgs = [type: string, configName: string, newConfigName: string]
 type IGetLatestVersionArgs = [isCheckBetaVersion: boolean]
 type IToolboxCheckArgs = [type: import('./enum').IToolboxItemType]
 type IOpenFileArgs = [filePath: string]

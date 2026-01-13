@@ -49,6 +49,7 @@ import { sendToMain, triggerRPC } from '@/utils/dataSender'
 import { showNotification } from '@/utils/notification'
 import { useRoute, useRouter } from 'vue-router'
 import ConfigForm from '@/components/ConfigForm.vue'
+import { ElMessage } from 'element-plus'
 // import mixin from '@/utils/ConfirmButtonMixin'
 import {
   IpcRendererEvent
@@ -72,7 +73,13 @@ onBeforeMount(() => {
 const handleConfirm = async () => {
   const result = (await $configForm.value?.validate()) || false
   if (result !== false) {
-    await triggerRPC<void>(IRPCActionType.UPDATE_UPLOADER_CONFIG, type.value, result?._id, result)
+    const configId = ($route.params.configId as string) || ''
+    const res = await triggerRPC<IRPCResult<boolean>>(IRPCActionType.UPDATE_UPLOADER_CONFIG, type.value, configId, result)
+    if (!res) return
+    if (!res.success) {
+      ElMessage.warning(res.error)
+      return
+    }
     showNotification({
       title: $T('SETTINGS_RESULT'),
       body: $T('TIPS_SET_SUCCEED')
