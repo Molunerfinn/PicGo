@@ -211,7 +211,7 @@ function copyConfig (configName: string) {
 
       const newConfigName = String(instance.inputValue ?? '').trim()
       if (!newConfigName) {
-        ElMessage.warning('Config name can not be empty')
+        ElMessage.warning($T('TIPS_UPLOADER_CONFIG_NAME_EMPTY'))
         return
       }
 

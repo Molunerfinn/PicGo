@@ -1,6 +1,7 @@
 import { IRPCActionType } from '~/universal/types/enum'
 import { RPCRouter } from '../router'
 import picgo from '@core/picgo'
+import { T } from '~/main/i18n'
 
 const configRouter = new RPCRouter()
 
@@ -38,7 +39,7 @@ configRouter
       const [type, configName] = args as IDeleteUploaderConfigArgs
       const existing = picgo.uploaderConfig.getConfigList(type)
       if (existing.length <= 1) {
-        throw new Error('Can not delete the last config')
+        throw new Error(T('TIPS_UPLOADER_CONFIG_CANNOT_DELETE_LAST'))
       }
       picgo.uploaderConfig.remove(type, configName)
       const configList = picgo.uploaderConfig.getConfigList(type)
@@ -79,7 +80,7 @@ configRouter
       const [type, configId, config] = args as IUpdateUploaderConfigArgs
       const configName = typeof config._configName === 'string' ? config._configName : ''
       if (configId && !configName) {
-        throw new Error('Config name can not be empty')
+        throw new Error(T('TIPS_UPLOADER_CONFIG_NAME_EMPTY'))
       }
 
       let oldConfigName = ''
@@ -87,7 +88,7 @@ configRouter
         const configList = picgo.uploaderConfig.getConfigList(type)
         const existConfig = configList.find(item => item._id === configId)
         if (!existConfig) {
-          throw new Error('Config not found')
+          throw new Error(T('TIPS_UPLOADER_CONFIG_NOT_FOUND'))
         }
         oldConfigName = existConfig._configName
       }
