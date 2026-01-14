@@ -63,7 +63,8 @@ module.exports = [
       'test/unit/coverage/**',
       'test/unit/*.js',
       'test/e2e/*.js',
-      'node_modules/**'
+      'node_modules/**',
+      'vitest.config.ts',
     ]
   },
   {
