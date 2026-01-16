@@ -50,6 +50,43 @@ PICGO_CLOUD_AGREE_PREFIX: "I have read and agree to PicGo's "
 PICGO_CLOUD_TERMS_OF_SERVICE: Terms of Service
 PICGO_CLOUD_AGREE_AND: " and "
 PICGO_CLOUD_PRIVACY_POLICY: Privacy Policy
+PICGO_CLOUD_LOGIN_EXPIRED: Login expired. Please log in again.
+PICGO_CLOUD_E2E_CHECKBOX_LABEL: Enable E2E encryption
+PICGO_CLOUD_E2E_ENABLE_WARNING_TITLE: Enable E2E Encryption
+PICGO_CLOUD_E2E_ENABLE_WARNING_MESSAGE: "E2E encryption requires you to keep your PIN safe. If you lose your PIN, the encrypted data cannot be recovered. PicGo does not store your PIN or any recovery data."
+PICGO_CLOUD_REMOTE_E2E_AUTO_ENABLED: Remote config is E2E-encrypted. E2E has been enabled locally.
+PICGO_CLOUD_E2E_PIN_SETUP_TITLE: Set up E2E PIN
+PICGO_CLOUD_E2E_PIN_DECRYPT_TITLE: Enter E2E PIN
+PICGO_CLOUD_E2E_PIN_RETRY_TITLE: "Incorrect PIN. Please try again (attempt ${retryCount})."
+PICGO_CLOUD_E2E_PIN_PLACEHOLDER: PIN
+PICGO_CLOUD_E2E_PIN_CONFIRM_PLACEHOLDER: Confirm PIN
+PICGO_CLOUD_CONFIG_SYNC_SUCCESS: Config sync succeeded.
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_DETECTED: Conflict detected. Please resolve the conflicts.
+PICGO_CLOUD_CONFIG_SYNC_FAILED: Config sync failed.
+PICGO_CLOUD_CONFIG_SYNC_ABORTED: Config sync cancelled.
+PICGO_CLOUD_CONFIG_SYNC_FAILED_WITH_REASON: "Config sync failed: ${reason}"
+PICGO_CLOUD_CONFIG_SYNC_PIN_MAX_RETRY: Too many incorrect PIN attempts. Please try again.
+PICGO_CLOUD_CONFIG_SYNC_LOCAL_CONFIG_INVALID: Local config is invalid. Please check your config file.
+PICGO_CLOUD_CONFIG_SYNC_IN_PROGRESS: Config sync is in progress.
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_PENDING: There is a pending conflict session. Please resolve conflicts first.
+PICGO_CLOUD_CONFIG_SYNC_NO_CONFLICT_SESSION: No conflict session found.
+PICGO_CLOUD_CONFIG_SYNC_RESOLUTION_INCOMPLETE: Please choose Local or Cloud for all conflict items.
+PICGO_CLOUD_CONFIG_SYNC_STARTING: Config sync started...
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_TITLE: "Conflict Detected (${count})"
+PICGO_CLOUD_CONFIG_SYNC_CHOOSE_ALL_LOCAL: Choose All Local
+PICGO_CLOUD_CONFIG_SYNC_CHOOSE_ALL_CLOUD: Choose All Cloud
+PICGO_CLOUD_CONFIG_SYNC_RESET_ALL: Reset All
+PICGO_CLOUD_CONFIG_SYNC_LOCAL_VERSION: Local Version
+PICGO_CLOUD_CONFIG_SYNC_CLOUD_VERSION: Cloud Version
+PICGO_CLOUD_CONFIG_SYNC_ABORT: Abort
+PICGO_CLOUD_CONFIG_SYNC_CONFIRM_AND_SYNC: Confirm & Sync
+PICGO_CLOUD_CONFIG_SYNC_VALUE_UNDEFINED: (empty)
+PICGO_CLOUD_LAST_SYNC_TIME: "Last sync time: ${time}"
+PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_TITLE: Restart Required?
+PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_MESSAGE: Some settings may require a restart to take effect. Restart now?
+PICGO_CLOUD_CONFIG_SYNC_RESTART_NOW: Restart Now
+PICGO_CLOUD_CONFIG_SYNC_RESTART_LATER: Later
+INPUT_BOX_CONFIRM_MISMATCH: The two inputs do not match.
 PICGO_SPONSOR_TEXT: PicGo is a free software, if you like it, please don't forget to buy me a cup of coffee.
 ALIPAY: Alipay
 WECHATPAY: Wechat Pay
