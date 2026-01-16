@@ -25,14 +25,14 @@ interface IRPCServer {
 
 type IRPCRoutes = Map<import('./enum').IRPCActionType, IRPCHandler<any>>
 
-type IRPCHandler<T> = (args: any[], event: import('electron').IpcMainEvent) => Promise<T>
+type IRPCHandler<T> = (args: any[], event: import('electron').IpcMainEvent | import('electron').IpcMainInvokeEvent) => Promise<T>
 
 interface IRPCRouter {
   add<T>(action: import('./enum').IRPCActionType, handler: IRPCHandler<T>): IRPCRouter
   routes: () => IRPCRoutes
 }
 
-type IToolboxChecker<T = any> = (event: import('electron').IpcMainEvent) => Promise<T>
+type IToolboxChecker<T = any> = (event: import('electron').IpcMainEvent | import('electron').IpcMainInvokeEvent) => Promise<T>
 
 type IToolboxCheckerMap<T extends import('./enum').IToolboxItemType> = {
   [type in T]: IToolboxChecker

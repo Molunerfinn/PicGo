@@ -31,22 +31,14 @@ export function getConfig<T> (key?: string): Promise<T | undefined> {
 }
 
 /**
-   * trigger RPC action
-   * TODO: create an isolate rpc handler
-   */
-export function triggerRPC<T> (action: IRPCActionType, ...args: any[]): Promise<T | null> {
-  return new Promise((resolve) => {
-    const callbackId = uuid()
-    const callback = (event: IpcRendererEvent, data: T | null, returnActionType: IRPCActionType, returnCallbackId: string) => {
-      if (returnCallbackId === callbackId && returnActionType === action) {
-        resolve(data)
-        ipcRenderer.removeListener(RPC_ACTIONS, callback)
-      }
-    }
-    const data = getRawData(args)
-    ipcRenderer.on(RPC_ACTIONS, callback)
-    ipcRenderer.send(RPC_ACTIONS, action, data, callbackId)
-  })
+ * Invoke an RPC action and await its return value.
+ *
+ * This uses `ipcRenderer.invoke(RPC_ACTIONS, action, args)` which is backed by
+ * `ipcMain.handle(RPC_ACTIONS, ...)` in the main process RPC server.
+ */
+export function invokeRPC<T> (action: IRPCActionType, ...args: any[]): Promise<IRPCResult<T>> {
+  const data = getRawData(args)
+  return ipcRenderer.invoke(RPC_ACTIONS, action, data) as Promise<IRPCResult<T>>
 }
 
 /**

@@ -34,6 +34,22 @@ GALLERY: Gallery
 PICBEDS_SETTINGS: Picbeds Settings
 PICGO_SETTINGS: PicGo Settings
 PLUGIN_SETTINGS: Plugins Settings
+PICGO_CLOUD_TITLE: PicGo Cloud
+PICGO_CLOUD_ERROR_TITLE: PicGo Cloud Error
+PICGO_CLOUD_NOT_LOGGED_IN: Not logged in to PicGo Cloud.
+PICGO_CLOUD_LOGIN: Log In
+PICGO_CLOUD_LOGOUT: Log Out
+PICGO_CLOUD_CANCEL_LOGIN: Cancel Login
+PICGO_CLOUD_RETRY: Retry
+PICGO_CLOUD_CONFIG_SYNC: Config Sync
+PICGO_CLOUD_LOGIN_IN_PROGRESS: Login in progress. Please finish login in your browser.
+PICGO_CLOUD_LOGGED_IN_AS: "Logged in as: ${user}"
+PICGO_CLOUD_LOGIN_TIMEOUT: Login timed out. Please try again.
+PICGO_CLOUD_LOGIN_FAILED: Login failed. Please try again.
+PICGO_CLOUD_AGREE_PREFIX: "I have read and agree to PicGo's "
+PICGO_CLOUD_TERMS_OF_SERVICE: Terms of Service
+PICGO_CLOUD_AGREE_AND: " and "
+PICGO_CLOUD_PRIVACY_POLICY: Privacy Policy
 PICGO_SPONSOR_TEXT: PicGo is a free software, if you like it, please don't forget to buy me a cup of coffee.
 ALIPAY: Alipay
 WECHATPAY: Wechat Pay

@@ -45,7 +45,7 @@
 import { IRPCActionType } from '~/universal/types/enum'
 import { ref, onBeforeMount } from 'vue'
 import { T as $T } from '@/i18n/index'
-import { sendToMain, triggerRPC } from '@/utils/dataSender'
+import { sendToMain, invokeRPC } from '@/utils/dataSender'
 import { showNotification } from '@/utils/notification'
 import { useRoute, useRouter } from 'vue-router'
 import ConfigForm from '@/components/ConfigForm.vue'
@@ -74,10 +74,10 @@ const handleConfirm = async () => {
   const result = (await $configForm.value?.validate()) || false
   if (result !== false) {
     const configId = ($route.params.configId as string) || ''
-    const res = await triggerRPC<IRPCResult<boolean>>(IRPCActionType.UPDATE_UPLOADER_CONFIG, type.value, configId, result)
-    if (!res) return
+    const res = await invokeRPC<boolean>(IRPCActionType.UPDATE_UPLOADER_CONFIG, type.value, configId, result)
     if (!res.success) {
-      ElMessage.warning(res.error)
+      const message = res.error
+      ElMessage.warning(message)
       return
     }
     showNotification({

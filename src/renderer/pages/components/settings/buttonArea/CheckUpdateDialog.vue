@@ -40,7 +40,7 @@ import pkg from 'root/package.json'
 import { compare } from 'compare-versions'
 import { IRPCActionType } from '~/universal/types/enum'
 import { useVModel } from '@/hooks/useVModel'
-import { triggerRPC } from '@/utils/dataSender'
+import { invokeRPC } from '@/utils/dataSender'
 import { openURL } from '@/utils/common'
 
 interface IProps {
@@ -75,12 +75,12 @@ watch(() => dialogVisible.value, (value) => {
 })
 
 async function checkUpdate () {
-  const version = await triggerRPC<string>(IRPCActionType.GET_LATEST_VERSION, checkBetaUpdate.value)
-  if (version) {
-    latestVersion.value = version
-  } else {
-    latestVersion.value = $T('TIPS_NETWORK_ERROR')
+  const res = await invokeRPC<string>(IRPCActionType.GET_LATEST_VERSION, checkBetaUpdate.value)
+  if (!res.success) {
+    latestVersion.value = res.error || $T('TIPS_NETWORK_ERROR')
+    return
   }
+  latestVersion.value = res.data
 }
 
 function confirmCheckVersion () {

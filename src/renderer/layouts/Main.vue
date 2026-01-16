@@ -77,6 +77,12 @@
               </el-menu-item>
             </template>
           </el-sub-menu>
+          <el-menu-item :index="routerConfig.PICGO_CLOUD_PAGE">
+            <el-icon>
+              <Cloudy />
+            </el-icon>
+            <span>PicGo Cloud</span>
+          </el-menu-item>
           <el-menu-item :index="routerConfig.SETTING_PAGE">
             <el-icon>
               <Setting />
@@ -205,6 +211,7 @@ import {
   UploadFilled,
   PictureFilled,
   Menu,
+  Cloudy,
   Share,
   InfoFilled,
   Minus,

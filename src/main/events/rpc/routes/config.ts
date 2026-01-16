@@ -2,23 +2,9 @@ import { IRPCActionType } from '~/universal/types/enum'
 import { RPCRouter } from '../router'
 import picgo from '@core/picgo'
 import { T } from '~/main/i18n'
+import { fail, ok } from '../utils'
 
 const configRouter = new RPCRouter()
-
-const errorToMessage = (e: unknown): string => {
-  if (e instanceof Error) return e.message
-  return String(e)
-}
-
-const ok = <T>(data: T): IRPCResult<T> => ({
-  success: true,
-  data
-})
-
-const fail = <T>(e: unknown): IRPCResult<T> => ({
-  success: false,
-  error: errorToMessage(e)
-})
 
 configRouter
   .add(IRPCActionType.GET_PICBED_CONFIG_LIST, async (args) => {

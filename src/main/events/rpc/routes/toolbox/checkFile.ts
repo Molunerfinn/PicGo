@@ -1,5 +1,4 @@
 import fs from 'fs-extra'
-import { IpcMainEvent } from 'electron'
 import { IToolboxItemCheckStatus, IToolboxItemType } from '~/universal/types/enum'
 import { sendToolboxResWithType } from './utils'
 import { dbPathChecker, getGalleryDBPath } from '~/main/apis/core/datastore/dbChecker'
@@ -10,7 +9,7 @@ import { T } from '~/main/i18n'
 export const checkFileMap: IToolboxCheckerMap<
 IToolboxItemType.IS_CONFIG_FILE_BROKEN | IToolboxItemType.IS_GALLERY_FILE_BROKEN
 > = {
-  [IToolboxItemType.IS_CONFIG_FILE_BROKEN]: async (event: IpcMainEvent) => {
+  [IToolboxItemType.IS_CONFIG_FILE_BROKEN]: async (event) => {
     const sendToolboxRes = sendToolboxResWithType(IToolboxItemType.IS_CONFIG_FILE_BROKEN)
     sendToolboxRes(event, {
       status: IToolboxItemCheckStatus.LOADING
