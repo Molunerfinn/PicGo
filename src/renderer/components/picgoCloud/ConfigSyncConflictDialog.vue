@@ -194,7 +194,7 @@
             <el-icon class="text-[14px]">
               <SuccessFilled />
             </el-icon>
-            {{ $T('PICGO_CLOUD_CONFIG_SYNC_SUCCESS') }}
+            {{ $T('PICGO_CLOUD_CONFIG_SYNC_CONFLICT_RESOLVED') }}
           </span>
         </div>
         <div class="flex items-center gap-[12px]">
