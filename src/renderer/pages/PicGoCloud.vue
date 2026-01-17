@@ -29,12 +29,13 @@
           </template>
 
           <template v-if="userInfo">
-            <div class="flex items-center justify-between gap-[12px] mb-[12px]">
-              <div class="text-[14px] text-[#ddd] leading-[20px]">
+            <div class="flex items-center gap-[12px] mb-[12px]">
+              <div class="text-[16px] font-medium text-[#ddd] leading-[22px]">
                 {{ $T('PICGO_CLOUD_LOGGED_IN_AS', { user: userInfo.user }) }}
               </div>
               <el-button
                 type="danger"
+                size="small"
                 @click="handleLogout"
               >
                 {{ $T('PICGO_CLOUD_LOGOUT') }}
@@ -51,20 +52,58 @@
                 {{ $T('PICGO_CLOUD_CONFIG_SYNC') }}
               </el-button>
 
-              <el-checkbox
-                v-model="e2eChecked"
-                :disabled="isE2ECheckboxDisabled"
-              >
-                <span class="text-[12px] text-[#bbb] leading-[18px]">
-                  {{ $T('PICGO_CLOUD_E2E_CHECKBOX_LABEL') }}
+              <div class="flex items-center gap-[8px] text-[#bbb]">
+                <span class="text-[12px] text-[#bbb] leading-[18px] shrink-0 whitespace-nowrap">
+                  {{ $T('PICGO_CLOUD_ENCRYPTION_MODE_LABEL') }}
                 </span>
-              </el-checkbox>
-              <span
-                v-if="lastSyncedAtText"
-                class="text-[12px] text-[#999] leading-[18px]"
-              >
-                {{ $T('PICGO_CLOUD_LAST_SYNC_TIME', { time: lastSyncedAtText }) }}
-              </span>
+                <el-select
+                  v-model="encryptionMode"
+                  size="small"
+                  class="w-[180px] shrink-0"
+                  :disabled="isEncryptionModeDisabled"
+                >
+                  <el-option
+                    :label="$T('PICGO_CLOUD_ENCRYPTION_MODE_AUTO')"
+                    :value="IPicGoCloudEncryptionMode.AUTO"
+                  />
+                  <el-option
+                    :label="$T('PICGO_CLOUD_ENCRYPTION_MODE_SERVER')"
+                    :value="IPicGoCloudEncryptionMode.SERVER_SIDE"
+                  />
+                  <el-option
+                    :label="$T('PICGO_CLOUD_ENCRYPTION_MODE_E2E')"
+                    :value="IPicGoCloudEncryptionMode.E2E"
+                  />
+                </el-select>
+                <el-tooltip
+                  effect="dark"
+                  placement="top"
+                  :enterable="true"
+                >
+                  <template #content>
+                    <div class="text-[12px] leading-[18px] max-w-[320px]">
+                      <div>{{ $T('PICGO_CLOUD_ENCRYPTION_MODE_TIP_AUTO') }}</div>
+                      <div>{{ $T('PICGO_CLOUD_ENCRYPTION_MODE_TIP_SERVER') }}</div>
+                      <div>{{ $T('PICGO_CLOUD_ENCRYPTION_MODE_TIP_E2E') }}</div>
+                      <div class="mt-[6px]">
+                        <el-link
+                          type="primary"
+                          :underline="false"
+                          @click.stop.prevent="handleOpenDocs"
+                        >
+                          {{ $T('PICGO_CLOUD_ENCRYPTION_MODE_TIP_DOC') }}
+                        </el-link>
+                      </div>
+                    </div>
+                  </template>
+                  <el-icon class="cursor-pointer text-[#999] hover:text-blue">
+                    <QuestionFilled />
+                  </el-icon>
+                </el-tooltip>
+              </div>
+            </div>
+            <div class="mt-[8px] text-[12px] text-[#999] leading-[18px]">
+              {{ $T('PICGO_CLOUD_LAST_SYNC_TIME', { time: lastSyncedAtText || $T('PICGO_CLOUD_LAST_SYNC_TIME_NONE') }) }}
             </div>
           </template>
 
@@ -140,9 +179,11 @@ import { openURL } from '@/utils/common'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ConfigSyncConflictDialog from '@/components/picgoCloud/ConfigSyncConflictDialog.vue'
 import dayjs from 'dayjs'
+import { QuestionFilled } from '@element-plus/icons-vue'
 import {
   IPicGoCloudConfigSyncSessionStatus,
   IPicGoCloudConfigSyncToastType,
+  IPicGoCloudEncryptionMode,
   type IPicGoCloudConfigSyncRunResult,
   type IPicGoCloudConfigSyncState,
   type IPicGoCloudConfigSyncResolution
@@ -164,6 +205,7 @@ const hasAgreedToTermsAndPrivacy = computed({
 
 const TERMS_URL = 'https://picgo.app/terms/'
 const PRIVACY_URL = 'https://picgo.app/privacy/'
+const DOC_URL = 'https://picgo.github.io/PicGo-Doc/'
 
 const isUserInfoLoading = computed(() => userInfoStatus.value === IPicGoCloudRequestStatus.LOADING)
 const isLoginInProgress = computed(() => loginStatus.value === IPicGoCloudLoginStatus.IN_PROGRESS)
@@ -183,23 +225,27 @@ const configSyncSessionStatus = computed(() => configSyncState.value.sessionStat
 const isConfigSyncRunning = computed(() => configSyncSessionStatus.value === IPicGoCloudConfigSyncSessionStatus.SYNCING)
 const isConfigSyncBusy = computed(() => configSyncSessionStatus.value !== IPicGoCloudConfigSyncSessionStatus.IDLE)
 const configSyncConflicts = computed(() => configSyncState.value.conflicts ?? [])
-const lastSyncedAtText = computed(() => {
+const lastSyncedAtText = computed<string | undefined>(() => {
   const raw = configSyncState.value.lastSyncedAt
-  if (!raw) return ''
+  if (!raw) return undefined
   const date = dayjs(raw)
-  if (!date.isValid()) return ''
+  if (!date.isValid()) return undefined
   return date.format('YYYY-MM-DD HH:mm:ss')
 })
 
-const isE2ECheckboxDisabled = computed(() => {
+const isEncryptionModeDisabled = computed(() => {
   if (isConfigSyncBusy.value) return true
   return isConfigSyncStateLoading.value || isE2EPreferenceUpdating.value
 })
 
-const e2eChecked = computed({
-  get: () => configSyncState.value.enableE2E === true,
-  set: (value: boolean) => {
-    void handleToggleE2E(value)
+const encryptionMode = computed<IPicGoCloudEncryptionMode>({
+  get: () => {
+    if (configSyncState.value.enableE2E === true) return IPicGoCloudEncryptionMode.E2E
+    if (configSyncState.value.enableE2E === false) return IPicGoCloudEncryptionMode.SERVER_SIDE
+    return IPicGoCloudEncryptionMode.AUTO
+  },
+  set: (value: IPicGoCloudEncryptionMode) => {
+    void handleSetEncryptionMode(value)
   }
 })
 
@@ -209,6 +255,11 @@ const handleOpenTerms = () => {
 
 const handleOpenPrivacy = () => {
   openURL(PRIVACY_URL)
+}
+
+const handleOpenDocs = () => {
+  // TODO: change dog url
+  openURL(DOC_URL)
 }
 
 onBeforeMount(() => {
@@ -383,12 +434,20 @@ const handleConfirmConfigSyncResolution = async (resolution: IPicGoCloudConfigSy
   }
 }
 
-const handleToggleE2E = async (nextEnabled: boolean) => {
+const handleSetEncryptionMode = async (nextMode: IPicGoCloudEncryptionMode) => {
   if (isE2EPreferenceUpdating.value) return
   if (isConfigSyncBusy.value) return
 
-  // Only turning on needs a warning confirmation. Turning off is immediate and persists `false`.
-  if (nextEnabled) {
+  const currentMode = encryptionMode.value
+  if (nextMode === currentMode) return
+
+  const previousEnableE2E = configSyncState.value.enableE2E
+
+  // Only turning on E2E needs a warning confirmation.
+  // If the user cancels, we persist "server-side encryption" (`enableE2E=false`) per product requirement,
+  // rather than leaving it at AUTO.
+  let modeToPersist = nextMode
+  if (nextMode === IPicGoCloudEncryptionMode.E2E) {
     try {
       await ElMessageBox.confirm(
         $T('PICGO_CLOUD_E2E_ENABLE_WARNING_MESSAGE'),
@@ -402,15 +461,28 @@ const handleToggleE2E = async (nextEnabled: boolean) => {
         }
       )
     } catch {
-      return
+      modeToPersist = IPicGoCloudEncryptionMode.SERVER_SIDE
     }
   }
 
+  // Optimistically update local UI state so the dropdown reflects the user's selection immediately.
+  configSyncState.value = {
+    ...configSyncState.value,
+    enableE2E: modeToPersist === IPicGoCloudEncryptionMode.AUTO
+      ? undefined
+      : modeToPersist === IPicGoCloudEncryptionMode.E2E
+  }
+
   isE2EPreferenceUpdating.value = true
-  const res = await invokeRPC<boolean | undefined>(IRPCActionType.PICGO_CLOUD_CONFIG_SYNC_SET_E2E_PREFERENCE, nextEnabled)
+  const res = await invokeRPC<boolean | undefined>(IRPCActionType.PICGO_CLOUD_CONFIG_SYNC_SET_E2E_PREFERENCE, modeToPersist)
   isE2EPreferenceUpdating.value = false
 
   if (!res.success) {
+    // Restore previous selection on failure.
+    configSyncState.value = {
+      ...configSyncState.value,
+      enableE2E: previousEnableE2E
+    }
     ElMessage.error(res.error)
     return
   }

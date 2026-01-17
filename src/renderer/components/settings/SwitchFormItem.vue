@@ -7,7 +7,6 @@
           <el-tooltip
             class="item"
             effect="dark"
-            :open="true"
             placement="right"
           >
             <template #content>

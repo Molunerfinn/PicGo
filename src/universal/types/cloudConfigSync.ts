@@ -22,6 +22,21 @@ export enum IPicGoCloudConfigSyncToastType {
   INFO = 'info'
 }
 
+export enum IPicGoCloudEncryptionMode {
+  /**
+   * AUTO means "follow remote state". It corresponds to `settings.picgoCloud.enableE2E` being `undefined`.
+   */
+  AUTO = 'AUTO',
+  /**
+   * SERVER_SIDE corresponds to `settings.picgoCloud.enableE2E` being `false`.
+   */
+  SERVER_SIDE = 'SERVER_SIDE',
+  /**
+   * E2E corresponds to `settings.picgoCloud.enableE2E` being `true`.
+   */
+  E2E = 'E2E'
+}
+
 export interface IPicGoCloudConfigSyncConflictItem {
   path: string
   localValue: unknown

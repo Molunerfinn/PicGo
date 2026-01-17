@@ -10,6 +10,7 @@ import fs from 'fs-extra'
 import { parse } from 'comment-json'
 import { cloneDeep, isPlainObject, set, unset } from 'lodash'
 import path from 'path'
+import logger from 'apis/core/picgo/logger'
 import {
   ConfigSyncManager,
   ConflictType,
@@ -23,6 +24,7 @@ import {
   IPicGoCloudConfigSyncRunStatus,
   IPicGoCloudConfigSyncSessionStatus,
   IPicGoCloudConfigSyncToastType,
+  IPicGoCloudEncryptionMode,
   type IPicGoCloudConfigSyncConflictItem,
   type IPicGoCloudConfigSyncResolution,
   type IPicGoCloudConfigSyncRunResult,
@@ -56,6 +58,32 @@ const clearConfigSyncSession = (): void => {
   configSyncSessionStatus = IPicGoCloudConfigSyncSessionStatus.IDLE
   configSyncConflictDiffTree = null
   configSyncConflictItems = []
+}
+
+const logConfigSyncOutcome = (
+  stage: 'sync' | 'applyResolvedConfig',
+  status: SyncStatus,
+  message?: string,
+  meta: { conflictCount?: number } = {}
+): void => {
+  const prefix = `[PicGo Cloud][config-sync][${stage}]`
+  if (status === SyncStatus.SUCCESS) {
+    logger.info(`${prefix} success`)
+    return
+  }
+
+  if (status === SyncStatus.CONFLICT) {
+    const count = typeof meta.conflictCount === 'number' ? meta.conflictCount : 0
+    logger.warn(`${prefix} conflict`, `count=${count}`)
+    return
+  }
+
+  if (message === USER_ABORTED_CODE || message === 'Invalid PIN input') {
+    logger.warn(`${prefix} aborted`)
+    return
+  }
+
+  logger.error(`${prefix} failed`, message || '')
 }
 
 const getLocalEnableE2EPreference = (): boolean | undefined => {
@@ -333,10 +361,18 @@ cloudRouter
   })
   .add(IRPCActionType.PICGO_CLOUD_CONFIG_SYNC_SET_E2E_PREFERENCE, async (args) => {
     try {
-      const [enable] = args as [boolean]
-      picgo.saveConfig({
-        'settings.picgoCloud.enableE2E': enable
-      })
+      const [mode] = args as [IPicGoCloudEncryptionMode]
+      if (mode === IPicGoCloudEncryptionMode.AUTO) {
+        picgo.removeConfig('settings.picgoCloud', 'enableE2E')
+      } else if (mode === IPicGoCloudEncryptionMode.SERVER_SIDE) {
+        picgo.saveConfig({
+          'settings.picgoCloud.enableE2E': false
+        })
+      } else {
+        picgo.saveConfig({
+          'settings.picgoCloud.enableE2E': true
+        })
+      }
       return ok(getLocalEnableE2EPreference())
     } catch (e) {
       return fail(e)
@@ -354,6 +390,7 @@ cloudRouter
     const fallbackState = await buildConfigSyncState()
 
     if (configSyncSessionStatus === IPicGoCloudConfigSyncSessionStatus.SYNCING) {
+      logger.info('[PicGo Cloud][config-sync][sync] already in progress')
       const runRes: IPicGoCloudConfigSyncRunResult = {
         status: IPicGoCloudConfigSyncRunStatus.FAILED,
         message: T('PICGO_CLOUD_CONFIG_SYNC_IN_PROGRESS'),
@@ -364,6 +401,7 @@ cloudRouter
     }
 
     if (configSyncSessionStatus === IPicGoCloudConfigSyncSessionStatus.CONFLICT) {
+      logger.info('[PicGo Cloud][config-sync][sync] pending conflict session')
       const runRes: IPicGoCloudConfigSyncRunResult = {
         status: IPicGoCloudConfigSyncRunStatus.CONFLICT,
         message: T('PICGO_CLOUD_CONFIG_SYNC_CONFLICT_PENDING'),
@@ -380,6 +418,7 @@ cloudRouter
     try {
       const userInfo = await getUserInfo()
       if (!userInfo) {
+        logger.warn('[PicGo Cloud][config-sync][sync] login expired')
         clearConfigSyncSession()
         const runRes: IPicGoCloudConfigSyncRunResult = {
           status: IPicGoCloudConfigSyncRunStatus.FAILED,
@@ -404,8 +443,10 @@ cloudRouter
         configSyncSessionStatus = IPicGoCloudConfigSyncSessionStatus.CONFLICT
         configSyncConflictDiffTree = res.diffTree
         configSyncConflictItems = extractConflictItems(res.diffTree)
+        logConfigSyncOutcome('sync', res.status, res.message, { conflictCount: configSyncConflictItems.length })
       } else {
         clearConfigSyncSession()
+        logConfigSyncOutcome('sync', res.status, res.message)
       }
 
       const localized = localizeConfigSyncResult(res.status, res.message)
@@ -424,6 +465,7 @@ cloudRouter
       }
       return ok(runRes)
     } catch (e) {
+      logger.error('[PicGo Cloud][config-sync][sync] error', e)
       clearConfigSyncSession()
       const localized = localizeConfigSyncResult(SyncStatus.FAILED, e instanceof Error ? e.message : String(e))
       const runRes: IPicGoCloudConfigSyncRunResult = {
@@ -440,6 +482,7 @@ cloudRouter
       const [resolution] = args as [IPicGoCloudConfigSyncResolution]
 
       if (configSyncSessionStatus !== IPicGoCloudConfigSyncSessionStatus.CONFLICT || !configSyncConflictDiffTree) {
+        logger.warn('[PicGo Cloud][config-sync][applyResolvedConfig] no conflict session')
         const runRes: IPicGoCloudConfigSyncRunResult = {
           status: IPicGoCloudConfigSyncRunStatus.FAILED,
           message: T('PICGO_CLOUD_CONFIG_SYNC_NO_CONFLICT_SESSION'),
@@ -453,6 +496,7 @@ cloudRouter
       const providedPaths = new Set(Object.keys(resolution))
       for (const path of expectedPaths) {
         if (!providedPaths.has(path)) {
+          logger.warn('[PicGo Cloud][config-sync][applyResolvedConfig] resolution incomplete')
           const runRes: IPicGoCloudConfigSyncRunResult = {
             status: IPicGoCloudConfigSyncRunStatus.FAILED,
             message: T('PICGO_CLOUD_CONFIG_SYNC_RESOLUTION_INCOMPLETE'),
@@ -465,6 +509,7 @@ cloudRouter
 
       const userInfo = await getUserInfo()
       if (!userInfo) {
+        logger.warn('[PicGo Cloud][config-sync][applyResolvedConfig] login expired')
         clearConfigSyncSession()
         const runRes: IPicGoCloudConfigSyncRunResult = {
           status: IPicGoCloudConfigSyncRunStatus.FAILED,
@@ -491,6 +536,8 @@ cloudRouter
         configSyncSessionStatus = IPicGoCloudConfigSyncSessionStatus.CONFLICT
       }
 
+      logConfigSyncOutcome('applyResolvedConfig', applyRes.status, applyRes.message, { conflictCount: configSyncConflictItems.length })
+
       const localized = localizeConfigSyncResult(applyRes.status, applyRes.message)
       const runStatus = applyRes.status === SyncStatus.SUCCESS
         ? IPicGoCloudConfigSyncRunStatus.SUCCESS
@@ -507,6 +554,7 @@ cloudRouter
       }
       return ok(runRes)
     } catch (e) {
+      logger.error('[PicGo Cloud][config-sync][applyResolvedConfig] error', e)
       // Keep the conflict session so user can retry from UI.
       configSyncSessionStatus = IPicGoCloudConfigSyncSessionStatus.CONFLICT
       const localized = localizeConfigSyncResult(SyncStatus.FAILED, e instanceof Error ? e.message : String(e))
