@@ -95,8 +95,8 @@
           </div>
 
           <!-- Card Content -->
-          <div class="p-[16px]">
-            <div class="grid grid-cols-[1fr_auto_1fr] gap-[12px] items-stretch">
+          <div>
+            <div class="grid grid-cols-[1fr_auto_1fr] gap-[12px] items-stretch overflow-x-auto p-[16px]">
               <!-- Local Option -->
               <div
                 class="relative cursor-pointer rounded-[8px] p-[16px] border-2 transition-all duration-200 group flex flex-col"
