@@ -44,7 +44,7 @@
     "element-plus": "^2.3.7",
     "epipebomb": "^1.0.0",
     "fs-extra": "^10.0.0",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "keycode": "^2.2.0",
     "lodash": "^4.17.21",
     "lodash-id": "^0.14.0",
