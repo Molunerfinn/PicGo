@@ -67,7 +67,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build macOS App (${{ matrix.arch }})
-        run: pnpm run build && electron-builder --config electron-builder.config.ts --mac --${{ matrix.arch }} --publish never
+        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --mac --${{ matrix.arch }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
@@ -130,7 +130,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Windows App (${{ matrix.arch }})
-        run: pnpm run build && electron-builder --config electron-builder.config.ts --win ${{ matrix.build_arch }} --publish never
+        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --win ${{ matrix.build_arch }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
@@ -163,7 +163,7 @@ jobs:
           version: 10
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -181,7 +181,7 @@ jobs:
           sudo apt-get install -y libfuse2
 
       - name: Build Linux App (${{ matrix.arch }})
-        run: pnpm run build && electron-builder --config electron-builder.config.ts --linux --${{ matrix.arch }} --publish never
+        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --linux --${{ matrix.arch }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
