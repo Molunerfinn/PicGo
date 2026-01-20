@@ -95,7 +95,7 @@ jobs:
       matrix:
         include:
           - runner: windows-latest
-            arch: x64
+            arch: x64-ia32
             build_arch: --x64 --ia32
             target: nsis
           - runner: windows-11-arm
@@ -158,7 +158,7 @@ jobs:
             target: AppImage deb snap
           - runner: ubuntu-24.04-arm
             arch: arm64
-            target: AppImage deb snap
+            target: AppImage deb
     steps:
       - name: Check out git repository
         uses: actions/checkout@v4
