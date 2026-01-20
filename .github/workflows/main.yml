@@ -6,11 +6,6 @@ on:
       - v*
   workflow_dispatch:
     inputs:
-      test_upload_dist:
-        description: "Test upload-dist.js script"
-        required: true
-        default: false
-        type: boolean
       build_os:
         description: "Build for specific OS: Windows, macOS, Linux, All"
         required: true
@@ -21,6 +16,16 @@ on:
           - macOS
           - Linux
           - All
+      test_upload_dist:
+        description: "Test upload-dist.js script"
+        required: true
+        default: false
+        type: boolean
+      test_upload_dist_to_dev:
+        description: "Test upload-dist.js script to dev folder"
+        required: true
+        default: false
+        type: boolean
       skip_notarize:
         description: "Skip Notarization (true/false)"
         required: true
@@ -201,7 +206,6 @@ jobs:
   release:
     name: Merge & Release
     needs: [build-macos, build-windows, build-linux]
-    if: always() && (needs.build-macos.result == 'success' || needs.build-windows.result == 'success' || needs.build-linux.result == 'success')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -239,11 +243,11 @@ jobs:
         run: ls -la dist/
 
       - name: Upload to release.picgo.app
-        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.test_upload_dist
+        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.test_upload_dist || github.event.inputs.test_upload_dist_to_dev
         run: |
           ARGS="--all"
 
-          if [[ "${{ github.event.inputs.test_upload_dist }}" == "true" ]]; then
+          if [[ "${{ github.event.inputs.test_upload_dist_to_dev }}" == "true" ]]; then
             ARGS="$ARGS --dev"
             echo "🚧 Test Upload Mode: ON"
           fi
