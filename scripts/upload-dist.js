@@ -15,7 +15,8 @@ const uploadToDev = process.argv.includes('--dev')
 const S3_BUCKET = 'release'
 const S3_LEGACY_BUCKET = 'picgo'
 const VERSION = pkg.version
-const FILE_PATH =  uploadToDev ? `dev/${VERSION}/` : `${VERSION}/`
+const DEV_DIST_PREFIX = 'dev/'
+const FILE_PATH =  uploadToDev ? `${DEV_DIST_PREFIX}${VERSION}/` : `${VERSION}/`
 const S3_SECRET_ID = process.env.PICGO_ENV_S3_SECRET_ID
 const S3_SECRET_KEY = process.env.PICGO_ENV_S3_SECRET_KEY
 const S3_ACCOUNT_ID = process.env.PICGO_ENV_S3_ACCOUNT_ID
@@ -113,11 +114,6 @@ const uploadDist = async () => {
       const filePath = path.join(distPath, fileName)
       let versionFileName = config['version-file']
 
-      // Beta 版本使用不同的 yml 文件名
-      if (VERSION.toLowerCase().includes('beta')) {
-        versionFileName = versionFileName.replace('.yml', '.beta.yml')
-      }
-
       console.log(`[${index + 1}/${configs.length}] Processing ${fileName}`)
 
       // 上传构建产物
@@ -129,16 +125,25 @@ const uploadDist = async () => {
         console.warn(`   ⚠️  File not found: ${fileName}`)
       }
 
+      let versionFilePath = path.join(distPath, versionFileName)
+      // Beta 版本使用不同的 yml 文件名
+      if (VERSION.toLowerCase().includes('beta') && fs.existsSync(versionFilePath)) {
+        versionFileName = versionFileName.replace('.yml', '.beta.yml')
+        // change to beta version file path
+        fs.renameSync(versionFilePath, path.join(distPath, versionFileName))
+        versionFilePath = path.join(distPath, versionFileName)
+      }
+
       // 上传版本文件（每个 yml 只上传一次）
-      const versionFilePath = path.join(distPath, versionFileName)
       if (!uploadedVersionFiles.has(versionFileName) && fs.existsSync(versionFilePath)) {
         console.log(`   Uploading version file: ${versionFileName}`)
+        const versionFileNameFinal = uploadToDev ? `${DEV_DIST_PREFIX}${versionFileName}` : versionFileName
 
         // 上传到主 bucket
         await uploadFileToS3(
           client,
           S3_BUCKET,
-          versionFileName,
+          versionFileNameFinal,
           versionFilePath,
           mime.lookup(versionFileName) || 'text/yaml'
         )
@@ -147,7 +152,7 @@ const uploadDist = async () => {
         await uploadFileToS3(
           legacyClient,
           S3_LEGACY_BUCKET,
-          versionFileName,
+          versionFileNameFinal,
           versionFilePath,
           mime.lookup(versionFileName) || 'text/yaml'
         )
