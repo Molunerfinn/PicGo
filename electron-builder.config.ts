@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
  
 dotenv.config()
 
-const shouldNotarize = process.env.SKIP_NOTARIZE !== 'true';
+const shouldNotarize = process.env.SKIP_NOTARIZE !== 'true'
 
 const config: Configuration = {
   appId: 'com.molunerfinn.picgo',
