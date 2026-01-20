@@ -129,9 +129,10 @@ const uploadDist = async () => {
       // Beta 版本使用不同的 yml 文件名
       if (VERSION.toLowerCase().includes('beta') && fs.existsSync(versionFilePath)) {
         versionFileName = versionFileName.replace('.yml', '.beta.yml')
+        const betaVersionFilePath = path.join(distPath, versionFileName)
         // change to beta version file path
-        fs.renameSync(versionFilePath, path.join(distPath, versionFileName))
-        versionFilePath = path.join(distPath, versionFileName)
+        fs.renameSync(versionFilePath, betaVersionFilePath)
+        versionFilePath = betaVersionFilePath
       }
 
       // 上传版本文件（每个 yml 只上传一次）
