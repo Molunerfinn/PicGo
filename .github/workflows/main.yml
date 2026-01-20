@@ -41,8 +41,10 @@ jobs:
       matrix:
         include:
           - runner: macos-15-intel
+            target: dmg
             arch: x64
           - runner: macos-latest
+            target: dmg
             arch: arm64
     steps:
       - name: Check out git repository
@@ -67,7 +69,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build macOS App (${{ matrix.arch }})
-        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --mac --${{ matrix.arch }} --publish never
+        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --mac ${{ matrix.target }} --${{ matrix.arch }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
@@ -95,9 +97,11 @@ jobs:
           - runner: windows-latest
             arch: x64
             build_arch: --x64 --ia32
+            target: nsis
           - runner: windows-11-arm
             arch: arm64
             build_arch: --arm64
+            target: nsis
     steps:
       - name: Check out git repository
         uses: actions/checkout@v4
@@ -130,7 +134,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Windows App (${{ matrix.arch }})
-        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --win ${{ matrix.build_arch }} --publish never
+        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --win ${{matrix.target}} ${{ matrix.build_arch }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
@@ -151,8 +155,10 @@ jobs:
         include:
           - runner: ubuntu-latest
             arch: x64
+            target: AppImage deb snap
           - runner: ubuntu-24.04-arm
             arch: arm64
+            target: AppImage deb snap
     steps:
       - name: Check out git repository
         uses: actions/checkout@v4
@@ -181,7 +187,7 @@ jobs:
           sudo apt-get install -y libfuse2
 
       - name: Build Linux App (${{ matrix.arch }})
-        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --linux --${{ matrix.arch }} --publish never
+        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --linux ${{matrix.target}} --${{ matrix.arch }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
@@ -234,7 +240,15 @@ jobs:
 
       - name: Upload to release.picgo.app
         if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.test_upload_dist
-        run: node scripts/upload-dist.js --all
+        run: |
+          ARGS="--all"
+
+          if [[ "${{ github.event.inputs.test_upload_dist }}" == "true" ]]; then
+            ARGS="$ARGS --dev"
+            echo "🚧 Test Upload Mode: ON"
+          fi
+
+          node scripts/upload-dist.js $ARGS
         env:
           PICGO_ENV_S3_SECRET_ID: ${{ secrets.PICGO_ENV_S3_SECRET_ID }}
           PICGO_ENV_S3_SECRET_KEY: ${{ secrets.PICGO_ENV_S3_SECRET_KEY }}

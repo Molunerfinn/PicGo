@@ -10,11 +10,12 @@ const path = require('path')
 const distPath = path.join(__dirname, '../dist')
 const S3Client = require('@aws-sdk/client-s3').S3Client
 const Upload = require('@aws-sdk/lib-storage').Upload
+const uploadToDev = process.argv.includes('--dev')
 
 const S3_BUCKET = 'release'
 const S3_LEGACY_BUCKET = 'picgo'
 const VERSION = pkg.version
-const FILE_PATH = `${VERSION}/`
+const FILE_PATH =  uploadToDev ? `dev/${VERSION}/` : `${VERSION}/`
 const S3_SECRET_ID = process.env.PICGO_ENV_S3_SECRET_ID
 const S3_SECRET_KEY = process.env.PICGO_ENV_S3_SECRET_KEY
 const S3_ACCOUNT_ID = process.env.PICGO_ENV_S3_ACCOUNT_ID
