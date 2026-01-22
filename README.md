@@ -52,7 +52,7 @@ PicGo supports mainstream Image hosts out of the box, and can be extended indefi
 - **International / open platforms**: GitHub, SM.MS, Imgur
 - **More options via plugins**: AWS S3, Cloudflare R2, MinIO, and more
 
-> **Note**: PicGo itself will no longer add new third-party Image hosts by default. You can build Image host plugins yourself—see [PicGo-Core](https://picgo.github.io/PicGo-Core-Doc/).
+> **Note**: PicGo itself will no longer add new third-party Image hosts by default. You can build Image host plugins yourself—see [PicGo-Core](https://docs.picgo.app/core/).
 
 ## ✨ Key Features
 
@@ -76,11 +76,11 @@ PicGo is built around a fast, low-friction image upload experience:
 ### 🛠 Developer-friendly
 - **HTTP API**: upload via HTTP requests (v2.2.0+), making it easy to integrate with other tools.
 - **Open source**: fully open-source and transparent.
-- **Great documentation**: detailed docs help you get started quickly. For plugin development, see the [PicGo-Core docs](https://picgo.github.io/PicGo-Core-Doc/).
+- **Great documentation**: detailed docs help you get started quickly. For plugin development, see the [PicGo-Core docs](https://docs.picgo.app/core/).
 
 > There’s more to discover—development progress is tracked in [Projects](https://github.com/Molunerfinn/PicGo/projects).
 
-If you’re new to PicGo, start with the [User Guide](https://picgo.github.io/PicGo-Doc/guide/getting-started.html). If you run into issues, check the [FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md) and closed [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed).
+If you’re new to PicGo, start with the [User Guide](https://docs.picgo.app/gui/guide/getting-started). If you run into issues, check the [FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md) and closed [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed).
 
 ## Download & Install
 

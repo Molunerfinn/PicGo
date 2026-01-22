@@ -22,7 +22,7 @@ body:
       label: 前置阅读 | Pre-reading
       description: 我已经自行查找、阅读以下内容（阅读了请打勾） | I have searched and read the following on my own (Please tick after reading)
       options:
-        - label: "[文档/Doc](https://picgo.github.io/PicGo-Doc/)"
+        - label: "[文档/Doc](https://docs.picgo.app/gui/)"
           required: true
         - label: "[Issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+sort%3Aupdated-desc+is%3Aclosed)"
           required: true

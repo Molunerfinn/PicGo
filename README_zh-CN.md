@@ -53,7 +53,7 @@ PicGo 原生支持主流图床平台，并可通过插件系统无限扩展：
 - **国际/开源平台**：GitHub、SM.MS、Imgur
 - **更多支持**：通过插件支持 AWS S3、Cloudflare R2、MinIO 等第三方图床
 
-> **注意**：PicGo 本体不再增加默认的第三方图床支持。你可以自行开发第三方图床插件。详见 [PicGo-Core](https://picgo.github.io/PicGo-Core-Doc/)。
+> **注意**：PicGo 本体不再增加默认的第三方图床支持。你可以自行开发第三方图床插件。详见 [PicGo-Core](https://docs.picgo.app/core/)。
 
 ## ✨ 特色功能
 
@@ -77,12 +77,11 @@ PicGo 打造了全方位的上传体验，让“传图”这件事变得前所�
 ### 🛠 开发者友好
 - **HTTP API**：支持通过 HTTP 请求调用 PicGo 上传 (v2.2.0+)，方便与其他工具集成。
 - **开源透明**：代码完全开源，安全可靠。
-- **丰富的文档**：详尽的开发文档助你快速上手。插件开发请参考 [PicGo-Core 文档](https://picgo.github.io/PicGo-Core-Doc/)。
+- **丰富的文档**：详尽的开发文档助你快速上手。插件开发请参考 [PicGo-Core 文档](https://docs.picgo.app/core/)。
 
 > 更多功能等你自己去发现，开发进度可以查看 [Projects](https://github.com/Molunerfinn/PicGo/projects)。
 
-**如果第一次使用，请参考应用 [使用文档](https://picgo.github.io/PicGo-Doc/guide/getting-started.html)。遇到问题了还可以看看 [FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md) 以及被关闭的 [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)。**
-
+**如果第一次使用，请参考应用 [使用文档](https://docs.picgo.app/gui/guide/getting-started)。遇到问题了还可以看看 [FAQ](https://github.com/Molunerfinn/PicGo/blob/dev/FAQ.md) 以及被关闭的 [issues](https://github.com/Molunerfinn/PicGo/issues?q=is%3Aissue+is%3Aclosed)。**
 
 ## 下载安装
 
