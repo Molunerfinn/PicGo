@@ -16,6 +16,7 @@
     "build:local": "dotenv -e .env -- electron-vite build && electron-builder --config electron-builder.config.ts --publish never",
     "lint": "pnpm lint:dpdm && eslint --ext .js,.jsx,.ts,.tsx,.vue src/",
     "tsc": "tsc --noEmit",
+    "vue-tsc": "vue-tsc --noEmit",
     "bump": "bump-version",
     "cz": "git-cz",
     "dev": "electron-vite dev",
@@ -26,7 +27,7 @@
     "postuninstall": "electron-builder install-app-deps",
     "upload-dist": "node ./scripts/upload-dist.js",
     "lint:dpdm": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/background.ts",
-    "check": "pnpm run tsc && pnpm run lint",
+    "check": "pnpm run tsc && pnpm run vue-tsc&& pnpm run lint",
     "test": "vitest run",
     "prepare": "husky",
     "commitlint": "commitlint --edit"
@@ -113,7 +114,8 @@
     "tailwindcss": "^3.3.2",
     "typescript": "^5.9.3",
     "vite": "^7.2.6",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "vue-tsc": "^3.2.3"
   },
   "commitlint": {
     "extends": [

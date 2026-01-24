@@ -12,12 +12,14 @@ PicGo is an Electron + Vue 3 desktop client. Source lives in `src/`: `src/main` 
 - `pnpm lint` / `pnpm lint:fix` — run or auto-fix ESLint (Standard, TypeScript, Vue rules).
 - `pnpm lint:dpdm` — fail fast on circular dependencies in `src/`.
 - `pnpm check` — run `tsc` + `lint` (run once before finishing a task).
+- Before completing a task, always run `pnpm check` and resolve any issues it reports.
 - `pnpm gen-i18n` — regenerate typed locales after touching `public/i18n/*.yml`.
 
 ## Coding Style & Naming Conventions
 Follow ESLint Standard defaults: two-space indentation, single quotes, trailing commas where allowed, and no stray semicolons. Author new modules in TypeScript. Keep renderer files browser-safe; route Node APIs through IPC helpers such as `src/main/events/picgoCoreIPC.ts`. Name Vue components in PascalCase (`UploadPanel.vue`) and use camelCase for utilities. Centralize IPC event names inside `src/universal/events/constants.ts`, and store enums/types under `src/universal/types/` so they stay reusable. Static assets are served from `public/` and resolved via `getStaticPath`/`getStaticFileUrl` (`src/universal/utils/staticPath.ts`); avoid using `__static` directly.
 Static assets are served from `public/`. In the main process use `getStaticPath`/`getStaticFileUrl` (`src/universal/utils/staticPath.ts`). In the renderer, place assets under `public/` and resolve them via `import.meta.env.BASE_URL + filename` (helper: `src/renderer/utils/static.ts`); do not rely on `__static` in renderer code.
 - Do not use `as any` under any circumstances; keep typings explicit and safe.
+- Do not prefix method calls with `void` (e.g. use `store?.refreshPicBeds()` rather than `void store?.refreshPicBeds()`).
 - Prefer enums over union types for discrete value sets (e.g., encryption methods). Avoid introducing new string literal union types.
 - Renderer page/component styles should prefer Tailwind utility classes; avoid adding new Vue `<style>` blocks unless there's no reasonable Tailwind equivalent.
 - New renderer ↔ main request/response APIs should be implemented via RPC routes (see `src/main/events/rpc/routes/system.ts`) with `RPCRouter` + `IRPCActionType` rather than adding ad-hoc IPC modules (e.g. `picgoCloudIPC`).

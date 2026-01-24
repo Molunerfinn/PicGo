@@ -32,6 +32,7 @@ import { getConfig } from '@/utils/dataSender'
 import { useRoute } from 'vue-router'
 import BaseConfigForm from './form/BaseConfigForm.vue'
 import { useConfigForm } from '@/hooks/useConfigForm'
+import { useStore } from '@/hooks/useStore'
 
 interface IProps {
   config: any[]
@@ -46,6 +47,7 @@ const $form = ref<IFormInstance>()
 const configList = ref<IPicGoPluginConfig[]>([])
 const formModel = reactive<IStringKeyMap>({})
 const isUploader = props.type === 'uploader'
+const store = useStore()
 
 async function validate (): Promise<IStringKeyMap | false> {
   const res = await $form.value?.validate() || false
@@ -81,7 +83,10 @@ async function getCurConfigFormData () {
   const configId = $route.params.configId
   const configType = getConfigType()
   if (isUploader) {
-    const curTypeConfigList = await getConfig<IStringKeyMap[]>(`uploader.${props.id}.configList`) || []
+    const cachedList = store?.state.appConfig?.uploader?.[props.id]?.configList
+    const curTypeConfigList = Array.isArray(cachedList)
+      ? cachedList
+      : await getConfig<IStringKeyMap[]>(`uploader.${props.id}.configList`) || []
     return curTypeConfigList.find(i => i._id === configId) || {}
   } else {
     const config = await getConfig<IStringKeyMap>(configType)

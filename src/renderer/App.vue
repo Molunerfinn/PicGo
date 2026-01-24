@@ -7,30 +7,32 @@
 <script lang="ts" setup>
 import { useStore } from '@/hooks/useStore'
 import { onBeforeMount, onMounted, onUnmounted } from 'vue'
-import { getConfig } from './utils/dataSender'
-import type { IConfig } from 'picgo'
 import bus from './utils/bus'
-import { FORCE_UPDATE } from '~/universal/events/constants'
+import { APP_CONFIG_UPDATED, FORCE_UPDATE } from '~/universal/events/constants'
 import { useATagClick } from './hooks/useATagClick'
 
 useATagClick()
 
 const store = useStore()
 onBeforeMount(async () => {
-  const config = await getConfig<IConfig>()
-  if (config) {
-    store?.setDefaultPicBed(config?.picBed?.uploader || config?.picBed?.current || 'smms')
-  }
+  if (!store) return
+  await store.refreshAppConfig()
+  await store.refreshPicBeds()
 })
 
 onMounted(() => {
   bus.on(FORCE_UPDATE, () => {
     store?.updateForceUpdateTime()
   })
+  bus.on(APP_CONFIG_UPDATED, () => {
+    store?.refreshAppConfig()
+    store?.refreshPicBeds()
+  })
 })
 
 onUnmounted(() => {
   bus.off(FORCE_UPDATE)
+  bus.off(APP_CONFIG_UPDATED)
 })
 
 </script>

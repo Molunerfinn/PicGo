@@ -43,7 +43,7 @@
 </template>
 <script lang="ts" setup>
 import { IRPCActionType } from '~/universal/types/enum'
-import { ref, onBeforeMount } from 'vue'
+import { computed, ref, onBeforeMount, watch } from 'vue'
 import { T as $T } from '@/i18n/index'
 import { sendToMain, invokeRPC } from '@/utils/dataSender'
 import { showNotification } from '@/utils/notification'
@@ -56,18 +56,22 @@ import {
 } from 'electron'
 import { GET_PICBED_CONFIG } from '~/universal/events/constants'
 import { useIPCOn } from '@/hooks/useIPC'
+import { useStore } from '@/hooks/useStore'
 const type = ref('')
 const config = ref<IPicGoPluginConfig[]>([])
 const picBedName = ref('')
 const $route = useRoute()
 const $router = useRouter()
 const $configForm = ref<InstanceType<typeof ConfigForm> | null>(null)
+const store = useStore()
+const appConfig = computed(() => store?.state.appConfig ?? null)
 type.value = $route.params.type as string
 
 useIPCOn(GET_PICBED_CONFIG, getPicBeds)
 
 onBeforeMount(() => {
   sendToMain(GET_PICBED_CONFIG, $route.params.type)
+  store?.refreshAppConfig()
 })
 
 const handleConfirm = async () => {

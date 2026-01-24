@@ -241,7 +241,7 @@ const isEncryptionModeDisabled = computed(() => {
 const encryptionMethodValue = computed<IPicGoCloudEncryptionMethod>({
   get: () => configSyncState.value.encryptionMethod ?? IPicGoCloudEncryptionMethod.AUTO,
   set: (value: IPicGoCloudEncryptionMethod) => {
-    void handleSetEncryptionMethod(value)
+    handleSetEncryptionMethod(value)
   }
 })
 
@@ -258,16 +258,22 @@ const handleOpenDocs = () => {
   openURL(DOC_URL)
 }
 
+const refreshAppStateAfterSync = async () => {
+  if (!store) return
+  await store.refreshAppConfig()
+  await store.refreshPicBeds()
+}
+
 onBeforeMount(() => {
   // First entry: only fetch when store is empty (undefined). Subsequent page entries read store.
   if (!store) return
   if (store.state.picgoCloud.userInfo !== undefined) {
     if (store.state.picgoCloud.userInfo) {
-      void loadConfigSyncState()
+      loadConfigSyncState()
     }
     return
   }
-  void loadUserInfoAndMaybeHydrateCloudState()
+  loadUserInfoAndMaybeHydrateCloudState()
 })
 
 const loadUserInfoAndMaybeHydrateCloudState = async () => {
@@ -383,6 +389,7 @@ const handleConfigSyncStart = async () => {
   }
 
   if (runRes.shouldShowRestartPrompt) {
+    await refreshAppStateAfterSync()
     await promptRestartIfNeeded()
   }
 }
@@ -422,6 +429,7 @@ const handleConfirmConfigSyncResolution = async (resolution: IPicGoCloudConfigSy
 
   if (runRes.shouldShowRestartPrompt) {
     isConflictDialogVisible.value = false
+    await refreshAppStateAfterSync()
     await promptRestartIfNeeded()
   }
 }
@@ -548,7 +556,7 @@ watch(isConfigSyncRunning, (running) => {
   }
   if (pollTimer.value !== null) return
   pollTimer.value = window.setInterval(() => {
-    void loadConfigSyncState()
+    loadConfigSyncState()
   }, 1500)
 })
 

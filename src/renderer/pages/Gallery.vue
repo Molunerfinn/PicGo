@@ -187,16 +187,15 @@
 </template>
 <script lang="ts" setup>
 import type { IResult } from '@picgo/store/dist/types'
-import { PASTE_TEXT, GET_PICBEDS } from '#/events/constants'
+import { PASTE_TEXT } from '#/events/constants'
 import { CheckboxValueType, ElMessageBox } from 'element-plus'
 import { Close, CaretBottom, Document, Edit, Delete, CaretTop } from '@element-plus/icons-vue'
 import {
   ipcRenderer,
-  clipboard,
-  IpcRendererEvent
+  clipboard
 } from 'electron'
 import { computed, nextTick, onActivated, onBeforeUnmount, onBeforeMount, reactive, ref, watch } from 'vue'
-import { getConfig, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
+import { saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { T as $T } from '@/i18n/index'
 import $$db from '@/utils/db'
@@ -204,6 +203,7 @@ import GalleryToolbar from './components/gallery/GalleryToolbar.vue'
 import { IRPCActionType } from '~/universal/types/enum'
 import { getRawData } from '@/utils/common'
 import { showNotification } from '@/utils/notification'
+import { useStore } from '@/hooks/useStore'
 const images = ref<ImgInfo[]>([])
 const dialogVisible = ref(false)
 const imgInfo = reactive({
@@ -229,7 +229,8 @@ const pasteStyleMap = {
   UBB: 'UBB',
   Custom: 'Custom'
 }
-const picBed = ref<IPicBedType[]>([])
+const store = useStore()
+const picBed = computed(() => store?.state.picBeds ?? [])
 const visiblePicBedList = computed(() => picBed.value.filter(item => item.visible))
 onBeforeRouteUpdate((to, from) => {
   if (from.name === 'gallery') {
@@ -246,8 +247,8 @@ onBeforeMount(async () => {
       updateGallery()
     })
   })
-  sendToMain(GET_PICBEDS)
-  ipcRenderer.on(GET_PICBEDS, getPicBeds)
+  store?.refreshPicBeds()
+  store?.refreshAppConfig()
   updateGallery()
 
   document.addEventListener('keydown', handleDetectShiftKey)
@@ -278,13 +279,6 @@ const isAllSelected = computed(() => {
     })
   }
 })
-
-function getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
-  picBed.value = picBeds
-  if (selectedPicBed.value.length === 0) return
-  const visibleTypes = new Set(picBeds.filter(item => item.visible).map(item => item.type))
-  selectedPicBed.value = selectedPicBed.value.filter(type => visibleTypes.has(type))
-}
 
 function getGallery (): IGalleryItem[] {
   if (searchText.value || selectedPicBed.value.length > 0) {
@@ -325,6 +319,12 @@ async function updateGallery () {
 
 watch(() => filterList, () => {
   clearSelectedList()
+})
+
+watch(picBed, (list) => {
+  if (selectedPicBed.value.length === 0) return
+  const visibleTypes = new Set(list.filter(item => item.visible).map(item => item.type))
+  selectedPicBed.value = selectedPicBed.value.filter(type => visibleTypes.has(type))
 })
 
 function handleChooseImage (val: CheckboxValueType, index: number) {
@@ -527,17 +527,25 @@ function toggleHandleBar () {
 }
 
 async function handlePasteStyleChange (val: string) {
-  saveConfig('settings.pasteStyle', val)
+  await saveConfig('settings.pasteStyle', val)
   pasteStyle.value = val
 }
 
 onBeforeUnmount(() => {
   ipcRenderer.removeAllListeners('updateGallery')
-  ipcRenderer.removeListener(GET_PICBEDS, getPicBeds)
 })
 
-onActivated(async () => {
-  pasteStyle.value = (await getConfig('settings.pasteStyle')) || 'markdown'
+const applyAppConfig = () => {
+  const settings = store?.state.appConfig?.settings ?? {}
+  pasteStyle.value = settings.pasteStyle || 'markdown'
+}
+
+watch(() => store?.state.appConfig, () => {
+  applyAppConfig()
+}, { immediate: true })
+
+onActivated(() => {
+  applyAppConfig()
 })
 
 </script>

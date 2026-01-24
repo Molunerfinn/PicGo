@@ -103,7 +103,7 @@ import dayjs from 'dayjs'
 import { IRPCActionType } from '~/universal/types/enum'
 import { T as $T } from '@/i18n/index'
 import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router'
-import { onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { PICBEDS_PAGE, UPLOADER_CONFIG_PAGE } from '@/router/config'
 import { useStore } from '@/hooks/useStore'
 const $router = useRouter()
@@ -113,6 +113,7 @@ const type = ref('')
 const curConfigList = ref<IUploaderConfigListItem[]>([])
 const defaultConfigId = ref('')
 const store = useStore()
+const appConfig = computed(() => store?.state.appConfig ?? null)
 const $confirm = ElMessageBox.confirm
 const $prompt = ElMessageBox.prompt
 
@@ -142,6 +143,12 @@ onBeforeRouteUpdate((to, from, next) => {
 
 onBeforeMount(() => {
   type.value = $route.params.type as string
+  getCurrentConfigList()
+  store?.refreshAppConfig()
+})
+
+watch(appConfig, () => {
+  if (!type.value) return
   getCurrentConfigList()
 })
 

@@ -97,8 +97,6 @@ function confirmCustomLink () {
       dialogVisible.value = false
       sendToMain('updateCustomLink')
       updateProps()
-    } else {
-      return false
     }
   })
 }

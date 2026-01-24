@@ -1,6 +1,7 @@
-import { reactive, InjectionKey, readonly, App, UnwrapRef, ref } from 'vue'
-import { saveConfig } from '@/utils/dataSender'
+import { reactive, InjectionKey, readonly, App, UnwrapRef, ref, type DeepReadonly } from 'vue'
+import { getConfig, getPicBeds, saveConfig } from '@/utils/dataSender'
 import type { IPicGoCloudUserInfo } from '#/types/cloud'
+import type { IConfig } from 'picgo'
 
 export enum IPicGoCloudRequestStatus {
   IDLE = 'IDLE',
@@ -34,12 +35,16 @@ export interface IPicGoCloudState {
 
 export interface IState {
   defaultPicBed: string;
+  appConfig: IConfig | null;
+  picBeds: IPicBedType[];
   picgoCloud: IPicGoCloudState;
 }
 
 export interface IStore {
-  state: UnwrapRef<IState>
+  state: DeepReadonly<UnwrapRef<IState>>
   setDefaultPicBed: (type: string) => void;
+  refreshAppConfig: () => Promise<void>;
+  refreshPicBeds: () => Promise<void>;
   setPicGoCloudUserInfo: (userInfo: IPicGoCloudUserInfo | null | undefined) => void;
   setPicGoCloudUserInfoStatus: (status: IPicGoCloudRequestStatus) => void;
   setPicGoCloudUserInfoError: (error: string | null) => void;
@@ -54,6 +59,8 @@ export const storeKey: InjectionKey<IStore> = Symbol('store')
 // state
 const state: IState = reactive({
   defaultPicBed: 'smms',
+  appConfig: null,
+  picBeds: [],
   picgoCloud: {
     userInfo: undefined,
     userInfoStatus: IPicGoCloudRequestStatus.IDLE,
@@ -73,6 +80,24 @@ const setDefaultPicBed = (type: string) => {
     'picBed.uploader': type
   })
   state.defaultPicBed = type
+}
+
+const setAppConfig = (config: IConfig | null) => {
+  state.appConfig = config
+  if (config) {
+    const picBed = config.picBed
+    state.defaultPicBed = picBed.uploader || picBed.current || 'smms'
+  }
+}
+
+const refreshAppConfig = async (): Promise<void> => {
+  const config = await getConfig<IConfig>()
+  setAppConfig(config ?? null)
+}
+
+const refreshPicBeds = async (): Promise<void> => {
+  const picBeds = await getPicBeds()
+  state.picBeds = picBeds
 }
 
 const setPicGoCloudUserInfo = (userInfo: IPicGoCloudUserInfo | null | undefined) => {
@@ -108,6 +133,8 @@ export const store = {
     app.provide(storeKey, {
       state: readonly(state),
       setDefaultPicBed,
+      refreshAppConfig,
+      refreshPicBeds,
       setPicGoCloudUserInfo,
       setPicGoCloudUserInfoStatus,
       setPicGoCloudUserInfoError,
