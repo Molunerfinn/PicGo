@@ -72,6 +72,11 @@ PICGO_CLOUD_CONFIG_SYNC_SUCCESS: Config sync succeeded.
 PICGO_CLOUD_CONFIG_SYNC_CONFLICT_DETECTED: Conflict detected. Please resolve the conflicts.
 PICGO_CLOUD_CONFIG_SYNC_FAILED: Config sync failed.
 PICGO_CLOUD_CONFIG_SYNC_ABORTED: Config sync cancelled.
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_TITLE: Confirm switch encryption method?
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_BODY: "You are switching from \"${from}\" to \"${to}\".\n\nNote: Switching encryption modes will clear all your cloud history versions.\nThis is because older history versions cannot be decrypted or verified under the new mode.\nAfter switching, the system will immediately create a new backup as the starting point."
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CONFIRM: Confirm switch and clear history
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CANCEL: Cancel
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CANCELLED: Encryption switch cancelled by user
 PICGO_CLOUD_CONFIG_SYNC_FAILED_WITH_REASON: "Config sync failed: ${reason}"
 PICGO_CLOUD_CONFIG_SYNC_PIN_MAX_RETRY: Too many incorrect PIN attempts. Please try again.
 PICGO_CLOUD_CONFIG_SYNC_LOCAL_CONFIG_INVALID: Local config is invalid. Please check your config file.

@@ -187,9 +187,12 @@ const localizeConfigSyncResult = (status: SyncStatus, message: string | undefine
 
   const raw = message || T('PICGO_CLOUD_CONFIG_SYNC_FAILED')
 
-  if (raw === USER_ABORTED_CODE || raw === 'Invalid PIN input') {
+  const isEncryptionSwitchCancelled = message === picgo.i18n.translate('CONFIG_SYNC_ENCRYPTION_SWITCH_CANCELLED')
+  if (raw === USER_ABORTED_CODE || raw === 'Invalid PIN input' || isEncryptionSwitchCancelled) {
     return {
-      message: T('PICGO_CLOUD_CONFIG_SYNC_ABORTED'),
+      message: isEncryptionSwitchCancelled
+        ? T('PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CANCELLED')
+        : T('PICGO_CLOUD_CONFIG_SYNC_ABORTED'),
       toastType: IPicGoCloudConfigSyncToastType.WARNING
     }
   }
@@ -205,6 +208,11 @@ const localizeConfigSyncResult = (status: SyncStatus, message: string | undefine
     message: T('PICGO_CLOUD_CONFIG_SYNC_FAILED_WITH_REASON', { reason: raw }),
     toastType: IPicGoCloudConfigSyncToastType.ERROR
   }
+}
+
+const getEncryptionMethodLabel = (method: EncryptionMethod): string => {
+  if (method === EncryptionMethod.E2EE) return T('PICGO_CLOUD_ENCRYPTION_MODE_E2E')
+  return T('PICGO_CLOUD_ENCRYPTION_MODE_SERVER')
 }
 
 const getConfigSyncManager = (): ConfigSyncManager => {
@@ -233,6 +241,23 @@ const getConfigSyncManager = (): ConfigSyncManager => {
         throw new Error(USER_ABORTED_CODE)
       }
       return value
+    },
+    onAskEncryptionSwitch: async ({ from, to }: { from: EncryptionMethod, to: EncryptionMethod }): Promise<boolean> => {
+      const title = T('PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_TITLE')
+      const message = T('PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_BODY', {
+        from: getEncryptionMethodLabel(from),
+        to: getEncryptionMethodLabel(to)
+      })
+      const res = await guiApi.showMessageBox({
+        title,
+        message,
+        type: 'warning',
+        buttons: [
+          T('PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CONFIRM'),
+          T('PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CANCEL')
+        ]
+      })
+      return res.result === 0
     }
   })
 
