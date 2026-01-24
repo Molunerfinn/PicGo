@@ -57,22 +57,22 @@
                   {{ $T('PICGO_CLOUD_ENCRYPTION_MODE_LABEL') }}
                 </span>
                 <el-select
-                  v-model="encryptionMode"
+                  v-model="encryptionMethodValue"
                   size="small"
                   class="w-[180px] shrink-0"
                   :disabled="isEncryptionModeDisabled"
                 >
                   <el-option
                     :label="$T('PICGO_CLOUD_ENCRYPTION_MODE_AUTO')"
-                    :value="IPicGoCloudEncryptionMode.AUTO"
+                    :value="IPicGoCloudEncryptionMethod.AUTO"
                   />
                   <el-option
                     :label="$T('PICGO_CLOUD_ENCRYPTION_MODE_SERVER')"
-                    :value="IPicGoCloudEncryptionMode.SERVER_SIDE"
+                    :value="IPicGoCloudEncryptionMethod.SSE"
                   />
                   <el-option
                     :label="$T('PICGO_CLOUD_ENCRYPTION_MODE_E2E')"
-                    :value="IPicGoCloudEncryptionMode.E2E"
+                    :value="IPicGoCloudEncryptionMethod.E2EE"
                   />
                 </el-select>
                 <el-tooltip
@@ -183,7 +183,7 @@ import { QuestionFilled } from '@element-plus/icons-vue'
 import {
   IPicGoCloudConfigSyncSessionStatus,
   IPicGoCloudConfigSyncToastType,
-  IPicGoCloudEncryptionMode,
+  IPicGoCloudEncryptionMethod,
   type IPicGoCloudConfigSyncRunResult,
   type IPicGoCloudConfigSyncState,
   type IPicGoCloudConfigSyncResolution
@@ -214,7 +214,7 @@ const errorMessage = computed(() => loginError.value || userInfoError.value)
 
 const configSyncState = ref<IPicGoCloudConfigSyncState>({
   sessionStatus: IPicGoCloudConfigSyncSessionStatus.IDLE,
-  enableE2E: undefined
+  encryptionMethod: undefined
 })
 const isConfigSyncStateLoading = ref(false)
 const isE2EPreferenceUpdating = ref(false)
@@ -238,14 +238,10 @@ const isEncryptionModeDisabled = computed(() => {
   return isConfigSyncStateLoading.value || isE2EPreferenceUpdating.value
 })
 
-const encryptionMode = computed<IPicGoCloudEncryptionMode>({
-  get: () => {
-    if (configSyncState.value.enableE2E === true) return IPicGoCloudEncryptionMode.E2E
-    if (configSyncState.value.enableE2E === false) return IPicGoCloudEncryptionMode.SERVER_SIDE
-    return IPicGoCloudEncryptionMode.AUTO
-  },
-  set: (value: IPicGoCloudEncryptionMode) => {
-    void handleSetEncryptionMode(value)
+const encryptionMethodValue = computed<IPicGoCloudEncryptionMethod>({
+  get: () => configSyncState.value.encryptionMethod ?? IPicGoCloudEncryptionMethod.AUTO,
+  set: (value: IPicGoCloudEncryptionMethod) => {
+    void handleSetEncryptionMethod(value)
   }
 })
 
@@ -299,10 +295,6 @@ const loadUserInfo = async () => {
 
 const applyConfigSyncState = (state: IPicGoCloudConfigSyncState) => {
   configSyncState.value = state
-
-  if (state.notifyRemoteE2EOnce) {
-    ElMessage.info($T('PICGO_CLOUD_REMOTE_E2E_AUTO_ENABLED'))
-  }
 
   if (state.sessionStatus === IPicGoCloudConfigSyncSessionStatus.CONFLICT) {
     isConflictDialogVisible.value = true
@@ -434,20 +426,20 @@ const handleConfirmConfigSyncResolution = async (resolution: IPicGoCloudConfigSy
   }
 }
 
-const handleSetEncryptionMode = async (nextMode: IPicGoCloudEncryptionMode) => {
+const handleSetEncryptionMethod = async (nextMode: IPicGoCloudEncryptionMethod) => {
   if (isE2EPreferenceUpdating.value) return
   if (isConfigSyncBusy.value) return
 
-  const currentMode = encryptionMode.value
+  const currentMode = encryptionMethodValue.value
   if (nextMode === currentMode) return
 
-  const previousEnableE2E = configSyncState.value.enableE2E
+  const previousEncryptionMethod = configSyncState.value.encryptionMethod
 
   // Only turning on E2E needs a warning confirmation.
-  // If the user cancels, we persist "server-side encryption" (`enableE2E=false`) per product requirement,
+  // If the user cancels, we persist "server-side encryption" (`encryptionMethod='sse'`) per product requirement,
   // rather than leaving it at AUTO.
   let modeToPersist = nextMode
-  if (nextMode === IPicGoCloudEncryptionMode.E2E) {
+  if (nextMode === IPicGoCloudEncryptionMethod.E2EE) {
     try {
       await ElMessageBox.confirm(
         $T('PICGO_CLOUD_E2E_ENABLE_WARNING_MESSAGE'),
@@ -461,27 +453,28 @@ const handleSetEncryptionMode = async (nextMode: IPicGoCloudEncryptionMode) => {
         }
       )
     } catch {
-      modeToPersist = IPicGoCloudEncryptionMode.SERVER_SIDE
+      modeToPersist = IPicGoCloudEncryptionMethod.SSE
     }
   }
 
   // Optimistically update local UI state so the dropdown reflects the user's selection immediately.
   configSyncState.value = {
     ...configSyncState.value,
-    enableE2E: modeToPersist === IPicGoCloudEncryptionMode.AUTO
-      ? undefined
-      : modeToPersist === IPicGoCloudEncryptionMode.E2E
+    encryptionMethod: modeToPersist
   }
 
   isE2EPreferenceUpdating.value = true
-  const res = await invokeRPC<boolean | undefined>(IRPCActionType.PICGO_CLOUD_CONFIG_SYNC_SET_E2E_PREFERENCE, modeToPersist)
+  const res = await invokeRPC<IPicGoCloudEncryptionMethod | undefined>(
+    IRPCActionType.PICGO_CLOUD_CONFIG_SYNC_SET_E2E_PREFERENCE,
+    modeToPersist
+  )
   isE2EPreferenceUpdating.value = false
 
   if (!res.success) {
     // Restore previous selection on failure.
     configSyncState.value = {
       ...configSyncState.value,
-      enableE2E: previousEnableE2E
+      encryptionMethod: previousEncryptionMethod
     }
     ElMessage.error(res.error)
     return
@@ -489,7 +482,7 @@ const handleSetEncryptionMode = async (nextMode: IPicGoCloudEncryptionMode) => {
 
   configSyncState.value = {
     ...configSyncState.value,
-    enableE2E: res.data
+    encryptionMethod: res.data
   }
 }
 
@@ -535,7 +528,7 @@ const handleLogout = async () => {
   // Clear config-sync related UI state after logout.
   configSyncState.value = {
     sessionStatus: IPicGoCloudConfigSyncSessionStatus.IDLE,
-    enableE2E: undefined
+    encryptionMethod: undefined
   }
   isConflictDialogVisible.value = false
 }

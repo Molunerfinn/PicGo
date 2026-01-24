@@ -53,11 +53,11 @@ PICGO_CLOUD_PRIVACY_POLICY: Privacy Policy
 PICGO_CLOUD_LOGIN_EXPIRED: Login expired. Please log in again.
 PICGO_CLOUD_ENCRYPTION_MODE_LABEL: Encryption mode
 PICGO_CLOUD_ENCRYPTION_MODE_AUTO: Auto
-PICGO_CLOUD_ENCRYPTION_MODE_SERVER: Server-side
-PICGO_CLOUD_ENCRYPTION_MODE_E2E: End-to-end
-PICGO_CLOUD_ENCRYPTION_MODE_TIP_AUTO: "Auto: follow the cloud's last used encryption mode (defaults to server-side)."
-PICGO_CLOUD_ENCRYPTION_MODE_TIP_SERVER: "Server-side: your config is encrypted on the server before being stored. No PIN required."
-PICGO_CLOUD_ENCRYPTION_MODE_TIP_E2E: "End-to-end: use your PIN to encrypt/decrypt data. PicGo does not store your PIN; losing it means data cannot be recovered."
+PICGO_CLOUD_ENCRYPTION_MODE_SERVER: Server-side encryption
+PICGO_CLOUD_ENCRYPTION_MODE_E2E: End-to-end encryption
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_AUTO: "Auto: follow the cloud's last used encryption method (defaults to server-side)."
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_SERVER: "Server-side encryption: your config is encrypted on the server before being stored. No PIN required."
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_E2E: "End-to-end encryption: use your PIN to encrypt/decrypt data. PicGo does not store your PIN; losing it means data cannot be recovered."
 PICGO_CLOUD_ENCRYPTION_MODE_TIP_DOC: Read full docs
 PICGO_CLOUD_E2E_CHECKBOX_LABEL: Enable E2E encryption
 PICGO_CLOUD_E2E_ENABLE_WARNING_TITLE: Enable E2E Encryption

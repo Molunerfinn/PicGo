@@ -22,19 +22,21 @@ export enum IPicGoCloudConfigSyncToastType {
   INFO = 'info'
 }
 
-export enum IPicGoCloudEncryptionMode {
+export enum IPicGoCloudEncryptionMethod {
   /**
-   * AUTO means "follow remote state". It corresponds to `settings.picgoCloud.enableE2E` being `undefined`.
+   * AUTO means "follow remote state". It corresponds to `settings.picgoCloud.encryptionMethod` being `auto` or missing.
    */
-  AUTO = 'AUTO',
+  AUTO = 'auto',
   /**
-   * SERVER_SIDE corresponds to `settings.picgoCloud.enableE2E` being `false`.
+   * Server side encryption.
+   * SSE corresponds to `settings.picgoCloud.encryptionMethod` being `sse`.
    */
-  SERVER_SIDE = 'SERVER_SIDE',
+  SSE = 'sse',
   /**
-   * E2E corresponds to `settings.picgoCloud.enableE2E` being `true`.
+   * End-to-end encryption.
+   * E2EE corresponds to `settings.picgoCloud.encryptionMethod` being `e2ee`.
    */
-  E2E = 'E2E'
+  E2EE = 'e2ee'
 }
 
 export interface IPicGoCloudConfigSyncConflictItem {
@@ -47,18 +49,13 @@ export type IPicGoCloudConfigSyncResolution = Record<string, IPicGoCloudConfigSy
 
 export interface IPicGoCloudConfigSyncState {
   sessionStatus: IPicGoCloudConfigSyncSessionStatus
-  enableE2E: boolean | undefined
+  encryptionMethod?: IPicGoCloudEncryptionMethod
   /**
    * `updatedAt` in `config.snapshot.json` under `baseDir` (ISO string).
    * Used to display "last sync time" in the GUI.
    */
   lastSyncedAt?: string
   conflicts?: IPicGoCloudConfigSyncConflictItem[]
-  /**
-   * When true, renderer SHOULD show a one-time info toast to tell the user
-   * that the remote config is E2E encrypted and the local preference was auto-enabled.
-   */
-  notifyRemoteE2EOnce?: boolean
 }
 
 export interface IPicGoCloudConfigSyncRunResult {

@@ -15,6 +15,7 @@ import {
   ConfigSyncManager,
   ConflictType,
   E2EAskPinReason,
+  EncryptionMethod,
   SyncStatus,
   type IDiffNode,
   type IConfig
@@ -24,7 +25,7 @@ import {
   IPicGoCloudConfigSyncRunStatus,
   IPicGoCloudConfigSyncSessionStatus,
   IPicGoCloudConfigSyncToastType,
-  IPicGoCloudEncryptionMode,
+  IPicGoCloudEncryptionMethod,
   type IPicGoCloudConfigSyncConflictItem,
   type IPicGoCloudConfigSyncResolution,
   type IPicGoCloudConfigSyncRunResult,
@@ -52,7 +53,6 @@ let configSyncSessionStatus: IPicGoCloudConfigSyncSessionStatus = IPicGoCloudCon
 let configSyncConflictDiffTree: IDiffNode | null = null
 let configSyncConflictItems: IPicGoCloudConfigSyncConflictItem[] = []
 let configSyncManager: ConfigSyncManager | null = null
-let notifyRemoteE2EPending: boolean = false
 
 const clearConfigSyncSession = (): void => {
   configSyncSessionStatus = IPicGoCloudConfigSyncSessionStatus.IDLE
@@ -86,15 +86,23 @@ const logConfigSyncOutcome = (
   logger.error(`${prefix} failed`, message || '')
 }
 
-const getLocalEnableE2EPreference = (): boolean | undefined => {
-  const value = picgo.getConfig<unknown>('settings.picgoCloud.enableE2E')
-  return typeof value === 'boolean' ? value : undefined
+const getLocalEncryptionMethod = (): IPicGoCloudEncryptionMethod | undefined => {
+  const value = picgo.getConfig<unknown>('settings.picgoCloud.encryptionMethod')
+  if (
+    value === IPicGoCloudEncryptionMethod.AUTO
+    || value === IPicGoCloudEncryptionMethod.SSE
+    || value === IPicGoCloudEncryptionMethod.E2EE
+  ) {
+    return value
+  }
+  return undefined
 }
 
-const popNotifyRemoteE2EOnce = (): boolean => {
-  if (!notifyRemoteE2EPending) return false
-  notifyRemoteE2EPending = false
-  return true
+const toSyncEncryptionMethod = (method?: IPicGoCloudEncryptionMethod): EncryptionMethod | undefined => {
+  if (method === IPicGoCloudEncryptionMethod.AUTO) return EncryptionMethod.AUTO
+  if (method === IPicGoCloudEncryptionMethod.SSE) return EncryptionMethod.SSE
+  if (method === IPicGoCloudEncryptionMethod.E2EE) return EncryptionMethod.E2EE
+  return undefined
 }
 
 const getSnapshotUpdatedAt = async (): Promise<string | undefined> => {
@@ -111,14 +119,12 @@ const getSnapshotUpdatedAt = async (): Promise<string | undefined> => {
   }
 }
 
-const buildConfigSyncState = async (options: { consumeNotifyOnce?: boolean } = {}): Promise<IPicGoCloudConfigSyncState> => {
-  const notify = options.consumeNotifyOnce ? popNotifyRemoteE2EOnce() : notifyRemoteE2EPending
+const buildConfigSyncState = async (): Promise<IPicGoCloudConfigSyncState> => {
   return {
     sessionStatus: configSyncSessionStatus,
-    enableE2E: getLocalEnableE2EPreference(),
+    encryptionMethod: getLocalEncryptionMethod(),
     lastSyncedAt: await getSnapshotUpdatedAt(),
-    conflicts: configSyncSessionStatus === IPicGoCloudConfigSyncSessionStatus.CONFLICT ? configSyncConflictItems : undefined,
-    ...(notify ? { notifyRemoteE2EOnce: true } : {})
+    conflicts: configSyncSessionStatus === IPicGoCloudConfigSyncSessionStatus.CONFLICT ? configSyncConflictItems : undefined
   }
 }
 
@@ -327,6 +333,7 @@ cloudRouter
     try {
       await loginWithTimeout()
       const userInfo = await getUserInfo()
+      console.log('userInfo after login', userInfo)
       if (!userInfo) {
         return fail(T('PICGO_CLOUD_LOGIN_FAILED'))
       }
@@ -354,26 +361,28 @@ cloudRouter
   })
   .add(IRPCActionType.PICGO_CLOUD_CONFIG_SYNC_GET_STATE, async () => {
     try {
-      return ok(await buildConfigSyncState({ consumeNotifyOnce: true }))
+      return ok(await buildConfigSyncState())
     } catch (e) {
       return fail(e)
     }
   })
   .add(IRPCActionType.PICGO_CLOUD_CONFIG_SYNC_SET_E2E_PREFERENCE, async (args) => {
     try {
-      const [mode] = args as [IPicGoCloudEncryptionMode]
-      if (mode === IPicGoCloudEncryptionMode.AUTO) {
-        picgo.removeConfig('settings.picgoCloud', 'enableE2E')
-      } else if (mode === IPicGoCloudEncryptionMode.SERVER_SIDE) {
+      const [mode] = args as [IPicGoCloudEncryptionMethod]
+      if (mode === IPicGoCloudEncryptionMethod.AUTO) {
         picgo.saveConfig({
-          'settings.picgoCloud.enableE2E': false
+          'settings.picgoCloud.encryptionMethod': IPicGoCloudEncryptionMethod.AUTO
+        })
+      } else if (mode === IPicGoCloudEncryptionMethod.SSE) {
+        picgo.saveConfig({
+          'settings.picgoCloud.encryptionMethod': IPicGoCloudEncryptionMethod.SSE
         })
       } else {
         picgo.saveConfig({
-          'settings.picgoCloud.enableE2E': true
+          'settings.picgoCloud.encryptionMethod': IPicGoCloudEncryptionMethod.E2EE
         })
       }
-      return ok(getLocalEnableE2EPreference())
+      return ok(getLocalEncryptionMethod())
     } catch (e) {
       return fail(e)
     }
@@ -413,8 +422,6 @@ cloudRouter
 
     configSyncSessionStatus = IPicGoCloudConfigSyncSessionStatus.SYNCING
 
-    const enableE2EBefore = getLocalEnableE2EPreference()
-
     try {
       const userInfo = await getUserInfo()
       if (!userInfo) {
@@ -431,13 +438,10 @@ cloudRouter
       }
 
       const manager = getConfigSyncManager()
-      const res = await manager.sync()
-
-      const enableE2EAfter = getLocalEnableE2EPreference()
-      if (enableE2EBefore === undefined && enableE2EAfter === true) {
-        // ConfigSyncManager auto-enables local enableE2E when remote is encrypted.
-        notifyRemoteE2EPending = true
-      }
+      const encryptionMethod = toSyncEncryptionMethod(getLocalEncryptionMethod())
+      const res = encryptionMethod
+        ? await manager.sync({ encryptionMethod })
+        : await manager.sync()
 
       if (res.status === SyncStatus.CONFLICT && res.diffTree) {
         configSyncSessionStatus = IPicGoCloudConfigSyncSessionStatus.CONFLICT
@@ -461,7 +465,7 @@ cloudRouter
         message: localized.message,
         toastType: localized.toastType,
         shouldShowRestartPrompt: res.status === SyncStatus.SUCCESS,
-        state: await buildConfigSyncState({ consumeNotifyOnce: true })
+        state: await buildConfigSyncState()
       }
       return ok(runRes)
     } catch (e) {
@@ -525,9 +529,16 @@ cloudRouter
 
       const resolvedConfig = await buildResolvedConfig(resolution)
 
-      const enableE2E = getLocalEnableE2EPreference()
+      const encryptionMethod = getLocalEncryptionMethod()
       const manager = getConfigSyncManager()
-      const applyRes = await manager.applyResolvedConfig(resolvedConfig, enableE2E === undefined ? {} : { useE2E: enableE2E })
+      const applyRes = await manager.applyResolvedConfig(
+        resolvedConfig,
+        encryptionMethod === IPicGoCloudEncryptionMethod.E2EE
+          ? { useE2E: true }
+          : encryptionMethod === IPicGoCloudEncryptionMethod.SSE
+            ? { useE2E: false }
+            : {}
+      )
 
       if (applyRes.status === SyncStatus.SUCCESS) {
         clearConfigSyncSession()
@@ -550,7 +561,7 @@ cloudRouter
         message: localized.message,
         toastType: localized.toastType,
         shouldShowRestartPrompt: applyRes.status === SyncStatus.SUCCESS,
-        state: await buildConfigSyncState({ consumeNotifyOnce: true })
+        state: await buildConfigSyncState()
       }
       return ok(runRes)
     } catch (e) {
