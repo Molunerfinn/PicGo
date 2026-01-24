@@ -1,9 +1,8 @@
-import { APP_CONFIG_UPDATED, GET_PICBEDS, PICGO_GET_CONFIG, PICGO_SAVE_CONFIG, RPC_ACTIONS } from '#/events/constants'
+import { GET_PICBEDS, PICGO_GET_CONFIG, PICGO_SAVE_CONFIG, RPC_ACTIONS } from '#/events/constants'
 import { IpcRendererEvent, ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
 import { IRPCActionType } from '~/universal/types/enum'
 import { getRawData } from './common'
-import bus from './bus'
 
 export async function saveConfig (_config: IObj | string, value?: any) {
   let config
@@ -15,7 +14,6 @@ export async function saveConfig (_config: IObj | string, value?: any) {
     config = getRawData(_config)
   }
   await ipcRenderer.invoke(PICGO_SAVE_CONFIG, config)
-  bus.emit(APP_CONFIG_UPDATED)
 }
 
 export function getConfig<T> (key?: string): Promise<T | undefined> {

@@ -10,29 +10,32 @@ import { onBeforeMount, onMounted, onUnmounted } from 'vue'
 import bus from './utils/bus'
 import { APP_CONFIG_UPDATED, FORCE_UPDATE } from '~/universal/events/constants'
 import { useATagClick } from './hooks/useATagClick'
+import { useIPCOn } from './hooks/useIPC'
 
 useATagClick()
 
 const store = useStore()
+const handleAppConfigUpdated = () => {
+  store?.refreshAppConfig()
+  store?.refreshPicBeds()
+}
+
 onBeforeMount(async () => {
   if (!store) return
   await store.refreshAppConfig()
   await store.refreshPicBeds()
 })
 
+useIPCOn(APP_CONFIG_UPDATED, handleAppConfigUpdated)
+
 onMounted(() => {
   bus.on(FORCE_UPDATE, () => {
     store?.updateForceUpdateTime()
-  })
-  bus.on(APP_CONFIG_UPDATED, () => {
-    store?.refreshAppConfig()
-    store?.refreshPicBeds()
   })
 })
 
 onUnmounted(() => {
   bus.off(FORCE_UPDATE)
-  bus.off(APP_CONFIG_UPDATED)
 })
 
 </script>

@@ -57,6 +57,7 @@ import {
 import { GET_PICBED_CONFIG } from '~/universal/events/constants'
 import { useIPCOn } from '@/hooks/useIPC'
 import { useStore } from '@/hooks/useStore'
+import { PICBEDS_PAGE } from '@/router/config'
 const type = ref('')
 const config = ref<IPicGoPluginConfig[]>([])
 const picBedName = ref('')
@@ -100,7 +101,7 @@ function getPicBeds (event: IpcRendererEvent, _config: IPicGoPluginConfig[], nam
 </script>
 <script lang="ts">
 export default {
-  name: 'PicbedsPage'
+  name: PICBEDS_PAGE
 }
 </script>
 <style lang='stylus'>

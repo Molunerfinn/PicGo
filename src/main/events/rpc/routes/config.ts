@@ -3,6 +3,7 @@ import { RPCRouter } from '../router'
 import picgo from '@core/picgo'
 import { T } from '~/main/i18n'
 import { fail, ok } from '../utils'
+import { notifyAppConfigUpdated } from '~/main/utils/appConfigNotifier'
 
 const configRouter = new RPCRouter()
 
@@ -30,6 +31,7 @@ configRouter
       picgo.uploaderConfig.remove(type, configName)
       const configList = picgo.uploaderConfig.getConfigList(type)
       const activeConfig = picgo.uploaderConfig.getActiveConfig(type)
+      notifyAppConfigUpdated()
       return ok({
         configList,
         defaultId: activeConfig?._id ?? ''
@@ -44,6 +46,7 @@ configRouter
       picgo.uploaderConfig.copy(type, configName, newConfigName)
       const configList = picgo.uploaderConfig.getConfigList(type)
       const activeConfig = picgo.uploaderConfig.getActiveConfig(type)
+      notifyAppConfigUpdated()
       return ok({
         configList,
         defaultId: activeConfig?._id ?? ''
@@ -56,6 +59,7 @@ configRouter
     try {
       const [type, configName] = args as ISelectUploaderConfigArgs
       const activeConfig = picgo.uploaderConfig.use(type, configName)
+      notifyAppConfigUpdated()
       return ok(activeConfig._id)
     } catch (e) {
       return fail(e)
@@ -83,6 +87,7 @@ configRouter
         picgo.uploaderConfig.rename(type, oldConfigName, configName)
       }
       picgo.uploaderConfig.createOrUpdate(type, configName, config)
+      notifyAppConfigUpdated()
       return ok(true)
     } catch (e) {
       return fail(e)

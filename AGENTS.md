@@ -20,6 +20,7 @@ Follow ESLint Standard defaults: two-space indentation, single quotes, trailing 
 Static assets are served from `public/`. In the main process use `getStaticPath`/`getStaticFileUrl` (`src/universal/utils/staticPath.ts`). In the renderer, place assets under `public/` and resolve them via `import.meta.env.BASE_URL + filename` (helper: `src/renderer/utils/static.ts`); do not rely on `__static` in renderer code.
 - Do not use `as any` under any circumstances; keep typings explicit and safe.
 - Do not prefix method calls with `void` (e.g. use `store?.refreshPicBeds()` rather than `void store?.refreshPicBeds()`).
+- If a renderer → main request mutates persisted config/state without using `saveConfig`, call `notifyAppConfigUpdated()` in main to inform renderers.
 - Prefer enums over union types for discrete value sets (e.g., encryption methods). Avoid introducing new string literal union types.
 - Renderer page/component styles should prefer Tailwind utility classes; avoid adding new Vue `<style>` blocks unless there's no reasonable Tailwind equivalent.
 - New renderer ↔ main request/response APIs should be implemented via RPC routes (see `src/main/events/rpc/routes/system.ts`) with `RPCRouter` + `IRPCActionType` rather than adding ad-hoc IPC modules (e.g. `picgoCloudIPC`).
