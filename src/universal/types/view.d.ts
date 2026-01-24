@@ -19,10 +19,10 @@ interface ISettingForm {
   customLink: string
   npmProxy: string
   npmRegistry: string
-  server?: {
-    port?: number
-    host?: string
-    enable?: boolean
+  server: {
+    port: number
+    host: string
+    enable: boolean
   }
   startupMode: import('#/types/enum').IStartupMode
 }
