@@ -162,12 +162,19 @@ jobs:
             ${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) 
               && 'release-signing' 
               || 'test-signing' }}
+          ARTIFACT_SLUG: |
+            ${{ (matrix.arch == 'x64-ia32') 
+              && 'PicGo-Windows' 
+              || (matrix.arch == 'arm64') 
+              && 'PicGo-Windows-ARM64' 
+              || '' }}
         with:
           api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
           organization-id: "${{ secrets.SIGNPATH_ORGANIZATION_ID }}"
           project-slug: "${{ secrets.SIGNPATH_PROJECT_SLUG }}"
           signing-policy-slug: "${{ env.SIGNPATH_SIGNING_POLICY_SLUG }}"
           github-artifact-id: "${{ steps.upload-unsigned.outputs.artifact-id }}"
+          artifact-configuration-slug: "${{ env.ARTIFACT_SLUG }}"
           wait-for-completion: true
           output-artifact-directory: "signed-artifact"
 
