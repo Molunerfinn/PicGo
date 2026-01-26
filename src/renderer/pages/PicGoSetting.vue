@@ -71,7 +71,7 @@ const form = reactive<ISettingForm>({
   autoCopyUrl: true,
   checkBetaUpdate: true,
   useBuiltinClipboard: false,
-  language: 'zh-CN',
+  language: 'en',
   logFileSizeLimit: 10,
   encodeOutputURL: true,
   showDockIcon: true,
@@ -110,7 +110,7 @@ const applyAppConfig = (config: DeepReadonly<IConfig> | null) => {
   form.autoCopyUrl = settings.autoCopyUrl === undefined ? true : settings.autoCopyUrl
   form.checkBetaUpdate = settings.checkBetaUpdate === undefined ? true : settings.checkBetaUpdate
   form.useBuiltinClipboard = settings.useBuiltinClipboard === undefined ? false : settings.useBuiltinClipboard
-  form.language = settings.language ?? 'zh-CN'
+  form.language = settings.language ?? 'en'
   form.encodeOutputURL = settings.encodeOutputURL === undefined ? false : settings.encodeOutputURL
   form.customLink = settings.customLink || '$url'
   form.npmProxy = settings.npmProxy || ''

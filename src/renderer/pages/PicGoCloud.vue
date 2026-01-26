@@ -34,6 +34,12 @@
                 {{ $T('PICGO_CLOUD_LOGGED_IN_AS', { user: userInfo.user }) }}
               </div>
               <el-button
+                size="small"
+                @click="handleOpenCloud"
+              >
+                {{ $T('PICGO_CLOUD_OPEN') }}
+              </el-button>
+              <el-button
                 type="danger"
                 size="small"
                 @click="handleLogout"
@@ -206,6 +212,7 @@ const hasAgreedToTermsAndPrivacy = computed({
 const TERMS_URL = 'https://picgo.app/terms/'
 const PRIVACY_URL = 'https://picgo.app/privacy/'
 const DOC_URL = 'https://docs.picgo.app/gui/'
+const CLOUD_URL = 'https://cloud.picgo.app'
 
 const isUserInfoLoading = computed(() => userInfoStatus.value === IPicGoCloudRequestStatus.LOADING)
 const isLoginInProgress = computed(() => loginStatus.value === IPicGoCloudLoginStatus.IN_PROGRESS)
@@ -256,6 +263,10 @@ const handleOpenPrivacy = () => {
 const handleOpenDocs = () => {
   // TODO: change dog url
   openURL(DOC_URL)
+}
+
+const handleOpenCloud = () => {
+  openURL(CLOUD_URL)
 }
 
 const refreshAppStateAfterSync = async () => {

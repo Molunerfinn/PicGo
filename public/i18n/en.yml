@@ -44,6 +44,7 @@ PICGO_CLOUD_RETRY: Retry
 PICGO_CLOUD_CONFIG_SYNC: Config Sync
 PICGO_CLOUD_LOGIN_IN_PROGRESS: Login in progress. Please finish login in your browser.
 PICGO_CLOUD_LOGGED_IN_AS: "Logged in as: ${user}"
+PICGO_CLOUD_OPEN: Open PicGo Cloud
 PICGO_CLOUD_LOGIN_TIMEOUT: Login timed out. Please try again.
 PICGO_CLOUD_LOGIN_FAILED: Login failed. Please try again.
 PICGO_CLOUD_AGREE_PREFIX: "I have read and agree to PicGo's "
