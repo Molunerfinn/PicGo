@@ -36,7 +36,7 @@ env:
   NODE_VERSION: 22.x
 
 jobs:
-  # ============== macOS Builds ==============
+  # ... [build-macos 保持不变] ...
   build-macos:
     name: Build macOS (${{ matrix.arch }})
     if: github.event.inputs.build_os == 'macOS' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v')
@@ -90,7 +90,7 @@ jobs:
           name: PicGo-macOS-${{ matrix.arch }}
           path: dist/*.*
 
-  # ============== Windows Builds ==============
+  # ============== Windows Builds (Modified for SignPath) =============
   build-windows:
     name: Build Windows (${{ matrix.arch }})
     if: github.event.inputs.build_os == 'Windows' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v')
@@ -138,10 +138,101 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # 1. Build (Unsigned)
       - name: Build Windows App (${{ matrix.arch }})
         run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --win ${{matrix.target}} ${{ matrix.build_arch }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      # 2. Upload Unsigned Artifact to SignPath (Intermediate Step)
+      - name: Upload Unsigned Artifact for Signing
+        id: upload-unsigned
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-${{ matrix.arch }}
+          path: dist/*.exe
+          retention-days: 1
+          if-no-files-found: error
+
+      # 3. Submit to SignPath and Wait
+      - name: Sign Artifact with SignPath
+        uses: signpath/github-action-submit-signing-request@v2
+        env:
+          SIGNPATH_SIGNING_POLICY_SLUG: |
+            ${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) 
+              && 'release-signing' 
+              || 'test-signing' }}
+        with:
+          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
+          organization-id: "${{ secrets.SIGNPATH_ORGANIZATION_ID }}"
+          project-slug: "${{ secrets.SIGNPATH_PROJECT_SLUG }}"
+          signing-policy-slug: "${{ env.SIGNPATH_SIGNING_POLICY_SLUG }}"
+          github-artifact-id: "${{ steps.upload-unsigned.outputs.artifact-id }}"
+          wait-for-completion: true
+          output-artifact-directory: "signed-artifact"
+
+      # 4. Replace Unsigned with Signed & Fix Blockmap (Critical for Auto-Update)
+      - name: Replace Unsigned with Signed & Update latest.yml
+        shell: powershell
+        run: |
+          # 1. Move signed artifacts to overwrite original files
+          Move-Item -Path "signed-artifact\*.exe" -Destination "dist\" -Force
+          Write-Host "✅ Signed artifacts moved to dist folder."
+
+          $yamlPath = "dist\latest.yml"
+
+          # If latest.yml does not exist (e.g., first build), skip
+          if (-not (Test-Path $yamlPath)) {
+            Write-Warning "latest.yml not found. Skipping update."
+            return
+          }
+
+          # Read YAML content
+          $content = Get-Content $yamlPath -Raw
+          $exes = Get-ChildItem "dist\*.exe"
+
+          foreach ($file in $exes) {
+            $filename = $file.Name
+            $size = $file.Length
+            
+            Write-Host "Processing: $filename (Size: $size)"
+
+            # 2. Calculate new SHA512 (Base64 format)
+            $sha512 = [System.Security.Cryptography.SHA512]::Create()
+            $stream = [System.IO.File]::OpenRead($file.FullName)
+            $hashBytes = $sha512.ComputeHash($stream)
+            $stream.Close()
+            $base64Hash = [Convert]::ToBase64String($hashBytes)
+            
+            Write-Host "  -> New Hash: $base64Hash"
+
+            # 3. Update YAML content using Regex
+            # Logic: Find the corresponding filename, then replace the following sha512 and size
+            # [Regex]::Escape handles dots (.) in filenames
+            $escapedName = [Regex]::Escape($filename)
+
+            # A. Update entries in the 'files' list
+            # Match pattern: url: <filename> ... sha512: <old_hash>
+            $content = $content -replace "(url:\s*$escapedName\s+sha512:\s*)([A-Za-z0-9+/=]+)", "`$1$base64Hash"
+            # Match pattern: url: <filename> ... size: <old_size>
+            # Note: In electron-builder yaml, size usually follows sha512
+            $content = $content -replace "(url:\s*$escapedName[\s\S]+?size:\s*)(\d+)", "`$1$size"
+
+            # B. Update root 'path' entry (if exists)
+            # Match pattern: path: <filename> ... sha512: <old_hash>
+            if ($content -match "path:\s*$escapedName") {
+                Write-Host "  -> Updating root path entry for $filename"
+                $content = $content -replace "(path:\s*$escapedName\s+sha512:\s*)([A-Za-z0-9+/=]+)", "`$1$base64Hash"
+                $content = $content -replace "(path:\s*$escapedName[\s\S]+?size:\s*)(\d+)", "`$1$size"
+            }
+          }
+
+          # 4. Write back to file
+          Set-Content -Path $yamlPath -Value $content -Encoding UTF8
+          Write-Host "✅ latest.yml updated successfully."
+
+          # Print for verification (optional)
+          Get-Content $yamlPath
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
