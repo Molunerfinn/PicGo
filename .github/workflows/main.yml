@@ -26,11 +26,19 @@ on:
         required: true
         default: false
         type: boolean
-      skip_notarize:
-        description: "Skip Notarization (true/false)"
+      skip_mac_notarize:
+        description: "Skip Mac Notarization (true/false)"
         required: true
         default: false
         type: boolean
+      win_signing_mode:
+        description: "Windows Signing Mode: release-signing(default) or test-signing"
+        required: true
+        default: "release-signing"
+        type: choice
+        options:
+          - release-signing
+          - test-signing
 
 env:
   NODE_VERSION: 22.x
@@ -82,7 +90,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          SKIP_NOTARIZE: ${{ inputs.skip_notarize }}
+          SKIP_NOTARIZE: ${{ inputs.skip_mac_notarize }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -159,7 +167,7 @@ jobs:
         uses: signpath/github-action-submit-signing-request@v2
         env:
           SIGNPATH_SIGNING_POLICY_SLUG: |
-            ${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) 
+            ${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') || inputs.win_signing_mode == 'release-signing') 
               && 'release-signing' 
               || 'test-signing' }}
           ARTIFACT_SLUG: |
