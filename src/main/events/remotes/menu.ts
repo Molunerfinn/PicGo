@@ -49,7 +49,7 @@ const buildMiniPageMenu = () => {
       }
     },
     {
-      label: T('PRIVACY_AGREEMENT'),
+      label: T('PRIVACY_TERMS_AGREEMENT'),
       click () {
         privacyManager.show(false)
       }
@@ -110,7 +110,7 @@ const buildMainPageMenu = (win: BrowserWindow) => {
       }
     },
     {
-      label: T('PRIVACY_AGREEMENT'),
+      label: T('PRIVACY_TERMS_AGREEMENT'),
       click () {
         privacyManager.show(false)
       }

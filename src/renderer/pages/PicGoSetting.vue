@@ -49,14 +49,14 @@ import { Reading } from '@element-plus/icons-vue'
 import { IConfig } from 'picgo'
 import { T as $T } from '@/i18n/index'
 import { enforceNumber, isLinux } from '~/universal/utils/common'
-import { onBeforeMount, reactive, ref } from 'vue'
-import { getConfig } from '@/utils/dataSender'
+import { computed, onBeforeMount, reactive, ref, watch, type DeepReadonly } from 'vue'
 import ButtonAreaSettings from './components/settings/buttonArea/ButtonAreaSettings.vue'
 import SwitchAreaSettings from './components/settings/switchArea/SwitchAreaSettings.vue'
 import CustomAreaSettings from './components/settings/customArea/CustomAreaSettings.vue'
 import SelectAreaSettings from './components/settings/selectArea/SelectAreaSettings.vue'
 import { openURL } from '@/utils/common'
 import { IStartupMode } from '#/types/enum'
+import { useStore } from '@/hooks/useStore'
 
 const form = reactive<ISettingForm>({
   showUpdateTip: false,
@@ -71,7 +71,7 @@ const form = reactive<ISettingForm>({
   autoCopyUrl: true,
   checkBetaUpdate: true,
   useBuiltinClipboard: false,
-  language: 'zh-CN',
+  language: 'en',
   logFileSizeLimit: 10,
   encodeOutputURL: true,
   showDockIcon: true,
@@ -88,40 +88,49 @@ const form = reactive<ISettingForm>({
 })
 
 const proxy = ref('')
+const store = useStore()
+const appConfig = computed(() => store?.state.appConfig ?? null)
 
 onBeforeMount(() => {
-  initData()
+  store?.refreshAppConfig()
 })
 
-async function initData () {
-  const config = (await getConfig<IConfig>())!
-  if (config !== undefined) {
-    const settings = config.settings || {}
-    const picBed = config.picBed
-    form.showUpdateTip = settings.showUpdateTip || false
-    form.autoStart = settings.autoStart || false
-    form.rename = settings.rename || false
-    form.autoRename = settings.autoRename || false
-    form.uploadNotification = settings.uploadNotification || false
-    form.notificationSound = settings.notificationSound === undefined ? true : settings.notificationSound
-    form.miniWindowOnTop = settings.miniWindowOnTop || false
-    form.logLevel = initLogLevel(settings.logLevel || [])
-    form.autoCopyUrl = settings.autoCopyUrl === undefined ? true : settings.autoCopyUrl
-    form.checkBetaUpdate = settings.checkBetaUpdate === undefined ? true : settings.checkBetaUpdate
-    form.useBuiltinClipboard = settings.useBuiltinClipboard === undefined ? false : settings.useBuiltinClipboard
-    form.language = settings.language ?? 'zh-CN'
-    form.encodeOutputURL = settings.encodeOutputURL === undefined ? false : settings.encodeOutputURL
-    form.customLink = settings.customLink || '$url'
-    form.npmProxy = settings.npmProxy || ''
-    form.npmRegistry = settings.npmRegistry || ''
-    proxy.value = picBed.proxy || ''
-    form.server = settings.server
-    form.logFileSizeLimit = enforceNumber(settings.logFileSizeLimit) || 10
-    form.showDockIcon = settings.showDockIcon === undefined ? true : settings.showDockIcon
-    form.showMenubarIcon = settings.showMenubarIcon === undefined ? true : settings.showMenubarIcon
-    form.startupMode = settings.startupMode || (isLinux ? IStartupMode.SHOW_MINI_WINDOW : IStartupMode.HIDE)
+const applyAppConfig = (config: DeepReadonly<IConfig> | null) => {
+  if (!config) return
+  const settings = config.settings || {}
+  const picBed = config.picBed
+  form.showUpdateTip = settings.showUpdateTip || false
+  form.autoStart = settings.autoStart || false
+  form.rename = settings.rename || false
+  form.autoRename = settings.autoRename || false
+  form.uploadNotification = settings.uploadNotification || false
+  form.notificationSound = settings.notificationSound === undefined ? true : settings.notificationSound
+  form.miniWindowOnTop = settings.miniWindowOnTop || false
+  form.logLevel = initLogLevel(settings.logLevel ? [...settings.logLevel] : [])
+  form.autoCopyUrl = settings.autoCopyUrl === undefined ? true : settings.autoCopyUrl
+  form.checkBetaUpdate = settings.checkBetaUpdate === undefined ? true : settings.checkBetaUpdate
+  form.useBuiltinClipboard = settings.useBuiltinClipboard === undefined ? false : settings.useBuiltinClipboard
+  form.language = settings.language ?? 'en'
+  form.encodeOutputURL = settings.encodeOutputURL === undefined ? false : settings.encodeOutputURL
+  form.customLink = settings.customLink || '$url'
+  form.npmProxy = settings.npmProxy || ''
+  form.npmRegistry = settings.npmRegistry || ''
+  proxy.value = picBed.proxy || ''
+  const server = settings.server ?? {}
+  form.server = {
+    port: enforceNumber(server.port ?? 36677) || 36677,
+    host: server.host || '127.0.0.1',
+    enable: server.enable ?? true
   }
+  form.logFileSizeLimit = enforceNumber(settings.logFileSizeLimit ?? 10) || 10
+  form.showDockIcon = settings.showDockIcon === undefined ? true : settings.showDockIcon
+  form.showMenubarIcon = settings.showMenubarIcon === undefined ? true : settings.showMenubarIcon
+  form.startupMode = settings.startupMode || (isLinux ? IStartupMode.SHOW_MINI_WINDOW : IStartupMode.HIDE)
 }
+
+watch(appConfig, (config) => {
+  applyAppConfig(config)
+}, { immediate: true })
 
 function initLogLevel (logLevel: string | string[]) {
   if (!Array.isArray(logLevel)) {
@@ -135,7 +144,7 @@ function initLogLevel (logLevel: string | string[]) {
 }
 
 function goConfigPage () {
-  openURL('https://picgo.github.io/PicGo-Doc/guide/config.html#picgo设置')
+  openURL('https://docs.picgo.app/gui/guide/config#picgo-setting')
 }
 
 </script>

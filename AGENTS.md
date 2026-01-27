@@ -12,12 +12,20 @@ PicGo is an Electron + Vue 3 desktop client. Source lives in `src/`: `src/main` 
 - `pnpm lint` / `pnpm lint:fix` — run or auto-fix ESLint (Standard, TypeScript, Vue rules).
 - `pnpm lint:dpdm` — fail fast on circular dependencies in `src/`.
 - `pnpm check` — run `tsc` + `lint` (run once before finishing a task).
+- Before completing a task, always run `pnpm check` and resolve any issues it reports.
 - `pnpm gen-i18n` — regenerate typed locales after touching `public/i18n/*.yml`.
 
 ## Coding Style & Naming Conventions
 Follow ESLint Standard defaults: two-space indentation, single quotes, trailing commas where allowed, and no stray semicolons. Author new modules in TypeScript. Keep renderer files browser-safe; route Node APIs through IPC helpers such as `src/main/events/picgoCoreIPC.ts`. Name Vue components in PascalCase (`UploadPanel.vue`) and use camelCase for utilities. Centralize IPC event names inside `src/universal/events/constants.ts`, and store enums/types under `src/universal/types/` so they stay reusable. Static assets are served from `public/` and resolved via `getStaticPath`/`getStaticFileUrl` (`src/universal/utils/staticPath.ts`); avoid using `__static` directly.
 Static assets are served from `public/`. In the main process use `getStaticPath`/`getStaticFileUrl` (`src/universal/utils/staticPath.ts`). In the renderer, place assets under `public/` and resolve them via `import.meta.env.BASE_URL + filename` (helper: `src/renderer/utils/static.ts`); do not rely on `__static` in renderer code.
 - Do not use `as any` under any circumstances; keep typings explicit and safe.
+- Avoid `as any` in tests as well; build concrete typed stubs (e.g., `IpcMainInvokeEvent`) instead.
+- Do not prefix method calls with `void` (e.g. use `store?.refreshPicBeds()` rather than `void store?.refreshPicBeds()`).
+- If a renderer → main request mutates persisted config/state without using `saveConfig`, call `notifyAppConfigUpdated()` in main to inform renderers.
+- Prefer enums over union types for discrete value sets (e.g., encryption methods). Avoid introducing new string literal union types.
+- Renderer page/component styles should prefer Tailwind utility classes; avoid adding new Vue `<style>` blocks unless there's no reasonable Tailwind equivalent.
+- New renderer ↔ main request/response APIs should be implemented via RPC routes (see `src/main/events/rpc/routes/system.ts`) with `RPCRouter` + `IRPCActionType` rather than adding ad-hoc IPC modules (e.g. `picgoCloudIPC`).
+  - For request/response semantics in renderer, prefer `invokeRPC` (backed by `ipcMain.handle(RPC_ACTIONS, ...)` in `src/main/events/rpc/index.ts`).
 
 ## Testing Guidelines
 Place renderer unit specs in `test/unit/specs` with the `.spec.js` suffix; Karma picks them up via `require.context`. Run them with `npx karma start test/unit/karma.conf.js --single-run` and ensure new renderer folders are covered. Spectron e2e cases live in `test/e2e/specs`; build first (`pnpm build`), then run `npx mocha test/e2e/index.js` so Spectron can launch `dist/electron/main.js`. Document any test data, IPC stubs, or fixtures you add to keep suites reproducible.

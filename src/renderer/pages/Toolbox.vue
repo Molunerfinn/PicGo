@@ -96,8 +96,8 @@
 </template>
 <script lang="ts" setup>
 import { useIPC } from '@/hooks/useIPC'
-import { sendRPC, triggerRPC } from '@/utils/dataSender'
-import { ElMessageBox } from 'element-plus'
+import { sendRPC, invokeRPC } from '@/utils/dataSender'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, reactive, ref } from 'vue'
 import { IToolboxItemType, IToolboxItemCheckStatus, IRPCActionType } from '~/universal/types/enum'
 import { T as $T } from '@/i18n'
@@ -194,7 +194,12 @@ const handleFix = async () => {
     const status = fixList[key as IToolboxItemType].status
     return status === IToolboxItemCheckStatus.ERROR && !fixList[key as IToolboxItemType].hasNoFixMethod
   }).map(async key => {
-    return triggerRPC<IToolboxCheckRes>(IRPCActionType.TOOLBOX_CHECK_FIX, key as IToolboxItemType)
+    const res = await invokeRPC<IToolboxCheckRes>(IRPCActionType.TOOLBOX_CHECK_FIX, key as IToolboxItemType)
+    if (!res.success) {
+      ElMessage.warning(res.error)
+      return null
+    }
+    return res.data
   }))
 
   fixRes.filter(item => item !== null).forEach(item => {

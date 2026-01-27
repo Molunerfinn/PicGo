@@ -10,8 +10,8 @@ class I18nManager {
   private builtinI18nFolder = getStaticPath('i18n')
   private outerI18nFolder = ''
   private localesMap: Map<string, ILocales> = new Map()
-  private currentLanguage: string = 'zh-CN'
-  readonly defaultLanguage: string = 'zh-CN'
+  private currentLanguage: string = 'en'
+  readonly defaultLanguage: string = 'en'
   private i18nFileList: II18nItem[] = builtinI18nList
 
   setOuterI18nFolder (folder: string) {

@@ -97,13 +97,13 @@
 <script lang="ts" setup>
 import { Delete, DocumentCopy, Edit, Plus } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { saveConfig, triggerRPC } from '@/utils/dataSender'
+import { saveConfig, invokeRPC } from '@/utils/dataSender'
 import { showNotification } from '@/utils/notification'
 import dayjs from 'dayjs'
 import { IRPCActionType } from '~/universal/types/enum'
 import { T as $T } from '@/i18n/index'
 import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router'
-import { onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { PICBEDS_PAGE, UPLOADER_CONFIG_PAGE } from '@/router/config'
 import { useStore } from '@/hooks/useStore'
 const $router = useRouter()
@@ -113,6 +113,7 @@ const type = ref('')
 const curConfigList = ref<IUploaderConfigListItem[]>([])
 const defaultConfigId = ref('')
 const store = useStore()
+const appConfig = computed(() => store?.state.appConfig ?? null)
 const $confirm = ElMessageBox.confirm
 const $prompt = ElMessageBox.prompt
 
@@ -124,8 +125,7 @@ interface PromptBoxState {
 }
 
 async function selectItem (configName: string) {
-  const res = await triggerRPC<IRPCResult<string>>(IRPCActionType.SELECT_UPLOADER, type.value, configName)
-  if (!res) return
+  const res = await invokeRPC<string>(IRPCActionType.SELECT_UPLOADER, type.value, configName)
   if (!res.success) {
     ElMessage.warning(res.error)
     return
@@ -144,11 +144,16 @@ onBeforeRouteUpdate((to, from, next) => {
 onBeforeMount(() => {
   type.value = $route.params.type as string
   getCurrentConfigList()
+  store?.refreshAppConfig()
+})
+
+watch(appConfig, () => {
+  if (!type.value) return
+  getCurrentConfigList()
 })
 
 async function getCurrentConfigList () {
-  const configList = await triggerRPC<IRPCResult<IUploaderConfigItem>>(IRPCActionType.GET_PICBED_CONFIG_LIST, type.value)
-  if (!configList) return
+  const configList = await invokeRPC<IUploaderConfigItem>(IRPCActionType.GET_PICBED_CONFIG_LIST, type.value)
   if (!configList.success) {
     ElMessage.warning(configList.error)
     return
@@ -183,8 +188,7 @@ function deleteConfig (configName: string) {
     cancelButtonText: $T('CANCEL'),
     type: 'warning'
   }).then(async () => {
-    const res = await triggerRPC<IRPCResult<IUploaderConfigItem>>(IRPCActionType.DELETE_PICBED_CONFIG, type.value, configName)
-    if (!res) return
+    const res = await invokeRPC<IUploaderConfigItem>(IRPCActionType.DELETE_PICBED_CONFIG, type.value, configName)
     if (!res.success) {
       ElMessage.warning(res.error)
       return
@@ -216,10 +220,9 @@ function copyConfig (configName: string) {
       }
 
       instance.confirmButtonLoading = true
-      const res = await triggerRPC<IRPCResult<IUploaderConfigItem>>(IRPCActionType.COPY_UPLOADER_CONFIG, type.value, configName, newConfigName)
+      const res = await invokeRPC<IUploaderConfigItem>(IRPCActionType.COPY_UPLOADER_CONFIG, type.value, configName, newConfigName)
       instance.confirmButtonLoading = false
 
-      if (!res) return
       if (!res.success) {
         ElMessage.warning(res.error)
         return

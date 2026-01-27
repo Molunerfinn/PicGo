@@ -53,6 +53,11 @@ export default createRouter({
           name: config.PLUGIN_PAGE
         },
         {
+          path: 'cloud',
+          component: () => import(/* webpackChunkName: "PicGoCloud" */ '@/pages/PicGoCloud.vue'),
+          name: config.PICGO_CLOUD_PAGE
+        },
+        {
           path: 'shortKey',
           component: () => import(/* webpackChunkName: "ShortkeyPage" */ '@/pages/ShortKey.vue'),
           name: config.SHORTKEY_PAGE

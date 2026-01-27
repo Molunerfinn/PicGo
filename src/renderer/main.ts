@@ -12,7 +12,7 @@ import { dragMixin } from '@/utils/mixin'
 import { initTalkingData } from './utils/analytics'
 import db from './utils/db'
 import { i18nManager, T } from './i18n/index'
-import { getConfig, saveConfig, sendToMain, triggerRPC } from '@/utils/dataSender'
+import { getConfig, saveConfig, sendToMain } from '@/utils/dataSender'
 import { store } from '@/store'
 import vue3PhotoPreview from 'vue3-photo-preview'
 import 'vue3-photo-preview/dist/index.css'
@@ -37,7 +37,6 @@ app.config.globalProperties.$http = axios
 app.config.globalProperties.$T = T
 app.config.globalProperties.$i18n = i18nManager
 app.config.globalProperties.getConfig = getConfig
-app.config.globalProperties.triggerRPC = triggerRPC
 app.config.globalProperties.saveConfig = saveConfig
 app.config.globalProperties.sendToMain = sendToMain
 

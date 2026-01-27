@@ -3,7 +3,7 @@ ABOUT: About
 OPEN_MAIN_WINDOW: Open Main Window
 CHOOSE_DEFAULT_PICBED: Choose Default Picbed
 OPEN_UPDATE_HELPER: Open Update Helper
-PRIVACY_AGREEMENT: Privacy Agreement
+PRIVACY_TERMS_AGREEMENT: Privacy & Terms Agreement
 RELOAD_APP: Reload App
 UPLOAD_FAILED: Upload Failed
 UPLOAD_SUCCEED: Upload Succeed
@@ -34,6 +34,75 @@ GALLERY: Gallery
 PICBEDS_SETTINGS: Picbeds Settings
 PICGO_SETTINGS: PicGo Settings
 PLUGIN_SETTINGS: Plugins Settings
+PICGO_CLOUD_TITLE: PicGo Cloud
+PICGO_CLOUD_ERROR_TITLE: PicGo Cloud Error
+PICGO_CLOUD_NOT_LOGGED_IN: Not logged in to PicGo Cloud.
+PICGO_CLOUD_LOGIN: Log In
+PICGO_CLOUD_LOGOUT: Log Out
+PICGO_CLOUD_CANCEL_LOGIN: Cancel Login
+PICGO_CLOUD_RETRY: Retry
+PICGO_CLOUD_CONFIG_SYNC: Config Sync
+PICGO_CLOUD_LOGIN_IN_PROGRESS: Login in progress. Please finish login in your browser.
+PICGO_CLOUD_LOGGED_IN_AS: "Logged in as: ${user}"
+PICGO_CLOUD_OPEN: Open PicGo Cloud
+PICGO_CLOUD_LOGIN_TIMEOUT: Login timed out. Please try again.
+PICGO_CLOUD_LOGIN_FAILED: Login failed. Please try again.
+PICGO_CLOUD_AGREE_PREFIX: "I have read and agree to PicGo's "
+PICGO_CLOUD_TERMS_OF_SERVICE: Terms of Service
+PICGO_CLOUD_AGREE_AND: " and "
+PICGO_CLOUD_PRIVACY_POLICY: Privacy Policy
+PICGO_CLOUD_LOGIN_EXPIRED: Login expired. Please log in again.
+PICGO_CLOUD_ENCRYPTION_MODE_LABEL: Encryption mode
+PICGO_CLOUD_ENCRYPTION_MODE_AUTO: Auto
+PICGO_CLOUD_ENCRYPTION_MODE_SERVER: Server-side encryption
+PICGO_CLOUD_ENCRYPTION_MODE_E2E: End-to-end encryption
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_AUTO: "Auto: follow the cloud's last used encryption method (defaults to server-side)."
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_SERVER: "Server-side encryption: your config is encrypted on the server before being stored. No PIN required."
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_E2E: "End-to-end encryption: use your PIN to encrypt/decrypt data. PicGo does not store your PIN; losing it means data cannot be recovered."
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_DOC: Read full docs
+PICGO_CLOUD_E2E_CHECKBOX_LABEL: Enable E2E encryption
+PICGO_CLOUD_E2E_ENABLE_WARNING_TITLE: Enable E2E Encryption
+PICGO_CLOUD_E2E_ENABLE_WARNING_MESSAGE: "E2E encryption requires you to keep your PIN safe. If you lose your PIN, the encrypted data cannot be recovered. PicGo does not store your PIN or any recovery data."
+PICGO_CLOUD_REMOTE_E2E_AUTO_ENABLED: Remote config is E2E-encrypted. E2E has been enabled locally.
+PICGO_CLOUD_E2E_PIN_SETUP_TITLE: Set up E2E PIN
+PICGO_CLOUD_E2E_PIN_DECRYPT_TITLE: Enter E2E PIN
+PICGO_CLOUD_E2E_PIN_RETRY_TITLE: "Incorrect PIN. Please try again (attempt ${retryCount})."
+PICGO_CLOUD_E2E_PIN_PLACEHOLDER: PIN
+PICGO_CLOUD_E2E_PIN_CONFIRM_PLACEHOLDER: Confirm PIN
+PICGO_CLOUD_CONFIG_SYNC_SUCCESS: Config sync succeeded.
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_DETECTED: Conflict detected. Please resolve the conflicts.
+PICGO_CLOUD_CONFIG_SYNC_FAILED: Config sync failed.
+PICGO_CLOUD_CONFIG_SYNC_ABORTED: Config sync cancelled.
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_TITLE: Confirm switch encryption method?
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_BODY: "You are switching from \"${from}\" to \"${to}\".\n\nNote: Switching encryption modes will clear all your cloud history versions.\nThis is because older history versions cannot be decrypted or verified under the new mode.\nAfter switching, the system will immediately create a new backup as the starting point."
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CONFIRM: Confirm switch and clear history
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CANCEL: Cancel
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CANCELLED: Encryption switch cancelled by user
+PICGO_CLOUD_CONFIG_SYNC_FAILED_WITH_REASON: "Config sync failed: ${reason}"
+PICGO_CLOUD_CONFIG_SYNC_PIN_MAX_RETRY: Too many incorrect PIN attempts. Please try again.
+PICGO_CLOUD_CONFIG_SYNC_LOCAL_CONFIG_INVALID: Local config is invalid. Please check your config file.
+PICGO_CLOUD_CONFIG_SYNC_IN_PROGRESS: Config sync is in progress.
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_PENDING: There is a pending conflict session. Please resolve conflicts first.
+PICGO_CLOUD_CONFIG_SYNC_NO_CONFLICT_SESSION: No conflict session found.
+PICGO_CLOUD_CONFIG_SYNC_RESOLUTION_INCOMPLETE: Please choose Local or Cloud for all conflict items.
+PICGO_CLOUD_CONFIG_SYNC_STARTING: Config sync started...
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_TITLE: "Conflict Detected (${count})"
+PICGO_CLOUD_CONFIG_SYNC_CHOOSE_ALL_LOCAL: Choose All Local
+PICGO_CLOUD_CONFIG_SYNC_CHOOSE_ALL_CLOUD: Choose All Cloud
+PICGO_CLOUD_CONFIG_SYNC_RESET_ALL: Reset All
+PICGO_CLOUD_CONFIG_SYNC_LOCAL_VERSION: Local Version
+PICGO_CLOUD_CONFIG_SYNC_CLOUD_VERSION: Cloud Version
+PICGO_CLOUD_CONFIG_SYNC_ABORT: Abort
+PICGO_CLOUD_CONFIG_SYNC_CONFIRM_AND_SYNC: Confirm & Sync
+PICGO_CLOUD_CONFIG_SYNC_VALUE_UNDEFINED: (empty)
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_RESOLVED: Conflicts resolved.
+PICGO_CLOUD_LAST_SYNC_TIME: "Last local sync time: ${time}"
+PICGO_CLOUD_LAST_SYNC_TIME_NONE: None
+PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_TITLE: Restart Required?
+PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_MESSAGE: Some settings may require a restart to take effect. Restart now?
+PICGO_CLOUD_CONFIG_SYNC_RESTART_NOW: Restart Now
+PICGO_CLOUD_CONFIG_SYNC_RESTART_LATER: Later
+INPUT_BOX_CONFIRM_MISMATCH: The two inputs do not match.
 PICGO_SPONSOR_TEXT: PicGo is a free software, if you like it, please don't forget to buy me a cup of coffee.
 ALIPAY: Alipay
 WECHATPAY: Wechat Pay
@@ -309,37 +378,6 @@ TIPS_UPLOADER_CONFIG_NOT_FOUND: Config not found
 TIPS_UPLOADER_CONFIG_CANNOT_DELETE_LAST: Cannot delete the last config
 
 # privacy
-PRIVACY: >
-
-  This software respects and protects the personal privacy of all users who use the service. In order to provide you with more accurate and better services, this software will use and collect some of your behavioral information in accordance with the provisions of this Privacy Policy. When you agree to the software service use agreement, you are deemed to have agreed to the entire content of this privacy policy. This privacy policy is an integral part of the software service use agreement, and it will not be used if you do not agree.
-  This Agreement will be updated periodically.
-
-  1. Scope of application
-
-
-  a) When you use this software, this software will record some information about your operation behavior of this software, including but not limited to the time-consuming, type, quantity and other information of your use of this software to upload files.
-
-
-  2. Use of Information
-
-
-  a) After obtaining your usage data, the software will upload it to the data analysis server so as to provide you with better services after analyzing the data.
-
-
-  3. Information disclosure
-
-
-  a) This software will not disclose your information to untrusted third parties.
-
-
-  b) In accordance with the relevant provisions of the law, or the requirements of administrative or judicial institutions, disclose to third parties or administrative or judicial institutions;
-
-
-
-
-  4. Information Security
-
-
-  a) This software does not collect your personal information, key information and other private information, and the collected information is only used for improving the software, optimizing the experience, and understanding the daily activities of the software.
+PRIVACY: "Please read and agree to the Privacy Policy ${privacyUrl} and Terms of Service ${termsUrl} before using."
 PRIVACY_TIPS: Please agree the privacy policy to upload
 QUIT: Quit

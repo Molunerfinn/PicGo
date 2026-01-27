@@ -252,7 +252,15 @@ interface IShowInputBoxOption {
   value?: string
   title: string
   placeholder: string
-  inputType?: 'text' | 'textarea'
+  inputType?: 'text' | 'textarea' | 'password'
+  /**
+   * Optional confirm input rendered in the same dialog.
+   * Commonly used for password/PIN setup to avoid user typos.
+   */
+  confirm?: {
+    value?: string
+    placeholder?: string
+  }
   /**
    * default to 400
    */

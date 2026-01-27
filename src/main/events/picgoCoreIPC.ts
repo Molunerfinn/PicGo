@@ -38,6 +38,7 @@ import { GalleryDB } from 'apis/core/datastore'
 import { IObject, IFilter } from '@picgo/store/dist/types'
 import pasteTemplate from '../utils/pasteTemplate'
 import { i18nManager, T } from '~/main/i18n'
+import { notifyAppConfigUpdated } from '~/main/utils/appConfigNotifier'
 import { rpcServer } from './rpc'
 
 const STORE_PATH = path.dirname(dbPathChecker())
@@ -259,6 +260,7 @@ const handleRemoveFiles = () => {
 const handlePicGoSaveConfig = () => {
   ipcMain.handle(PICGO_SAVE_CONFIG, (_event, data: IObj) => {
     picgo.saveConfig(data)
+    notifyAppConfigUpdated()
     return true
   })
 }

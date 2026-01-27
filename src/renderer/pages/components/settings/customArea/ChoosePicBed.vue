@@ -22,6 +22,7 @@ import { GET_PICBEDS } from '#/events/constants'
 import { saveConfig, sendToMain } from '@/utils/dataSender'
 import { useIPCOn } from '@/hooks/useIPC'
 import { useVModel } from '@/hooks/useVModel'
+import { IpcRendererEvent } from 'electron'
 
 interface IProps {
   showPicBedList: string[]
@@ -51,7 +52,7 @@ onBeforeMount(() => {
   useIPCOn(GET_PICBEDS, getPicBeds)
 })
 
-function getPicBeds (event: Event, picBeds: IPicBedType[]) {
+function getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
   picBed.value = picBeds
   showPicBedList.value = picBed.value.map(item => {
     if (item.visible) {

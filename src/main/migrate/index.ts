@@ -11,7 +11,7 @@ const updateShortKeyFromVersion212 = (picgo: PicGoCore) => {
   if (shortKeyConfig === undefined) {
     const defaultShortKeyConfig = {
       enable: true,
-      key: 'CommandOrControl+Shift+P',
+      key: 'CommandOrControl+Shift+U',
       name: 'upload',
       label: T('QUICK_UPLOAD')
     }

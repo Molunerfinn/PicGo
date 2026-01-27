@@ -12,7 +12,7 @@ import { CREATE_APP_MENU } from '@core/bus/constants'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { app } from 'electron'
 import { T } from '~/main/i18n'
-import { isLinux } from '~/universal/utils/common'
+import { isLinux, isWindows } from '~/universal/utils/common'
 import { getStaticPath } from '#/utils/staticPath'
 import picgo from '@core/picgo'
 // import { URLSearchParams } from 'url'
@@ -37,7 +37,7 @@ const handleWindowParams = (windowURL: string) => {
 }
 
 export const isWindowShouldShowOnStartup = (currentWindow: IWindowList) => {
-  const startupMode = picgo.getConfig<IStartupMode | undefined>('settings.startupMode') || (isLinux ? IStartupMode.SHOW_MINI_WINDOW : IStartupMode.HIDE)
+  const startupMode = picgo.getConfig<IStartupMode | undefined>('settings.startupMode') || (isLinux ? IStartupMode.SHOW_MINI_WINDOW : isWindows ? IStartupMode.SHOW_MAIN_WINDOW : IStartupMode.HIDE)
   switch (currentWindow) {
     case IWindowList.MINI_WINDOW: {
       return startupMode === IStartupMode.SHOW_MINI_WINDOW

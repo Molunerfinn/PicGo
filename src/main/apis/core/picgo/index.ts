@@ -1,4 +1,5 @@
 import { dbChecker, dbPathChecker } from 'apis/core/datastore/dbChecker'
+import { shell } from 'electron'
 import pkg from 'root/package.json'
 import { PicGo } from 'picgo'
 
@@ -14,6 +15,10 @@ picgo.saveConfig({
 
 global.PICGO_GUI_VERSION = pkg.version
 picgo.GUI_VERSION = global.PICGO_GUI_VERSION
+
+picgo.openUrl = (url: string) => {
+  return shell.openExternal(url)
+}
 
 // const originPicGoSaveConfig = picgo.saveConfig.bind(picgo)
 

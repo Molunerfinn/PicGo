@@ -43,9 +43,9 @@
 </template>
 <script lang="ts" setup>
 import { IRPCActionType } from '~/universal/types/enum'
-import { ref, onBeforeMount } from 'vue'
+import { computed, ref, onBeforeMount, watch } from 'vue'
 import { T as $T } from '@/i18n/index'
-import { sendToMain, triggerRPC } from '@/utils/dataSender'
+import { sendToMain, invokeRPC } from '@/utils/dataSender'
 import { showNotification } from '@/utils/notification'
 import { useRoute, useRouter } from 'vue-router'
 import ConfigForm from '@/components/ConfigForm.vue'
@@ -56,28 +56,33 @@ import {
 } from 'electron'
 import { GET_PICBED_CONFIG } from '~/universal/events/constants'
 import { useIPCOn } from '@/hooks/useIPC'
+import { useStore } from '@/hooks/useStore'
+import { PICBEDS_PAGE } from '@/router/config'
 const type = ref('')
 const config = ref<IPicGoPluginConfig[]>([])
 const picBedName = ref('')
 const $route = useRoute()
 const $router = useRouter()
 const $configForm = ref<InstanceType<typeof ConfigForm> | null>(null)
+const store = useStore()
+const appConfig = computed(() => store?.state.appConfig ?? null)
 type.value = $route.params.type as string
 
 useIPCOn(GET_PICBED_CONFIG, getPicBeds)
 
 onBeforeMount(() => {
   sendToMain(GET_PICBED_CONFIG, $route.params.type)
+  store?.refreshAppConfig()
 })
 
 const handleConfirm = async () => {
   const result = (await $configForm.value?.validate()) || false
   if (result !== false) {
     const configId = ($route.params.configId as string) || ''
-    const res = await triggerRPC<IRPCResult<boolean>>(IRPCActionType.UPDATE_UPLOADER_CONFIG, type.value, configId, result)
-    if (!res) return
+    const res = await invokeRPC<boolean>(IRPCActionType.UPDATE_UPLOADER_CONFIG, type.value, configId, result)
     if (!res.success) {
-      ElMessage.warning(res.error)
+      const message = res.error
+      ElMessage.warning(message)
       return
     }
     showNotification({
@@ -96,7 +101,7 @@ function getPicBeds (event: IpcRendererEvent, _config: IPicGoPluginConfig[], nam
 </script>
 <script lang="ts">
 export default {
-  name: 'PicbedsPage'
+  name: PICBEDS_PAGE
 }
 </script>
 <style lang='stylus'>

@@ -77,6 +77,12 @@
               </el-menu-item>
             </template>
           </el-sub-menu>
+          <el-menu-item :index="routerConfig.PICGO_CLOUD_PAGE">
+            <el-icon>
+              <Cloudy />
+            </el-icon>
+            <span>PicGo Cloud</span>
+          </el-menu-item>
           <el-menu-item :index="routerConfig.SETTING_PAGE">
             <el-icon>
               <Setting />
@@ -205,6 +211,7 @@ import {
   UploadFilled,
   PictureFilled,
   Menu,
+  Cloudy,
   Share,
   InfoFilled,
   Minus,
@@ -213,7 +220,7 @@ import {
 } from '@element-plus/icons-vue'
 import { ElMessage as $message } from 'element-plus'
 import { T as $T } from '@/i18n/index'
-import { ref, onBeforeUnmount, Ref, onBeforeMount, watch, nextTick, reactive } from 'vue'
+import { ref, onBeforeUnmount, Ref, onBeforeMount, watch, nextTick, reactive, computed } from 'vue'
 import { onBeforeRouteUpdate, useRouter } from 'vue-router'
 import QrcodeVue from 'qrcode.vue'
 import pick from 'lodash/pick'
@@ -221,7 +228,6 @@ import pkg from 'root/package.json'
 import * as config from '@/router/config'
 import {
   ipcRenderer,
-  IpcRendererEvent,
   clipboard
 } from 'electron'
 import InputBoxDialog from '@/components/dialog/InputBoxDialog.vue'
@@ -230,18 +236,19 @@ import {
   CLOSE_WINDOW,
   SHOW_MAIN_PAGE_MENU,
   SHOW_MAIN_PAGE_QRCODE,
-  SHOW_MAIN_PAGE_DONATION,
-  GET_PICBEDS
+  SHOW_MAIN_PAGE_DONATION
 } from '~/universal/events/constants'
 import { getConfig, sendToMain } from '@/utils/dataSender'
 import { useOS } from '@/hooks/useOS'
+import { useStore } from '@/hooks/useStore'
 const version = ref(process.env.NODE_ENV === 'production' ? pkg.version : 'Dev')
 const routerConfig = reactive(config)
 const defaultActive = ref(routerConfig.UPLOAD_PAGE)
 const visible = ref(false)
 const os = useOS()
 const $router = useRouter()
-const picBed: Ref<IPicBedType[]> = ref([])
+const store = useStore()
+const picBed = computed(() => store?.state.picBeds ?? [])
 const qrcodeVisible = ref(false)
 const picBedConfigString = ref('')
 const choosedPicBedForQRCode: Ref<string[]> = ref([])
@@ -249,8 +256,7 @@ const choosedPicBedForQRCode: Ref<string[]> = ref([])
 const keepAlivePages = $router.getRoutes().filter(item => item.meta.keepAlive).map(item => item.name as string)
 
 onBeforeMount(() => {
-  sendToMain(GET_PICBEDS)
-  ipcRenderer.on(GET_PICBEDS, getPicBeds)
+  store?.refreshPicBeds()
   handleGetPicPeds()
   ipcRenderer.on(SHOW_MAIN_PAGE_QRCODE, () => {
     qrcodeVisible.value = true
@@ -263,7 +269,7 @@ onBeforeMount(() => {
 watch(() => choosedPicBedForQRCode, (val) => {
   if (val.value.length > 0) {
     nextTick(async () => {
-      const picBedConfig = await getConfig('picBed')
+      const picBedConfig = store?.state.appConfig?.picBed ?? await getConfig('picBed')
       const config = pick(picBedConfig, ...choosedPicBedForQRCode.value)
       picBedConfigString.value = JSON.stringify(config)
     })
@@ -271,7 +277,7 @@ watch(() => choosedPicBedForQRCode, (val) => {
 }, { deep: true })
 
 const handleGetPicPeds = () => {
-  sendToMain(GET_PICBEDS)
+  store?.refreshPicBeds()
 }
 
 const handleSelect = (index: string) => {
@@ -325,10 +331,6 @@ function handleCopyPicBedConfig () {
   $message.success($T('COPY_PICBED_CONFIG_SUCCEED'))
 }
 
-function getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
-  picBed.value = picBeds
-}
-
 onBeforeRouteUpdate(async (to) => {
   if (to.params.type) {
     defaultActive.value = `${routerConfig.UPLOADER_CONFIG_PAGE}-${to.params.type}`
@@ -338,7 +340,8 @@ onBeforeRouteUpdate(async (to) => {
 })
 
 onBeforeUnmount(() => {
-  ipcRenderer.removeListener(GET_PICBEDS, getPicBeds)
+  ipcRenderer.removeAllListeners(SHOW_MAIN_PAGE_QRCODE)
+  ipcRenderer.removeAllListeners(SHOW_MAIN_PAGE_DONATION)
 })
 
 </script>

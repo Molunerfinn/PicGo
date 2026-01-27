@@ -66,7 +66,7 @@ export function createContextMenu () {
         }
       },
       {
-        label: T('PRIVACY_AGREEMENT'),
+        label: T('PRIVACY_TERMS_AGREEMENT'),
         click () {
           privacyManager.show(false)
         }

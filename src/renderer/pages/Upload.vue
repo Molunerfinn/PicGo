@@ -103,16 +103,15 @@
 import { T as $T } from '@/i18n'
 import $bus from '@/utils/bus'
 import { getFilePath } from '@/utils/common'
-import { getConfig, saveConfig, sendToMain } from '@/utils/dataSender'
+import { saveConfig, sendToMain } from '@/utils/dataSender'
 import { CaretBottom, UploadFilled } from '@element-plus/icons-vue'
 import {
   IpcRendererEvent,
   ipcRenderer
 } from 'electron'
 import { ElMessage as $message, ElMessageBox } from 'element-plus'
-import { onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
 import {
-  GET_PICBEDS,
   LOG_INVALID_URL_LINES,
   SHOW_INPUT_BOX,
   SHOW_INPUT_BOX_RESPONSE,
@@ -123,14 +122,30 @@ import {
   isUrl,
   parseNewlineSeparatedUrls
 } from '~/universal/utils/common'
+import { useStore } from '@/hooks/useStore'
 const dragover = ref(false)
 const progress = ref(0)
 const showProgress = ref(false)
 const showError = ref(false)
 const pasteStyle = ref('')
-const picBed = ref<IPicBedType[]>([])
-const picBedName = ref('')
-const configName = ref('')
+const store = useStore()
+const currentPicBedType = computed(() => {
+  const config = store?.state.appConfig
+  return config?.picBed?.uploader || config?.picBed?.current || store?.state.defaultPicBed || 'smms'
+})
+const picBedName = computed(() => {
+  const currentType = currentPicBedType.value
+  const list = store?.state.picBeds ?? []
+  const match = list.find(item => item.type === currentType)
+  return match?.name || currentType
+})
+const configName = computed(() => {
+  const configEntry = store?.state.appConfig?.picBed?.[currentPicBedType.value] as IStringKeyMap | undefined
+  if (configEntry && typeof configEntry._configName === 'string') {
+    return configEntry._configName
+  }
+  return 'Default'
+})
 const $confirm = ElMessageBox.confirm
 onBeforeMount(() => {
   ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, _progress: number) => {
@@ -142,13 +157,11 @@ onBeforeMount(() => {
       showError.value = true
     }
   })
-  getPasteStyle()
-  getDefaultPicBed()
+  store?.refreshAppConfig()
+  store?.refreshPicBeds()
   ipcRenderer.on('syncPicBed', () => {
-    getDefaultPicBed()
+    store?.refreshAppConfig()
   })
-  sendToMain(GET_PICBEDS)
-  ipcRenderer.on(GET_PICBEDS, getPicBeds)
   $bus.on(SHOW_INPUT_BOX_RESPONSE, handleInputBoxValue)
 })
 
@@ -170,7 +183,6 @@ onBeforeUnmount(() => {
   $bus.off(SHOW_INPUT_BOX_RESPONSE)
   ipcRenderer.removeAllListeners('uploadProgress')
   ipcRenderer.removeAllListeners('syncPicBed')
-  ipcRenderer.removeListener(GET_PICBEDS, getPicBeds)
 })
 
 async function onDrop (e: DragEvent) {
@@ -280,9 +292,14 @@ function ipcSendFiles (files: FileList) {
   sendToMain('uploadChoosedFiles', sendFiles)
 }
 
-async function getPasteStyle () {
-  pasteStyle.value = await getConfig('settings.pasteStyle') || 'markdown'
+const applyAppConfig = () => {
+  const settings = store?.state.appConfig?.settings ?? {}
+  pasteStyle.value = settings.pasteStyle || 'markdown'
 }
+
+watch(() => store?.state.appConfig, () => {
+  applyAppConfig()
+}, { immediate: true })
 
 function handlePasteStyleChange (val: string | number | boolean | undefined) {
   saveConfig({
@@ -327,22 +344,6 @@ async function handleInputBoxValue (val: string) {
   }
 
   await uploadUrls(urls, invalidLines, () => openUrlInputBox(val))
-}
-
-async function getDefaultPicBed () {
-  const currentPicBed = await getConfig<string>('picBed.current')
-  const currentConfigName = await getConfig<string>(`picBed.${currentPicBed}._configName`) || 'Default'
-  picBed.value.forEach(item => {
-    if (item.type === currentPicBed) {
-      picBedName.value = item.name
-    }
-  })
-  configName.value = currentConfigName
-}
-
-function getPicBeds (event: IpcRendererEvent, picBeds: IPicBedType[]) {
-  picBed.value = picBeds
-  getDefaultPicBed()
 }
 
 async function handleChangePicBed () {

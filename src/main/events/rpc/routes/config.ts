@@ -2,23 +2,10 @@ import { IRPCActionType } from '~/universal/types/enum'
 import { RPCRouter } from '../router'
 import picgo from '@core/picgo'
 import { T } from '~/main/i18n'
+import { fail, ok } from '../utils'
+import { notifyAppConfigUpdated } from '~/main/utils/appConfigNotifier'
 
 const configRouter = new RPCRouter()
-
-const errorToMessage = (e: unknown): string => {
-  if (e instanceof Error) return e.message
-  return String(e)
-}
-
-const ok = <T>(data: T): IRPCResult<T> => ({
-  success: true,
-  data
-})
-
-const fail = <T>(e: unknown): IRPCResult<T> => ({
-  success: false,
-  error: errorToMessage(e)
-})
 
 configRouter
   .add(IRPCActionType.GET_PICBED_CONFIG_LIST, async (args) => {
@@ -44,6 +31,7 @@ configRouter
       picgo.uploaderConfig.remove(type, configName)
       const configList = picgo.uploaderConfig.getConfigList(type)
       const activeConfig = picgo.uploaderConfig.getActiveConfig(type)
+      notifyAppConfigUpdated()
       return ok({
         configList,
         defaultId: activeConfig?._id ?? ''
@@ -58,6 +46,7 @@ configRouter
       picgo.uploaderConfig.copy(type, configName, newConfigName)
       const configList = picgo.uploaderConfig.getConfigList(type)
       const activeConfig = picgo.uploaderConfig.getActiveConfig(type)
+      notifyAppConfigUpdated()
       return ok({
         configList,
         defaultId: activeConfig?._id ?? ''
@@ -70,6 +59,7 @@ configRouter
     try {
       const [type, configName] = args as ISelectUploaderConfigArgs
       const activeConfig = picgo.uploaderConfig.use(type, configName)
+      notifyAppConfigUpdated()
       return ok(activeConfig._id)
     } catch (e) {
       return fail(e)
@@ -97,6 +87,7 @@ configRouter
         picgo.uploaderConfig.rename(type, oldConfigName, configName)
       }
       picgo.uploaderConfig.createOrUpdate(type, configName, config)
+      notifyAppConfigUpdated()
       return ok(true)
     } catch (e) {
       return fail(e)
