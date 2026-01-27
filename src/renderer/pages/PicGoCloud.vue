@@ -211,7 +211,7 @@ const hasAgreedToTermsAndPrivacy = computed({
 
 const TERMS_URL = 'https://picgo.app/terms/'
 const PRIVACY_URL = 'https://picgo.app/privacy/'
-const DOC_URL = 'https://docs.picgo.app/gui/'
+const DOC_URL = 'https://picgo.app/blog/2026/picgo-configuration-sync-release/'
 const CLOUD_URL = 'https://cloud.picgo.app'
 
 const isUserInfoLoading = computed(() => userInfoStatus.value === IPicGoCloudRequestStatus.LOADING)
@@ -261,7 +261,6 @@ const handleOpenPrivacy = () => {
 }
 
 const handleOpenDocs = () => {
-  // TODO: change dog url
   openURL(DOC_URL)
 }
 
