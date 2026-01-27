@@ -2,7 +2,6 @@ import { IRPCActionType } from '~/universal/types/enum'
 import { RPCRouter } from '../router'
 import picgo from '@core/picgo'
 import type { IPicGoCloudUserInfo } from '#/types/cloud'
-import axios from 'axios'
 import { T } from '~/main/i18n'
 import { fail, ok } from '../utils'
 import GuiApi from 'apis/gui'
@@ -36,14 +35,6 @@ const cloudRouter = new RPCRouter()
 
 const LOGIN_TIMEOUT_MS = 5 * 60 * 1000
 const USER_ABORTED_CODE = 'PICGO_CLOUD_CONFIG_SYNC_ABORTED'
-
-type ICloudWithGetUserInfo = {
-  getUserInfo: () => Promise<IPicGoCloudUserInfo | null>
-}
-
-const hasGetUserInfo = (cloud: unknown): cloud is ICloudWithGetUserInfo => {
-  return typeof (cloud as { getUserInfo?: unknown }).getUserInfo === 'function'
-}
 
 /**
  * Config sync session state MUST live in the main process (memory only) so the UI can re-hydrate
@@ -282,47 +273,7 @@ const buildResolvedConfig = async (resolution: IPicGoCloudConfigSyncResolution):
 }
 
 const getUserInfo = async (): Promise<IPicGoCloudUserInfo | null> => {
-  const cloud = picgo.cloud
-  if (hasGetUserInfo(cloud)) {
-    return await cloud.getUserInfo()
-  }
-
-  // Backward-compatible fallback (for older picgo-core versions without `cloud.getUserInfo`).
-  const token = picgo.getConfig<string | undefined>('settings.picgoCloud.token')
-  if (!token) return null
-
-  type IAxiosErrorLike = {
-    response?: {
-      status?: number
-      data?: unknown
-    }
-    message?: string
-  }
-
-  const baseURL = process.env.PICGO_CLOUD_API_URL || 'https://picgo.app'
-  try {
-    const res = await axios.request<IPicGoCloudUserInfo>({
-      method: 'GET',
-      baseURL,
-      url: '/api/whoami',
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    return res.data
-  } catch (e: unknown) {
-    const errorLike = (typeof e === 'object' && e !== null) ? (e as IAxiosErrorLike) : null
-    const status = errorLike?.response?.status
-    if (status === 401 || status === 403) {
-      // Treat invalid token as logged-out and clear it for later retries.
-      picgo.cloud.logout()
-      return null
-    }
-    const message = (errorLike?.response?.data as { message?: string } | undefined)?.message
-      ?? errorLike?.message
-      ?? String(e)
-    throw new Error(message)
-  }
+  return await picgo.cloud.getUserInfo()
 }
 
 const loginWithTimeout = async (): Promise<void> => {
