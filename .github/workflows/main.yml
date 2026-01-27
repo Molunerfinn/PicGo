@@ -6,11 +6,6 @@ on:
       - v*
   workflow_dispatch:
     inputs:
-      test_upload_dist:
-        description: "Test upload-dist.js script"
-        required: true
-        default: false
-        type: boolean
       build_os:
         description: "Build for specific OS: Windows, macOS, Linux, All"
         required: true
@@ -21,97 +16,243 @@ on:
           - macOS
           - Linux
           - All
+      test_upload_dist:
+        description: "Test upload-dist.js script"
+        required: true
+        default: false
+        type: boolean
+      test_upload_dist_to_dev:
+        description: "Test upload-dist.js script to dev folder"
+        required: true
+        default: false
+        type: boolean
       skip_notarize:
         description: "Skip Notarization (true/false)"
         required: true
         default: false
         type: boolean
+
 env:
   NODE_VERSION: 22.x
 
 jobs:
-  # parallel build jobs
-  build:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+  # ============== macOS Builds ==============
+  build-macos:
+    name: Build macOS (${{ matrix.arch }})
+    if: github.event.inputs.build_os == 'macOS' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ${{ matrix.runner }}
     strategy:
-      # if one job fails, do not stop other jobs
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        include:
+          - runner: macos-15-intel
+            target: dmg
+            arch: x64
+          - runner: macos-latest
+            target: dmg
+            arch: arm64
     steps:
       - name: Check out git repository
         uses: actions/checkout@v4
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
-      - name: Clean workspace on Windows
-        if: runner.os == 'Windows' && (github.event.inputs.build_os == 'Windows' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v'))
+
+      - name: Clean workspace
+        run: rm -rf dist dist_electron node_modules ~/.cache/electron-builder ~/.cache/electron
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build macOS App (${{ matrix.arch }})
+        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --mac ${{ matrix.target }} --${{ matrix.arch }} --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          SKIP_NOTARIZE: ${{ inputs.skip_notarize }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PicGo-macOS-${{ matrix.arch }}
+          path: dist/*.*
+
+  # ============== Windows Builds ==============
+  build-windows:
+    name: Build Windows (${{ matrix.arch }})
+    if: github.event.inputs.build_os == 'Windows' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            arch: x64-ia32
+            build_arch: --x64 --ia32
+            target: nsis
+          - runner: windows-11-arm
+            arch: arm64
+            build_arch: --arm64
+            target: nsis
+    steps:
+      - name: Check out git repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Clean workspace
         run: |
           if (Test-Path dist) { Remove-Item -Recurse -Force dist }
           if (Test-Path dist_electron) { Remove-Item -Recurse -Force dist_electron }
           if (Test-Path node_modules) { Remove-Item -Recurse -Force node_modules }
-
           if (Test-Path "$env:LOCALAPPDATA\electron-builder") {
             Remove-Item "$env:LOCALAPPDATA\electron-builder" -Recurse -Force -ErrorAction SilentlyContinue
           }
           if (Test-Path "$env:LOCALAPPDATA\electron") {
             Remove-Item "$env:LOCALAPPDATA\electron" -Recurse -Force -ErrorAction SilentlyContinue
           }
-      - name: Clean workspace on macOS & Linux
-        if: runner.os == 'macOS' || runner.os == 'Linux' && (github.event.inputs.build_os == 'macOS' || github.event.inputs.build_os == 'Linux' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v'))
-        run: |
-          rm -rf dist dist_electron node_modules ~/.cache/electron-builder ~/.cache/electron
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Ubuntu Update with sudo
-        if: runner.os == 'Linux' && (github.event.inputs.build_os == 'Linux' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v'))
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libfuse2
-      - name: Build Windows x64 & ARM64 App
-        if: runner.os == 'Windows' && (github.event.inputs.build_os == 'Windows' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v'))
-        run: pnpm run build:win || true
+
+      - name: Build Windows App (${{ matrix.arch }})
+        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --win ${{matrix.target}} ${{ matrix.build_arch }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Build macOS x64 & ARM64 App
-        if: runner.os == 'macOS' && (github.event.inputs.build_os == 'macOS' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v'))
-        run: pnpm run build:mac || true
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          # macOS Code Signing
-          # p12 证书的 Base64 字符串
-          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
-          # p12 证书密码
-          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
-          # macOS Notarization (公证所需变量)
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          SKIP_NOTARIZE: ${{ inputs.skip_notarize }}
-      - name: Build Linux x64 & ARM64 App
-        if: runner.os == 'Linux' && (github.event.inputs.build_os == 'Linux' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v'))
-        run: pnpm run build:linux || true
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PicGo-${{ runner.os }}
+          name: PicGo-Windows-${{ matrix.arch }}
           path: dist/*.*
-      - name: Upload to release.picgo.app
-        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.test_upload_dist
+
+  # ============== Linux Builds ==============
+  build-linux:
+    name: Build Linux (${{ matrix.arch }})
+    if: github.event.inputs.build_os == 'Linux' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: x64
+            target: AppImage deb snap
+          - runner: ubuntu-24.04-arm
+            arch: arm64
+            target: AppImage deb
+    steps:
+      - name: Check out git repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Clean workspace
+        run: rm -rf dist dist_electron node_modules ~/.cache/electron-builder ~/.cache/electron
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Linux dependencies
         run: |
-          pnpm run upload-dist
+          sudo apt-get update
+          sudo apt-get install -y libfuse2
+
+      - name: Build Linux App (${{ matrix.arch }})
+        run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --linux ${{matrix.target}} --${{ matrix.arch }} --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PicGo-Linux-${{ matrix.arch }}
+          path: dist/*.*
+
+  # ============== Release ==============
+  release:
+    name: Merge & Release
+    needs: [build-macos, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out git repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List artifacts
+        run: ls -laR artifacts/
+
+      - name: Merge artifacts and yml files
+        run: node scripts/merge-artifacts.js
+
+      - name: List dist
+        run: ls -la dist/
+
+      - name: Upload to release.picgo.app
+        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.test_upload_dist || github.event.inputs.test_upload_dist_to_dev
+        run: |
+          ARGS="--all"
+
+          if [[ "${{ github.event.inputs.test_upload_dist_to_dev }}" == "true" ]]; then
+            ARGS="$ARGS --dev"
+            echo "🚧 Test Upload Mode: ON"
+          fi
+
+          node scripts/upload-dist.js $ARGS
         env:
           PICGO_ENV_S3_SECRET_ID: ${{ secrets.PICGO_ENV_S3_SECRET_ID }}
           PICGO_ENV_S3_SECRET_KEY: ${{ secrets.PICGO_ENV_S3_SECRET_KEY }}
@@ -119,17 +260,7 @@ jobs:
           PICGO_ENV_S3_LEGACY_ACCOUNT_ID: ${{ secrets.PICGO_ENV_S3_LEGACY_ACCOUNT_ID }}
           PICGO_ENV_S3_LEGACY_SECRET_ID: ${{ secrets.PICGO_ENV_S3_LEGACY_SECRET_ID }}
           PICGO_ENV_S3_LEGACY_SECRET_KEY: ${{ secrets.PICGO_ENV_S3_LEGACY_SECRET_KEY }}
-  release:
-    name: Publish GitHub Release
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
+
       - name: Publish GitHub Dev Release
         if: github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v2
@@ -140,16 +271,16 @@ jobs:
           draft: true
           prerelease: false
           files: |
-            !artifacts/**/*-unpacked/**
-            artifacts/**/*.exe
-            artifacts/**/*.dmg
-            artifacts/**/*.zip
-            artifacts/**/*.AppImage
-            artifacts/**/*.deb
-            artifacts/**/*.snap
-            artifacts/**/*.tar.gz
-            artifacts/**/*.yml
-            artifacts/**/*.blockmap
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.snap
+            dist/*.tar.gz
+            dist/*.yml
+            dist/*.blockmap
+
       - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
@@ -160,13 +291,12 @@ jobs:
           draft: true
           prerelease: false
           files: |
-            !artifacts/**/*-unpacked/**
-            artifacts/**/*.exe
-            artifacts/**/*.dmg
-            artifacts/**/*.zip
-            artifacts/**/*.AppImage
-            artifacts/**/*.deb
-            artifacts/**/*.snap
-            artifacts/**/*.tar.gz
-            artifacts/**/*.yml
-            artifacts/**/*.blockmap
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.snap
+            dist/*.tar.gz
+            dist/*.yml
+            dist/*.blockmap

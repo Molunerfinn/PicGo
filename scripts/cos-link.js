@@ -16,15 +16,15 @@ const macos = [
 
 const linux = {
   AppImage: [
-    { label: '64 bit', arch: '-x64', ext: '.AppImage' },
+    { label: '64 bit', arch: '-amd64', ext: '.AppImage' },
     { label: 'ARM64', arch: '-arm64', ext: '.AppImage' }
   ],
   Deb: [
-    { label: '64 bit', arch: '-x64', ext: '.deb' },
+    { label: '64 bit', arch: '-amd64', ext: '.deb' },
     { label: 'ARM64', arch: '-arm64', ext: '.deb' }
   ],
   Snap: [
-    { label: '64 bit', arch: '-x64', ext: '.snap' }
+    { label: '64 bit', arch: '-amd64', ext: '.snap' }
   ]
 }
 
