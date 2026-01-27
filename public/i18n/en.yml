@@ -3,7 +3,7 @@ ABOUT: About
 OPEN_MAIN_WINDOW: Open Main Window
 CHOOSE_DEFAULT_PICBED: Choose Default Picbed
 OPEN_UPDATE_HELPER: Open Update Helper
-PRIVACY_AGREEMENT: Privacy Agreement
+PRIVACY_TERMS_AGREEMENT: Privacy & Terms Agreement
 RELOAD_APP: Reload App
 UPLOAD_FAILED: Upload Failed
 UPLOAD_SUCCEED: Upload Succeed
@@ -378,37 +378,6 @@ TIPS_UPLOADER_CONFIG_NOT_FOUND: Config not found
 TIPS_UPLOADER_CONFIG_CANNOT_DELETE_LAST: Cannot delete the last config
 
 # privacy
-PRIVACY: >
-
-  This software respects and protects the personal privacy of all users who use the service. In order to provide you with more accurate and better services, this software will use and collect some of your behavioral information in accordance with the provisions of this Privacy Policy. When you agree to the software service use agreement, you are deemed to have agreed to the entire content of this privacy policy. This privacy policy is an integral part of the software service use agreement, and it will not be used if you do not agree.
-  This Agreement will be updated periodically.
-
-  1. Scope of application
-
-
-  a) When you use this software, this software will record some information about your operation behavior of this software, including but not limited to the time-consuming, type, quantity and other information of your use of this software to upload files.
-
-
-  2. Use of Information
-
-
-  a) After obtaining your usage data, the software will upload it to the data analysis server so as to provide you with better services after analyzing the data.
-
-
-  3. Information disclosure
-
-
-  a) This software will not disclose your information to untrusted third parties.
-
-
-  b) In accordance with the relevant provisions of the law, or the requirements of administrative or judicial institutions, disclose to third parties or administrative or judicial institutions;
-
-
-
-
-  4. Information Security
-
-
-  a) This software does not collect your personal information, key information and other private information, and the collected information is only used for improving the software, optimizing the experience, and understanding the daily activities of the software.
+PRIVACY: "Please read and agree to the Privacy Policy ${privacyUrl} and Terms of Service ${termsUrl} before using."
 PRIVACY_TIPS: Please agree the privacy policy to upload
 QUIT: Quit

@@ -67,7 +67,7 @@ PicGo 打造了全方位的上传体验，让“传图”这件事变得前所�
 
 ### 🚀 极速上传体验
 - **多维上传方式**：支持拖拽图片、剪贴板粘贴、快捷键上传，甚至在 macOS/Windows 上支持右键菜单直接上传。
-- **全局快捷键**：默认 `Command+Shift+P` (macOS) / `Ctrl+Shift+P` (Windows/Linux) 即可唤起上传，无需离开当前窗口。 快捷键可自定义。
+- **全局快捷键**：默认 `Command+Shift+U` (macOS) / `Ctrl+Shift+U` (Windows/Linux) 即可唤起上传，无需离开当前窗口。 快捷键可自定义。
 
 ### 🧩 强大的插件生态
 - **高度可扩展**：PicGo 拥有丰富的插件系统，已有插件支持 AWS S3、Cloudflare R2、MinIO 等第三方图床。

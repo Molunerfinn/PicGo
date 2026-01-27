@@ -66,7 +66,7 @@ PicGo is built around a fast, low-friction image upload experience:
 
 ### 🚀 Fast uploads
 - **Multiple ways to upload**: drag & drop, paste from clipboard, hotkeys, and even right-click context menu upload on macOS/Windows.
-- **Global hotkey**: press `Command+Shift+P` (macOS) / `Ctrl+Shift+P` (Windows/Linux) to open the upload window without leaving your current app. The global key can be customized.
+- **Global hotkey**: press `Command+Shift+U` (macOS) / `Ctrl+Shift+U` (Windows/Linux) to open the upload window without leaving your current app. The global key can be customized.
 
 ### 🧩 Powerful plugin ecosystem
 - **Highly extensible**: plugins already exist for AWS S3, Cloudflare R2, MinIO, and many other Image hosts.

@@ -4,7 +4,7 @@ interface ILocales {
   OPEN_MAIN_WINDOW: string
   CHOOSE_DEFAULT_PICBED: string
   OPEN_UPDATE_HELPER: string
-  PRIVACY_AGREEMENT: string
+  PRIVACY_TERMS_AGREEMENT: string
   RELOAD_APP: string
   UPLOAD_SUCCEED: string
   UPLOAD_FAILED: string
