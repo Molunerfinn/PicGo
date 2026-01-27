@@ -1,3 +1,28 @@
+# :tada: 2.5.0 (2026-01-27)
+
+
+### :sparkles: Features
+
+* add picgo cloud and config sync ([#1382](https://github.com/Molunerfinn/PicGo/issues/1382)) ([4344772](https://github.com/Molunerfinn/PicGo/commit/4344772)), closes [#1381](https://github.com/Molunerfinn/PicGo/issues/1381)
+
+
+### :bug: Bug Fixes
+
+* review changes ([5cabbbd](https://github.com/Molunerfinn/PicGo/commit/5cabbbd))
+
+
+### :package: Chore
+
+* **multi-arch:** add multi-arch build support ([#1379](https://github.com/Molunerfinn/PicGo/issues/1379)) ([678cb71](https://github.com/Molunerfinn/PicGo/commit/678cb71))
+
+
+### :pencil: Documentation
+
+* **faq:** update faq ([4fb3f2d](https://github.com/Molunerfinn/PicGo/commit/4fb3f2d))
+* **release:** update 2.4.3 docs ([5eb3755](https://github.com/Molunerfinn/PicGo/commit/5eb3755))
+
+
+
 ## :tada: 2.4.3 (2026-01-12)
 
 
