@@ -27,7 +27,7 @@
     "postuninstall": "electron-builder install-app-deps",
     "upload-dist": "node ./scripts/upload-dist.js",
     "lint:dpdm": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/background.ts",
-    "check": "pnpm run tsc && pnpm run vue-tsc&& pnpm run lint",
+    "check": "pnpm run tsc && pnpm run vue-tsc && pnpm run lint",
     "test": "vitest run",
     "prepare": "husky",
     "commitlint": "commitlint --edit"

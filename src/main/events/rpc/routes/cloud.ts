@@ -309,7 +309,6 @@ cloudRouter
     try {
       await loginWithTimeout()
       const userInfo = await getUserInfo()
-      console.log('userInfo after login', userInfo)
       if (!userInfo) {
         return fail(T('PICGO_CLOUD_LOGIN_FAILED'))
       }
