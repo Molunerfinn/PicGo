@@ -26,11 +26,19 @@ on:
         required: true
         default: false
         type: boolean
-      skip_notarize:
-        description: "Skip Notarization (true/false)"
+      skip_mac_notarize:
+        description: "Skip Mac Notarization (true/false)"
         required: true
         default: false
         type: boolean
+      win_signing_mode:
+        description: "Windows Signing Mode: release-signing(default) or test-signing"
+        required: true
+        default: "release-signing"
+        type: choice
+        options:
+          - release-signing
+          - test-signing
 
 env:
   NODE_VERSION: 22.x
@@ -82,7 +90,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          SKIP_NOTARIZE: ${{ inputs.skip_notarize }}
+          SKIP_NOTARIZE: ${{ inputs.skip_mac_notarize }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -138,10 +146,56 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # 1. Build (Unsigned)
       - name: Build Windows App (${{ matrix.arch }})
         run: pnpm run build && pnpm exec electron-builder --config electron-builder.config.ts --win ${{matrix.target}} ${{ matrix.build_arch }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      # 2. Upload Unsigned Artifact to SignPath (Intermediate Step)
+      - name: Upload Unsigned Artifact for Signing
+        id: upload-unsigned
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-${{ matrix.arch }}
+          path: dist/*.exe
+          retention-days: 1
+          if-no-files-found: error
+
+      # 3. Submit to SignPath and Wait
+      - name: Sign Artifact with SignPath
+        uses: signpath/github-action-submit-signing-request@v2
+        env:
+          SIGNPATH_SIGNING_POLICY_SLUG: |
+            ${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') || inputs.win_signing_mode == 'release-signing') 
+              && 'release-signing' 
+              || 'test-signing' }}
+          ARTIFACT_SLUG: |
+            ${{ (matrix.arch == 'x64-ia32') 
+              && 'PicGo-Windows' 
+              || (matrix.arch == 'arm64') 
+              && 'PicGo-Windows-ARM64' 
+              || '' }}
+        with:
+          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
+          organization-id: "${{ secrets.SIGNPATH_ORGANIZATION_ID }}"
+          project-slug: "${{ secrets.SIGNPATH_PROJECT_SLUG }}"
+          signing-policy-slug: "${{ env.SIGNPATH_SIGNING_POLICY_SLUG }}"
+          github-artifact-id: "${{ steps.upload-unsigned.outputs.artifact-id }}"
+          artifact-configuration-slug: "${{ env.ARTIFACT_SLUG }}"
+          wait-for-completion: true
+          output-artifact-directory: "signed-artifact"
+
+      # 4. Replace Unsigned with Signed & Fix Blockmap (Critical for Auto-Update)
+      - name: Replace Unsigned with Signed & Update latest.yml
+        shell: powershell
+        run: |
+          # Move signed artifacts to dist folder, overwriting existing ones
+          Move-Item -Path "signed-artifact\*.exe" -Destination "dist\" -Force
+          Write-Host "✅ Signed artifacts moved to dist folder."
+
+          # Run the Node.js script to update latest.yml
+          node scripts/update-win-yaml.js
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
