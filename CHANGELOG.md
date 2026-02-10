@@ -1,3 +1,18 @@
+## :tada: 2.5.2 (2026-02-10)
+
+
+### :bug: Bug Fixes
+
+* s.ee upload error ([a1f76ca](https://github.com/Molunerfinn/PicGo/commit/a1f76ca)), closes [#1385](https://github.com/Molunerfinn/PicGo/issues/1385)
+
+
+### :pencil: Documentation
+
+* add 2.5.1 docs ([5008a92](https://github.com/Molunerfinn/PicGo/commit/5008a92))
+* update readme for s.ee ([d0defee](https://github.com/Molunerfinn/PicGo/commit/d0defee))
+
+
+
 ## :tada: 2.5.1 (2026-02-10)
 
 

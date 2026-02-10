@@ -1,6 +1,6 @@
 {
   "name": "picgo",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "private": true,
   "main": "dist_electron/main/index.js",
   "description": "A powerful & simple image uploader for creators.",
