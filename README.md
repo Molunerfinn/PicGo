@@ -49,7 +49,7 @@ Whether you’re writing a blog post, taking notes, or authoring developer docs,
 PicGo supports mainstream Image hosts out of the box, and can be extended indefinitely through its plugin system:
 
 - **China cloud vendors**: Qiniu, Tencent Cloud COS, UPYUN, Alibaba Cloud OSS
-- **International / open platforms**: GitHub, SM.MS, Imgur
+- **International / open platforms**: GitHub, SM.MS(S.EE), Imgur
 - **More options via plugins**: AWS S3, Cloudflare R2, MinIO, and more
 
 > **Note**: PicGo itself will no longer add new third-party Image hosts by default. You can build Image host plugins yourself—see [PicGo-Core](https://docs.picgo.app/core/).

@@ -50,7 +50,7 @@
 PicGo 原生支持主流图床平台，并可通过插件系统无限扩展：
 
 - **国内云厂商**：七牛云、腾讯云 COS、又拍云、阿里云 OSS
-- **国际/开源平台**：GitHub、SM.MS、Imgur
+- **国际/开源平台**：GitHub、SM.MS(S.EE)、Imgur
 - **更多支持**：通过插件支持 AWS S3、Cloudflare R2、MinIO 等第三方图床
 
 > **注意**：PicGo 本体不再增加默认的第三方图床支持。你可以自行开发第三方图床插件。详见 [PicGo-Core](https://docs.picgo.app/core/)。

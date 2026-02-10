@@ -162,3 +162,23 @@ An official PicGo image host (if any) would be built into PicGo out of the box �
 不可信。所有打着「PicGo 官方图床」旗号的第三方插件（包括不限于 www.picgo.net 等）都不是 PicGo 官方提供的图床或服务，请勿轻信。
 
 PicGo 不会以“第三方插件”的形式要求你另外下载安装所谓的 PicGo 官方图床。如果 PicGo 真的做了官方图床，一定是开箱即用的内置在本体里的。如果你需要使用第三方图床，请优先参考 PicGo 官方维护的插件集合与社区仓库，并自行甄别来源与安全性。
+
+## 14. SM.MS migrated to S.EE: how should I update my config? / SM.MS 迁移到 S.EE 后，配置应该怎么改？
+
+SM.MS uploader has migrated to **S.EE** and changed from the original free plan to a paid service.
+
+To continue uploading normally:
+
+1. Get your API token from [https://s.ee/user/dashboard/](https://s.ee/user/dashboard/).
+2. Check your `picBed.smms.backupDomain`:
+   - if it is an old domain such as `sm.ms` or `smms.app`, remove this field, or
+   - change it to `s.ee`.
+
+SM.MS 上传器已迁移到 **S.EE**，并且服务已从原本免费改为收费。
+
+如需继续正常上传：
+
+1. 到 [https://s.ee/user/dashboard/](https://s.ee/user/dashboard/) 获取 API Token。
+2. 检查你的 `picBed.smms.backupDomain`：
+   - 如果是旧域名（如 `sm.ms`、`smms.app`），请删除该字段，或
+   - 改为 `s.ee`。
