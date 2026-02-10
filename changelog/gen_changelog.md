@@ -10,7 +10,8 @@ This guide describes how to generate a consolidated changelog for any PicGo rele
 
 ## Structure
 - Target file: `changelog/X.Y.Z.md` (replace with the series version)
-- Three top-level sections: `## Features`, `## Bug Fixes`, `## Other`
+- Use these top-level sections when they contain items: `## Features`, `## Bug Fixes`, `## Other`
+- Omit any empty section title entirely (do not output a heading with no bullets)
 - Do **not** nest content under individual beta version headers; merge all items into these sections
 - Keep items in chronological order (early → late) within each section, mirroring the beta sequence
 - Keep inline issue references, thanks, and notes as-is
@@ -33,18 +34,20 @@ This guide describes how to generate a consolidated changelog for any PicGo rele
    - Features ↔ “Feature(s)” or “Features” blocks
    - Bug Fixes ↔ “Bug Fixes” blocks
    - Other ↔ “Other”, “Notice”, or misc notes that are not features/bugs
+   - If one section has no items after merging, skip that section heading in both EN and ZH halves
 3) Omit “国内可下载链接” (or any download links) entirely
 4) Drop beta subheadings; keep only section-level bullets in chronological order
 5) Ensure images remain adjacent to their bullets with indentation
 6) After the English sections are complete, insert `----------` on its own line
-7) Append the Chinese translation, preserving bullet order and images, under `## Features`, `## Bug Fixes`, `## Other` again (same section titles, just Chinese content; no “(Chinese)” suffix)
+7) Append the Chinese translation, preserving bullet order and images, reusing only the section headings that appeared in English (same heading set/order; no “(Chinese)” suffix)
 8) Save the result to `changelog/X.Y.Z.md`
 
 ## Quick checklist
-- [ ] All features present with images kept
-- [ ] All bug fixes present
-- [ ] All “Other” notes present
+- [ ] All non-empty Features items present with images kept
+- [ ] All non-empty Bug Fixes items present
+- [ ] All non-empty Other notes present
 - [ ] No beta headers
 - [ ] No download links
+- [ ] No empty section headings
 - [ ] Chronological ordering preserved
 - [ ] Chinese translation present with matching bullets/images after `----------`
