@@ -44,7 +44,7 @@ env:
   NODE_VERSION: 22.x
 
 jobs:
-  # ... [build-macos 保持不变] ...
+  # ============== macOS Builds ==============
   build-macos:
     name: Build macOS (${{ matrix.arch }})
     if: github.event.inputs.build_os == 'macOS' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v')
@@ -98,7 +98,7 @@ jobs:
           name: PicGo-macOS-${{ matrix.arch }}
           path: dist/*.*
 
-  # ============== Windows Builds (Modified for SignPath) =============
+  # ============== Windows Builds ==============
   build-windows:
     name: Build Windows (${{ matrix.arch }})
     if: github.event.inputs.build_os == 'Windows' || github.event.inputs.build_os == 'All' || startsWith(github.ref, 'refs/tags/v')
