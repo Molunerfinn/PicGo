@@ -162,6 +162,11 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+      - name: Notification for Signing Start
+        env:
+          NOTIFY_URL: ${{ secrets.SIGN_NOTIFICATION }}
+        run: curl "$NOTIFY_URL"
+
       # 3. Submit to SignPath and Wait
       - name: Sign Artifact with SignPath
         uses: signpath/github-action-submit-signing-request@v2
