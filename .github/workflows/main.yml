@@ -163,6 +163,7 @@ jobs:
           if-no-files-found: error
 
       - name: Notification for Signing Start
+        shell: bash
         env:
           NOTIFY_URL: ${{ secrets.SIGN_NOTIFICATION }}
         run: curl "$NOTIFY_URL"
