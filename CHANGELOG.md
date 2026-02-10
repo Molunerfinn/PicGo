@@ -1,3 +1,24 @@
+## :tada: 2.5.1 (2026-02-10)
+
+
+### :sparkles: Features
+
+* windows signature ([#1386](https://github.com/Molunerfinn/PicGo/issues/1386)) ([781cf30](https://github.com/Molunerfinn/PicGo/commit/781cf30))
+
+
+### :bug: Bug Fixes
+
+* **plugin:** plugin search error ([ef07c15](https://github.com/Molunerfinn/PicGo/commit/ef07c15)), closes [#1383](https://github.com/Molunerfinn/PicGo/issues/1383)
+
+
+### :package: Chore
+
+* **notification:** add notification for windows sign ([#1387](https://github.com/Molunerfinn/PicGo/issues/1387)) ([592f985](https://github.com/Molunerfinn/PicGo/commit/592f985))
+* update link ([27464dc](https://github.com/Molunerfinn/PicGo/commit/27464dc))
+* update picgo version to support s.ee ([e2e05ae](https://github.com/Molunerfinn/PicGo/commit/e2e05ae)), closes [#1385](https://github.com/Molunerfinn/PicGo/issues/1385)
+
+
+
 # :tada: 2.5.0 (2026-01-27)
 
 
