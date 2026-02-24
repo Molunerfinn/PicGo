@@ -108,6 +108,7 @@ If you’re new to PicGo, start with the [User Guide](https://docs.picgo.app/gui
 | [Chocolatey](https://chocolatey.org/)                     | `choco install picgo`                                       | Windows    | Thanks to @iYato                        |
 | [Homebrew](https://brew.sh/)                              | `brew install picgo --cask`                                 | macOS      | Thanks to @womeimingzi11                |
 | [AUR](https://aur.archlinux.org/packages/yay)             | `yay -S picgo-appimage`                                     | Arch Linux | Thanks to @houbaron                     |
+| [Nix](https://search.nixos.org/packages?channel=unstable&query=picgo&show=picgo) | `nix-shell -p picgo`                 | Nix/NixOS  | Thanks to @qrzbing                      |
 
 ## Screenshots
 
