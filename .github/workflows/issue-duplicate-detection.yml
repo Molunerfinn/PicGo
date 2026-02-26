@@ -15,9 +15,6 @@ jobs:
   detect-duplicate-issues:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
       - name: Run Warp Agent duplicate detector
         uses: warpdotdev/warp-agent-action@v1
         id: duplicate_detector
@@ -61,7 +58,7 @@ jobs:
             7. If duplicates exist, create or update exactly one comment on issue #${{ github.event.issue.number }}:
                - first line must be: <!-- issue-duplicate-detector -->
                - include markdown bullet list with title + link:
-                 - [Issue title](https://github.com/owner/repo/issues/123)
+                 - [Issue title](${{ github.server_url }}/${{ github.repository }}/issues/123)
             8. Before posting, check existing comments on the target issue:
                - if marker comment exists, update that comment
                - otherwise create a new comment
@@ -70,5 +67,5 @@ jobs:
             Expected comment format:
             <!-- issue-duplicate-detector -->
             Detected potentially duplicate issues:
-            - [Duplicate issue title](https://github.com/owner/repo/issues/123)
-            - [Another duplicate issue](https://github.com/owner/repo/issues/456)
+            - [Duplicate issue title](${{ github.server_url }}/${{ github.repository }}/issues/123)
+            - [Another duplicate issue](${{ github.server_url }}/${{ github.repository }}/issues/456)
