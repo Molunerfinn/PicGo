@@ -1,0 +1,74 @@
+name: Issue Duplicate Detection
+
+on:
+  issues:
+    types:
+      - opened
+      - edited
+      - reopened
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  detect-duplicate-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run Warp Agent duplicate detector
+        uses: warpdotdev/warp-agent-action@v1
+        id: duplicate_detector
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          warp_api_key: ${{ secrets.WARP_API_KEY }}
+          profile: ${{ vars.WARP_AGENT_PROFILE || '' }}
+          prompt: |
+            You are triaging duplicate GitHub issues for this repository.
+
+            Repository: ${{ github.repository }}
+            Target issue number: #${{ github.event.issue.number }}
+            Target issue URL: ${{ github.event.issue.html_url }}
+            Target issue title: ${{ github.event.issue.title }}
+            Target issue body:
+            ${{ github.event.issue.body }}
+
+            Use the GitHub CLI with GH_TOKEN for all operations.
+
+            Workflow requirements:
+            1. Gather issue context from title/body/error messages/symptoms/components.
+               - Run:
+                 gh issue view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json number,title,body,url,state,labels
+            2. Search with multiple strategies:
+               - title keywords
+               - error message fragments
+               - symptom words
+               - component/module names
+               Example command pattern:
+               gh issue list --repo ${{ github.repository }} --state all --search "<query>"
+            3. Inspect every candidate in detail:
+               gh issue view <candidate_number> --repo ${{ github.repository }} --json number,title,body,url,state
+            4. Duplicate threshold:
+               - only mark duplicate when confidence >= 90%
+               - same root cause + very similar symptoms/errors/components
+            5. Exclusions:
+               - never include pull requests
+               - never include the current issue itself (#${{ github.event.issue.number }})
+            6. If confidence is insufficient or no duplicates exist, exit without commenting.
+            7. If duplicates exist, create or update exactly one comment on issue #${{ github.event.issue.number }}:
+               - first line must be: <!-- issue-duplicate-detector -->
+               - include markdown bullet list with title + link:
+                 - [Issue title](https://github.com/owner/repo/issues/123)
+            8. Before posting, check existing comments on the target issue:
+               - if marker comment exists, update that comment
+               - otherwise create a new comment
+            9. Do not comment on any other issue.
+
+            Expected comment format:
+            <!-- issue-duplicate-detector -->
+            Detected potentially duplicate issues:
+            - [Duplicate issue title](https://github.com/owner/repo/issues/123)
+            - [Another duplicate issue](https://github.com/owner/repo/issues/456)
