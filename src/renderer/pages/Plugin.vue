@@ -170,6 +170,7 @@
     >
       <config-form
         :id="configName"
+        :key="configFormKey"
         ref="$configForm"
         :config="config"
         :type="currentType"
@@ -222,13 +223,14 @@ import { IRPCActionType } from '~/universal/types/enum'
 const $confirm = ElMessageBox.confirm
 const searchText = ref('')
 const pluginList = ref<IPicGoPlugin[]>([])
-const config = ref<any[]>([])
+const config = ref<IPicGoPluginConfig[]>([])
 const currentType = ref<'plugin' | 'uploader' | 'transformer'>('plugin')
 const configName = ref('')
 const dialogVisible = ref(false)
 const pluginNameList = ref<string[]>([])
 const loading = ref(true)
 const needReload = ref(false)
+const configFormKey = computed(() => `${currentType.value}:${configName.value}`)
 const pluginListToolTip = $T('PLUGIN_LIST')
 const importLocalPluginToolTip = $T('PLUGIN_IMPORT_LOCAL')
 // const id = ref('')
@@ -320,11 +322,11 @@ onBeforeMount(async () => {
     })
     pluginNameList.value = pluginNameList.value.filter(item => item !== plugin)
   })
-  ipcRenderer.on(PICGO_CONFIG_PLUGIN, (evt: IpcRendererEvent, _currentType: 'plugin' | 'transformer' | 'uploader', _configName: string, _config: any) => {
+  ipcRenderer.on(PICGO_CONFIG_PLUGIN, (evt: IpcRendererEvent, _currentType: 'plugin' | 'transformer' | 'uploader', _configName: string, _config: IPicGoPluginConfig[]) => {
     currentType.value = _currentType
     configName.value = _configName
-    dialogVisible.value = true
     config.value = _config
+    dialogVisible.value = true
   })
   ipcRenderer.on(PICGO_HANDLE_PLUGIN_ING, (evt: IpcRendererEvent, fullName: string) => {
     pluginList.value.forEach(item => {

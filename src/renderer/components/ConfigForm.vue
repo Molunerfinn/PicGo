@@ -27,7 +27,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, watch, toRefs } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { getConfig } from '@/utils/dataSender'
 import { useRoute } from 'vue-router'
 import BaseConfigForm from './form/BaseConfigForm.vue'
@@ -35,7 +35,7 @@ import { useConfigForm } from '@/hooks/useConfigForm'
 import { useStore } from '@/hooks/useStore'
 
 interface IProps {
-  config: any[]
+  config: IPicGoPluginConfig[]
   type: 'uploader' | 'transformer' | 'plugin'
   id: string
   colorMode?: 'white' | 'dark'
@@ -46,7 +46,7 @@ const $route = useRoute()
 const $form = ref<IFormInstance>()
 const configList = ref<IPicGoPluginConfig[]>([])
 const formModel = reactive<IStringKeyMap>({})
-const isUploader = props.type === 'uploader'
+const isUploader = computed(() => props.type === 'uploader')
 const store = useStore()
 
 async function validate (): Promise<IStringKeyMap | false> {
@@ -72,9 +72,16 @@ function getConfigType () {
 
 const handleConfigForm = useConfigForm()
 
+function resetFormModel () {
+  Object.keys(formModel).forEach((key) => {
+    delete formModel[key]
+  })
+}
+
 async function handleConfig (inputConfig: IPicGoPluginConfig[]) {
   const currentConfig = await getCurConfigFormData()
-  const resetConfig = isUploader && !$route.params.configId
+  const resetConfig = isUploader.value && !$route.params.configId
+  resetFormModel()
   Object.assign(formModel, currentConfig)
   configList.value = handleConfigForm(inputConfig, formModel, currentConfig, resetConfig)
 }
@@ -82,7 +89,7 @@ async function handleConfig (inputConfig: IPicGoPluginConfig[]) {
 async function getCurConfigFormData () {
   const configId = $route.params.configId
   const configType = getConfigType()
-  if (isUploader) {
+  if (isUploader.value) {
     const cachedList = store?.state.appConfig?.uploader?.[props.id]?.configList
     const curTypeConfigList = Array.isArray(cachedList)
       ? cachedList
@@ -99,8 +106,8 @@ async function resetConfig () {
   Object.assign(formModel, config)
 }
 
-watch(toRefs(props.config), (val: IPicGoPluginConfig[]) => {
-  handleConfig(val)
+watch(() => props.config, async (val: IPicGoPluginConfig[]) => {
+  await handleConfig(val)
 }, {
   deep: true,
   immediate: true

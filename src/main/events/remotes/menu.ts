@@ -187,6 +187,9 @@ const buildPluginPageMenu = (plugin: IPicGoPlugin) => {
     }
   }]
   for (const i in plugin.config) {
+    if (i === 'uploader') {
+      continue
+    }
     if (plugin.config[i].config.length > 0) {
       const obj = {
         label: T('CONFIG_THING', {
