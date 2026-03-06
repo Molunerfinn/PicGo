@@ -6,6 +6,11 @@ on:
       - v*
   workflow_dispatch:
     inputs:
+      release_tag:
+        description: "GitHub release tag to publish to (optional, defaults to current branch like dev)"
+        required: false
+        default: ""
+        type: string
       build_os:
         description: "Build for specific OS: Windows, macOS, Linux, All"
         required: true
@@ -321,13 +326,13 @@ jobs:
           PICGO_ENV_S3_LEGACY_SECRET_ID: ${{ secrets.PICGO_ENV_S3_LEGACY_SECRET_ID }}
           PICGO_ENV_S3_LEGACY_SECRET_KEY: ${{ secrets.PICGO_ENV_S3_LEGACY_SECRET_KEY }}
 
-      - name: Publish GitHub Dev Release
+      - name: Publish GitHub Workflow Release
         if: github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v2
         continue-on-error: true
         with:
           token: ${{ secrets.GH_TOKEN }}
-          tag_name: dev
+          tag_name: ${{ github.event.inputs.release_tag || github.ref_name }}
           draft: true
           prerelease: false
           files: |
