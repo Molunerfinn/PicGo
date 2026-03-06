@@ -1,3 +1,25 @@
+## :tada: 2.5.3 (2026-03-06)
+
+
+### :bug: Bug Fixes
+
+* **plugin:** refresh plugin config dialog state ([#1395](https://github.com/Molunerfinn/PicGo/issues/1395)) ([0e452e1](https://github.com/Molunerfinn/PicGo/commit/0e452e1)), closes [#1394](https://github.com/Molunerfinn/PicGo/issues/1394)
+* **update:** correct latest version lookup with beta channel ([#1396](https://github.com/Molunerfinn/PicGo/issues/1396)) ([#1397](https://github.com/Molunerfinn/PicGo/issues/1397)) ([c7ca0de](https://github.com/Molunerfinn/PicGo/commit/c7ca0de))
+
+
+### :package: Chore
+
+* add oz agent for issues ([#1392](https://github.com/Molunerfinn/PicGo/issues/1392)) ([f05ab63](https://github.com/Molunerfinn/PicGo/commit/f05ab63))
+
+
+### :pencil: Documentation
+
+* **custom:** update README ([#1390](https://github.com/Molunerfinn/PicGo/issues/1390)) ([5d0f016](https://github.com/Molunerfinn/PicGo/commit/5d0f016))
+* update docs ([ac9a00b](https://github.com/Molunerfinn/PicGo/commit/ac9a00b))
+* update sponsor ([87d92d5](https://github.com/Molunerfinn/PicGo/commit/87d92d5))
+
+
+
 ## :tada: 2.5.2 (2026-02-10)
 
 
