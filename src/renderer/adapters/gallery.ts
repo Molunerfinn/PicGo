@@ -7,14 +7,33 @@ import { sendToMain } from '@/utils/dataSender'
 
 type GalleryListener = () => void
 
+interface GalleryHistoryItem extends ImgInfo {
+  createdAt?: number
+  updatedAt?: number
+}
+
+function resolveGalleryItemTimestamp (item: GalleryHistoryItem) {
+  if (typeof item.updatedAt === 'number') {
+    return item.updatedAt
+  }
+
+  if (typeof item.createdAt === 'number') {
+    return item.createdAt
+  }
+
+  return 0
+}
+
 export const galleryAdapter = {
   async getGalleryItems () {
     const result = await db.get<ImgInfo>({ orderBy: 'desc' })
     return result.data
   },
-  async getRecentUploads (limit = 10) {
-    const result = await db.get<ImgInfo>({ orderBy: 'desc' })
-    return result.data.slice(0, limit)
+  async getRecentUploads (limit = 100) {
+    const result = await db.get<GalleryHistoryItem>({ orderBy: 'desc' })
+    return [...result.data]
+      .sort((left, right) => resolveGalleryItemTimestamp(right) - resolveGalleryItemTimestamp(left))
+      .slice(0, limit)
   },
   async updateImageUrl (id: string, imgUrl: string) {
     await db.updateById(id, { imgUrl })

@@ -3,8 +3,10 @@ import {
   useRef,
   useState,
   type ChangeEvent,
-  type RefObject,
-} from "react"
+  type RefObject
+} from 'react'
+import { webUtils } from 'electron'
+import { dashboardAdapter } from '@/adapters/dashboard'
 
 interface UseDashboardUploadResult {
   fileInputRef: RefObject<HTMLInputElement | null>
@@ -12,21 +14,55 @@ interface UseDashboardUploadResult {
   uploadProgress: number
   startUpload: () => void
   handleFileChange: (event: ChangeEvent<HTMLInputElement>) => void
+  uploadFileList: (files: FileList) => void
+  uploadClipboardFiles: () => void
+  uploadUrls: (urls: string[]) => void
 }
 
-export function useDashboardUpload(): UseDashboardUploadResult {
+function toUploadFiles (files: FileList) {
+  return Array.from(files)
+    .map((item) => {
+      const filePath = webUtils.getPathForFile(item)
+      if (!filePath) {
+        return null
+      }
+
+      return {
+        name: item.name,
+        path: filePath
+      } satisfies IFileWithPath
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null)
+}
+
+export function useDashboardUpload (): UseDashboardUploadResult {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
-
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const progressIntervalRef = useRef<number | null>(null)
   const resetTimeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
-    return () => {
-      if (progressIntervalRef.current !== null) {
-        window.clearInterval(progressIntervalRef.current)
+    const unsubscribe = dashboardAdapter.subscribeToUploadProgress((_event, progress) => {
+      if (progress === -1) {
+        setIsUploading(false)
+        setUploadProgress(100)
+
+        if (resetTimeoutRef.current !== null) {
+          window.clearTimeout(resetTimeoutRef.current)
+        }
+
+        resetTimeoutRef.current = window.setTimeout(() => {
+          setUploadProgress(0)
+        }, 800)
+        return
       }
+
+      setIsUploading(progress < 100)
+      setUploadProgress(progress)
+    })
+
+    return () => {
+      unsubscribe()
 
       if (resetTimeoutRef.current !== null) {
         window.clearTimeout(resetTimeoutRef.current)
@@ -34,50 +70,38 @@ export function useDashboardUpload(): UseDashboardUploadResult {
     }
   }, [])
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files || event.target.files.length === 0 || isUploading) {
+  const uploadFileList = (files: FileList) => {
+    const nextFiles = toUploadFiles(files)
+    if (!nextFiles.length) {
       return
     }
 
-    setIsUploading(true)
-    setUploadProgress(0)
+    dashboardAdapter.uploadSelectedFiles(nextFiles)
+  }
 
-    if (progressIntervalRef.current !== null) {
-      window.clearInterval(progressIntervalRef.current)
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || event.target.files.length === 0) {
+      return
     }
 
-    let progress = 0
-    progressIntervalRef.current = window.setInterval(() => {
-      progress += Math.random() * 10
-
-      if (progress >= 100) {
-        progress = 100
-
-        if (progressIntervalRef.current !== null) {
-          window.clearInterval(progressIntervalRef.current)
-          progressIntervalRef.current = null
-        }
-
-        if (resetTimeoutRef.current !== null) {
-          window.clearTimeout(resetTimeoutRef.current)
-        }
-
-        resetTimeoutRef.current = window.setTimeout(() => {
-          setIsUploading(false)
-          setUploadProgress(0)
-
-          if (fileInputRef.current) {
-            fileInputRef.current.value = ""
-          }
-        }, 800)
-      }
-
-      setUploadProgress(progress)
-    }, 200)
+    uploadFileList(event.target.files)
+    event.target.value = ''
   }
 
   const startUpload = () => {
     fileInputRef.current?.click()
+  }
+
+  const uploadClipboardFiles = () => {
+    dashboardAdapter.uploadClipboardFiles()
+  }
+
+  const uploadUrls = (urls: string[]) => {
+    dashboardAdapter.uploadSelectedFiles(
+      urls.map((url) => ({
+        path: url
+      }))
+    )
   }
 
   return {
@@ -86,5 +110,8 @@ export function useDashboardUpload(): UseDashboardUploadResult {
     uploadProgress,
     startUpload,
     handleFileChange,
+    uploadFileList,
+    uploadClipboardFiles,
+    uploadUrls
   }
 }

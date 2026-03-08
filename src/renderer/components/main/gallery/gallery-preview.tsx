@@ -35,6 +35,7 @@ export function GalleryPreview({
   const isSingle = images.length === 1
   const isActive = isOpen && Boolean(activeImage)
   const portalRoot = typeof document === "undefined" ? null : document.body
+  const activeImageName = activeImage?.name ?? ""
   const countLabel = t("GALLERY_PREVIEW_COUNT", {
     current: resolvedIndex + 1,
     total: images.length,
@@ -261,6 +262,15 @@ export function GalleryPreview({
               </Button>
             </div>
           ) : null}
+
+          <div className="pointer-events-none absolute left-1/2 top-6 -translate-x-1/2">
+            <div
+              title={activeImageName}
+              className="bg-gallery-preview-control border-gallery-preview-control-border text-foreground max-w-[min(60vw,28rem)] truncate rounded-full border px-3 py-1 text-xs font-medium shadow-sm"
+            >
+              {activeImageName}
+            </div>
+          </div>
 
           <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2">
             <div className="bg-gallery-preview-control border-gallery-preview-control-border text-foreground rounded-full border px-3 py-1 text-xs font-medium shadow-sm">

@@ -1,5 +1,6 @@
 import { ChevronDownIcon, CloudIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -13,6 +14,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useAppStore } from "@/store"
 
 export interface UploaderSwitcherConfigItem {
   id: string
@@ -35,20 +37,30 @@ export interface UploaderSwitcherValue {
 interface UploaderSwitcherProps {
   current: UploaderSwitcherValue
   providers: UploaderSwitcherProviderItem[]
-  onSelect: (next: UploaderSwitcherValue) => Promise<void>
   disabled?: boolean
 }
 
 export function UploaderSwitcher({
   current,
   providers,
-  onSelect,
   disabled,
 }: UploaderSwitcherProps) {
   const { t } = useTranslation()
+  const selectDashboardProviderConfig = useAppStore(
+    (state) => state.selectDashboardProviderConfig
+  )
 
-  const handleConfigSelect = (next: UploaderSwitcherValue) => {
-    onSelect(next).catch(() => undefined)
+  const handleConfigSelect = async (next: UploaderSwitcherValue) => {
+    try {
+      await selectDashboardProviderConfig(next.providerId, next.configId)
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message.trim().length > 0
+          ? error.message
+          : t("OPERATION_FAILED")
+
+      toast.error(message)
+    }
   }
 
   return (
@@ -86,14 +98,14 @@ export function UploaderSwitcher({
                 provider.configs.map((config) => (
                   <DropdownMenuItem
                     key={`${provider.id}:${config.id}`}
-                    onSelect={() =>
-                      handleConfigSelect({
+                    onSelect={async () => {
+                      await handleConfigSelect({
                         providerId: provider.id,
                         providerName: provider.name,
                         configId: config.id,
                         configName: config.name,
                       })
-                    }
+                    }}
                   >
                     {config.name}
                   </DropdownMenuItem>

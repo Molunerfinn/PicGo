@@ -30,3 +30,4 @@ specs/
 .cache/
 openspec/
 bug*
+Trace-*.json

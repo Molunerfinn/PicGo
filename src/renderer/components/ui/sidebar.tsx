@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { PanelLeftIcon } from "lucide-react"
+import { SidebarContext, useSidebar } from "./sidebar-context"
 
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
@@ -69,27 +70,6 @@ const SIDEBAR_MENU_SUB_BUTTON_SIZE = {
 type SidebarMenuSubButtonSize =
   ValueOf<typeof SIDEBAR_MENU_SUB_BUTTON_SIZE>
 
-type SidebarContextProps = {
-  state: SidebarState
-  open: boolean
-  setOpen: (open: boolean) => void
-  openMobile: boolean
-  setOpenMobile: (open: boolean) => void
-  isMobile: boolean
-  toggleSidebar: () => void
-}
-
-const SidebarContext = React.createContext<SidebarContextProps | null>(null)
-
-function useSidebar() {
-  const context = React.useContext(SidebarContext)
-  if (!context) {
-    throw new Error("useSidebar must be used within a SidebarProvider.")
-  }
-
-  return context
-}
-
 function SidebarProvider({
   defaultOpen = true,
   open: openProp,
@@ -129,7 +109,7 @@ function SidebarProvider({
   const state: SidebarState =
     open ? SIDEBAR_STATE.EXPANDED : SIDEBAR_STATE.COLLAPSED
 
-  const contextValue: SidebarContextProps = {
+  const contextValue = {
     state,
     open,
     setOpen,
@@ -714,5 +694,4 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar,
 }

@@ -300,7 +300,9 @@ export function PicGoSettingsShortcuts() {
         draftShortcutValue={draftShortcutValue}
         isCaptureActive={isCaptureActive}
         onCancel={closeEditDialog}
-        onConfirm={() => handleSaveShortcut().catch(() => undefined)}
+        onConfirm={async () => {
+          await handleSaveShortcut()
+        }}
         onCaptureActivate={handleActivateCapture}
         onCaptureBlur={() => setIsCaptureActive(false)}
         onCaptureKeyDown={handleCaptureKeyDown}

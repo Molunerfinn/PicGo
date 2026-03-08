@@ -70,6 +70,7 @@ export enum IRPCActionType {
 
   // system rpc
   RELOAD_APP = 'RELOAD_APP',
+  GET_WINDOW_STATE = 'GET_WINDOW_STATE',
   OPEN_FILE = 'OPEN_FILE',
   COPY_TEXT = 'COPY_TEXT',
   SHOW_DOCK_ICON = 'SHOW_DOCK_ICON',

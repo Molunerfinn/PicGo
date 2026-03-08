@@ -466,12 +466,13 @@ const useStoreBase = create<AppStoreState>((set, get) => ({
   async selectDashboardProviderConfig (providerId, configId) {
     const appConfig = get().appConfig
     const configName = appConfig?.uploader?.[providerId]?.configList.find((item) => item._id === configId)?._configName
+    console.log('Selected configId:', configId, 'resolved configName:', configName)
 
     if (!configName) {
       throw new Error(i18n.t('TIPS_UPLOADER_CONFIG_NOT_FOUND'))
     }
 
-    await providersAdapter.selectProviderConfig(providerId, configName)
+    await providersAdapter.changeCurrentUploader(providerId, configName)
     await get().hydrateAppState()
   },
   async createConfig () {

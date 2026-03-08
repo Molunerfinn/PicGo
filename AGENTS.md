@@ -21,6 +21,10 @@ Static assets are served from `public/`. In the main process use `getStaticPath`
 - Do not use `as any` under any circumstances; keep typings explicit and safe.
 - Avoid `as any` in tests as well; build concrete typed stubs (e.g., `IpcMainInvokeEvent`) instead.
 - Do not prefix method calls with `void` (e.g. use `store?.refreshPicBeds()` rather than `void store?.refreshPicBeds()`).
+- Do not write `void someMethod()` or `void object.method()` anywhere in the codebase. If you need fire-and-forget behavior, use an `async` callback with `await`, or handle errors explicitly with `try/catch` and logging instead of swallowing them.
+- Because the renderer uses React Compiler, do not add `useMemo` or `useCallback` by default. Prefer plain values and inline functions unless a specific API requires stable identity or there is a proven performance issue.
+- For Zustand store state/actions, prefer reading them directly in the consuming component with `useAppStore` / `useStore` instead of passing them down through unnecessary prop layers. If a child can access the needed store value or action itself, do not thread it through parent props.
+- Renderer-side shared constants (for example responsive breakpoints, UI timing values, fixed dimensions, thresholds, and repeated literal values used across components) should be centralized in `src/renderer/utils/consts.ts` instead of being hardcoded inline in components. When a new renderer constant may be reused or affects shared behavior, add it there first.
 - If a renderer → main request mutates persisted config/state without using `saveConfig`, call `notifyAppConfigUpdated()` in main to inform renderers.
 - Prefer enums over union types for discrete value sets (e.g., encryption methods). Avoid introducing new string literal union types.
 - Renderer page/component styles should prefer Tailwind utility classes; avoid adding new Vue `<style>` blocks unless there's no reasonable Tailwind equivalent.

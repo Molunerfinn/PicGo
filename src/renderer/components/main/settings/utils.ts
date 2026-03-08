@@ -1,5 +1,6 @@
 import type { ProviderUploaderSummary } from "@/components/main/providers/types"
 import type { ValueOf } from "@/types/utils"
+import { IPasteStyle } from "~/universal/types/enum"
 
 export const settingsSectionId = {
   General: "general",
@@ -66,6 +67,7 @@ export interface SettingsUrlRewriteRule {
 
 export interface SettingsConfigState {
   appearance: SettingsAppearance
+  pasteStyle: IPasteStyle
   showUpdateTip: boolean
   showPicBedList: string[]
   autoStart: boolean
@@ -266,6 +268,7 @@ export type SettingLogLevel =
 
 export const defaultSettingsConfig: SettingsConfigState = {
   appearance: settingsAppearance.Auto,
+  pasteStyle: IPasteStyle.MARKDOWN,
   showUpdateTip: false,
   showPicBedList: [],
   autoStart: false,

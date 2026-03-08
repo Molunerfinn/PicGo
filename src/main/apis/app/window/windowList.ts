@@ -9,12 +9,13 @@ import {
 import { IStartupMode, IWindowList } from '#/types/enum'
 import bus from '@core/bus'
 import { CREATE_APP_MENU } from '@core/bus/constants'
-import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
+import { TOGGLE_SHORTKEY_MODIFIED_MODE, WINDOW_STATE_CHANGED } from '#/events/constants'
 import { app } from 'electron'
 import { T } from '~/main/i18n'
 import { isLinux, isWindows } from '~/universal/utils/common'
 import { getStaticPath } from '#/utils/staticPath'
 import picgo from '@core/picgo'
+import { getMainWindowState, saveMainWindowState } from './windowState'
 // import { URLSearchParams } from 'url'
 
 const windowList = new Map<IWindowList, IWindowListItem>()
@@ -83,9 +84,10 @@ windowList.set(IWindowList.SETTING_WINDOW, {
   multiple: false,
   options () {
     const showDockIcon = picgo.getConfig<boolean>('settings.showDockIcon') !== false
+    const mainWindowState = getMainWindowState()
     const options: IBrowserWindowOptions = {
-      height: 450,
-      width: 800,
+      height: mainWindowState.height,
+      width: mainWindowState.width,
       minHeight: 450,
       minWidth: 800,
       show: false,
@@ -112,6 +114,35 @@ windowList.set(IWindowList.SETTING_WINDOW, {
   },
   callback (window, windowManager) {
     window.loadURL(handleWindowParams(SETTING_WINDOW_URL))
+    // TODO(release): remove the default DevTools auto-open before the official release build.
+    window.on('show', () => {
+      if (!window.webContents.isDevToolsOpened()) {
+        window.webContents.openDevTools({
+          mode: 'detach'
+        })
+      }
+    })
+    window.on('maximize', () => {
+      window.webContents.send(WINDOW_STATE_CHANGED, {
+        isMaximized: true
+      })
+    })
+    window.on('unmaximize', () => {
+      window.webContents.send(WINDOW_STATE_CHANGED, {
+        isMaximized: false
+      })
+    })
+    window.on('close', () => {
+      const nextBounds = window.isMaximized()
+        ? window.getNormalBounds()
+        : window.getBounds()
+
+      saveMainWindowState({
+        width: nextBounds.width,
+        height: nextBounds.height,
+        isMaximized: window.isMaximized()
+      })
+    })
     window.on('closed', () => {
       bus.emit(TOGGLE_SHORTKEY_MODIFIED_MODE, false)
       if (process.platform === 'linux') {
@@ -120,6 +151,9 @@ windowList.set(IWindowList.SETTING_WINDOW, {
         })
       }
     })
+    if (getMainWindowState().isMaximized) {
+      window.maximize()
+    }
     bus.emit(CREATE_APP_MENU)
     windowManager.create(IWindowList.MINI_WINDOW)
   }

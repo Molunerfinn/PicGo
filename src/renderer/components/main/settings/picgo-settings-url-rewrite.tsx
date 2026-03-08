@@ -178,8 +178,8 @@ export function PicGoSettingsUrlRewrite() {
             }
             trailing={
               <Button
-                onClick={() => {
-                  handleSave().catch(() => undefined)
+                onClick={async () => {
+                  await handleSave()
                 }}
               >
                 <SaveIcon className="size-4" />

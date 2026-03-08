@@ -34,4 +34,6 @@ export type RecentUpload = {
   name: string
   time: string
   type: RecentUploadType
+  subtitle?: string
+  thumbnailUrl?: string
 }

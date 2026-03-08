@@ -23,6 +23,7 @@ import {
   MINIMIZE_WINDOW,
   MAXIMIZE_WINDOW,
   CLOSE_WINDOW,
+  WINDOW_STATE_CHANGED,
   SHOW_MAIN_PAGE_MENU,
   SHOW_UPLOAD_PAGE_MENU,
   OPEN_USER_STORE_FILE,
@@ -208,6 +209,9 @@ export default {
       } else {
         window.maximize()
       }
+      window.webContents.send(WINDOW_STATE_CHANGED, {
+        isMaximized: window.isMaximized()
+      })
     })
     ipcMain.on(CLOSE_WINDOW, () => {
       const window = BrowserWindow.getFocusedWindow()

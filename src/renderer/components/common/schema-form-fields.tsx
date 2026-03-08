@@ -15,8 +15,8 @@ import {
   ComboboxItem,
   ComboboxList,
   ComboboxValue,
-  useComboboxAnchor,
 } from "@/components/ui/combobox"
+import { useComboboxAnchor } from "@/components/ui/combobox-anchor"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {

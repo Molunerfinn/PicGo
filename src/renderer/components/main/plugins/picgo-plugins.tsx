@@ -143,7 +143,7 @@ export function PicGoPlugins() {
   useEffect(() => {
     const query = pluginPage.searchValue
     const timer = window.setTimeout(() => {
-      searchPlugins(query).catch(() => undefined)
+      searchPlugins(query)
     }, 180)
 
     return () => {
@@ -193,7 +193,7 @@ export function PicGoPlugins() {
       return
     }
 
-    fetchPluginReadme(fullName).catch(() => undefined)
+    fetchPluginReadme(fullName)
   }, [activeListItem?.fullName, fetchPluginReadme, pluginPage.readmeByPlugin])
 
   // Guarantee the current active tab is always valid for the selected plugin.

@@ -122,7 +122,7 @@ export function PluginDetailReadmeTabContent({
     event.preventDefault()
     event.stopPropagation()
 
-    openUrl(anchor.href).catch(() => undefined)
+    openUrl(anchor.href)
   }
 
   if (!selectedItem) {

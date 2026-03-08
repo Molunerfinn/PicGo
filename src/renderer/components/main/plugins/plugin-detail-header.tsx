@@ -108,8 +108,8 @@ export function PluginDetailHeader({
               <button
                 type="button"
                 className="truncate cursor-pointer text-left text-lg font-semibold transition-colors hover:text-(--app-plugin-tab-active-color) hover:underline"
-                onClick={() => {
-                  handleOpenPluginHomepage().catch(() => undefined)
+                onClick={async () => {
+                  await handleOpenPluginHomepage()
                 }}
                 title={pluginHomepageUrl}
               >
@@ -145,8 +145,8 @@ export function PluginDetailHeader({
                   className="text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)"
                   disabled={isMutating}
                   aria-label={t("UNINSTALL_PLUGIN")}
-                  onClick={() => {
-                    handleUninstallPlugin().catch(() => undefined)
+                  onClick={async () => {
+                    await handleUninstallPlugin()
                   }}
                 >
                   <Trash2Icon className="size-4" />
@@ -164,8 +164,8 @@ export function PluginDetailHeader({
                   className="text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)"
                   disabled={isMutating}
                   aria-label={t("UPDATE_PLUGIN")}
-                  onClick={() => {
-                    handleUpdatePlugin().catch(() => undefined)
+                  onClick={async () => {
+                    await handleUpdatePlugin()
                   }}
                 >
                   {isMutating ? (
@@ -187,8 +187,8 @@ export function PluginDetailHeader({
                   <Switch
                     checked={plugin.enabled}
                     disabled={isMutating}
-                    onCheckedChange={(checked) => {
-                      handleSetPluginEnabled(checked).catch(() => undefined)
+                    onCheckedChange={async (checked) => {
+                      await handleSetPluginEnabled(checked)
                     }}
                   />
                 </div>
@@ -209,8 +209,8 @@ export function PluginDetailHeader({
                   className="text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)"
                   disabled={isMutating}
                   aria-label={t("PLUGIN_INSTALL")}
-                  onClick={() => {
-                    handleInstallPlugin().catch(() => undefined)
+                  onClick={async () => {
+                    await handleInstallPlugin()
                   }}
                 >
                   {isMutating ? (

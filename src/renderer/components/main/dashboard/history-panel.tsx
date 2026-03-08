@@ -1,116 +1,219 @@
-import { MoreHorizontalIcon, SearchIcon } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import dayjs from 'dayjs'
+import { useState } from 'react'
+import { Virtuoso } from 'react-virtuoso'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { cn } from '@/lib/utils'
 import { galleryAdapter } from '@/adapters/gallery'
+import { GalleryPreview } from '@/components/main/gallery/gallery-preview'
+import type { GalleryPhoto } from '@/components/main/gallery/utils'
+import { SearchInput } from '@/components/common/search-input'
 import { RECENT_UPLOAD_TYPE, type RecentUpload } from '@/types/dashboard'
+import { cn } from '@/lib/utils'
+import type { DashboardHistoryRecord } from './hooks/use-dashboard-history'
 import { HistoryItem } from './history-item'
 
 interface DashboardHistoryItem extends RecentUpload {
-  group: 'today' | 'yesterday'
-  raw: ImgInfo
+  previewId: number
+  timestamp: number
+  raw: DashboardHistoryRecord
   keywords: string[]
 }
 
-function formatRelativeTime (item: ImgInfo, index: number) {
-  const timestamp =
-    typeof item._updatedAt === 'number'
-      ? item._updatedAt
-      : typeof item._createdAt === 'number'
-        ? item._createdAt
-        : null
-
-  const formatter = new Intl.RelativeTimeFormat(undefined, {
-    numeric: 'auto'
-  })
-
-  if (timestamp === null) {
-    return formatter.format(-(index + 1), 'hour')
-  }
-
-  const diffMs = timestamp - Date.now()
-  const diffMinutes = Math.round(diffMs / (1000 * 60))
-  if (Math.abs(diffMinutes) < 60) {
-    return formatter.format(diffMinutes, 'minute')
-  }
-
-  const diffHours = Math.round(diffMs / (1000 * 60 * 60))
-  if (Math.abs(diffHours) < 24) {
-    return formatter.format(diffHours, 'hour')
-  }
-
-  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
-  return formatter.format(diffDays, 'day')
+interface DashboardHistoryGroup {
+  key: string
+  label: string
+  items: DashboardHistoryItem[]
 }
 
-function buildHistoryItems (items: ImgInfo[]): DashboardHistoryItem[] {
-  return items.map((item, index) => {
-    const name = item.fileName || item.imgUrl || item.originImgUrl || item.id || `${index + 1}`
-    const keywords = [name, item.imgUrl, item.originImgUrl, item.fileName]
-      .filter((value): value is string => typeof value === 'string' && value.length > 0)
+type DashboardHistoryEntry =
+  | {
+    type: 'header'
+    key: string
+    label: string
+    isFirstGroup: boolean
+  }
+  | {
+    type: 'item'
+    key: string
+    item: DashboardHistoryItem
+  }
 
-    return {
-      id: item.id || item.imgUrl || `${index}`,
-      name,
-      time: formatRelativeTime(item, index),
-      type: item.type === 'file' ? RECENT_UPLOAD_TYPE.FILE : RECENT_UPLOAD_TYPE.IMAGE,
-      group: index < 8 ? 'today' : 'yesterday',
-      raw: item,
-      keywords
+function resolveGalleryTimestamp (item: DashboardHistoryRecord) {
+  if (typeof item.updatedAt === 'number') {
+    return item.updatedAt
+  }
+
+  if (typeof item.createdAt === 'number') {
+    return item.createdAt
+  }
+
+  return 0
+}
+
+function isSameDay (left: Date, right: Date) {
+  return left.getFullYear() === right.getFullYear() &&
+    left.getMonth() === right.getMonth() &&
+    left.getDate() === right.getDate()
+}
+
+function formatHistoryTimestamp (timestamp: number) {
+  if (timestamp <= 0) {
+    return ''
+  }
+
+  return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')
+}
+
+function buildHistoryItems (items: DashboardHistoryRecord[]): DashboardHistoryItem[] {
+  return [...items]
+    .sort((left, right) => resolveGalleryTimestamp(right) - resolveGalleryTimestamp(left))
+    .map((item, index) => {
+      const name = item.fileName || item.imgUrl || item.originImgUrl || item.id || `${index + 1}`
+      const timestamp = resolveGalleryTimestamp(item)
+      const keywords = [name, item.imgUrl, item.originImgUrl, item.fileName]
+        .filter((value): value is string => typeof value === 'string' && value.length > 0)
+
+      return {
+        id: item.id || item.imgUrl || `${index}`,
+        previewId: index,
+        name,
+        time: formatHistoryTimestamp(timestamp),
+        type: item.type === 'file' ? RECENT_UPLOAD_TYPE.FILE : RECENT_UPLOAD_TYPE.IMAGE,
+        subtitle: item.imgUrl || item.originImgUrl,
+        thumbnailUrl: item.imgUrl || item.originImgUrl,
+        timestamp,
+        raw: item,
+        keywords
+      }
+    })
+}
+
+function buildGroupKey (timestamp: number) {
+  const date = new Date(timestamp)
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+}
+
+function formatGroupLabel (timestamp: number, t: (key: string) => string) {
+  const date = new Date(timestamp)
+  const now = new Date()
+  const yesterday = new Date(now)
+  yesterday.setDate(now.getDate() - 1)
+
+  if (isSameDay(date, now)) {
+    return t('HISTORY_PANEL_TODAY')
+  }
+
+  if (isSameDay(date, yesterday)) {
+    return t('HISTORY_PANEL_YESTERDAY')
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }).format(date)
+}
+
+function buildHistoryGroups (
+  items: DashboardHistoryItem[],
+  t: (key: string) => string
+): DashboardHistoryGroup[] {
+  const groups: DashboardHistoryGroup[] = []
+
+  items.forEach((item) => {
+    const key = buildGroupKey(item.timestamp)
+    const lastGroup = groups[groups.length - 1]
+
+    if (lastGroup?.key === key) {
+      lastGroup.items.push(item)
+      return
     }
+
+    groups.push({
+      key,
+      label: formatGroupLabel(item.timestamp, t),
+      items: [item]
+    })
+  })
+
+  return groups
+}
+
+function buildVirtuosoResetKey (groups: DashboardHistoryGroup[], searchText: string) {
+  const groupSignature = groups
+    .map((group) => `${group.key}:${group.items.map((item) => item.id).join(',')}`)
+    .join('|')
+
+  return `${searchText}:${groupSignature}`
+}
+
+function buildHistoryEntries (groups: DashboardHistoryGroup[]): DashboardHistoryEntry[] {
+  return groups.flatMap((group, groupIndex) => {
+    const header: DashboardHistoryEntry = {
+      type: 'header',
+      key: `header:${group.key}`,
+      label: group.label,
+      isFirstGroup: groupIndex === 0
+    }
+
+    const items = group.items.map((item): DashboardHistoryEntry => ({
+      type: 'item',
+      key: `item:${item.id}`,
+      item
+    }))
+
+    return [header, ...items]
   })
 }
 
-export function HistoryPanel ({ className }: { className?: string }) {
+export function HistoryPanel ({
+  className,
+  loadThumbnails = true,
+  items
+}: {
+  className?: string
+  loadThumbnails?: boolean
+  items: DashboardHistoryRecord[]
+}) {
   const { t } = useTranslation()
   const [searchText, setSearchText] = useState('')
-  const [historyItems, setHistoryItems] = useState<DashboardHistoryItem[]>([])
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [activePreviewId, setActivePreviewId] = useState<number | null>(null)
+  const historyItems = buildHistoryItems(items)
 
-  useEffect(() => {
-    let disposed = false
+  const keyword = searchText.trim().toLowerCase()
+  const filteredItems = keyword
+    ? historyItems.filter((item) => item.keywords.some((value) => value.toLowerCase().includes(keyword)))
+    : historyItems
 
-    async function refreshHistory () {
-      try {
-        const items = await galleryAdapter.getRecentUploads(10)
-        if (!disposed) {
-          setHistoryItems(buildHistoryItems(items))
-        }
-      } catch (error) {
-        if (!disposed) {
-          console.error(error)
-        }
-      }
+  const todayLabel = t('HISTORY_PANEL_TODAY')
+  const yesterdayLabel = t('HISTORY_PANEL_YESTERDAY')
+  const previewLabel = t('GALLERY_PREVIEW')
+  const groups = buildHistoryGroups(filteredItems, (key) => {
+    if (key === 'HISTORY_PANEL_TODAY') {
+      return todayLabel
     }
 
-    refreshHistory().catch(() => undefined)
-
-    const unsubscribe = galleryAdapter.subscribeToUpdates(() => {
-      refreshHistory().catch(() => undefined)
+    return yesterdayLabel
+  })
+  const entries = buildHistoryEntries(groups)
+  const virtuosoKey = buildVirtuosoResetKey(groups, keyword)
+  const previewItems: GalleryPhoto[] = filteredItems
+    .filter((item) => {
+      return Boolean(item.thumbnailUrl || item.subtitle)
     })
-
-    return () => {
-      disposed = true
-      unsubscribe()
-    }
-  }, [])
-
-  const filteredItems = useMemo(() => {
-    const keyword = searchText.trim().toLowerCase()
-    if (!keyword) {
-      return historyItems
-    }
-
-    return historyItems.filter((item) => {
-      return item.keywords.some((value) => value.toLowerCase().includes(keyword))
-    })
-  }, [historyItems, searchText])
-
-  const todayItems = filteredItems.filter((item) => item.group === 'today')
-  const yesterdayItems = filteredItems.filter((item) => item.group === 'yesterday')
+    .map((item) => ({
+      id: item.previewId,
+      imgUrl: item.thumbnailUrl || item.subtitle || '',
+      originImgUrl: item.subtitle,
+      alt: item.name,
+      name: item.name,
+      sizeMb: 0,
+      date: item.time,
+      provider: item.raw.type || '',
+      collection: '',
+      tags: []
+    }))
 
   const handleCopy = async (item: DashboardHistoryItem) => {
     try {
@@ -122,70 +225,93 @@ export function HistoryPanel ({ className }: { className?: string }) {
     }
   }
 
+  const handlePreview = (item: DashboardHistoryItem) => {
+    if (!(item.thumbnailUrl || item.subtitle)) {
+      return
+    }
+
+    setActivePreviewId(item.previewId)
+    setPreviewOpen(true)
+  }
+
   return (
-    <div className={cn('flex h-full flex-col', className)}>
-      <div className="px-4 pb-4 pt-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold">{t('HISTORY_PANEL_TITLE')}</h2>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-primary size-8"
-          >
-            <MoreHorizontalIcon className="size-4" />
-          </Button>
-        </div>
-        <div className="relative">
-          <Input
-            placeholder={t('HISTORY_PANEL_FILTER_PLACEHOLDER')}
-            className="bg-muted/50 border-transparent placeholder:text-muted-foreground/70 focus:bg-background focus:border-primary/50 h-9 pl-9 text-xs transition-all"
+    <>
+      <div className={cn('flex h-full min-h-0 flex-col', className)}>
+        <div className="px-4 pb-4 pt-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-bold">{t('HISTORY_PANEL_TITLE')}</h2>
+          </div>
+          <SearchInput
             value={searchText}
-            onChange={(event) => {
-              setSearchText(event.target.value)
-            }}
+            onValueChange={setSearchText}
+            placeholder={t('HISTORY_PANEL_FILTER_PLACEHOLDER')}
+            ariaLabel={t('HISTORY_PANEL_FILTER_PLACEHOLDER')}
+            clearLabel={t('GALLERY_CLEAR_SELECTION')}
           />
-          <span className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">
-            <SearchIcon className="size-3.5" />
-          </span>
+        </div>
+
+        <div className="min-h-0 flex-1">
+          {entries.length > 0
+            ? (
+              <Virtuoso
+                key={virtuosoKey}
+                style={{ height: '100%' }}
+                data={entries}
+                overscan={320}
+                increaseViewportBy={320}
+                computeItemKey={(index, entry) => entry?.key ?? `history-entry-${index}`}
+                itemContent={(_, entry) => {
+                  if (!entry) {
+                    return null
+                  }
+
+                  if (entry.type === 'header') {
+                    return (
+                      <div
+                        className={cn(
+                          'px-4 pb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground',
+                          entry.isFirstGroup ? 'pt-0' : 'pt-6'
+                        )}
+                      >
+                        {entry.label}
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <div className="px-4 pb-3">
+                      <HistoryItem
+                        item={entry.item}
+                        loadThumbnail={loadThumbnails}
+                        previewLabel={previewLabel}
+                        onPreview={() => {
+                          handlePreview(entry.item)
+                        }}
+                        onCopy={async () => {
+                          await handleCopy(entry.item)
+                        }}
+                      />
+                    </div>
+                  )
+                }}
+              />
+            )
+            : <div className="px-4 pb-6 text-sm text-muted-foreground" />}
         </div>
       </div>
 
-      <ScrollArea className="flex-1">
-        <div className="space-y-6 px-4 pb-6">
-          <div className="space-y-3">
-            <p className="text-muted-foreground px-2 text-[10px] font-bold uppercase tracking-wider">
-              {t('HISTORY_PANEL_TODAY')}
-            </p>
-            {todayItems.map((item) => (
-              <HistoryItem
-                key={item.id}
-                item={item}
-                onCopy={() => {
-                  handleCopy(item).catch(() => undefined)
-                }}
-              />
-            ))}
-          </div>
-          {yesterdayItems.length > 0
-            ? (
-              <div className="space-y-3">
-                <p className="text-muted-foreground px-2 text-[10px] font-bold uppercase tracking-wider">
-                  {t('HISTORY_PANEL_YESTERDAY')}
-                </p>
-                {yesterdayItems.map((item) => (
-                  <HistoryItem
-                    key={item.id}
-                    item={item}
-                    onCopy={() => {
-                      handleCopy(item).catch(() => undefined)
-                    }}
-                  />
-                ))}
-              </div>
-            )
-            : null}
-        </div>
-      </ScrollArea>
-    </div>
+      <GalleryPreview
+        isOpen={previewOpen}
+        images={previewItems}
+        activeId={activePreviewId}
+        onClose={() => {
+          setPreviewOpen(false)
+          setActivePreviewId(null)
+        }}
+        onActiveIdChange={(id) => {
+          setActivePreviewId(id)
+        }}
+      />
+    </>
   )
 }

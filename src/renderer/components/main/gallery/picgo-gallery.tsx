@@ -6,7 +6,7 @@ import {
 } from "react"
 import { AppMainCard } from "@/components/common/app-main-card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useSidebar } from "@/components/ui/sidebar"
+import { useSidebar } from "@/components/ui/sidebar-context"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { GalleryHeader } from "./gallery-header"

@@ -24,8 +24,12 @@ export const utilityWindowsAdapter = {
         return
       }
 
-      const handler = (_event: Electron.IpcRendererEvent, ...args: T) => {
-        void listener(...args)
+      const handler = async (_event: Electron.IpcRendererEvent, ...args: T) => {
+        try {
+          await listener(...args)
+        } catch (error) {
+          console.error(error)
+        }
       }
 
       ipcRenderer.on(channel, handler)

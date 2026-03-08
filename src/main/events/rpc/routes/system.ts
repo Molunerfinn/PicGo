@@ -1,6 +1,6 @@
 import { IRPCActionType, IWindowList } from '~/universal/types/enum'
 import { RPCRouter } from '../router'
-import { app, clipboard, shell } from 'electron'
+import { app, BrowserWindow, clipboard, shell } from 'electron'
 import windowManager from '~/main/apis/app/window/windowManager'
 import { handleMenubarIcon } from '~/main/apis/app/system'
 import { PICGO_NOTIFICATION_CLICKED } from '~/universal/events/constants'
@@ -12,6 +12,13 @@ systemRouter
   .add(IRPCActionType.RELOAD_APP, async () => {
     app.relaunch()
     app.exit(0)
+  })
+  .add(IRPCActionType.GET_WINDOW_STATE, async (_args, event) => {
+    const senderWindow = BrowserWindow.fromWebContents(event.sender)
+
+    return {
+      isMaximized: senderWindow?.isMaximized() ?? false
+    }
   })
   .add(IRPCActionType.OPEN_FILE, async (args) => {
     const [filePath] = args as IOpenFileArgs

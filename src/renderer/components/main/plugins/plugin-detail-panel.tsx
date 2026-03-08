@@ -271,8 +271,8 @@ export function PluginDetailPanel({
                       [fieldName]: value,
                     }))
                   }}
-                  onSave={() => {
-                    handleSaveConfigTab().catch(() => undefined)
+                  onSave={async () => {
+                    await handleSaveConfigTab()
                   }}
                 />
               </TabsContent>
@@ -290,8 +290,8 @@ export function PluginDetailPanel({
                       [fieldName]: value,
                     }))
                   }}
-                  onSave={() => {
-                    handleSaveTransformerTab().catch(() => undefined)
+                  onSave={async () => {
+                    await handleSaveTransformerTab()
                   }}
                 />
               </TabsContent>

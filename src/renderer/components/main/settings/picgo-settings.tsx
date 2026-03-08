@@ -95,7 +95,7 @@ export function PicGoSettings() {
       return
     }
 
-    i18n.changeLanguage(settingsConfig.language).catch(() => undefined)
+    i18n.changeLanguage(settingsConfig.language)
   }, [settingsConfig.language])
 
   useEffect(() => {

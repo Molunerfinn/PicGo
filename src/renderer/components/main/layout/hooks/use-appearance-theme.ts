@@ -30,7 +30,15 @@ export function useAppearanceTheme() {
     (appearance === settingsAppearance.Auto && prefersDark)
 
   useEffect(() => {
-    ensureSettingsHydrated().catch(() => undefined)
+    async function bootstrapAppearanceTheme () {
+      try {
+        await ensureSettingsHydrated()
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    bootstrapAppearanceTheme()
   }, [ensureSettingsHydrated])
 
   useEffect(() => {
@@ -47,12 +55,12 @@ export function useAppearanceTheme() {
     document.documentElement.classList.toggle("dark", isDark)
   }, [isDark])
 
-  const toggleTheme = () => {
+  const toggleTheme = async () => {
     const nextAppearance = isDark
       ? settingsAppearance.Light
       : settingsAppearance.Dark
 
-    saveSettingsConfig("settings.appearance", nextAppearance).catch(() => undefined)
+    await saveSettingsConfig("settings.appearance", nextAppearance)
   }
 
   return {
