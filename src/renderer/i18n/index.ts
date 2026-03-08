@@ -1,67 +1,69 @@
 import { ipcRenderer } from 'electron'
-import { ObjectAdapter, I18n } from '@picgo/i18n'
-import { GET_CURRENT_LANGUAGE, SET_CURRENT_LANGUAGE, FORCE_UPDATE, GET_LANGUAGE_LIST } from '#/events/constants'
-import bus from '@/utils/bus'
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import { parse } from 'yaml'
+import { GET_CURRENT_LANGUAGE, SET_CURRENT_LANGUAGE } from '#/events/constants'
 import { builtinI18nList } from '#/i18n'
+import enRaw from '../../../public/i18n/en.yml?raw'
+import zhCNRaw from '../../../public/i18n/zh-CN.yml?raw'
+import zhTWRaw from '../../../public/i18n/zh-TW.yml?raw'
 
-export class I18nManager {
-  private i18n: I18n | null = null
-  private i18nFileList: II18nItem[] = builtinI18nList
+type TranslationMap = Record<string, string>
 
-  private getLanguageList () {
-    ipcRenderer.send(GET_LANGUAGE_LIST)
-    ipcRenderer.once(GET_LANGUAGE_LIST, (event, list: II18nItem[]) => {
-      this.i18nFileList = list
-    })
-  }
-
-  private getCurrentLanguage () {
-    ipcRenderer.send(GET_CURRENT_LANGUAGE)
-    ipcRenderer.once(GET_CURRENT_LANGUAGE, (event, lang: string, locales: ILocales) => {
-      this.setLocales(lang, locales)
-      bus.emit(FORCE_UPDATE)
-    })
-  }
-
-  private setLocales (lang: string, locales: ILocales) {
-    const objectAdapter = new ObjectAdapter({
-      [lang]: locales
-    })
-    this.i18n = new I18n({
-      adapter: objectAdapter,
-      defaultLanguage: lang
-    })
-  }
-
-  constructor () {
-    this.getCurrentLanguage()
-    this.getLanguageList()
-    ipcRenderer.on(SET_CURRENT_LANGUAGE, (event, lang: string, locales: ILocales) => {
-      this.setLocales(lang, locales)
-      bus.emit(FORCE_UPDATE)
-    })
-  }
-
-  T (key: ILocalesKey, args: IStringKeyMap = {}): string {
-    return this.i18n?.translate(key, args) || key
-  }
-
-  setCurrentLanguage (lang: string) {
-    ipcRenderer.send(SET_CURRENT_LANGUAGE, lang)
-  }
-
-  get languageList () {
-    return this.i18nFileList
-  }
+function parseLocale (raw: string): TranslationMap {
+  return parse(raw) as TranslationMap
 }
 
-const i18nManager = new I18nManager()
-
-const T = (key: ILocalesKey, args: IStringKeyMap = {}): string => {
-  return i18nManager.T(key, args)
+function applyLanguage (lang: string) {
+  const nextLanguage = ['en', 'zh-CN', 'zh-TW'].includes(lang) ? lang : 'en'
+  return i18n.changeLanguage(nextLanguage).catch(() => {
+    return i18n.changeLanguage('en')
+  })
 }
 
-export {
-  i18nManager,
-  T
+let initializePromise: Promise<typeof i18n> | null = null
+
+export function initializeI18n () {
+  if (initializePromise) {
+    return initializePromise
+  }
+
+  initializePromise = i18n
+    .use(initReactI18next)
+    .init({
+      resources: {
+        en: { translation: parseLocale(enRaw) },
+        'zh-CN': { translation: parseLocale(zhCNRaw) },
+        'zh-TW': { translation: parseLocale(zhTWRaw) }
+      },
+      lng: 'en',
+      fallbackLng: 'en',
+      interpolation: {
+        escapeValue: false,
+        prefix: '${',
+        suffix: '}'
+      }
+    })
+    .then(async () => {
+      ipcRenderer.send(GET_CURRENT_LANGUAGE)
+      ipcRenderer.once(GET_CURRENT_LANGUAGE, (_event, lang: string) => {
+        applyLanguage(lang)
+      })
+      ipcRenderer.on(SET_CURRENT_LANGUAGE, (_event, lang: string) => {
+        applyLanguage(lang)
+      })
+      return i18n
+    })
+
+  return initializePromise
 }
+
+export function setCurrentLanguage (lang: string) {
+  ipcRenderer.send(SET_CURRENT_LANGUAGE, lang)
+}
+
+export function getLanguageList () {
+  return builtinI18nList
+}
+
+export default i18n

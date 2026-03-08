@@ -1,10 +1,7 @@
-import { onBeforeMount, ref } from 'vue'
+import { useState } from 'react'
+import { getAppPlatform } from '@/lib/platform'
 
-export const useOS = () => {
-  const os = ref<string>('')
-
-  onBeforeMount(() => {
-    os.value = process.platform
-  })
+export function useOS () {
+  const [os] = useState(getAppPlatform())
   return os
 }

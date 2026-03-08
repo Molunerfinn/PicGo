@@ -62,8 +62,8 @@ windowList.set(IWindowList.TRAY_WINDOW, {
       frame: false,
       fullscreenable: false,
       resizable: false,
-      transparent: true,
-      vibrancy: 'ultra-dark',
+      transparent: false,
+      backgroundColor: '#111827',
       webPreferences: {
         ...defaultWebPreferences,
         webSecurity: false
@@ -86,15 +86,17 @@ windowList.set(IWindowList.SETTING_WINDOW, {
     const options: IBrowserWindowOptions = {
       height: 450,
       width: 800,
+      minHeight: 450,
+      minWidth: 800,
       show: false,
-      frame: true,
+      frame: false,
       center: true,
       fullscreenable: false,
-      resizable: false,
+      resizable: true,
       title: 'PicGo',
-      transparent: true,
+      transparent: false,
+      backgroundColor: '#0f172a',
       skipTaskbar: !showDockIcon,
-      titleBarStyle: 'hidden',
       webPreferences: {
         ...defaultWebPreferences,
         webSecurity: false
@@ -135,7 +137,8 @@ windowList.set(IWindowList.MINI_WINDOW, {
       fullscreenable: false,
       skipTaskbar: true,
       resizable: false,
-      transparent: process.platform !== 'linux',
+      transparent: false,
+      backgroundColor: '#0f172a',
       icon: getStaticPath('logo.png'),
       webPreferences: {
         ...defaultWebPreferences
@@ -162,7 +165,7 @@ windowList.set(IWindowList.RENAME_WINDOW, {
       show: true,
       fullscreenable: false,
       resizable: false,
-      backgroundColor: 'rgba(26,40,42,0.9)',
+      backgroundColor: '#0f172a',
       webPreferences: {
         ...defaultWebPreferences
       }
@@ -204,7 +207,7 @@ windowList.set(IWindowList.TOOLBOX_WINDOW, {
       center: true,
       fullscreenable: false,
       resizable: false,
-      backgroundColor: 'rgba(26,40,42,0.9)',
+      backgroundColor: '#0f172a',
       title: `PicGo-${T('TOOLBOX')}`,
       icon: getStaticPath('logo.png'),
       webPreferences: {

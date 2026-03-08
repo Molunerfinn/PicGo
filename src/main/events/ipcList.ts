@@ -21,6 +21,7 @@ import {
   OPEN_DEVTOOLS,
   SHOW_MINI_PAGE_MENU,
   MINIMIZE_WINDOW,
+  MAXIMIZE_WINDOW,
   CLOSE_WINDOW,
   SHOW_MAIN_PAGE_MENU,
   SHOW_UPLOAD_PAGE_MENU,
@@ -198,6 +199,15 @@ export default {
     ipcMain.on(MINIMIZE_WINDOW, () => {
       const window = BrowserWindow.getFocusedWindow()
       window?.minimize()
+    })
+    ipcMain.on(MAXIMIZE_WINDOW, () => {
+      const window = BrowserWindow.getFocusedWindow()
+      if (!window) return
+      if (window.isMaximized()) {
+        window.unmaximize()
+      } else {
+        window.maximize()
+      }
     })
     ipcMain.on(CLOSE_WINDOW, () => {
       const window = BrowserWindow.getFocusedWindow()

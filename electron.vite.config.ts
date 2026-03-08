@@ -1,6 +1,7 @@
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
-import vue from '@vitejs/plugin-vue'
-// temp for webUtils
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import electronRenderer from '@molunerfinn/vite-plugin-electron-renderer'
 import { resolve } from 'path'
 
@@ -42,7 +43,17 @@ export default defineConfig({
     root: 'src/renderer',
     publicDir: resolve(__dirname, 'src/renderer/public'),
     resolve: { alias },
-    plugins: [vue(), electronRenderer()],
+    plugins: [
+      tanstackRouter({
+        target: 'react',
+        autoCodeSplitting: true,
+        routesDirectory: './routes',
+        generatedRouteTree: './routeTree.gen.ts'
+      }),
+      react(),
+      electronRenderer(),
+      tailwindcss()
+    ],
     build: {
       outDir: 'dist_electron/renderer',
       rollupOptions: {

@@ -104,6 +104,8 @@ interface IKeyCommandType {
 interface IBrowserWindowOptions {
   height: number,
   width: number,
+  minHeight?: number,
+  minWidth?: number,
   show: boolean,
   fullscreenable: boolean,
   resizable: boolean,

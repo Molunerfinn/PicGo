@@ -14,7 +14,10 @@ export default defineConfig({
   resolve: { alias },
   test: {
     environment: 'node',
-    include: ['src/__tests__/**/*.spec.ts']
+    include: ['src/__tests__/**/*.spec.{ts,tsx}'],
+    setupFiles: ['src/__tests__/setup.ts'],
+    environmentMatchGlobs: [
+      ['src/__tests__/renderer/**/*.spec.tsx', 'jsdom']
+    ]
   }
 })
-

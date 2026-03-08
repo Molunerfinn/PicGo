@@ -29,11 +29,14 @@ OPEN_TOOLBOX: Open Toolbox
 # ---renderer i18n begin---
 
 CHOOSE_YOUR_DEFAULT_PICBED: "Choose ${d} as your default picbed:"
+SIDEBAR_DASHBOARD: Dashboard
 UPLOAD_AREA: Upload Area
 GALLERY: Gallery
+GALLERY_PROVIDERS: Providers
 PICBEDS_SETTINGS: Picbeds Settings
 PICGO_SETTINGS: PicGo Settings
 PLUGIN_SETTINGS: Plugins Settings
+DASHBOARD_HISTORY_PANEL_TITLE: History Panel
 PICGO_CLOUD_TITLE: PicGo Cloud
 PICGO_CLOUD_ERROR_TITLE: PicGo Cloud Error
 PICGO_CLOUD_NOT_LOGGED_IN: Not logged in to PicGo Cloud.
@@ -381,3 +384,104 @@ TIPS_UPLOADER_CONFIG_CANNOT_DELETE_LAST: Cannot delete the last config
 PRIVACY: "Please read and agree to the Privacy Policy ${privacyUrl} and Terms of Service ${termsUrl} before using."
 PRIVACY_TIPS: Please agree the privacy policy to upload
 QUIT: Quit
+GALLERY_ALL_PHOTOS: All Photos
+GALLERY_COLLECTIONS: Collections
+GALLERY_TAGS: Tags
+GALLERY_MENU: Menu
+GALLERY_OPEN_INSPECTOR: Open Inspector
+GALLERY_INSPECTOR_TITLE: Gallery Inspector
+GALLERY_INSPECTOR_DESCRIPTION: Inspect and edit selected images.
+GALLERY_CLEAR_SELECTION: Clear Selection
+GALLERY_SELECTED_COUNT: ${count} selected
+GALLERY_GRID_VIEW: Grid View
+GALLERY_LIST_VIEW: List View
+GALLERY_PREVIEW: Preview
+GALLERY_PREVIEW_EMPTY: No images to preview
+GALLERY_PREVIEW_PREV: Previous
+GALLERY_PREVIEW_NEXT: Next
+GALLERY_PREVIEW_CLOSE: Close preview
+GALLERY_PREVIEW_COUNT: ${current} / ${total}
+GALLERY_QUICK_ACTIONS: Quick Actions
+GALLERY_EXPORT: Download
+GALLERY_URL: URL
+GALLERY_BATCH_REWRITE: Batch Rewrite
+GALLERY_COLLECTION: Collection
+GALLERY_ADD_TAG: Add tag
+GALLERY_TAG_SUGGESTIONS: Suggestions
+GALLERY_COLUMN_NAME: Name
+GALLERY_COLUMN_PROVIDER: Provider
+GALLERY_COLUMN_SIZE: Size
+GALLERY_COLUMN_DATE: Date
+GALLERY_ADD: Add
+SIDEBAR_PLUGINS: Plugins
+SIDEBAR_SYSTEM: System
+SIDEBAR_NOTIFICATIONS: Notifications
+SIDEBAR_EXPAND: Click to Expand
+SIDEBAR_COLLAPSE: Collapse Sidebar
+HISTORY_PANEL_TITLE: History
+HISTORY_PANEL_FILTER_PLACEHOLDER: Filter...
+HISTORY_PANEL_TODAY: Today
+HISTORY_PANEL_YESTERDAY: Yesterday
+DASHBOARD_NO_VISIBLE_PROVIDERS: No visible providers
+DASHBOARD_NO_VISIBLE_PROVIDERS_DESCRIPTION: All providers are hidden. Open settings to change provider visibility.
+DASHBOARD_OPEN_SETTINGS: Open Settings
+DASHBOARD_DROP_IMAGES_HERE: Drop files here
+DASHBOARD_OR: or
+DASHBOARD_CLICK_TO_UPLOAD: Click to Upload
+DASHBOARD_PASTE_FROM_CLIPBOARD: Paste from Clipboard
+DASHBOARD_PASTE_FROM_URL: Paste from URL
+DASHBOARD_CLIPBOARD: Clipboard
+FIELD_IS_REQUIRED: ${field} is required
+CONFIG_RENAME: Config Rename
+SETTINGS_SECTION_GENERAL: General
+SETTINGS_SECTION_APPEARANCE: Appearance
+SETTINGS_SECTION_UPLOAD_WORKFLOW: Upload Workflow
+SETTINGS_SECTION_NETWORK: Network
+SETTINGS_SECTION_ADVANCED: Advanced
+SETTINGS_SECTION_ABOUT: About
+SETTINGS_NO_RESULTS_TITLE: No settings found
+SETTINGS_NO_RESULTS_DESCRIPTION: Try another keyword or clear the search input.
+SETTINGS_OPEN_SHORTCUTS: Shortcuts
+SETTINGS_LINK_WEBSITE: Website
+SETTINGS_LINK_GITHUB: GitHub
+SETTINGS_LINK_DOCS: Documentation
+SETTINGS_LINK_PRIVACY: Privacy Policy
+SETTINGS_LINK_TERMS: Terms of Service
+SETTINGS_APPEARANCE_MODE: Appearance
+SETTINGS_APPEARANCE_MODE_LIGHT: Light
+SETTINGS_APPEARANCE_MODE_DARK: Dark
+SETTINGS_APPEARANCE_MODE_AUTO: Auto
+COMMON_FOR_EXAMPLE: "Ex.: ${value}"
+SETTINGS_SET_DEFAULT_CONFIG: Set Default Config
+PROVIDER_DRAFT_CONFIG: Draft
+PROVIDER_ACTIVE_UPLOADER_LABEL: Active
+PROVIDER_ACTIVE_UPLOADER_TOOLTIP: ${uploaderName} is the active uploader
+PROVIDER_DEFAULT_CONFIG_LABEL: Default
+PROVIDER_DEFAULT_CONFIG_TOOLTIP: Used when ${uploaderName} is active.
+PROVIDER_SIDEBAR_EMPTY: No uploaders or configs found.
+PROVIDER_UPLOADER_ACTIONS: ${uploaderName} actions
+PROVIDER_SIDEBAR_COLLAPSE: Collapse
+PROVIDER_SIDEBAR_EXPAND: Expand
+PROVIDER_CONFIG_ACTIONS: Config actions
+PROVIDER_CREATE_CONFIG: Create config
+PROVIDER_INSTALL_MORE_UPLOADERS: Install more uploaders
+PROVIDER_NO_UPLOADER_SELECTED: No uploader selected.
+PROVIDER_NO_CONFIG_YET: No config yet
+PROVIDER_NO_CONFIG_DESCRIPTION: Create a new config for ${uploaderName} to start editing schema-based options.
+PROVIDER_CONFIGURATION: Configuration
+PROVIDER_UPDATED_AT_LABEL: Updated
+PROVIDER_DELETE_CONFIG_HINT: Permanently remove this configuration.
+UPLOADER_SWITCHER_SELECT_PROVIDER: Select provider
+UPLOADER_SWITCHER_CONFIG: Config
+UPLOADER_SWITCHER_NO_CONFIG: No config
+GALLERY_URL_REWRITE_DESCRIPTION: Batch rewrite the URLs for selected images.
+GALLERY_URL_REWRITE_CHANGED: Changed
+GALLERY_URL_REWRITE_UNCHANGED: Unchanged
+TRAY_ALREADY_UPLOAD_EMPTY: No uploaded images yet
+PLUGIN_EMPTY: No plugins found.
+PLUGIN_EMPTY_DESCRIPTION: Search npm and install plugins to get started.
+PLUGIN_DETAIL: Detail
+PLUGIN_NO_CONFIG_SCHEMA: This plugin does not expose config schema.
+PLUGIN_NO_TRANSFORMER_SCHEMA: This plugin does not expose transformer schema.
+PLUGIN_NO_README: No README available for this plugin.
+NO_OPTIONS_FOUND: No options found.

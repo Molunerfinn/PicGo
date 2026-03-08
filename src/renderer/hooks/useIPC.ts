@@ -1,29 +1,57 @@
+import { useEffect, useRef } from 'react'
 import { ipcRenderer } from 'electron'
-import { onUnmounted } from 'vue'
 import { IRPCActionType } from '~/universal/types/enum'
 
-export const useIPCOn = (channel: string, listener: IpcRendererListener) => {
-  ipcRenderer.on(channel, listener)
+type IPCListener = Parameters<typeof ipcRenderer.on>[1]
+type IPCCleanup = () => void
 
-  onUnmounted(() => {
-    ipcRenderer.removeListener(channel, listener)
-  })
+export function useIPCOn (channel: string, listener: IPCListener) {
+  // Subscribe to an IPC channel for the lifetime of the current component.
+  useEffect(() => {
+    ipcRenderer.on(channel, listener)
+
+    return () => {
+      ipcRenderer.removeListener(channel, listener)
+    }
+  }, [channel, listener])
 }
 
-export const useIPCOnce = (channel: string, listener: IpcRendererListener) => {
-  ipcRenderer.once(channel, listener)
+export function useIPCOnce (channel: string, listener: IPCListener) {
+  // Subscribe once to an IPC channel and always clean up the listener on unmount.
+  useEffect(() => {
+    ipcRenderer.once(channel, listener)
 
-  onUnmounted(() => {
-    ipcRenderer.removeListener(channel, listener)
-  })
+    return () => {
+      ipcRenderer.removeListener(channel, listener)
+    }
+  }, [channel, listener])
 }
 
-/**
- * will auto removeListener when component unmounted
- */
-export const useIPC = () => {
+export function useIPC () {
+  const cleanupRef = useRef<IPCCleanup[]>([])
+
+  // Remove any IPC listeners that were registered through this hook on unmount.
+  useEffect(() => {
+    return () => {
+      cleanupRef.current.forEach((cleanup) => {
+        cleanup()
+      })
+      cleanupRef.current = []
+    }
+  }, [])
+
   return {
-    on: (channel: IRPCActionType, listener: IpcRendererListener) => useIPCOn(channel, listener),
-    once: (channel: IRPCActionType, listener: IpcRendererListener) => useIPCOnce(channel, listener)
+    on: (channel: IRPCActionType, listener: IPCListener) => {
+      ipcRenderer.on(channel, listener)
+      cleanupRef.current.push(() => {
+        ipcRenderer.removeListener(channel, listener)
+      })
+    },
+    once: (channel: IRPCActionType, listener: IPCListener) => {
+      ipcRenderer.once(channel, listener)
+      cleanupRef.current.push(() => {
+        ipcRenderer.removeListener(channel, listener)
+      })
+    }
   }
 }
