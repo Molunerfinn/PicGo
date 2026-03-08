@@ -1,8 +1,14 @@
-import { ClockIcon, CopyIcon, ImageIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import type { RecentUpload } from "@/types/dashboard"
+import { ClockIcon, CopyIcon, ImageIcon } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import type { RecentUpload } from '@/types/dashboard'
 
-export function HistoryItem({ item }: { item: RecentUpload }) {
+export function HistoryItem ({
+  item,
+  onCopy
+}: {
+  item: RecentUpload
+  onCopy?: () => void
+}) {
   return (
     <div className="group hover:bg-primary/10 flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-colors">
       <div className="bg-muted border-border/50 group-hover:border-primary/20 group-hover:bg-white/50 flex size-10 flex-shrink-0 items-center justify-center rounded-lg border transition-colors">
@@ -21,6 +27,7 @@ export function HistoryItem({ item }: { item: RecentUpload }) {
         variant="ghost"
         size="icon-xs"
         className="text-muted-foreground hover:text-primary opacity-0 transition-opacity group-hover:opacity-100"
+        onClick={onCopy}
       >
         <CopyIcon className="size-3" />
       </Button>

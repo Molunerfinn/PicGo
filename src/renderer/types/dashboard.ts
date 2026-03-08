@@ -30,7 +30,7 @@ export type RecentUploadType =
   ValueOf<typeof RECENT_UPLOAD_TYPE>
 
 export type RecentUpload = {
-  id: number
+  id: number | string
   name: string
   time: string
   type: RecentUploadType
