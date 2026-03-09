@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import type { CSSProperties } from "react"
 import { createPortal } from "react-dom"
 import { AnimatePresence, motion } from "motion/react"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
@@ -167,6 +168,7 @@ export function GalleryPreview({
         <motion.div
           layoutRoot
           className="bg-gallery-preview-overlay fixed inset-0 z-[60] flex items-center justify-center supports-backdrop-filter:backdrop-blur-(--blur-gallery-preview)"
+          style={{ WebkitAppRegion: "no-drag" } as CSSProperties}
           role="dialog"
           aria-modal="true"
           aria-label={t("GALLERY_PREVIEW")}

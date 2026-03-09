@@ -1,12 +1,17 @@
 "use client"
 
 import * as React from "react"
+import type { CSSProperties } from "react"
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
 import { getAsChildChildren, getAsChildRender } from "@/lib/as-child"
+
+type DragRegionStyle = CSSProperties & {
+  WebkitAppRegion?: 'drag' | 'no-drag'
+}
 
 function Dialog({
   ...props
@@ -64,12 +69,17 @@ function DialogClose({
 
 function DialogOverlay({
   className,
+  style,
   ...props
 }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-overlay"
       className={cn("animate-in fade-in-0 bg-gallery-preview-overlay supports-backdrop-filter:backdrop-blur-(--blur-gallery-preview) fixed inset-0 isolate z-[70] duration-100", className)}
+      style={{
+        WebkitAppRegion: "no-drag",
+        ...style,
+      } as DragRegionStyle}
       {...props}
     />
   )
@@ -80,6 +90,7 @@ function DialogContent({
   children,
   showCloseButton = true,
   showMask = true,
+  style,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Popup> & {
   showCloseButton?: boolean
@@ -94,6 +105,10 @@ function DialogContent({
           "bg-background data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 ring-foreground/10 grid max-w-[calc(100%-2rem)] gap-6 rounded-xl p-6 text-sm ring-1 duration-100 sm:max-w-md fixed top-1/2 left-1/2 z-[71] w-full -translate-x-1/2 -translate-y-1/2 outline-none",
           className
         )}
+        style={{
+          WebkitAppRegion: "no-drag",
+          ...style,
+        } as DragRegionStyle}
         {...props}
       >
         {children}
