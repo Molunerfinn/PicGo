@@ -4,11 +4,13 @@ import {
   useRef,
   useState,
 } from "react"
+import { galleryAdapter } from "@/adapters/gallery"
 import { AppMainCard } from "@/components/common/app-main-card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useSidebar } from "@/components/ui/sidebar-context"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
+import { useAppStore } from "@/store"
 import { GalleryHeader } from "./gallery-header"
 import { GallerySidebar, allPhotosKey } from "./gallery-sidebar"
 import { GalleryList } from "./gallery-list"
@@ -20,9 +22,10 @@ import {
   useGallerySelectionBox,
 } from "./hooks/use-gallery-selection-box"
 import {
+  buildGalleryPhotos,
   filterGalleryImages,
   GalleryViewMode,
-  getImageList,
+  type GalleryProviderFilter,
   type GalleryPhoto,
   type NavContext,
   NavType,
@@ -32,12 +35,16 @@ import {
 // const tagSuggestions = ["Work", "Meme", "Design"]
 
 function formatSize(sizeMb: number) {
+  if (sizeMb <= 0) {
+    return "--"
+  }
+
   return `${sizeMb.toFixed(1)} MB`
 }
 
 export function PicGoGallery() {
   const { t } = useTranslation()
-  const [images, setImages] = useState<GalleryPhoto[]>(() => getImageList())
+  const [images, setImages] = useState<GalleryPhoto[]>([])
   const [navContext, setNavContext] = useState<NavContext>({
     type: NavType.All,
     value: allPhotosKey,
@@ -59,6 +66,8 @@ export function PicGoGallery() {
   const [isLayoutFrozen, setIsLayoutFrozen] = useState(false)
   const [frozenWidth, setFrozenWidth] = useState<number | null>(null)
   const { state: sidebarState } = useSidebar()
+  const ensureHydrated = useAppStore((state) => state.ensureHydrated)
+  const picBeds = useAppStore((state) => state.picBeds)
 
   const scrollAreaWrapperRef = useRef<HTMLDivElement | null>(null)
   const scrollViewportRef = useRef<HTMLDivElement | null>(null)
@@ -79,6 +88,13 @@ export function PicGoGallery() {
     .filter((image): image is GalleryPhoto => Boolean(image))
 
   const filteredImages = filterGalleryImages(images, navContext, searchValue)
+  const visibleProviders: GalleryProviderFilter[] = picBeds
+    .filter((item) => item.visible)
+    .map((item) => ({
+      type: item.type,
+      name: item.name,
+      count: images.filter((image) => image.providerType === item.type).length,
+    }))
 
   // TODO(v3-post-launch): Restore selected tag derivation when Tags inspector actions return.
   // const selectedTags = getSelectedTags(selectedImages)
@@ -97,6 +113,28 @@ export function PicGoGallery() {
   useEffect(() => {
     isLayoutFrozenRef.current = isLayoutFrozen
   }, [isLayoutFrozen])
+
+  useEffect(() => {
+    async function refreshGalleryPage () {
+      try {
+        await ensureHydrated()
+        const galleryItems = await galleryAdapter.getGalleryItems()
+        setImages(buildGalleryPhotos(galleryItems, picBeds))
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    refreshGalleryPage()
+
+    const unsubscribe = galleryAdapter.subscribeToUpdates(() => {
+      refreshGalleryPage()
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [ensureHydrated, picBeds])
 
   const handleScrollAreaWrapperRef = (node: HTMLDivElement | null) => {
     scrollAreaWrapperRef.current = node
@@ -244,10 +282,18 @@ export function PicGoGallery() {
   //   )
   // }
 
-  const handleDeleteSelection = () => {
+  const handleDeleteSelection = async () => {
     if (selectedIdsRef.current.length === 0) return
-    const selected = new Set(selectedIdsRef.current)
-    setImages((prev) => prev.filter((image) => !selected.has(image.id)))
+    const deletedDbIds = new Set(selectedImages.map((image) => image.dbId))
+
+    await Promise.all(
+      selectedImages.map(async (image) => {
+        await galleryAdapter.removeById(image.dbId)
+      })
+    )
+
+    setImages((prev) => prev.filter((image) => !deletedDbIds.has(image.dbId)))
+    setPreviewImages((prev) => prev.filter((image) => !deletedDbIds.has(image.dbId)))
     setSelection([])
   }
 
@@ -365,6 +411,11 @@ export function PicGoGallery() {
           ...image,
           imgUrl: change.nextSrc,
           originImgUrl: image.originImgUrl ?? change.originImgUrl,
+          raw: {
+            ...image.raw,
+            imgUrl: change.nextSrc,
+            originImgUrl: image.raw.originImgUrl ?? change.originImgUrl,
+          },
         }
       })
     )
@@ -380,20 +431,40 @@ export function PicGoGallery() {
           ...image,
           imgUrl: change.nextSrc,
           originImgUrl: image.originImgUrl ?? change.originImgUrl,
+          raw: {
+            ...image.raw,
+            imgUrl: change.nextSrc,
+            originImgUrl: image.raw.originImgUrl ?? change.originImgUrl,
+          },
         }
       })
       return hasUpdate ? next : prev
     })
+
+    changes.forEach((change) => {
+      const targetImage = images.find((image) => image.id === change.id)
+      if (!targetImage) {
+        return
+      }
+
+      galleryAdapter.updateImageUrl(targetImage.dbId, change.nextSrc).catch((error) => {
+        console.error(error)
+      })
+    })
   }
 
 
-  const activeBreadcrumb =
-    navContext.type === NavType.All ? t("GALLERY_ALL_PHOTOS") : navContext.value
+  const activeBreadcrumb = navContext.type === NavType.All
+    ? t("GALLERY_ALL_PHOTOS")
+    : navContext.type === NavType.Provider
+      ? visibleProviders.find((provider) => provider.type === navContext.value)?.name ?? navContext.value
+      : navContext.value
 
   return (
     <main className="flex min-h-0 min-w-0 flex-1 gap-4">
       <GallerySidebar
         images={images}
+        providers={visibleProviders}
         navContext={navContext}
         onFilterChange={handleFilterChange}
       />

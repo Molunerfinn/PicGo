@@ -60,6 +60,8 @@ export function useGallerySelectionBox({
 }: UseGallerySelectionBoxOptions): UseGallerySelectionBoxResult {
   const [selectionBox, setSelectionBox] = useState<SelectionBox>(emptySelectionBox)
   const [isSelecting, setIsSelecting] = useState(false)
+  const setSelectionRef = useRef(setSelection)
+  const setInspectorOpenRef = useRef(setInspectorOpen)
   const selectionRef = useRef<SelectionBox>(emptySelectionBox)
   const selectionFrameRef = useRef<number | null>(null)
   const initialSelectionRef = useRef<number[]>([])
@@ -67,6 +69,11 @@ export function useGallerySelectionBox({
   const clearOnDragRef = useRef(false)
   const pendingClearRef = useRef(false)
   const suppressCardClickRef = useRef(false)
+
+  useEffect(() => {
+    setSelectionRef.current = setSelection
+    setInspectorOpenRef.current = setInspectorOpen
+  }, [setInspectorOpen, setSelection])
 
   const consumeSuppressCardClick = () => {
     if (!suppressCardClickRef.current) return false
@@ -138,7 +145,7 @@ export function useGallerySelectionBox({
         selectionRef.current.isVisible = true
         suppressCardClickRef.current = true
         if (clearOnDragRef.current) {
-          setSelection([])
+          setSelectionRef.current([])
           clearOnDragRef.current = false
         }
       }
@@ -173,7 +180,7 @@ export function useGallerySelectionBox({
       })
 
       const merged = new Set([...initialSelectionRef.current, ...nextSelected])
-      setSelection(Array.from(merged))
+      setSelectionRef.current(Array.from(merged))
     }
 
     const handleMouseUp = () => {
@@ -191,11 +198,11 @@ export function useGallerySelectionBox({
         }, 0)
       }
       if (shouldClearOnClick) {
-        setSelection([])
+        setSelectionRef.current([])
         return
       }
       if (!isInspectorOpenRef.current && selectedIdsRef.current.length > 0) {
-        setInspectorOpen(true)
+        setInspectorOpenRef.current(true)
       }
     }
 
@@ -216,8 +223,6 @@ export function useGallerySelectionBox({
     itemRefs,
     scrollViewportRef,
     selectedIdsRef,
-    setInspectorOpen,
-    setSelection,
   ])
 
   return {

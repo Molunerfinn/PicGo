@@ -42,18 +42,22 @@ function AlertDialogPortal({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Portal>) {
   return (
-    <AlertDialogPrimitive.Portal data-slot="alert-dialog-portal" {...props} />
+    <AlertDialogPrimitive.Portal
+      data-slot="alert-dialog-portal"
+      container={typeof document !== "undefined" ? document.body : undefined}
+      {...props}
+    />
   )
 }
 
 function AlertDialogOverlay({
   className,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Backdrop>) {
+}: React.ComponentProps<"div">) {
   return (
-    <AlertDialogPrimitive.Backdrop
+    <div
       data-slot="alert-dialog-overlay"
-      className={cn("data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs fixed inset-0 z-50", className)}
+      className={cn("animate-in fade-in-0 bg-gallery-preview-overlay supports-backdrop-filter:backdrop-blur-(--blur-gallery-preview) fixed inset-0 z-[70] duration-100", className)}
       {...props}
     />
   )
@@ -62,18 +66,20 @@ function AlertDialogOverlay({
 function AlertDialogContent({
   className,
   size = ALERT_DIALOG_CONTENT_SIZE.DEFAULT,
+  showMask = true,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Popup> & {
   size?: AlertDialogContentSize
+  showMask?: boolean
 }) {
   return (
     <AlertDialogPortal>
-      <AlertDialogOverlay />
+      {showMask ? <AlertDialogOverlay /> : null}
       <AlertDialogPrimitive.Popup
         data-slot="alert-dialog-content"
         data-size={size}
         className={cn(
-          "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 bg-background ring-foreground/10 gap-6 rounded-xl p-6 ring-1 duration-100 data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-lg group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 outline-none",
+          "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 bg-background ring-foreground/10 gap-6 rounded-xl p-6 ring-1 duration-100 data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-lg group/alert-dialog-content fixed top-1/2 left-1/2 z-[71] grid w-full -translate-x-1/2 -translate-y-1/2 outline-none",
           className
         )}
         {...props}

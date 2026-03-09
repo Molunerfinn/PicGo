@@ -210,6 +210,11 @@ const MasonryItem: ItemContent<GalleryPhoto, MasonryContext> = ({
             <Maximize2 className="size-3" />
           </Button>
         </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 overflow-hidden bg-background/60 text-foreground shadow-sm backdrop-blur-sm dark:bg-background/45">
+          <div className="truncate px-2 py-1 text-center text-[10px] font-medium leading-none sm:text-xs">
+            {photo.name}
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -263,6 +268,9 @@ export function MasonryView({
         node.querySelector<HTMLDivElement>(
           "[data-testid='virtuoso-scroller']"
         ) ?? null
+      if (scroller) {
+        scroller.style.position = "relative"
+      }
       scrollViewportRef.current = scroller
       onScrollRootChange(scroller)
     })
@@ -309,7 +317,7 @@ export function MasonryView({
     selectionBox.isVisible && scrollRoot
       ? createPortal(
         <div
-          className="border-primary/60 pointer-events-none absolute z-20 border bg-transparent"
+          className="border-primary/60 bg-primary/10 pointer-events-none absolute z-20 border"
           style={getSelectionBoxRect(selectionBox)}
         />,
         scrollRoot

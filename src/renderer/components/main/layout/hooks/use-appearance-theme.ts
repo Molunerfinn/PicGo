@@ -60,7 +60,9 @@ export function useAppearanceTheme() {
       ? settingsAppearance.Light
       : settingsAppearance.Dark
 
-    await saveSettingsConfig("settings.appearance", nextAppearance)
+    await saveSettingsConfig({
+      appearance: nextAppearance
+    })
   }
 
   return {

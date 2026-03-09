@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { galleryAdapter } from "@/adapters/gallery"
 import {
   GalleryUrlRewriteDialog,
   type GalleryUrlRewriteChange,
@@ -52,7 +53,7 @@ type GalleryInspectorProps = {
   // onAddTag: (tag: string) => void
   // onRemoveTag: (tag: string) => void
   // onCollectionChange: (value: string) => void
-  onDelete: () => void
+  onDelete: () => Promise<void>
   onPreviewOpen: (imageId: number) => void
   onUrlRewrite: (changes: GalleryUrlRewriteChange[]) => void
 }
@@ -113,9 +114,13 @@ export function GalleryInspector({
   const handleCopy = async () => {
     if (!canAct) return
     try {
-      await navigator.clipboard.writeText(
-        selectedImages.map((image) => getGalleryImageUrl(image)).join("\n")
+      const copiedLinks = await Promise.all(
+        selectedImages.map(async (image) => {
+          return galleryAdapter.copyImageLink(image.raw)
+        })
       )
+
+      galleryAdapter.copyBatchLinks(copiedLinks)
       toast.success(
         selectedImages.length > 1
           ? t("BATCH_COPY_LINK_SUCCEED")
@@ -142,8 +147,8 @@ export function GalleryInspector({
   //   })
   // }
 
-  const handleDelete = () => {
-    onDelete()
+  const handleDelete = async () => {
+    await onDelete()
     toast.success(t("SUCCESS"), {
       description: t("DELETE"),
     })
@@ -217,7 +222,12 @@ export function GalleryInspector({
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>{t("CANCEL")}</AlertDialogCancel>
-                    <AlertDialogAction variant="destructive" onClick={handleDelete}>
+                    <AlertDialogAction
+                      variant="destructive"
+                      onClick={async () => {
+                        await handleDelete()
+                      }}
+                    >
                       {t("DELETE")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -250,6 +260,13 @@ export function GalleryInspector({
                             decoding="async"
                             draggable={false}
                           />
+                          {!isOverflow ? (
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 overflow-hidden bg-background/60 text-foreground shadow-sm backdrop-blur-sm dark:bg-background/45">
+                              <div className="truncate px-2 py-1 text-center text-[10px] font-medium leading-none sm:text-xs">
+                                {image.name}
+                              </div>
+                            </div>
+                          ) : null}
                           {isOverflow && (
                             <div className="absolute inset-0 flex items-center justify-center bg-foreground/70 text-sm font-semibold text-background">
                               +{selectedImages.length - 4}
@@ -265,7 +282,7 @@ export function GalleryInspector({
                     onClick={() => onPreviewOpen(selectedImages[0].id)}
                     title={t("GALLERY_PREVIEW")}
                     aria-label={t("GALLERY_PREVIEW")}
-                    className="h-full w-full cursor-zoom-in"
+                    className="relative h-full w-full cursor-zoom-in overflow-hidden"
                   >
                     <img
                       src={selectedImages[0].imgUrl}
@@ -275,6 +292,11 @@ export function GalleryInspector({
                       decoding="async"
                       draggable={false}
                     />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 overflow-hidden bg-background/60 text-foreground shadow-sm backdrop-blur-sm dark:bg-background/45">
+                      <div className="truncate px-2 py-1 text-center text-[10px] font-medium leading-none sm:text-xs">
+                        {selectedImages[0].name}
+                      </div>
+                    </div>
                   </button>
                 ) : (
                   <div className="text-muted-foreground flex h-full items-center justify-center text-sm">

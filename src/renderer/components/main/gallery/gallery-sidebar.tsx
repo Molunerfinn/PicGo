@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import {
   NavType,
-  providers,
+  type GalleryProviderFilter,
   type GalleryPhoto,
   type NavContext,
 } from "./utils"
@@ -28,6 +28,7 @@ type GalleryNavButtonProps = {
 
 type GallerySidebarProps = {
   images: GalleryPhoto[]
+  providers: GalleryProviderFilter[]
   navContext: NavContext
   // TODO(v3-post-launch): Restore tag suggestions input when Tags feature returns.
   // tagSuggestions: string[]
@@ -102,20 +103,13 @@ function GalleryNavButton({
 
 export function GallerySidebar({
   images,
+  providers,
   navContext,
   // TODO(v3-post-launch): Restore tagSuggestions usage when Tags sidebar filter is re-enabled.
   // tagSuggestions,
   onFilterChange,
 }: GallerySidebarProps) {
   const { t } = useTranslation()
-
-  const providerCounts: Record<string, number> = {}
-  providers.forEach((provider) => {
-    providerCounts[provider] = 0
-  })
-  images.forEach((image) => {
-    providerCounts[image.provider] = (providerCounts[image.provider] ?? 0) + 1
-  })
 
   // TODO(v3-post-launch): Restore collection count aggregation when Collections sidebar section is re-enabled.
   // const collectionCounts: Record<string, number> = {}
@@ -149,15 +143,15 @@ export function GallerySidebar({
               />
               {providers.map((provider) => (
                 <GalleryNavButton
-                  key={provider}
-                  label={provider}
-                  count={providerCounts[provider] ?? 0}
+                  key={provider.type}
+                  label={provider.name}
+                  count={provider.count}
                   active={
                     navContext.type === NavType.Provider &&
-                    navContext.value === provider
+                    navContext.value === provider.type
                   }
                   onClick={() =>
-                    onFilterChange({ type: NavType.Provider, value: provider })
+                    onFilterChange({ type: NavType.Provider, value: provider.type })
                   }
                 />
               ))}

@@ -204,6 +204,7 @@ export function HistoryPanel ({
     })
     .map((item) => ({
       id: item.previewId,
+      dbId: String(item.id),
       imgUrl: item.thumbnailUrl || item.subtitle || '',
       originImgUrl: item.subtitle,
       alt: item.name,
@@ -211,6 +212,8 @@ export function HistoryPanel ({
       sizeMb: 0,
       date: item.time,
       provider: item.raw.type || '',
+      providerType: item.raw.type || '',
+      raw: item.raw,
       collection: '',
       tags: []
     }))
