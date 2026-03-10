@@ -33,7 +33,14 @@ type MasonryContext = {
   imageSizeOverrides: Record<number, ImageSize>
   masonryGap: number
   previewLabel: string
-  onCardClick: (id: number) => void
+  onCardClick: (
+    id: number,
+    modifier?: {
+      shiftKey: boolean
+      metaKey: boolean
+      ctrlKey: boolean
+    }
+  ) => void
   onToggleSelection: (id: number, checked?: boolean) => void
   onPreview: (id: number) => void
   onImageLoad: (image: GalleryPhoto) => (event: SyntheticEvent<HTMLImageElement>) => void
@@ -41,13 +48,6 @@ type MasonryContext = {
 }
 
 const placeholderAspectRatio = 4 / 3
-
-function getGalleryColumnCount(width: number) {
-  if (width < 520) return 1
-  if (width < 760) return 2
-  if (width < 840) return 3
-  return 4
-}
 
 function getMasonryGap(width: number) {
   if (width >= 1200) return 20
@@ -152,12 +152,18 @@ const MasonryItem: ItemContent<GalleryPhoto, MasonryContext> = ({
         data-gallery-item="true"
         ref={(node) => context.onItemRefChange(photo.id, node)}
         className={cn(
-          "group relative overflow-hidden rounded-2xl border transition-shadow",
+          "group relative overflow-hidden rounded-xl border transition-shadow",
           isSelected
             ? "border-primary/40 ring-2 ring-ring/40"
             : "border-transparent hover:border-border/80"
         )}
-        onClick={() => context.onCardClick(photo.id)}
+        onClick={(event) => {
+          context.onCardClick(photo.id, {
+            shiftKey: event.shiftKey,
+            metaKey: event.metaKey,
+            ctrlKey: event.ctrlKey
+          })
+        }}
       >
         <LazyImage
           src={photo.imgUrl}
@@ -222,6 +228,7 @@ const MasonryItem: ItemContent<GalleryPhoto, MasonryContext> = ({
 
 export type MasonryViewProps = {
   images: GalleryPhoto[]
+  columnCount: number
   selectedSet: Set<number>
   galleryWidth: number
   scrollRoot: HTMLElement | null
@@ -230,7 +237,14 @@ export type MasonryViewProps = {
   frozenWidth: number | null
   onScrollRootChange: (root: HTMLElement | null) => void
   onMouseDown: (event: MouseEvent<HTMLDivElement>) => void
-  onCardClick: (id: number) => void
+  onCardClick: (
+    id: number,
+    modifier?: {
+      shiftKey: boolean
+      metaKey: boolean
+      ctrlKey: boolean
+    }
+  ) => void
   onToggleSelection: (id: number, checked?: boolean) => void
   onPreview: (id: number) => void
   onItemRefChange: (id: number, node: HTMLDivElement | null) => void
@@ -240,6 +254,7 @@ export type MasonryViewProps = {
 
 export function MasonryView({
   images,
+  columnCount,
   selectedSet,
   galleryWidth,
   scrollRoot,
@@ -297,9 +312,7 @@ export function MasonryView({
     }
 
   const masonryGap = getMasonryGap(galleryWidth)
-  const masonryColumnCount = galleryWidth
-    ? getGalleryColumnCount(galleryWidth)
-    : 2
+  const masonryColumnCount = columnCount
 
   const masonryContext: MasonryContext = {
     selectedSet,
@@ -335,7 +348,7 @@ export function MasonryView({
         style={frozenWidth ? { width: frozenWidth } : undefined}
       >
         <VirtuosoMasonry
-          key={images.map((img) => img.id).join("-")}
+          key={`${masonryColumnCount}:${images.map((img) => img.id).join("-")}`}
           data={images}
           columnCount={masonryColumnCount}
           ItemContent={MasonryItem}

@@ -4,6 +4,14 @@ import type { IPicGoCloudUserInfo } from '#/types/cloud'
 import i18n from '@/i18n'
 import { appConfigAdapter } from '@/adapters/app-config'
 import { providersAdapter } from '@/adapters/providers'
+import {
+  GALLERY_MASONRY_COLUMN_COUNT_DEFAULT,
+  GALLERY_MASONRY_COLUMN_COUNT_MAX,
+  GALLERY_MASONRY_COLUMN_COUNT_MIN,
+  PICGO_GUI_GALLERY_MASONRY_COLUMN_COUNT_KEY,
+  PICGO_GUI_GALLERY_VIEW_MODE_KEY
+} from '@/utils/consts'
+import { rendererStorage } from '@/utils/storage'
 import type {
   PluginConfigSectionType,
   PluginImportResult,
@@ -27,6 +35,7 @@ import type {
   ProviderUploaderSummary
 } from '@/components/main/providers/types'
 import type { ProviderFormValues } from '@/components/main/providers/utils'
+import { GalleryViewMode, type GalleryViewMode as GalleryViewModeType } from '@/components/main/gallery/utils'
 
 interface ProviderPageState {
   isHydrating: boolean
@@ -46,6 +55,15 @@ interface PluginPageState {
 
 interface SettingsPageState {
   searchValue: string
+}
+
+interface GalleryUiState {
+  viewMode: GalleryViewModeType
+  masonryColumnCount: number
+}
+
+interface UiState {
+  gallery: GalleryUiState
 }
 
 interface CheckUpdateResult {
@@ -87,19 +105,24 @@ export interface AppStoreState {
   providers: ProviderUploaderSummary[]
   providerSchemas: Record<string, ProviderUploaderSchema>
   pluginsInstalled: PluginInstalledItem[]
+  ui: UiState
   providerPage: ProviderPageState
   pluginPage: PluginPageState
   settingsVersion: SettingsVersionState
   settingsPage: SettingsPageState
   hasHydrated: boolean
   hasSettingsHydrated: boolean
+  hasUiHydrated: boolean
   picgoCloud: PicGoCloudUserInfoState
   refreshAppConfig: () => Promise<void>
   refreshPicBeds: () => Promise<void>
   hydrateAppState: () => Promise<void>
   ensureHydrated: () => Promise<void>
   ensureSettingsHydrated: () => Promise<void>
+  ensureUiHydrated: () => Promise<void>
   refreshProviderState: () => Promise<void>
+  setGalleryViewMode: (mode: GalleryViewModeType) => Promise<void>
+  setGalleryMasonryColumnCount: (count: number) => Promise<void>
   setDefaultPicBed: (type: string) => Promise<void>
   setSettingsSearchValue: (value: string) => void
   saveSettingsConfig: (
@@ -158,6 +181,28 @@ const initialPluginPageState: PluginPageState = {
 
 const initialSettingsPageState: SettingsPageState = {
   searchValue: ''
+}
+
+const initialUiState: UiState = {
+  gallery: {
+    viewMode: GalleryViewMode.Masonry,
+    masonryColumnCount: GALLERY_MASONRY_COLUMN_COUNT_DEFAULT
+  }
+}
+
+function normalizeGalleryMasonryColumnCount (count: number) {
+  return Math.min(
+    GALLERY_MASONRY_COLUMN_COUNT_MAX,
+    Math.max(GALLERY_MASONRY_COLUMN_COUNT_MIN, count)
+  )
+}
+
+function normalizeGalleryViewMode (value: string | undefined): GalleryViewModeType {
+  if (value === GalleryViewMode.List) {
+    return GalleryViewMode.List
+  }
+
+  return GalleryViewMode.Masonry
 }
 
 function resolveDefaultPicBed (config: IConfig | null) {
@@ -290,12 +335,14 @@ const useStoreBase = create<AppStoreState>((set, get) => ({
   providers: [],
   providerSchemas: {},
   pluginsInstalled: [],
+  ui: initialUiState,
   providerPage: initialProviderPageState,
   pluginPage: initialPluginPageState,
   settingsVersion: defaultSettingsVersion,
   settingsPage: initialSettingsPageState,
   hasHydrated: false,
   hasSettingsHydrated: false,
+  hasUiHydrated: false,
   picgoCloud: {
     userInfo: undefined,
     userInfoStatus: picGoCloudRequestStatus.Idle,
@@ -355,8 +402,68 @@ const useStoreBase = create<AppStoreState>((set, get) => ({
     await get().ensureHydrated()
     set({ hasSettingsHydrated: true })
   },
+  async ensureUiHydrated () {
+    if (get().hasUiHydrated) {
+      return
+    }
+
+    const [storedViewMode, storedMasonryColumnCount] = await Promise.all([
+      rendererStorage.getItem<string>(
+        PICGO_GUI_GALLERY_VIEW_MODE_KEY,
+        GalleryViewMode.Masonry
+      ),
+      rendererStorage.getItem<number>(
+        PICGO_GUI_GALLERY_MASONRY_COLUMN_COUNT_KEY,
+        GALLERY_MASONRY_COLUMN_COUNT_DEFAULT
+      )
+    ])
+
+    set((state) => ({
+      ui: {
+        ...state.ui,
+        gallery: {
+          viewMode: normalizeGalleryViewMode(storedViewMode),
+          masonryColumnCount: normalizeGalleryMasonryColumnCount(storedMasonryColumnCount)
+        }
+      },
+      hasUiHydrated: true
+    }))
+  },
   async refreshProviderState () {
     await get().hydrateAppState()
+  },
+  async setGalleryViewMode (mode) {
+    const normalizedMode = normalizeGalleryViewMode(mode)
+
+    set((state) => ({
+      ui: {
+        ...state.ui,
+        gallery: {
+          ...state.ui.gallery,
+          viewMode: normalizedMode
+        }
+      }
+    }))
+
+    await rendererStorage.setItem(PICGO_GUI_GALLERY_VIEW_MODE_KEY, normalizedMode)
+  },
+  async setGalleryMasonryColumnCount (count) {
+    const normalizedCount = normalizeGalleryMasonryColumnCount(count)
+
+    set((state) => ({
+      ui: {
+        ...state.ui,
+        gallery: {
+          ...state.ui.gallery,
+          masonryColumnCount: normalizedCount
+        }
+      }
+    }))
+
+    await rendererStorage.setItem(
+      PICGO_GUI_GALLERY_MASONRY_COLUMN_COUNT_KEY,
+      normalizedCount
+    )
   },
   async setDefaultPicBed (type: string) {
     await appConfigAdapter.saveConfig({
@@ -466,7 +573,6 @@ const useStoreBase = create<AppStoreState>((set, get) => ({
   async selectDashboardProviderConfig (providerId, configId) {
     const appConfig = get().appConfig
     const configName = appConfig?.uploader?.[providerId]?.configList.find((item) => item._id === configId)?._configName
-    console.log('Selected configId:', configId, 'resolved configName:', configName)
 
     if (!configName) {
       throw new Error(i18n.t('TIPS_UPLOADER_CONFIG_NOT_FOUND'))

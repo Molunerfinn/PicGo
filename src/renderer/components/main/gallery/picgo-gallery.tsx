@@ -11,6 +11,10 @@ import { useSidebar } from "@/components/ui/sidebar-context"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { useAppStore } from "@/store"
+import {
+  GALLERY_MASONRY_COLUMN_COUNT_DEFAULT,
+} from "@/utils/consts"
+import { isMacOS } from "@/lib/platform"
 import { GalleryHeader } from "./gallery-header"
 import { GallerySidebar, allPhotosKey } from "./gallery-sidebar"
 import { GalleryList } from "./gallery-list"
@@ -50,9 +54,6 @@ export function PicGoGallery() {
     value: allPhotosKey,
   })
   const [selectedIds, setSelectedIds] = useState<number[]>([])
-  const [viewMode, setViewMode] = useState<GalleryViewMode>(
-    GalleryViewMode.Masonry
-  )
   const [searchValue, setSearchValue] = useState("")
   const [isInspectorOpen, setInspectorOpen] = useState(false)
   const [isPreviewOpen, setPreviewOpen] = useState(false)
@@ -67,6 +68,10 @@ export function PicGoGallery() {
   const [frozenWidth, setFrozenWidth] = useState<number | null>(null)
   const { state: sidebarState } = useSidebar()
   const ensureHydrated = useAppStore((state) => state.ensureHydrated)
+  const ensureUiHydrated = useAppStore((state) => state.ensureUiHydrated)
+  const setGalleryViewMode = useAppStore((state) => state.setGalleryViewMode)
+  const setGalleryMasonryColumnCount = useAppStore((state) => state.setGalleryMasonryColumnCount)
+  const galleryUi = useAppStore((state) => state.ui.gallery)
   const picBeds = useAppStore((state) => state.picBeds)
 
   const scrollAreaWrapperRef = useRef<HTMLDivElement | null>(null)
@@ -74,6 +79,7 @@ export function PicGoGallery() {
   const galleryContentRef = useRef<HTMLDivElement | null>(null)
   const itemRefs = useRef<Map<number, HTMLDivElement>>(new Map())
   const selectedIdsRef = useRef<number[]>([])
+  const selectionAnchorIdRef = useRef<number | null>(null)
   const galleryWidthRef = useRef(0)
   const isSelectingRef = useRef(false)
   const isInspectorOpenRef = useRef(false)
@@ -88,6 +94,8 @@ export function PicGoGallery() {
     .filter((image): image is GalleryPhoto => Boolean(image))
 
   const filteredImages = filterGalleryImages(images, navContext, searchValue)
+  const viewMode = galleryUi.viewMode
+  const masonryColumnCount = galleryUi.masonryColumnCount || GALLERY_MASONRY_COLUMN_COUNT_DEFAULT
   const visibleProviders: GalleryProviderFilter[] = picBeds
     .filter((item) => item.visible)
     .map((item) => ({
@@ -113,6 +121,18 @@ export function PicGoGallery() {
   useEffect(() => {
     isLayoutFrozenRef.current = isLayoutFrozen
   }, [isLayoutFrozen])
+
+  useEffect(() => {
+    async function hydrateGalleryUiState () {
+      try {
+        await ensureUiHydrated()
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    hydrateGalleryUiState()
+  }, [ensureUiHydrated])
 
   useEffect(() => {
     async function refreshGalleryPage () {
@@ -250,8 +270,48 @@ export function PicGoGallery() {
       setInspectorOpen,
     })
 
-  const handleCardClick = (id: number) => {
+  const handleCardClick = (
+    id: number,
+    modifier?: {
+      shiftKey: boolean
+      metaKey: boolean
+      ctrlKey: boolean
+    }
+  ) => {
     if (consumeSuppressCardClick()) return
+    const isMultiKey = isMacOS()
+      ? modifier?.metaKey === true
+      : modifier?.ctrlKey === true
+
+    if (modifier?.shiftKey) {
+      const currentIndex = filteredImages.findIndex((image) => image.id === id)
+      const anchorId = selectionAnchorIdRef.current ?? selectedIdsRef.current[selectedIdsRef.current.length - 1] ?? id
+      const anchorIndex = filteredImages.findIndex((image) => image.id === anchorId)
+
+      if (currentIndex >= 0 && anchorIndex >= 0) {
+        const minIndex = Math.min(anchorIndex, currentIndex)
+        const maxIndex = Math.max(anchorIndex, currentIndex)
+        const rangedIds = filteredImages.slice(minIndex, maxIndex + 1).map((image) => image.id)
+
+        if (isMultiKey) {
+          setSelection((prev) => Array.from(new Set([...prev, ...rangedIds])))
+        } else {
+          setSelection(rangedIds)
+        }
+        return
+      }
+    }
+
+    if (isMultiKey) {
+      setSelection((prev) => {
+        const hasItem = prev.includes(id)
+        return hasItem ? prev.filter((value) => value !== id) : [...prev, id]
+      })
+      selectionAnchorIdRef.current = id
+      return
+    }
+
+    selectionAnchorIdRef.current = id
     setSelection([id])
   }
 
@@ -260,6 +320,7 @@ export function PicGoGallery() {
       const hasItem = prev.includes(id)
       const shouldSelect = checked ?? !hasItem
       if (shouldSelect) {
+        selectionAnchorIdRef.current = id
         return hasItem ? prev : [...prev, id]
       }
       return prev.filter((value) => value !== id)
@@ -473,15 +534,17 @@ export function PicGoGallery() {
         <section>
           <GalleryHeader
             activeBreadcrumb={activeBreadcrumb}
+            masonryColumnCount={masonryColumnCount}
             searchValue={searchValue}
             onSearchValueChange={setSearchValue}
+            onMasonryColumnCountChange={setGalleryMasonryColumnCount}
             onSelectAll={handleSelectAll}
             onOpenInspector={() => setInspectorOpen(true)}
             isAllSelected={isAllSelected}
             hasFilteredImages={filteredImages.length > 0}
             hasSelection={selectedIds.length > 0}
             viewMode={viewMode}
-            onViewModeChange={setViewMode}
+            onViewModeChange={setGalleryViewMode}
             onPreview={handleToolbarPreview}
           />
 
@@ -489,6 +552,7 @@ export function PicGoGallery() {
             {viewMode === GalleryViewMode.Masonry ? (
               <MasonryView
                 images={filteredImages}
+                columnCount={masonryColumnCount}
                 selectedSet={selectedSet}
                 galleryWidth={galleryWidth}
                 scrollRoot={scrollRoot}

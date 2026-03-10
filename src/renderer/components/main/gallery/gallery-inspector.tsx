@@ -238,7 +238,7 @@ export function GalleryInspector({
 
           <ScrollArea className="min-h-0 flex-1">
             <div className="flex flex-col gap-5 px-4 py-4">
-              <div className="border-border/60 mb-2 aspect-video overflow-hidden rounded-2xl border">
+              <div className="border-border/60 mb-2 aspect-video overflow-hidden rounded-xl border">
                 {selectedImages.length > 1 ? (
                   <div className="grid h-full grid-cols-2 gap-1 p-1">
                     {selectedImages.slice(0, 4).map((image, index) => {

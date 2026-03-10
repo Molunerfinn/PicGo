@@ -160,7 +160,10 @@ export function useGallerySelectionBox({
       const boxBottom = Math.max(start.y, currentY)
 
       const nextSelected: number[] = []
-      itemRefs.current.forEach((node, id) => {
+      Array.from(itemRefs.current, ([id, node]) => ({
+        id,
+        node
+      })).forEach(({ node, id }) => {
         const itemRect = node.getBoundingClientRect()
         const itemLeft = itemRect.left - rect.left + viewport.scrollLeft
         const itemTop = itemRect.top - rect.top + viewport.scrollTop

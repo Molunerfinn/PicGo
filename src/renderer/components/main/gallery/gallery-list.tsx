@@ -28,7 +28,14 @@ export type GalleryListLabels = {
 type GalleryListProps = {
   items: GalleryListItem[]
   selectedIds: Set<number>
-  onSelect: (id: number) => void
+  onSelect: (
+    id: number,
+    modifier?: {
+      shiftKey: boolean
+      metaKey: boolean
+      ctrlKey: boolean
+    }
+  ) => void
   onToggleSelection: (id: number, checked?: boolean) => void
   onPreviewOpen: (id: number) => void
   onToggleAll: () => void
@@ -42,7 +49,14 @@ type GalleryListProps = {
 
 type GalleryListContext = {
   selectedIds: Set<number>
-  onSelect: (id: number) => void
+  onSelect: (
+    id: number,
+    modifier?: {
+      shiftKey: boolean
+      metaKey: boolean
+      ctrlKey: boolean
+    }
+  ) => void
   onToggleSelection: (id: number, checked?: boolean) => void
   onPreviewOpen: (id: number) => void
   formatSize: (sizeMb: number) => string
@@ -58,9 +72,9 @@ const GalleryTable = forwardRef<HTMLTableElement, HTMLAttributes<HTMLTableElemen
     >
       <colgroup>
         <col />
-        <col />
+        <col className="w-32" />
         <col className="w-20" />
-        <col className="w-24" />
+        <col className="w-40" />
       </colgroup>
       {children}
     </table>
@@ -99,7 +113,13 @@ const galleryTableComponents: TableComponents<GalleryListItem, GalleryListContex
         {...props}
         data-gallery-item="true"
         data-state={isSelected ? "selected" : undefined}
-        onClick={() => context.onSelect(item.id)}
+        onClick={(event) => {
+          context.onSelect(item.id, {
+            shiftKey: event.shiftKey,
+            metaKey: event.metaKey,
+            ctrlKey: event.ctrlKey
+          })
+        }}
         className="cursor-pointer"
       />
     )
@@ -203,14 +223,14 @@ export function GalleryList({
                   <span className="min-w-0 truncate">{labels.name}</span>
                 </div>
               </TableHead>
-              <TableHead className="text-muted-foreground min-w-0 text-xs uppercase tracking-wide">
+              <TableHead className="text-muted-foreground min-w-0 w-32 text-xs uppercase tracking-wide">
                 <span className="block truncate">{labels.provider}</span>
               </TableHead>
               <TableHead className="text-muted-foreground w-20 text-right text-xs uppercase tracking-wide">
                 {labels.size}
               </TableHead>
-              <TableHead className="text-muted-foreground w-24 text-xs uppercase tracking-wide">
-                {labels.date}
+              <TableHead className="text-muted-foreground w-40 text-xs uppercase tracking-wide">
+                <span className="block truncate">{labels.date}</span>
               </TableHead>
             </TableRow>
           )}
@@ -250,14 +270,14 @@ export function GalleryList({
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="text-muted-foreground min-w-0 text-xs">
+              <TableCell className="text-muted-foreground min-w-0 w-32 text-xs">
                 <span className="block truncate">{item.provider}</span>
               </TableCell>
               <TableCell className="text-muted-foreground w-20 text-right text-xs">
                 {context.formatSize(item.sizeMb)}
               </TableCell>
-              <TableCell className="text-muted-foreground w-24 text-xs">
-                {item.date}
+              <TableCell className="text-muted-foreground w-40 text-xs">
+                <span className="block truncate">{item.date}</span>
               </TableCell>
             </>
           )}
