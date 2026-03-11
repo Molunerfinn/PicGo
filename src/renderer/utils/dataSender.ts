@@ -1,4 +1,4 @@
-import { GET_PICBEDS, PICGO_GET_CONFIG, PICGO_SAVE_CONFIG, RPC_ACTIONS } from '#/events/constants'
+import { GET_PICBEDS, OPEN_URL, PICGO_GET_CONFIG, PICGO_OPEN_FILE, PICGO_SAVE_CONFIG, RPC_ACTIONS } from '#/events/constants'
 import { IpcRendererEvent, ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
 import { IRPCActionType } from '~/universal/types/enum'
@@ -66,4 +66,12 @@ export function sendRPC (action: IRPCActionType, ...args: any[]): void {
 export function sendToMain (channel: string, ...args: any[]) {
   const data = getRawData(args)
   ipcRenderer.send(channel, ...data)
+}
+
+export function openFile (fileName: string) {
+  sendToMain(PICGO_OPEN_FILE, fileName)
+}
+
+export function openURL (url: string) {
+  sendToMain(OPEN_URL, url)
 }

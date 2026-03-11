@@ -40,8 +40,7 @@ import pkg from 'root/package.json'
 import { compare } from 'compare-versions'
 import { IRPCActionType } from '~/universal/types/enum'
 import { useVModel } from '@/hooks/useVModel'
-import { invokeRPC } from '@/utils/dataSender'
-import { openURL } from '@/utils/common'
+import { invokeRPC, openURL } from '@/utils/dataSender'
 
 interface IProps {
   modelValue: boolean

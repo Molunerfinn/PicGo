@@ -72,9 +72,8 @@
 </template>
 <script lang="ts" setup>
 import { T as $T } from '@/i18n'
-import { saveConfig } from '@/utils/dataSender'
+import { openFile, saveConfig } from '@/utils/dataSender'
 import { useVModel } from '@/hooks/useVModel'
-import { openFile } from '@/utils/common'
 import { showNotification } from '@/utils/notification'
 import { ElMessage as $message } from 'element-plus'
 import { useVModelValues } from '@/hooks/useVModelValues'

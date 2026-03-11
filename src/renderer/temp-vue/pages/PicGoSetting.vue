@@ -54,7 +54,7 @@ import ButtonAreaSettings from './components/settings/buttonArea/ButtonAreaSetti
 import SwitchAreaSettings from './components/settings/switchArea/SwitchAreaSettings.vue'
 import CustomAreaSettings from './components/settings/customArea/CustomAreaSettings.vue'
 import SelectAreaSettings from './components/settings/selectArea/SelectAreaSettings.vue'
-import { openURL } from '@/utils/common'
+import { openURL } from '@/utils/dataSender'
 import { IStartupMode } from '#/types/enum'
 import { useStore } from '@/hooks/useStore'
 

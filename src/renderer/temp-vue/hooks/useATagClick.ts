@@ -1,4 +1,4 @@
-import { openURL } from '@/utils/common'
+import { openURL } from '@/utils/dataSender'
 import { onMounted, onUnmounted } from 'vue'
 
 export function useATagClick () {
