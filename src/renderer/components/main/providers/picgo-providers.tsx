@@ -3,7 +3,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { useAppStore } from "@/store"
+import { appActions, providerStoreActions, useAppStore, useProviderStore } from "@/store"
 import { ProviderConfigNameDialog } from "./provider-config-name-dialog"
 import { ProviderConfigPanel } from "./provider-config-panel"
 import { ProviderDeleteConfigDialog } from "./provider-delete-config-dialog"
@@ -33,18 +33,11 @@ export function PicGoProviders() {
   const navigate = useNavigate()
   const search = useSearch({ from: "/main/providers" })
 
-  const appConfig = useAppStore((state) => state.appConfig)
-  const providers = useAppStore((state) => state.providers)
-  const providerSchemas = useAppStore((state) => state.providerSchemas)
-  const providerPage = useAppStore((state) => state.providerPage)
-  const hasHydrated = useAppStore((state) => state.hasHydrated)
-  const ensureHydrated = useAppStore((state) => state.ensureHydrated)
-  const ensureProviderExpanded = useAppStore(
-    (state) => state.ensureProviderExpanded
-  )
-  const renameConfig = useAppStore((state) => state.renameConfig)
-  const copyConfig = useAppStore((state) => state.copyConfig)
-  const deleteConfig = useAppStore((state) => state.deleteConfig)
+  const appConfig = useAppStore.use.appConfig()
+  const providers = useAppStore.use.providers()
+  const providerSchemas = useAppStore.use.providerSchemas()
+  const hasHydrated = useAppStore.use.hasHydrated()
+  const isLoadingUploaders = useProviderStore.use.isHydrating()
 
   const [draftConfigMap, setDraftConfigMap] = useState<
     Record<string, ProviderDraftConfigItem | undefined>
@@ -66,7 +59,6 @@ export function PicGoProviders() {
   const queriedConfigId = search.configId ?? null
 
   const configMap = appConfig?.uploader ?? emptyProviderConfigMap
-  const isLoadingUploaders = providerPage.isHydrating
   const visibleProviders = providers.filter((provider) => provider.visible)
 
   const { selectedUploaderId, selectedConfigId } = resolveProviderSelectionState({
@@ -101,7 +93,7 @@ export function PicGoProviders() {
 
     async function bootstrap() {
       try {
-        await ensureHydrated()
+        await appActions.ensureHydrated()
       } catch (error) {
         if (!isDisposed) {
           toast.error(resolveErrorMessage(error, t("FAILED")))
@@ -114,7 +106,7 @@ export function PicGoProviders() {
     return () => {
       isDisposed = true
     }
-  }, [ensureHydrated, t])
+  }, [t])
 
   // Canonicalize URL selection after hydration so URL remains the single source of truth.
   useEffect(() => {
@@ -165,8 +157,8 @@ export function PicGoProviders() {
       return
     }
 
-    ensureProviderExpanded(selectedUploaderId)
-  }, [ensureProviderExpanded, selectedUploaderId])
+    providerStoreActions.ensureExpanded(selectedUploaderId)
+  }, [selectedUploaderId])
 
   const handleCreateConfigDraft = async (uploaderId: string, configName: string) => {
     try {
@@ -195,7 +187,7 @@ export function PicGoProviders() {
         [uploaderId]: draftConfig,
       }))
 
-      ensureProviderExpanded(uploaderId)
+      providerStoreActions.ensureExpanded(uploaderId)
       navigateToSelection({
         uploader: uploaderId,
         configId: draftId,
@@ -227,7 +219,7 @@ export function PicGoProviders() {
     }
 
     try {
-      await renameConfig(uploaderId, configId, configName)
+      await providerStoreActions.renameConfig(uploaderId, configId, configName)
       toast.success(t("SUCCESS"))
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))
@@ -240,7 +232,11 @@ export function PicGoProviders() {
     configName: string
   ) => {
     try {
-      const selectedId = await copyConfig(uploaderId, configId, configName)
+      const selectedId = await providerStoreActions.copyConfig(
+        uploaderId,
+        configId,
+        configName
+      )
 
       navigateToSelection({
         uploader: uploaderId,
@@ -280,7 +276,7 @@ export function PicGoProviders() {
     }
 
     try {
-      const selectedId = await deleteConfig(uploaderId, configId)
+      const selectedId = await providerStoreActions.deleteConfig(uploaderId, configId)
 
       navigateToSelection({
         uploader: uploaderId,

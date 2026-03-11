@@ -2,31 +2,28 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
+import { useAppStore } from "@/store"
 import { SettingsProxyDialog } from "./settings-dialog-proxy"
 import { SettingsServerDialog } from "./settings-dialog-server"
 import { SettingsRow } from "./settings-row"
-import type { SettingsConfigState } from "./utils"
+import { defaultSettingsConfig } from "./utils"
 
 interface SettingsSectionNetworkProps {
-  settingsConfig: SettingsConfigState
   isItemVisible: (itemId: string) => boolean
   isAnyItemVisible: (itemIds: string[]) => boolean
-  onSaveConfig: (
-    path: string | Partial<SettingsConfigState>,
-    value?: unknown
-  ) => Promise<boolean>
 }
 
 export function SettingsSectionNetwork({
-  settingsConfig,
   isItemVisible,
   isAnyItemVisible,
-  onSaveConfig,
 }: SettingsSectionNetworkProps) {
   const { t } = useTranslation()
+  const appConfig = useAppStore.use.appConfig()
+  const settingsConfig = appConfig?.settings ?? defaultSettingsConfig
+  const picBedProxy = appConfig?.picBed.proxy ?? ""
   const [isProxyDialogOpen, setProxyDialogOpen] = useState(false)
   const [isServerDialogOpen, setServerDialogOpen] = useState(false)
-  const [proxyDraft, setProxyDraft] = useState(settingsConfig.proxy)
+  const [proxyDraft, setProxyDraft] = useState(picBedProxy)
   const [npmProxyDraft, setNpmProxyDraft] = useState(settingsConfig.npmProxy)
   const [npmRegistryDraft, setNpmRegistryDraft] = useState(settingsConfig.npmRegistry)
   const [serverHostDraft, setServerHostDraft] = useState(settingsConfig.server.host)
@@ -46,7 +43,7 @@ export function SettingsSectionNetwork({
               type="button"
               variant="outline"
               onClick={() => {
-                setProxyDraft(settingsConfig.proxy)
+                setProxyDraft(picBedProxy)
                 setNpmProxyDraft(settingsConfig.npmProxy)
                 setNpmRegistryDraft(settingsConfig.npmRegistry)
                 setProxyDialogOpen(true)
@@ -86,7 +83,6 @@ export function SettingsSectionNetwork({
         onProxyDraftChange={setProxyDraft}
         onNpmProxyDraftChange={setNpmProxyDraft}
         onNpmRegistryDraftChange={setNpmRegistryDraft}
-        onSaveConfig={onSaveConfig}
       />
 
       <SettingsServerDialog
@@ -98,7 +94,6 @@ export function SettingsSectionNetwork({
         onServerHostDraftChange={setServerHostDraft}
         onServerPortDraftChange={setServerPortDraft}
         onServerEnableDraftChange={setServerEnableDraft}
-        onSaveConfig={onSaveConfig}
       />
     </>
   )

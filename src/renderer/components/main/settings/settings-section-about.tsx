@@ -6,22 +6,14 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
-import { useAppStore } from "@/store"
+import { settingsStoreActions, useAppStore } from "@/store"
 import { openSettingsExternalUrl } from "./side-effect-utils"
 import { SettingsRow } from "./settings-row"
-import type {
-  SettingsConfigState,
-  SettingsVersionState,
-} from "./utils"
+import { defaultSettingsConfig } from "./utils"
+import { useSettingsSave } from "./use-settings-save"
 
 interface SettingsSectionAboutProps {
-  settingsConfig: SettingsConfigState
-  settingsVersion: SettingsVersionState
   isItemVisible: (itemId: string) => boolean
-  onSaveConfig: (
-    path: string | Partial<SettingsConfigState>,
-    value?: unknown
-  ) => Promise<boolean>
 }
 
 const aboutLinks = [
@@ -66,20 +58,20 @@ function resolveErrorMessage(error: unknown, fallback: string) {
 }
 
 export function SettingsSectionAbout({
-  settingsConfig,
-  settingsVersion,
   isItemVisible,
-  onSaveConfig,
 }: SettingsSectionAboutProps) {
   const { t } = useTranslation()
-  const checkSettingsUpdates = useAppStore((state) => state.checkSettingsUpdates)
+  const appConfig = useAppStore.use.appConfig()
+  const settingsVersion = useAppStore.use.settingsVersion()
+  const settingsConfig = appConfig?.settings ?? defaultSettingsConfig
+  const saveSettingsConfig = useSettingsSave()
   const [isCheckingUpdates, setCheckingUpdates] = useState(false)
 
   const runCheckUpdates = async () => {
     setCheckingUpdates(true)
 
     try {
-      const result = await checkSettingsUpdates()
+      const result = await settingsStoreActions.checkUpdates()
       if (result.hasUpdate) {
         toast.success(`${t("SETTINGS_NEWEST_VERSION")}: ${result.latestVersion}`)
       } else {
@@ -136,7 +128,7 @@ export function SettingsSectionAbout({
             <Switch
               checked={settingsConfig.showUpdateTip}
               onCheckedChange={(checked) => {
-                onSaveConfig("settings.showUpdateTip", checked)
+                saveSettingsConfig("settings.showUpdateTip", checked)
               }}
             />
           }
@@ -149,7 +141,7 @@ export function SettingsSectionAbout({
               <Switch
                 checked={settingsConfig.checkBetaUpdate}
                 onCheckedChange={(checked) => {
-                  onSaveConfig("settings.checkBetaUpdate", checked)
+                  saveSettingsConfig("settings.checkBetaUpdate", checked)
                 }}
               />
             }

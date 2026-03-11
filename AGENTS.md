@@ -24,6 +24,22 @@ Static assets are served from `public/`. In the main process use `getStaticPath`
 - Do not write `void someMethod()` or `void object.method()` anywhere in the codebase. If you need fire-and-forget behavior, use an `async` callback with `await`, or handle errors explicitly with `try/catch` and logging instead of swallowing them.
 - Because the renderer uses React Compiler, do not add `useMemo` or `useCallback` by default. Prefer plain values and inline functions unless a specific API requires stable identity or there is a proven performance issue.
 - For Zustand store state/actions, prefer reading them directly in the consuming component with `useAppStore` / `useStore` instead of passing them down through unnecessary prop layers. If a child can access the needed store value or action itself, do not thread it through parent props.
+- If a child component only needs a store action (for example `providerStoreActions.toggleExpanded`, `settingsStoreActions.setSearchValue`, or `galleryStoreActions.setViewMode`), do not pass that store action through props. Import and use the action directly inside the child component.
+- Renderer Zustand stores must follow the project store architecture:
+  - `src/renderer/store/app-store.ts` is for true global renderer state only.
+  - Feature/page-local UI state must live under `src/renderer/store/<feature>/` (for example `src/renderer/store/gallery/store.ts`, `src/renderer/store/gallery/actions.ts`), not inside `app-store.ts`.
+  - Do not add an extra nested `store/` directory like `src/renderer/store/gallery/store/store.ts`.
+- Zustand state and actions must be separated:
+  - Do not define state-mutating actions inside `create()`.
+  - Keep store files focused on state shape and initial state.
+  - Put global actions in `src/renderer/store/app-actions.ts`.
+  - Put feature actions in `src/renderer/store/<feature>/actions.ts`.
+  - Actions must update state via `useXxxStore.setState(...)`.
+- Follow strict IPC boundaries for Zustand actions:
+  - Pure IPC/service calls without Zustand state changes should call the adapter/service directly from the component or helper, not through a Zustand action.
+  - Flows that combine IPC/service work with Zustand state updates must live in actions files.
+- When updating nested Zustand state (especially config-like objects), use `zustand/middleware/immer`; do not reintroduce deep `...state` spread chains for nested updates.
+- Components must consume Zustand state through auto-generated selectors (for example `useAppStore.use.appConfig()`), not by destructuring the whole store or writing ad-hoc hook selectors in components.
 - Renderer-side shared constants (for example responsive breakpoints, UI timing values, fixed dimensions, thresholds, and repeated literal values used across components) should be centralized in `src/renderer/utils/consts.ts` instead of being hardcoded inline in components. When a new renderer constant may be reused or affects shared behavior, add it there first.
 - If a renderer → main request mutates persisted config/state without using `saveConfig`, call `notifyAppConfigUpdated()` in main to inform renderers.
 - Prefer enums over union types for discrete value sets (e.g., encryption methods). Avoid introducing new string literal union types.

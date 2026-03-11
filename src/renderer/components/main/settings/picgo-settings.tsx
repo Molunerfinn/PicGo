@@ -3,7 +3,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router"
 import { toast } from "sonner"
 
 import { isMacOS } from "@/lib/platform"
-import { useAppStore } from "@/store"
+import { appActions, useAppStore, useSettingsStore } from "@/store"
 import i18n from "@/i18n"
 import { SettingsPanel } from "./settings-panel"
 import { SettingsSidebar } from "./settings-sidebar"
@@ -34,24 +34,20 @@ export function PicGoSettings() {
   const navigate = useNavigate()
   const search = useSearch({ from: "/main/settings/settings" }) as SettingsRouteSearch
 
-  const providers = useAppStore((state) => state.providers)
-  const settingsConfig = useAppStore(
-    (state) => state.appConfig?.settings ?? defaultSettingsConfig
-  )
-  const settingsVersion = useAppStore((state) => state.settingsVersion)
-  const settingsPage = useAppStore((state) => state.settingsPage)
-  const ensureHydrated = useAppStore((state) => state.ensureHydrated)
-  const ensureSettingsHydrated = useAppStore((state) => state.ensureSettingsHydrated)
-  const setSettingsSearchValue = useAppStore((state) => state.setSettingsSearchValue)
+  const providers = useAppStore.use.providers()
+  const appConfig = useAppStore.use.appConfig()
+  const settingsSearchValue = useSettingsStore.use.searchValue()
+  const settingsConfig = appConfig?.settings ?? defaultSettingsConfig
+  const picBedProxy = appConfig?.picBed.proxy ?? ""
 
   const queriedSection = search.section
   const selectedSection = resolveSettingsSection(queriedSection)
 
-  const searchItems = buildSettingsSearchItems(settingsConfig, providers)
+  const searchItems = buildSettingsSearchItems(settingsConfig, providers, picBedProxy)
   const { matchedSections, matchedItemIds, hasQuery } = filterSettingsSectionsBySearch(
     allSettingsSections,
     searchItems,
-    settingsPage.searchValue
+    settingsSearchValue
   )
 
   useEffect(() => {
@@ -59,8 +55,8 @@ export function PicGoSettings() {
 
     async function bootstrap() {
       try {
-        await ensureHydrated()
-        await ensureSettingsHydrated()
+        await appActions.ensureHydrated()
+        await appActions.ensureSettingsHydrated()
       } catch (error) {
         if (!isDisposed) {
           toast.error(resolveErrorMessage(error, "Failed"))
@@ -73,7 +69,7 @@ export function PicGoSettings() {
     return () => {
       isDisposed = true
     }
-  }, [ensureHydrated, ensureSettingsHydrated])
+  }, [])
 
   useEffect(() => {
     if (isValidSettingsSection(queriedSection)) {
@@ -132,12 +128,10 @@ export function PicGoSettings() {
     <>
       <SettingsSidebar
         selectedSection={selectedSection}
-        searchValue={settingsPage.searchValue}
         matchedSections={matchedSections}
         matchedItemIds={matchedItemIds}
         isAdvancedRoute={false}
         activeAdvancedRoute={null}
-        onSearchValueChange={setSettingsSearchValue}
         onSelectSection={handleSelectSection}
         onNavigateRoute={(to) => navigate({ to })}
       />
@@ -146,12 +140,8 @@ export function PicGoSettings() {
         selectedSection={selectedSection}
         hasSearch={hasQuery}
         matchedItemIds={matchedItemIds}
-        settingsConfig={settingsConfig}
-        settingsVersion={settingsVersion}
-        providers={providers}
         isMac={isMacOS()}
         onNavigateUrlRewrite={() => navigate({ to: "/main/settings/url-rewrite" })}
-        onClearSearch={() => setSettingsSearchValue("")}
       />
     </>
   )

@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -18,8 +19,8 @@ import {
   settingLogLevel,
   toggleLogLevelDraft,
   type SettingLogLevel,
-  type SettingsConfigState,
 } from "./utils"
+import { useSettingsSave } from "./use-settings-save"
 
 interface SettingsLogDialogProps {
   open: boolean
@@ -28,10 +29,6 @@ interface SettingsLogDialogProps {
   logSizeDraft: string
   onLogLevelDraftChange: (nextLogLevel: string[]) => void
   onLogSizeDraftChange: (nextLogSize: string) => void
-  onSaveConfig: (
-    path: string | Partial<SettingsConfigState>,
-    value?: unknown
-  ) => Promise<boolean>
 }
 
 export function SettingsLogDialog({
@@ -41,9 +38,9 @@ export function SettingsLogDialog({
   logSizeDraft,
   onLogLevelDraftChange,
   onLogSizeDraftChange,
-  onSaveConfig,
 }: SettingsLogDialogProps) {
   const { t } = useTranslation()
+  const saveSettingsConfig = useSettingsSave()
 
   const logLevelOptions: Array<{ id: SettingLogLevel; label: string }> = [
     { id: settingLogLevel.All, label: t("SETTINGS_LOG_LEVEL_ALL") },
@@ -55,7 +52,12 @@ export function SettingsLogDialog({
   ]
 
   const handleConfirm = async () => {
-    const isSaved = await saveLogSettingsConfig(onSaveConfig, {
+    if (logLevelDraft.length === 0) {
+      toast.error(t("TIPS_PLEASE_CHOOSE_LOG_LEVEL"))
+      return
+    }
+
+    const isSaved = await saveLogSettingsConfig(saveSettingsConfig, {
       logLevel: logLevelDraft,
       logFileSizeLimit: logSizeDraft,
     })

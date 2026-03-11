@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/input-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
+import { settingsStoreActions, useSettingsStore } from "@/store"
 import {
   filterSettingsNavItemsBySearch,
   settingsNavItemKind,
@@ -18,28 +19,25 @@ import {
 
 interface SettingsSidebarProps {
   selectedSection: SettingsSectionId
-  searchValue: string
   matchedSections: SettingsSectionId[]
   matchedItemIds: Set<string>
   isAdvancedRoute: boolean
   activeAdvancedRoute: "shortcuts" | "url-rewrite" | null
-  onSearchValueChange: (value: string) => void
   onSelectSection: (section: SettingsSectionId) => void
   onNavigateRoute: (to: "/main/settings/shortcuts") => void
 }
 
 export function SettingsSidebar({
   selectedSection,
-  searchValue,
   matchedSections,
   matchedItemIds,
   isAdvancedRoute,
   activeAdvancedRoute,
-  onSearchValueChange,
   onSelectSection,
   onNavigateRoute,
 }: SettingsSidebarProps) {
   const { t } = useTranslation()
+  const searchValue = useSettingsStore.use.searchValue()
 
   const resolveSectionLabel = (sectionId: SettingsSectionId) => {
     if (sectionId === settingsSectionId.General) {
@@ -78,7 +76,7 @@ export function SettingsSidebar({
           </InputGroupAddon>
           <InputGroupInput
             value={searchValue}
-            onChange={(event) => onSearchValueChange(event.target.value)}
+            onChange={(event) => settingsStoreActions.setSearchValue(event.target.value)}
             placeholder={t("SEARCH")}
             aria-label={t("SEARCH")}
           />
@@ -88,7 +86,7 @@ export function SettingsSidebar({
                 size="icon-xs"
                 variant="ghost"
                 className="text-muted-foreground transition-all duration-300 hover:bg-(--app-provider-sidebar-item-hover-bg) hover:text-(--app-provider-sidebar-item-active-color)"
-                onClick={() => onSearchValueChange("")}
+                onClick={() => settingsStoreActions.setSearchValue("")}
                 title={t("GALLERY_CLEAR_SELECTION")}
                 aria-label={t("GALLERY_CLEAR_SELECTION")}
               >

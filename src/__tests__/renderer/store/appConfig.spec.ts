@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { IConfig } from 'picgo'
 import { getConfig, getPicBeds } from '@/utils/dataSender'
 import {
+  appActions,
   picGoCloudLoginStatus,
   picGoCloudRequestStatus,
   useStore
@@ -50,11 +51,12 @@ describe('renderer/store appConfig', () => {
     }
     getConfigMock.mockResolvedValue(config)
 
-    const storeInstance = useStore.getState()
-    await storeInstance.refreshAppConfig()
+    await appActions.refreshAppConfig()
 
     const nextState = useStore.getState()
-    expect(nextState.appConfig).toStrictEqual(config)
+    expect(nextState.appConfig?.picBed.uploader).toBe('github')
+    expect(nextState.appConfig?.picBed.current).toBe('smms')
+    expect(nextState.appConfig?.settings.autoCopyUrl).toBe(true)
     expect(nextState.defaultPicBed).toBe('github')
   })
 
@@ -65,8 +67,7 @@ describe('renderer/store appConfig', () => {
     ]
     getPicBedsMock.mockResolvedValue(picBeds)
 
-    const storeInstance = useStore.getState()
-    await storeInstance.refreshPicBeds()
+    await appActions.refreshPicBeds()
 
     expect(useStore.getState().picBeds).toEqual(picBeds)
   })

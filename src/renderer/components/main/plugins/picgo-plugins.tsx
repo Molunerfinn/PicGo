@@ -3,7 +3,7 @@ import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
 
 import { openUrl } from "@/lib/utils"
-import { useAppStore } from "@/store"
+import { appActions, pluginStoreActions, useAppStore, usePluginStore } from "@/store"
 import { PluginDetailPanel } from "./plugin-detail-panel"
 import { PluginSidebar, type PluginSidebarListItem } from "./plugin-sidebar"
 import {
@@ -41,25 +41,12 @@ function resolveFolderPathFromFiles(files: FileList) {
 export function PicGoPlugins() {
   const { t } = useTranslation()
 
-  const ensureHydrated = useAppStore((state) => state.ensureHydrated)
-  const appConfig = useAppStore((state) => state.appConfig)
-  const pluginsInstalled = useAppStore((state) => state.pluginsInstalled)
-  const pluginPage = useAppStore((state) => state.pluginPage)
-  const setPluginSearchValue = useAppStore((state) => state.setPluginSearchValue)
-  const searchPlugins = useAppStore((state) => state.searchPlugins)
-  const installPlugin = useAppStore((state) => state.installPlugin)
-  const setPluginEnabled = useAppStore((state) => state.setPluginEnabled)
-  const updatePlugin = useAppStore((state) => state.updatePlugin)
-  const uninstallPlugin = useAppStore((state) => state.uninstallPlugin)
-  const savePluginConfig = useAppStore((state) => state.savePluginConfig)
-  const togglePluginTransformer = useAppStore(
-    (state) => state.togglePluginTransformer
-  )
-  const runPluginGuiMenuAction = useAppStore(
-    (state) => state.runPluginGuiMenuAction
-  )
-  const fetchPluginReadme = useAppStore((state) => state.fetchPluginReadme)
-  const importLocalPlugin = useAppStore((state) => state.importLocalPlugin)
+  const appConfig = useAppStore.use.appConfig()
+  const pluginsInstalled = useAppStore.use.pluginsInstalled()
+  const pluginSearchValue = usePluginStore.use.searchValue()
+  const pluginSearchResults = usePluginStore.use.searchResults()
+  const isMutatingByPlugin = usePluginStore.use.isMutatingByPlugin()
+  const readmeByPlugin = usePluginStore.use.readmeByPlugin()
 
   const [selectedPluginFullName, setSelectedPluginFullName] = useState<string | null>(
     null
@@ -68,13 +55,13 @@ export function PicGoPlugins() {
   const pendingTabOnSelectionRef = useRef<PluginDetailTab | null>(null)
   const importInputRef = useRef<HTMLInputElement | null>(null)
 
-  const isSearchMode = pluginPage.searchValue.trim().length > 0
+  const isSearchMode = pluginSearchValue.trim().length > 0
   const installedPluginMap = new Map(
     pluginsInstalled.map((plugin) => [plugin.fullName, plugin] as const)
   )
 
   const listItems: PluginSidebarListItem[] = isSearchMode
-    ? pluginPage.searchResults.map((item) => ({
+    ? pluginSearchResults.map((item) => ({
       fullName: item.fullName,
       name: item.name,
       description: item.description,
@@ -100,11 +87,10 @@ export function PicGoPlugins() {
   const activeListItem = resolveActivePlugin(listItems, selectedPluginFullName)
   const activePlugin: PluginInstalledItem | null = activeListItem?.installedPlugin ?? null
   const activeReadmeState = resolveReadmeState(
-    pluginPage.readmeByPlugin,
+    readmeByPlugin,
     activeListItem?.fullName
   )
   const availableTabs = resolvePluginDetailTabs(activePlugin)
-  const currentTransformer = appConfig?.picBed.transformer ?? "path"
 
   // Hydrate initial plugin/provider/app config state when this page mounts.
   useEffect(() => {
@@ -112,7 +98,7 @@ export function PicGoPlugins() {
 
     async function bootstrap() {
       try {
-        await ensureHydrated()
+        await appActions.ensureHydrated()
       } catch (error) {
         if (!isDisposed) {
           toast.error(resolveErrorMessage(error, t("FAILED")))
@@ -125,7 +111,7 @@ export function PicGoPlugins() {
     return () => {
       isDisposed = true
     }
-  }, [ensureHydrated, t])
+  }, [t])
 
   // Configure the hidden file input to allow folder selection for local plugin import.
   useEffect(() => {
@@ -141,15 +127,15 @@ export function PicGoPlugins() {
 
   // Debounce npm search requests while the search keyword changes.
   useEffect(() => {
-    const query = pluginPage.searchValue
+    const query = pluginSearchValue
     const timer = window.setTimeout(() => {
-      searchPlugins(query)
+      pluginStoreActions.searchPlugins(query)
     }, 180)
 
     return () => {
       window.clearTimeout(timer)
     }
-  }, [pluginPage.searchValue, searchPlugins])
+  }, [pluginSearchValue])
 
   // Keep selected plugin in sync with the current sidebar list result set.
   useEffect(() => {
@@ -187,14 +173,14 @@ export function PicGoPlugins() {
       return
     }
 
-    const readmeState = pluginPage.readmeByPlugin[fullName]
+    const readmeState = readmeByPlugin[fullName]
 
     if (readmeState && readmeState.status !== pluginReadmeStatus.Idle) {
       return
     }
 
-    fetchPluginReadme(fullName)
-  }, [activeListItem?.fullName, fetchPluginReadme, pluginPage.readmeByPlugin])
+    pluginStoreActions.fetchPluginReadme(fullName)
+  }, [activeListItem?.fullName, readmeByPlugin])
 
   // Guarantee the current active tab is always valid for the selected plugin.
   useEffect(() => {
@@ -207,7 +193,7 @@ export function PicGoPlugins() {
 
   const handleInstallPlugin = async (fullName: string) => {
     try {
-      await installPlugin(fullName)
+      await pluginStoreActions.installPlugin(fullName)
       toast.success(t("PLUGIN_INSTALL_SUCCEED"))
       setSelectedPluginFullName(fullName)
     } catch (error) {
@@ -217,7 +203,7 @@ export function PicGoPlugins() {
 
   const handleSetPluginEnabled = async (fullName: string, enabled: boolean) => {
     try {
-      await setPluginEnabled(fullName, enabled)
+      await pluginStoreActions.setPluginEnabled(fullName, enabled)
       toast.success(t("SUCCESS"))
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))
@@ -226,7 +212,7 @@ export function PicGoPlugins() {
 
   const handleUpdatePlugin = async (fullName: string) => {
     try {
-      await updatePlugin(fullName)
+      await pluginStoreActions.updatePlugin(fullName)
       toast.success(t("PLUGIN_UPDATE_SUCCEED"))
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))
@@ -235,7 +221,7 @@ export function PicGoPlugins() {
 
   const handleUninstallPlugin = async (fullName: string) => {
     try {
-      await uninstallPlugin(fullName)
+      await pluginStoreActions.uninstallPlugin(fullName)
       toast.success(t("PLUGIN_UNINSTALL_SUCCEED"))
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))
@@ -295,13 +281,16 @@ export function PicGoPlugins() {
 
     try {
       if (action.kind === pluginGearActionKind.ToggleTransformer) {
-        await togglePluginTransformer(plugin.fullName)
+        await pluginStoreActions.togglePluginTransformer(plugin.fullName)
         toast.success(t("SUCCESS"))
         return
       }
 
       if (action.kind === pluginGearActionKind.GuiMenu && action.guiMenuLabel) {
-        const result = await runPluginGuiMenuAction(plugin.fullName, action.guiMenuLabel)
+        const result = await pluginStoreActions.runPluginGuiMenuAction(
+          plugin.fullName,
+          action.guiMenuLabel
+        )
         toast.success(result.message)
       }
     } catch (error) {
@@ -315,7 +304,7 @@ export function PicGoPlugins() {
     values: Record<string, unknown>
   ) => {
     try {
-      await savePluginConfig(fullName, tab, values)
+      await pluginStoreActions.savePluginConfig(fullName, tab, values)
       toast.success(t("SUCCESS"))
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))
@@ -340,7 +329,7 @@ export function PicGoPlugins() {
     }
 
     try {
-      const result = await importLocalPlugin(folderPath)
+      const result = await pluginStoreActions.importLocalPlugin(folderPath)
       toast.success(`${t("PLUGIN_IMPORT_SUCCEED")}: ${result.path}`)
       setSelectedPluginFullName(result.installedPlugin.fullName)
     } catch (error) {
@@ -363,11 +352,6 @@ export function PicGoPlugins() {
       <PluginSidebar
         items={listItems}
         selectedPluginFullName={selectedPluginFullName}
-        searchValue={pluginPage.searchValue}
-        isImportingLocal={pluginPage.isImportingLocal}
-        currentTransformer={currentTransformer}
-        loadingMap={pluginPage.isMutatingByPlugin}
-        onSearchValueChange={setPluginSearchValue}
         onSelectPlugin={setSelectedPluginFullName}
         onInstallPlugin={handleInstallPlugin}
         onOpenAwesomeList={handleOpenAwesomeList}
@@ -397,7 +381,7 @@ export function PicGoPlugins() {
         readmeState={activeReadmeState}
         isMutating={
           activeListItem
-            ? Boolean(pluginPage.isMutatingByPlugin[activeListItem.fullName])
+            ? Boolean(isMutatingByPlugin[activeListItem.fullName])
             : false
         }
         onTabChange={setActiveTab}

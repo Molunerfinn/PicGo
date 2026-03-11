@@ -7,19 +7,12 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group"
+import { providerStoreActions, useProviderStore } from "@/store"
 
-interface ProviderSidebarSearchProps {
-  searchValue: string
-  hasSearch: boolean
-  onSearchValueChange: (value: string) => void
-}
-
-export function ProviderSidebarSearch({
-  searchValue,
-  hasSearch,
-  onSearchValueChange,
-}: ProviderSidebarSearchProps) {
+export function ProviderSidebarSearch() {
   const { t } = useTranslation()
+  const searchValue = useProviderStore.use.searchValue()
+  const hasSearch = searchValue.trim().length > 0
 
   return (
     <InputGroup className="bg-background/70">
@@ -28,7 +21,7 @@ export function ProviderSidebarSearch({
       </InputGroupAddon>
       <InputGroupInput
         value={searchValue}
-        onChange={(event) => onSearchValueChange(event.target.value)}
+        onChange={(event) => providerStoreActions.setSearchValue(event.target.value)}
         placeholder={t("SEARCH")}
         aria-label={t("SEARCH")}
       />
@@ -38,7 +31,7 @@ export function ProviderSidebarSearch({
             size="icon-xs"
             variant="ghost"
             className="text-muted-foreground transition-all duration-300 hover:bg-(--app-provider-sidebar-item-hover-bg) hover:text-(--app-provider-sidebar-item-active-color)"
-            onClick={() => onSearchValueChange("")}
+            onClick={() => providerStoreActions.setSearchValue("")}
             title={t("GALLERY_CLEAR_SELECTION")}
             aria-label={t("GALLERY_CLEAR_SELECTION")}
           >

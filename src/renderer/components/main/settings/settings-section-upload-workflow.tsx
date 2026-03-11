@@ -3,30 +3,28 @@ import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
+import { useAppStore } from "@/store"
 import { SettingsCustomLinkDialog } from "./settings-dialog-custom-link"
 import {
   settingsCustomLinkFormatExampleValue,
   useSettingsExampleText,
 } from "./settings-example-text"
 import { SettingsRow } from "./settings-row"
-import type { SettingsConfigState } from "./utils"
+import { useSettingsSave } from "./use-settings-save"
+import { defaultSettingsConfig } from "./utils"
 
 interface SettingsSectionUploadWorkflowProps {
-  settingsConfig: SettingsConfigState
   isItemVisible: (itemId: string) => boolean
-  onSaveConfig: (
-    path: string | Partial<SettingsConfigState>,
-    value?: unknown
-  ) => Promise<boolean>
 }
 
 export function SettingsSectionUploadWorkflow({
-  settingsConfig,
   isItemVisible,
-  onSaveConfig,
 }: SettingsSectionUploadWorkflowProps) {
   const { t } = useTranslation()
+  const appConfig = useAppStore.use.appConfig()
+  const settingsConfig = appConfig?.settings ?? defaultSettingsConfig
   const formatSettingsExampleText = useSettingsExampleText()
+  const saveSettingsConfig = useSettingsSave()
   const customLinkFormatExample = formatSettingsExampleText(
     settingsCustomLinkFormatExampleValue
   )
@@ -43,7 +41,7 @@ export function SettingsSectionUploadWorkflow({
             <Switch
               checked={settingsConfig.rename}
               onCheckedChange={(checked) => {
-                onSaveConfig("settings.rename", checked)
+                saveSettingsConfig("settings.rename", checked)
               }}
             />
           }
@@ -55,7 +53,7 @@ export function SettingsSectionUploadWorkflow({
             <Switch
               checked={settingsConfig.autoRename}
               onCheckedChange={(checked) => {
-                onSaveConfig("settings.autoRename", checked)
+                saveSettingsConfig("settings.autoRename", checked)
               }}
             />
           }
@@ -67,7 +65,7 @@ export function SettingsSectionUploadWorkflow({
             <Switch
               checked={settingsConfig.autoCopyUrl}
               onCheckedChange={(checked) => {
-                onSaveConfig("settings.autoCopyUrl", checked)
+                saveSettingsConfig("settings.autoCopyUrl", checked)
               }}
             />
           }
@@ -80,7 +78,7 @@ export function SettingsSectionUploadWorkflow({
             <Switch
               checked={settingsConfig.useBuiltinClipboard}
               onCheckedChange={(checked) => {
-                onSaveConfig("settings.useBuiltinClipboard", checked)
+                saveSettingsConfig("settings.useBuiltinClipboard", checked)
               }}
             />
           }
@@ -92,7 +90,7 @@ export function SettingsSectionUploadWorkflow({
             <Switch
               checked={settingsConfig.encodeOutputURL}
               onCheckedChange={(checked) => {
-                onSaveConfig("settings.encodeOutputURL", checked)
+                saveSettingsConfig("settings.encodeOutputURL", checked)
               }}
             />
           }
@@ -104,7 +102,7 @@ export function SettingsSectionUploadWorkflow({
             <Switch
               checked={settingsConfig.uploadNotification}
               onCheckedChange={(checked) => {
-                onSaveConfig("settings.uploadNotification", checked)
+                saveSettingsConfig("settings.uploadNotification", checked)
               }}
             />
           }
@@ -116,7 +114,7 @@ export function SettingsSectionUploadWorkflow({
             <Switch
               checked={settingsConfig.notificationSound}
               onCheckedChange={(checked) => {
-                onSaveConfig("settings.notificationSound", checked)
+                saveSettingsConfig("settings.notificationSound", checked)
               }}
             />
           }
@@ -145,9 +143,6 @@ export function SettingsSectionUploadWorkflow({
         onOpenChange={setCustomLinkOpen}
         customLinkDraft={customLinkDraft}
         onCustomLinkDraftChange={setCustomLinkDraft}
-        onSaveCustomLink={async (nextCustomLink) => {
-          return onSaveConfig("settings.customLink", nextCustomLink)
-        }}
       />
     </>
   )

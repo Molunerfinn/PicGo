@@ -1,19 +1,15 @@
-import { openFile, openUrl } from "@/lib/utils"
-import { settingsMockApi } from "./settings-mock"
+import { settingsAdapter } from "@/adapters/settings"
 
 export async function openSettingsConfigFile() {
-  const result = await settingsMockApi.openConfigFile()
-  await openFile(result.path)
-  return result.path
+  settingsAdapter.openConfigFile()
+  return "data.json"
 }
 
 export async function openSettingsLogFile() {
-  const result = await settingsMockApi.openLogFile()
-  await openFile(result.path)
-  return result.path
+  settingsAdapter.openLogFile()
+  return "picgo.log"
 }
 
 export async function openSettingsExternalUrl(url: string) {
-  await settingsMockApi.openExternalUrl(url)
-  await openUrl(url)
+  settingsAdapter.openExternalUrl(url)
 }

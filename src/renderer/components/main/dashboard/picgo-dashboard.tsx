@@ -29,7 +29,7 @@ import {
 import { Sheet, SheetTrigger } from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
-import { useAppStore } from '@/store'
+import { appActions, settingsStoreActions, useAppStore } from '@/store'
 import { DESKTOP_HISTORY_PANEL_BREAKPOINT } from '@/utils/consts'
 import { UploaderSwitcher } from './uploader-switcher'
 import { buildVisibleProviderOptions, resolveCurrentSwitcherValue } from './utils'
@@ -111,12 +111,8 @@ export function PicGoDashboard () {
     uploadUrls
   } = useDashboardUpload()
 
-  const ensureHydrated = useAppStore((state) => state.ensureHydrated)
-  const providers = useAppStore((state) => state.providers)
-  const appConfig = useAppStore((state) => state.appConfig)
-  const refreshAppConfig = useAppStore((state) => state.refreshAppConfig)
-  const refreshPicBeds = useAppStore((state) => state.refreshPicBeds)
-  const saveSettingsConfig = useAppStore((state) => state.saveSettingsConfig)
+  const providers = useAppStore.use.providers()
+  const appConfig = useAppStore.use.appConfig()
 
   const providerOptions = buildVisibleProviderOptions(providers, appConfig)
   const currentSelection = resolveCurrentSwitcherValue(providerOptions, appConfig)
@@ -126,22 +122,19 @@ export function PicGoDashboard () {
   useEffect(() => {
     async function hydrateDashboard () {
       try {
-        await ensureHydrated()
+        await appActions.ensureHydrated()
       } catch (error) {
         console.error(error)
       }
     }
 
     hydrateDashboard()
-  }, [ensureHydrated])
+  }, [])
 
   useEffect(() => {
     const unsubscribe = dashboardAdapter.subscribeToSyncPicBed(async () => {
       try {
-        await Promise.all([
-          refreshAppConfig(),
-          refreshPicBeds()
-        ])
+        await Promise.all([appActions.refreshAppConfig(), appActions.refreshPicBeds()])
       } catch (error) {
         console.error(error)
       }
@@ -150,7 +143,7 @@ export function PicGoDashboard () {
     return () => {
       unsubscribe()
     }
-  }, [refreshAppConfig, refreshPicBeds])
+  }, [])
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -177,7 +170,7 @@ export function PicGoDashboard () {
 
   const handlePasteStyleChange = async (nextFormat: LinkFormat) => {
     try {
-      await saveSettingsConfig({
+      await settingsStoreActions.saveSettingsConfig({
         pasteStyle: resolvePersistedPasteStyle(nextFormat)
       })
     } catch (error) {

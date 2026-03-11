@@ -16,13 +16,13 @@ import {
   settingsCustomLinkFormatExampleValue,
   useSettingsExampleText,
 } from "./settings-example-text"
+import { useSettingsSave } from "./use-settings-save"
 
 interface SettingsCustomLinkDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   customLinkDraft: string
   onCustomLinkDraftChange: (nextCustomLink: string) => void
-  onSaveCustomLink: (nextCustomLink: string) => Promise<boolean>
 }
 
 export function SettingsCustomLinkDialog({
@@ -30,10 +30,10 @@ export function SettingsCustomLinkDialog({
   onOpenChange,
   customLinkDraft,
   onCustomLinkDraftChange,
-  onSaveCustomLink,
 }: SettingsCustomLinkDialogProps) {
   const { t } = useTranslation()
   const formatSettingsExampleText = useSettingsExampleText()
+  const saveSettingsConfig = useSettingsSave()
 
   const handleConfirm = async () => {
     const isValid =
@@ -42,11 +42,11 @@ export function SettingsCustomLinkDialog({
       customLinkDraft.includes("$extName")
 
     if (!isValid) {
-      toast.error(t("FAILED"))
+      toast.error(t("TIPS_MUST_CONTAINS_URL"))
       return
     }
 
-    const isSaved = await onSaveCustomLink(customLinkDraft)
+    const isSaved = await saveSettingsConfig("settings.customLink", customLinkDraft)
     if (isSaved) {
       onOpenChange(false)
     }

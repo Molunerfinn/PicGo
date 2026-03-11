@@ -18,40 +18,35 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Slider } from "@/components/ui/slider"
 import { cn } from "@/lib/utils"
+import { galleryStoreActions, useGalleryStore } from "@/store"
 import { GalleryViewMode } from "./utils"
 
 type GalleryHeaderProps = {
   activeBreadcrumb: string
-  masonryColumnCount: number
   searchValue: string
   onSearchValueChange: (value: string) => void
-  onMasonryColumnCountChange: (value: number) => Promise<void>
   onSelectAll: () => void
   onOpenInspector: () => void
   isAllSelected: boolean
   hasFilteredImages: boolean
   hasSelection: boolean
-  viewMode: GalleryViewMode
-  onViewModeChange: (mode: GalleryViewMode) => void
   onPreview: () => void
 }
 
 export function GalleryHeader({
   activeBreadcrumb,
-  masonryColumnCount,
   searchValue,
   onSearchValueChange,
-  onMasonryColumnCountChange,
   onSelectAll,
   onOpenInspector,
   isAllSelected,
   hasFilteredImages,
   hasSelection,
-  viewMode,
-  onViewModeChange,
   onPreview,
 }: GalleryHeaderProps) {
   const { t } = useTranslation()
+  const viewMode = useGalleryStore.use.viewMode()
+  const masonryColumnCount = useGalleryStore.use.masonryColumnCount()
   const sliderValue = 11 - masonryColumnCount
 
   return (
@@ -79,7 +74,7 @@ export function GalleryHeader({
                 onValueChange={async (value) => {
                   const resolvedValue = Array.isArray(value) ? value[0] : value
                   const nextValue = 11 - resolvedValue
-                  await onMasonryColumnCountChange(nextValue)
+                  await galleryStoreActions.setMasonryColumnCount(nextValue)
                 }}
               />
             </div>
@@ -140,7 +135,7 @@ export function GalleryHeader({
             <Button
               variant="ghost"
               size="icon-sm"
-              onClick={() => onViewModeChange(GalleryViewMode.Masonry)}
+              onClick={() => galleryStoreActions.setViewMode(GalleryViewMode.Masonry)}
               aria-pressed={viewMode === GalleryViewMode.Masonry}
               title={t("GALLERY_GRID_VIEW")}
               className={cn(
@@ -155,7 +150,7 @@ export function GalleryHeader({
             <Button
               variant="ghost"
               size="icon-sm"
-              onClick={() => onViewModeChange(GalleryViewMode.List)}
+              onClick={() => galleryStoreActions.setViewMode(GalleryViewMode.List)}
               aria-pressed={viewMode === GalleryViewMode.List}
               title={t("GALLERY_LIST_VIEW")}
               className={cn(

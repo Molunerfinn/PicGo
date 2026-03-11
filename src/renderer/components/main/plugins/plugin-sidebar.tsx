@@ -27,6 +27,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { pluginStoreActions, useAppStore, usePluginStore } from "@/store"
 import {
   pluginGearActionKind,
   type PluginGearAction,
@@ -49,11 +50,6 @@ export interface PluginSidebarListItem {
 interface PluginSidebarProps {
   items: PluginSidebarListItem[]
   selectedPluginFullName: string | null
-  searchValue: string
-  isImportingLocal: boolean
-  currentTransformer: string
-  loadingMap: Record<string, boolean>
-  onSearchValueChange: (value: string) => void
   onSelectPlugin: (fullName: string) => void
   onInstallPlugin: (fullName: string) => void
   onOpenAwesomeList: () => void
@@ -64,11 +60,6 @@ interface PluginSidebarProps {
 export function PluginSidebar({
   items,
   selectedPluginFullName,
-  searchValue,
-  isImportingLocal,
-  currentTransformer,
-  loadingMap,
-  onSearchValueChange,
   onSelectPlugin,
   onInstallPlugin,
   onOpenAwesomeList,
@@ -76,6 +67,11 @@ export function PluginSidebar({
   onGearAction,
 }: PluginSidebarProps) {
   const { t } = useTranslation()
+  const appConfig = useAppStore.use.appConfig()
+  const searchValue = usePluginStore.use.searchValue()
+  const isImportingLocal = usePluginStore.use.isImportingLocal()
+  const loadingMap = usePluginStore.use.isMutatingByPlugin()
+  const currentTransformer = appConfig?.picBed.transformer ?? "path"
   const normalizedSearch = searchValue.trim().toLowerCase()
   const hasSearch = normalizedSearch.length > 0
 
@@ -128,7 +124,7 @@ export function PluginSidebar({
           </InputGroupAddon>
           <InputGroupInput
             value={searchValue}
-            onChange={(event) => onSearchValueChange(event.target.value)}
+            onChange={(event) => pluginStoreActions.setSearchValue(event.target.value)}
             placeholder={t("PLUGIN_SEARCH_PLACEHOLDER")}
             aria-label={t("SEARCH")}
           />
@@ -138,7 +134,7 @@ export function PluginSidebar({
                 size="icon-xs"
                 variant="ghost"
                 className="text-muted-foreground transition-all duration-300 hover:bg-(--app-plugin-sidebar-item-hover-bg) hover:text-(--app-plugin-sidebar-item-active-color)"
-                onClick={() => onSearchValueChange("")}
+                onClick={() => pluginStoreActions.setSearchValue("")}
                 title={t("GALLERY_CLEAR_SELECTION")}
                 aria-label={t("GALLERY_CLEAR_SELECTION")}
               >

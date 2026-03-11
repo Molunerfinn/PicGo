@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 
-import type { ProviderUploaderSummary } from "@/components/main/providers/types"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { settingsStoreActions, useAppStore } from "@/store"
 import {
   Select,
   SelectContent,
@@ -12,30 +13,45 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { SettingsRow } from "./settings-row"
+import { useSettingsSave } from "./use-settings-save"
 import {
+  defaultSettingsConfig,
   settingsAppearance,
-  type SettingsConfigState,
 } from "./utils"
 
 interface SettingsSectionAppearanceProps {
-  settingsConfig: SettingsConfigState
-  providers: ProviderUploaderSummary[]
   isMac: boolean
   isItemVisible: (itemId: string) => boolean
-  onSaveConfig: (
-    path: string | Partial<SettingsConfigState>,
-    value?: unknown
-  ) => Promise<boolean>
 }
 
 export function SettingsSectionAppearance({
-  settingsConfig,
-  providers,
   isMac,
   isItemVisible,
-  onSaveConfig,
 }: SettingsSectionAppearanceProps) {
   const { t } = useTranslation()
+  const appConfig = useAppStore.use.appConfig()
+  const providers = useAppStore.use.providers()
+  const settingsConfig = appConfig?.settings ?? defaultSettingsConfig
+  const visiblePicBedNames = (appConfig?.picBed.list ?? [])
+    .filter((provider) => provider.visible)
+    .map((provider) => provider.name)
+  const saveSettingsConfig = useSettingsSave()
+
+  const handleVisibleProviderChange = async (
+    providerName: string,
+    nextChecked: boolean
+  ) => {
+    const nextNames = nextChecked
+      ? Array.from(new Set([...visiblePicBedNames, providerName]))
+      : visiblePicBedNames.filter((name) => name !== providerName)
+
+    try {
+      await settingsStoreActions.saveVisiblePicBedNames(nextNames)
+      toast.success(t("SUCCESS"))
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t("FAILED"))
+    }
+  }
 
   return (
     <div className="space-y-1">
@@ -46,7 +62,7 @@ export function SettingsSectionAppearance({
           <Select
             value={settingsConfig.appearance}
             onValueChange={(value) => {
-              onSaveConfig("settings.appearance", value)
+              saveSettingsConfig("settings.appearance", value)
             }}
           >
             <SelectTrigger className="w-44">
@@ -74,7 +90,7 @@ export function SettingsSectionAppearance({
           <Switch
             checked={settingsConfig.showDockIcon}
             onCheckedChange={(checked) => {
-              onSaveConfig("settings.showDockIcon", checked)
+              saveSettingsConfig("settings.showDockIcon", checked)
             }}
           />
         }
@@ -88,7 +104,7 @@ export function SettingsSectionAppearance({
           <Switch
             checked={settingsConfig.showMenubarIcon}
             onCheckedChange={(checked) => {
-              onSaveConfig("settings.showMenubarIcon", checked)
+              saveSettingsConfig("settings.showMenubarIcon", checked)
             }}
           />
         }
@@ -100,8 +116,11 @@ export function SettingsSectionAppearance({
         control={
           <Switch
             checked={settingsConfig.miniWindowOnTop}
-            onCheckedChange={(checked) => {
-              onSaveConfig("settings.miniWindowOnTop", checked)
+            onCheckedChange={async (checked) => {
+              const isSaved = await saveSettingsConfig("settings.miniWindowOnTop", checked)
+              if (isSaved) {
+                toast.info(t("TIPS_NEED_RELOAD"))
+              }
             }}
           />
         }
@@ -116,7 +135,7 @@ export function SettingsSectionAppearance({
         control={
           <div className="grid w-full min-w-0 gap-2 min-[1200px]:grid-cols-2">
             {providers.map((provider) => {
-              const checked = settingsConfig.showPicBedList.includes(provider.name)
+              const checked = visiblePicBedNames.includes(provider.name)
 
               return (
                 <Label
@@ -125,14 +144,11 @@ export function SettingsSectionAppearance({
                 >
                   <Checkbox
                     checked={checked}
-                    onCheckedChange={(nextChecked) => {
-                      const nextNames = nextChecked
-                        ? [...settingsConfig.showPicBedList, provider.name]
-                        : settingsConfig.showPicBedList.filter(
-                          (name) => name !== provider.name
-                        )
-
-                      onSaveConfig("picBed.list", nextNames)
+                    onCheckedChange={async (nextChecked) => {
+                      await handleVisibleProviderChange(
+                        provider.name,
+                        nextChecked === true
+                      )
                     }}
                   />
                   <span

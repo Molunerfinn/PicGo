@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { SettingsRow } from "./settings-row"
-import type { SettingsConfigState } from "./utils"
+import { useSettingsSave } from "./use-settings-save"
 
 interface SettingsServerDialogProps {
   open: boolean
@@ -24,10 +24,6 @@ interface SettingsServerDialogProps {
   onServerHostDraftChange: (value: string) => void
   onServerPortDraftChange: (value: string) => void
   onServerEnableDraftChange: (value: boolean) => void
-  onSaveConfig: (
-    path: string | Partial<SettingsConfigState>,
-    value?: unknown
-  ) => Promise<boolean>
 }
 
 export function SettingsServerDialog({
@@ -39,9 +35,9 @@ export function SettingsServerDialog({
   onServerHostDraftChange,
   onServerPortDraftChange,
   onServerEnableDraftChange,
-  onSaveConfig,
 }: SettingsServerDialogProps) {
   const { t } = useTranslation()
+  const saveSettingsConfig = useSettingsSave()
 
   const handleConfirm = async () => {
     const port = Number(serverPortDraft)
@@ -51,7 +47,7 @@ export function SettingsServerDialog({
       enable: serverEnableDraft,
     }
 
-    const isSaved = await onSaveConfig("settings.server", nextServer)
+    const isSaved = await saveSettingsConfig("settings.server", nextServer)
     if (isSaved) {
       onOpenChange(false)
     }

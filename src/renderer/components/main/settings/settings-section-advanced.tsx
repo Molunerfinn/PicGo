@@ -3,22 +3,18 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
+import { useAppStore } from "@/store"
 import {
   openSettingsConfigFile,
   openSettingsLogFile,
 } from "./side-effect-utils"
 import { SettingsLogDialog } from "./settings-dialog-log"
 import { SettingsRow } from "./settings-row"
-import type { SettingsConfigState } from "./utils"
+import { defaultSettingsConfig } from "./utils"
 
 interface SettingsSectionAdvancedProps {
-  settingsConfig: SettingsConfigState
   isItemVisible: (itemId: string) => boolean
   isAnyItemVisible: (itemIds: string[]) => boolean
-  onSaveConfig: (
-    path: string | Partial<SettingsConfigState>,
-    value?: unknown
-  ) => Promise<boolean>
   onNavigateUrlRewrite: () => void
 }
 
@@ -31,13 +27,13 @@ function resolveErrorMessage(error: unknown, fallback: string) {
 }
 
 export function SettingsSectionAdvanced({
-  settingsConfig,
   isItemVisible,
   isAnyItemVisible,
-  onSaveConfig,
   onNavigateUrlRewrite,
 }: SettingsSectionAdvancedProps) {
   const { t } = useTranslation()
+  const appConfig = useAppStore.use.appConfig()
+  const settingsConfig = appConfig?.settings ?? defaultSettingsConfig
   const [isLogDialogOpen, setLogDialogOpen] = useState(false)
   const [logLevelDraft, setLogLevelDraft] = useState(settingsConfig.logLevel)
   const [logSizeDraft, setLogSizeDraft] = useState(String(settingsConfig.logFileSizeLimit))
@@ -124,7 +120,6 @@ export function SettingsSectionAdvanced({
         logSizeDraft={logSizeDraft}
         onLogLevelDraftChange={setLogLevelDraft}
         onLogSizeDraftChange={setLogSizeDraft}
-        onSaveConfig={onSaveConfig}
       />
     </>
   )

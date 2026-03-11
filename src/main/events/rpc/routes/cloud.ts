@@ -292,7 +292,9 @@ const loginWithTimeout = async (): Promise<void> => {
   } finally {
     if (timeoutId) clearTimeout(timeoutId)
     // Avoid unhandled rejection when timeout disposes the core login flow.
-    loginPromise.catch(() => {})
+    loginPromise.catch((error) => {
+      picgo.log.warn(error instanceof Error ? error.message : String(error))
+    })
   }
 }
 

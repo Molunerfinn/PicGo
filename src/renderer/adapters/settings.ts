@@ -1,49 +1,8 @@
 import { ipcRenderer } from 'electron'
-import { toast } from 'sonner'
-import type { IConfig } from 'picgo'
-import { PICGO_OPEN_FILE, TOGGLE_SHORTKEY_MODIFIED_MODE, GET_PICBEDS } from '#/events/constants'
-import { IStartupMode, IRPCActionType } from '~/universal/types/enum'
+import { GET_PICBEDS, OPEN_URL, PICGO_OPEN_FILE, TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
+import { IRPCActionType } from '~/universal/types/enum'
 import { appConfigAdapter } from './app-config'
 import { getConfig, invokeRPC, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
-
-export function buildSettingsForm (config: IConfig | null): ISettingForm {
-  const settings = config?.settings || {}
-  const picBed = (config?.picBed || {}) as IStringKeyMap
-  const picBedList = Array.isArray(picBed.list) ? picBed.list as IPicBedType[] : []
-
-  return {
-    showUpdateTip: settings.showUpdateTip || false,
-    showPicBedList: picBedList.filter((item) => item.visible).map((item) => item.name),
-    autoStart: settings.autoStart || false,
-    rename: settings.rename || false,
-    autoRename: settings.autoRename || false,
-    uploadNotification: settings.uploadNotification || false,
-    notificationSound: settings.notificationSound === undefined ? true : settings.notificationSound,
-    miniWindowOnTop: settings.miniWindowOnTop || false,
-    logLevel: Array.isArray(settings.logLevel)
-      ? [...settings.logLevel]
-      : settings.logLevel
-        ? [settings.logLevel]
-        : ['all'],
-    autoCopyUrl: settings.autoCopyUrl === undefined ? true : settings.autoCopyUrl,
-    checkBetaUpdate: settings.checkBetaUpdate === undefined ? true : settings.checkBetaUpdate,
-    useBuiltinClipboard: settings.useBuiltinClipboard === undefined ? false : settings.useBuiltinClipboard,
-    language: settings.language ?? 'en',
-    logFileSizeLimit: Number(settings.logFileSizeLimit ?? 10) || 10,
-    encodeOutputURL: settings.encodeOutputURL === undefined ? false : settings.encodeOutputURL,
-    showDockIcon: settings.showDockIcon === undefined ? true : settings.showDockIcon,
-    showMenubarIcon: settings.showMenubarIcon === undefined ? true : settings.showMenubarIcon,
-    customLink: settings.customLink || '$url',
-    npmProxy: settings.npmProxy || '',
-    npmRegistry: settings.npmRegistry || '',
-    server: {
-      port: Number(settings.server?.port ?? 36677) || 36677,
-      host: settings.server?.host || '127.0.0.1',
-      enable: settings.server?.enable ?? true
-    },
-    startupMode: settings.startupMode || IStartupMode.HIDE
-  }
-}
 
 export const settingsAdapter = {
   async savePatch (patch: IStringKeyMap) {
@@ -63,6 +22,12 @@ export const settingsAdapter = {
   },
   openConfigFile () {
     sendToMain(PICGO_OPEN_FILE, 'data.json')
+  },
+  openLogFile () {
+    sendToMain(PICGO_OPEN_FILE, 'picgo.log')
+  },
+  openExternalUrl (url: string) {
+    sendToMain(OPEN_URL, url)
   },
   updateServer () {
     sendToMain('updateServer')
@@ -116,9 +81,4 @@ export const settingsAdapter = {
     sendToMain(GET_PICBEDS)
     return nextList
   }
-}
-
-export function toastSettingsError (error: unknown) {
-  const message = error instanceof Error ? error.message : String(error)
-  toast.error(message)
 }

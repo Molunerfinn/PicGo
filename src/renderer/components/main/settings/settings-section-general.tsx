@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
+import { IStartupMode } from "~/universal/types/enum"
 
 import {
   Select,
@@ -8,29 +10,35 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import { settingsStoreActions, useAppStore } from "@/store"
 import { SettingsRow } from "./settings-row"
+import { useSettingsSave } from "./use-settings-save"
 import {
-  settingsStartupMode,
-  type SettingsConfigState,
+  defaultSettingsConfig,
 } from "./utils"
 
 interface SettingsSectionGeneralProps {
-  settingsConfig: SettingsConfigState
   isMac: boolean
   isItemVisible: (itemId: string) => boolean
-  onSaveConfig: (
-    path: string | Partial<SettingsConfigState>,
-    value?: unknown
-  ) => Promise<boolean>
 }
 
 export function SettingsSectionGeneral({
-  settingsConfig,
   isMac,
   isItemVisible,
-  onSaveConfig,
 }: SettingsSectionGeneralProps) {
   const { t } = useTranslation()
+  const appConfig = useAppStore.use.appConfig()
+  const settingsConfig = appConfig?.settings ?? defaultSettingsConfig
+  const saveSettingsConfig = useSettingsSave()
+
+  const handleLanguageChange = async (value: string) => {
+    try {
+      await settingsStoreActions.saveLanguage(value)
+      toast.success(t("SUCCESS"))
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t("FAILED"))
+    }
+  }
 
   return (
     <div className="space-y-1">
@@ -41,7 +49,9 @@ export function SettingsSectionGeneral({
           <Select
             value={settingsConfig.language}
             onValueChange={(value) => {
-              onSaveConfig("settings.language", value)
+              if (typeof value === "string") {
+                handleLanguageChange(value)
+              }
             }}
           >
             <SelectTrigger className="w-44">
@@ -63,22 +73,22 @@ export function SettingsSectionGeneral({
           <Select
             value={settingsConfig.startupMode}
             onValueChange={(value) => {
-              onSaveConfig("settings.startupMode", value)
+              saveSettingsConfig("settings.startupMode", value)
             }}
           >
             <SelectTrigger className="w-52">
               <SelectValue placeholder={t("SETTINGS_STARTUP_MODE")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={settingsStartupMode.MainWindow}>
+              <SelectItem value={IStartupMode.SHOW_MAIN_WINDOW}>
                 {t("SETTINGS_STARTUP_MODE_MAIN_WINDOW")}
               </SelectItem>
               {!isMac ? (
-                <SelectItem value={settingsStartupMode.MiniWindow}>
+                <SelectItem value={IStartupMode.SHOW_MINI_WINDOW}>
                   {t("SETTINGS_STARTUP_MODE_MINI_WINDOW")}
                 </SelectItem>
               ) : null}
-              <SelectItem value={settingsStartupMode.Hide}>
+              <SelectItem value={IStartupMode.HIDE}>
                 {t("SETTINGS_STARTUP_MODE_HIDE")}
               </SelectItem>
             </SelectContent>
@@ -93,7 +103,7 @@ export function SettingsSectionGeneral({
           <Switch
             checked={settingsConfig.autoStart}
             onCheckedChange={(checked) => {
-              onSaveConfig("settings.autoStart", checked)
+              saveSettingsConfig("settings.autoStart", checked)
             }}
           />
         }

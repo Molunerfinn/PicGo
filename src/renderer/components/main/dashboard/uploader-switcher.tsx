@@ -14,7 +14,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useAppStore } from "@/store"
+import { providerStoreActions } from "@/store"
 
 export interface UploaderSwitcherConfigItem {
   id: string
@@ -46,13 +46,13 @@ export function UploaderSwitcher({
   disabled,
 }: UploaderSwitcherProps) {
   const { t } = useTranslation()
-  const selectDashboardProviderConfig = useAppStore(
-    (state) => state.selectDashboardProviderConfig
-  )
 
   const handleConfigSelect = async (next: UploaderSwitcherValue) => {
     try {
-      await selectDashboardProviderConfig(next.providerId, next.configId)
+      await providerStoreActions.selectDashboardProviderConfig(
+        next.providerId,
+        next.configId
+      )
     } catch (error) {
       const message =
         error instanceof Error && error.message.trim().length > 0

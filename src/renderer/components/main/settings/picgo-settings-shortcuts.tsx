@@ -5,6 +5,7 @@ import type { TFunction } from "i18next"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { settingsAdapter } from "@/adapters/settings"
 import { AppMainCard } from "@/components/common/app-main-card"
 import { MainCardHeader } from "@/components/common/main-card-header"
 import { Button } from "@/components/ui/button"
@@ -12,7 +13,12 @@ import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
-import { useAppStore } from "@/store"
+import {
+  appActions,
+  settingsStoreActions,
+  useAppStore,
+  useSettingsStore,
+} from "@/store"
 import {
   buildShortcutFromKeyboardEvent,
 } from "./shortcut-key-binding"
@@ -22,6 +28,7 @@ import { SettingsSidebar } from "./settings-sidebar"
 import {
   allSettingsSections,
   buildSettingsSearchItems,
+  buildSettingsShortcutItems,
   buildShortcutValue,
   defaultSettingsConfig,
   filterSettingsSectionsBySearch,
@@ -71,26 +78,26 @@ export function PicGoSettingsShortcuts() {
   const navigate = useNavigate()
   const { t } = useTranslation()
 
-  const providers = useAppStore((state) => state.providers)
-  const settingsConfig = useAppStore(
-    (state) => state.appConfig?.settings ?? defaultSettingsConfig
-  )
-  const settingsPage = useAppStore((state) => state.settingsPage)
-  const ensureHydrated = useAppStore((state) => state.ensureHydrated)
-  const ensureSettingsHydrated = useAppStore((state) => state.ensureSettingsHydrated)
-  const setSettingsSearchValue = useAppStore((state) => state.setSettingsSearchValue)
-  const updateShortcutKeys = useAppStore((state) => state.updateShortcutKeys)
-  const setShortcutEnabled = useAppStore((state) => state.setShortcutEnabled)
+  const providers = useAppStore.use.providers()
+  const appConfig = useAppStore.use.appConfig()
+  const settingsSearchValue = useSettingsStore.use.searchValue()
+  const settingsConfig = appConfig?.settings ?? defaultSettingsConfig
+  const picBedProxy = appConfig?.picBed.proxy ?? ""
 
   const [editingShortcutId, setEditingShortcutId] = useState<string | null>(null)
   const [draftShortcutValue, setDraftShortcutValue] = useState("")
   const [isCaptureActive, setIsCaptureActive] = useState(false)
 
-  const searchItems = buildSettingsSearchItems(settingsConfig, providers)
+  const shortcutItems = buildSettingsShortcutItems(settingsConfig.shortKey)
+  const searchItems = buildSettingsSearchItems(
+    settingsConfig,
+    providers,
+    picBedProxy
+  )
   const { matchedSections, matchedItemIds, hasQuery } = filterSettingsSectionsBySearch(
     allSettingsSections,
     searchItems,
-    settingsPage.searchValue
+    settingsSearchValue
   )
 
   useEffect(() => {
@@ -98,8 +105,8 @@ export function PicGoSettingsShortcuts() {
 
     async function bootstrap() {
       try {
-        await ensureHydrated()
-        await ensureSettingsHydrated()
+        await appActions.ensureHydrated()
+        await appActions.ensureSettingsHydrated()
       } catch (error) {
         if (!isDisposed) {
           toast.error(resolveErrorMessage(error, "Failed"))
@@ -112,7 +119,15 @@ export function PicGoSettingsShortcuts() {
     return () => {
       isDisposed = true
     }
-  }, [ensureHydrated, ensureSettingsHydrated])
+  }, [])
+
+  useEffect(() => {
+    settingsAdapter.toggleShortcutModifiedMode(editingShortcutId !== null)
+
+    return () => {
+      settingsAdapter.toggleShortcutModifiedMode(false)
+    }
+  }, [editingShortcutId])
 
   const openEditDialog = (shortcut: SettingsShortcutItem) => {
     setEditingShortcutId(shortcut.id)
@@ -152,7 +167,7 @@ export function PicGoSettingsShortcuts() {
         return
       }
 
-      await updateShortcutKeys(editingShortcutId, keys)
+      await settingsStoreActions.updateShortcutKeys(editingShortcutId, keys)
       toast.success(t("TIPS_SHORTCUT_MODIFIED_SUCCEED"))
       closeEditDialog()
     } catch (error) {
@@ -162,7 +177,7 @@ export function PicGoSettingsShortcuts() {
 
   const handleToggleShortcut = async (shortcutId: string, nextEnabled: boolean) => {
     try {
-      await setShortcutEnabled(shortcutId, nextEnabled)
+      await settingsStoreActions.setShortcutEnabled(shortcutId, nextEnabled)
       toast.success(t("TIPS_SHORTCUT_MODIFIED_SUCCEED"))
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))
@@ -173,12 +188,10 @@ export function PicGoSettingsShortcuts() {
     <>
       <SettingsSidebar
         selectedSection={settingsSectionId.Advanced}
-        searchValue={settingsPage.searchValue}
         matchedSections={matchedSections}
         matchedItemIds={matchedItemIds}
         isAdvancedRoute={true}
         activeAdvancedRoute="shortcuts"
-        onSearchValueChange={setSettingsSearchValue}
         onSelectSection={(section) =>
           navigate({
             to: "/main/settings/settings",
@@ -220,14 +233,14 @@ export function PicGoSettingsShortcuts() {
                     type="button"
                     variant="outline"
                     className="mt-4"
-                    onClick={() => setSettingsSearchValue("")}
+                    onClick={() => settingsStoreActions.setSearchValue("")}
                   >
                     {t("GALLERY_CLEAR_SELECTION")}
                   </Button>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {settingsConfig.shortcuts.map((shortcut) => {
+                  {shortcutItems.map((shortcut) => {
                     const label = resolveShortcutLabel(shortcut, t)
                     const sourceName = resolveSourceName(shortcut)
                     const isBuiltin = isBuiltinShortcut(shortcut)
@@ -260,9 +273,10 @@ export function PicGoSettingsShortcuts() {
                               <div className="flex shrink-0 items-center gap-2">
                                 <Switch
                                   checked={shortcut.enable}
-                                  onCheckedChange={(checked) => {
-                                    handleToggleShortcut(shortcut.id, checked === true).catch(
-                                      () => undefined
+                                  onCheckedChange={async (checked) => {
+                                    await handleToggleShortcut(
+                                      shortcut.id,
+                                      checked === true
                                     )
                                   }}
                                 />

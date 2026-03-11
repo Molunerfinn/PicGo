@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
+import { providerStoreActions } from "@/store"
 import {
   ProviderActiveUploaderBadge,
   ProviderDefaultConfigBadge,
@@ -59,7 +60,6 @@ interface ProviderSidebarUploaderSectionProps {
   selectedConfigId: string | null
   onSelectUploader: (uploaderId: string) => void
   onSetDefaultUploader: (uploaderId: string) => Promise<void>
-  onToggleUploader: (uploaderId: string) => void
   onSelectConfig: (uploaderId: string, configId: string) => void
   onCreateIntent: (uploaderId: string) => void
   onRenameIntent: (uploaderId: string, configId: string, configName: string) => void
@@ -192,7 +192,6 @@ export function ProviderSidebarUploaderSection({
   selectedConfigId,
   onSelectUploader,
   onSetDefaultUploader,
-  onToggleUploader,
   onSelectConfig,
   onCreateIntent,
   onRenameIntent,
@@ -272,7 +271,7 @@ export function ProviderSidebarUploaderSection({
           variant="ghost"
           size="icon-xs"
           className="text-muted-foreground hover:text-(--app-provider-sidebar-item-active-color)"
-          onClick={() => onToggleUploader(uploader.id)}
+          onClick={() => providerStoreActions.toggleExpanded(uploader.id)}
           title={isExpanded ? t("PROVIDER_SIDEBAR_COLLAPSE") : t("PROVIDER_SIDEBAR_EXPAND")}
           aria-label={
             isExpanded ? t("PROVIDER_SIDEBAR_COLLAPSE") : t("PROVIDER_SIDEBAR_EXPAND")

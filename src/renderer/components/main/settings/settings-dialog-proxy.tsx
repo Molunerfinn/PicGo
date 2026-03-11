@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -10,13 +11,12 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { settingsStoreActions } from "@/store"
 import {
   settingsPluginMirrorExampleValue,
   settingsProxyExampleValue,
   useSettingsExampleText,
 } from "./settings-example-text"
-import type { SettingsConfigState } from "./utils"
-import { saveProxySettingsConfig } from "./utils"
 
 interface SettingsProxyDialogProps {
   open: boolean
@@ -27,10 +27,14 @@ interface SettingsProxyDialogProps {
   onProxyDraftChange: (value: string) => void
   onNpmProxyDraftChange: (value: string) => void
   onNpmRegistryDraftChange: (value: string) => void
-  onSaveConfig: (
-    path: string | Partial<SettingsConfigState>,
-    value?: unknown
-  ) => Promise<boolean>
+}
+
+function resolveErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message.trim().length > 0) {
+    return error.message
+  }
+
+  return fallback
 }
 
 export function SettingsProxyDialog({
@@ -42,20 +46,20 @@ export function SettingsProxyDialog({
   onProxyDraftChange,
   onNpmProxyDraftChange,
   onNpmRegistryDraftChange,
-  onSaveConfig,
 }: SettingsProxyDialogProps) {
   const { t } = useTranslation()
   const formatSettingsExampleText = useSettingsExampleText()
-
   const handleConfirm = async () => {
-    const isSaved = await saveProxySettingsConfig(onSaveConfig, {
-      proxy: proxyDraft,
-      npmProxy: npmProxyDraft,
-      npmRegistry: npmRegistryDraft,
-    })
-
-    if (isSaved) {
+    try {
+      await settingsStoreActions.saveSettingsConfig({
+        npmProxy: npmProxyDraft,
+        npmRegistry: npmRegistryDraft,
+      })
+      await settingsStoreActions.savePicBedProxy(proxyDraft)
+      toast.success(t("SUCCESS"))
       onOpenChange(false)
+    } catch (error) {
+      toast.error(resolveErrorMessage(error, t("FAILED")))
     }
   }
 

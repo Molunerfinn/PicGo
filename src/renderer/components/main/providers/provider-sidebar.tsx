@@ -5,7 +5,7 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useAppStore } from "@/store"
+import { providerStoreActions, useAppStore, useProviderStore } from "@/store"
 import { ProviderSidebarSearch } from "./provider-sidebar-search"
 import { ProviderSidebarUploaderSection } from "./provider-sidebar-uploader-section"
 import {
@@ -47,24 +47,12 @@ export function ProviderSidebar({
   const navigate = useNavigate()
   const search = useSearch({ from: "/main/providers" })
 
-  const appConfig = useAppStore((state) => state.appConfig)
-  const providers = useAppStore((state) => state.providers)
-  const loadingMap = useAppStore((state) => state.providerPage.isLoadingByProvider)
-  const isLoadingUploaders = useAppStore((state) => state.providerPage.isHydrating)
-  const searchValue = useAppStore((state) => state.providerPage.searchValue)
-  const expandedUploaderIds = useAppStore(
-    (state) => state.providerPage.expandedProviderIds
-  )
-  const setProviderSearchValue = useAppStore(
-    (state) => state.setProviderSearchValue
-  )
-  const toggleProviderExpanded = useAppStore(
-    (state) => state.toggleProviderExpanded
-  )
-  const ensureProviderExpanded = useAppStore(
-    (state) => state.ensureProviderExpanded
-  )
-  const setDefaultProvider = useAppStore((state) => state.setDefaultProvider)
+  const appConfig = useAppStore.use.appConfig()
+  const providers = useAppStore.use.providers()
+  const loadingMap = useProviderStore.use.isLoadingByProvider()
+  const isLoadingUploaders = useProviderStore.use.isHydrating()
+  const searchValue = useProviderStore.use.searchValue()
+  const expandedUploaderIds = useProviderStore.use.expandedProviderIds()
 
   const queriedUploaderId = search.uploader ?? null
   const queriedConfigId = search.configId ?? null
@@ -103,7 +91,7 @@ export function ProviderSidebar({
       null
     )
 
-    ensureProviderExpanded(uploaderId)
+    providerStoreActions.ensureExpanded(uploaderId)
     navigateToSelection(uploaderId, nextConfigId ?? undefined)
   }
 
@@ -113,7 +101,7 @@ export function ProviderSidebar({
 
   const handleSetDefaultUploader = async (uploaderId: string) => {
     try {
-      await setDefaultProvider(uploaderId)
+      await providerStoreActions.setDefaultProvider(uploaderId)
       toast.success(t("SUCCESS"))
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))
@@ -175,11 +163,7 @@ export function ProviderSidebar({
     <aside className="bg-sidebar text-sidebar-foreground border-sidebar-border flex w-(--app-provider-sidebar-width) shrink-0 flex-col overflow-hidden rounded-xl border backdrop-blur-xl">
       <div className="border-sidebar-border/60 flex flex-col gap-3 border-b px-4 py-4">
         <h1 className="text-base font-semibold">{t("GALLERY_PROVIDERS")}</h1>
-        <ProviderSidebarSearch
-          searchValue={searchValue}
-          hasSearch={hasSearch}
-          onSearchValueChange={setProviderSearchValue}
-        />
+        <ProviderSidebarSearch />
       </div>
 
       <ScrollArea className="min-h-0 flex-1">
@@ -205,7 +189,6 @@ export function ProviderSidebar({
                 selectedConfigId={selectedConfigId}
                 onSelectUploader={handleSelectUploader}
                 onSetDefaultUploader={handleSetDefaultUploader}
-                onToggleUploader={toggleProviderExpanded}
                 onSelectConfig={handleSelectConfig}
                 onCreateIntent={onCreateIntent}
                 onRenameIntent={onRenameIntent}

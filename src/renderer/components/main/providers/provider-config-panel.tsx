@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useAppStore } from "@/store"
+import { providerStoreActions, useAppStore, useProviderStore } from "@/store"
 import {
   ProviderActiveUploaderBadge,
   ProviderDefaultConfigBadge,
@@ -52,13 +52,10 @@ export function ProviderConfigPanel({
   const navigate = useNavigate()
   const search = useSearch({ from: "/main/providers" })
 
-  const appConfig = useAppStore((state) => state.appConfig)
-  const providers = useAppStore((state) => state.providers)
-  const providerSchemas = useAppStore((state) => state.providerSchemas)
-  const loadingMap = useAppStore((state) => state.providerPage.isLoadingByProvider)
-  const setDefaultConfig = useAppStore((state) => state.setDefaultConfig)
-  const createConfig = useAppStore((state) => state.createConfig)
-  const saveConfig = useAppStore((state) => state.saveConfig)
+  const appConfig = useAppStore.use.appConfig()
+  const providers = useAppStore.use.providers()
+  const providerSchemas = useAppStore.use.providerSchemas()
+  const loadingMap = useProviderStore.use.isLoadingByProvider()
 
   const [formValues, setFormValues] = useState<ProviderFormValues>({})
   const [fieldErrors, setFieldErrors] = useState<ProviderFieldErrorMap>({})
@@ -135,7 +132,7 @@ export function ProviderConfigPanel({
     }
 
     try {
-      const selectedId = await setDefaultConfig(
+      const selectedId = await providerStoreActions.setDefaultConfig(
         selectedUploaderId,
         selectedPersistedConfig._id
       )
@@ -179,13 +176,17 @@ export function ProviderConfigPanel({
       setIsSaving(true)
 
       if (isDraftSelected) {
-        const createdConfigId = await createConfig(
+        const createdConfigId = await providerStoreActions.createConfig(
           selectedUploaderId,
           selectedConfig._configName
         )
 
         if (createdConfigId) {
-          await saveConfig(selectedUploaderId, createdConfigId, formValues)
+          await providerStoreActions.saveConfig(
+            selectedUploaderId,
+            createdConfigId,
+            formValues
+          )
         }
 
         setDraftConfigMap((prev) => ({
@@ -198,7 +199,7 @@ export function ProviderConfigPanel({
         return
       }
 
-      const selectedId = await saveConfig(
+      const selectedId = await providerStoreActions.saveConfig(
         selectedUploaderId,
         selectedConfig._id,
         formValues

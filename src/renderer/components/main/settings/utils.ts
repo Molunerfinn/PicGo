@@ -1,6 +1,6 @@
 import type { ProviderUploaderSummary } from "@/components/main/providers/types"
 import type { ValueOf } from "@/types/utils"
-import { IPasteStyle } from "~/universal/types/enum"
+import { IPasteStyle, IStartupMode } from "~/universal/types/enum"
 
 export const settingsSectionId = {
   General: "general",
@@ -21,15 +21,6 @@ export const settingsNavItemKind = {
 
 export type SettingsNavItemKind =
   ValueOf<typeof settingsNavItemKind>
-
-export const settingsStartupMode = {
-  MainWindow: "SHOW_SETTING_WINDOW",
-  MiniWindow: "SHOW_MINI_WINDOW",
-  Hide: "HIDE",
-} as const
-
-export type SettingsStartupMode =
-  ValueOf<typeof settingsStartupMode>
 
 export const settingsAppearance = {
   Light: "light",
@@ -56,20 +47,35 @@ export interface SettingsShortcutItem {
   from: string
 }
 
+export interface SettingsShortKeyConfig {
+  enable: boolean
+  key: string
+  name: string
+  label: string
+}
+
+export type SettingsShortKeyMap = Record<string, SettingsShortKeyConfig>
+
 export interface SettingsUrlRewriteRule {
-  id: string
   match: string
   replace: string
   global: boolean
   ignoreCase: boolean
-  enabled: boolean
+  enable: boolean
+}
+
+export interface SettingsUrlRewriteDraftRule extends SettingsUrlRewriteRule {
+  id: string
+}
+
+export interface SettingsUrlRewriteConfig {
+  rules: SettingsUrlRewriteRule[]
 }
 
 export interface SettingsConfigState {
   appearance: SettingsAppearance
   pasteStyle: IPasteStyle
   showUpdateTip: boolean
-  showPicBedList: string[]
   autoStart: boolean
   rename: boolean
   autoRename: boolean
@@ -88,11 +94,10 @@ export interface SettingsConfigState {
   customLink: string
   npmProxy: string
   npmRegistry: string
-  proxy: string
   server: SettingsServerConfig
-  startupMode: SettingsStartupMode
-  shortcuts: SettingsShortcutItem[]
-  urlRewriteRules: SettingsUrlRewriteRule[]
+  startupMode: IStartupMode
+  shortKey: SettingsShortKeyMap
+  urlRewrite: SettingsUrlRewriteConfig
 }
 
 export interface SettingsVersionState {
@@ -100,8 +105,37 @@ export interface SettingsVersionState {
   latestVersion: string | null
 }
 
+type SettingsPathPrimitive =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | symbol
+  | bigint
+
+type NestedSettingsConfigPath<T> = {
+  [K in keyof T & string]:
+  T[K] extends SettingsPathPrimitive
+    ? K
+    : T[K] extends readonly unknown[]
+      ? K
+      : T[K] extends object
+        ? string extends keyof T[K]
+          ? K
+          : K | `${K}.${NestedSettingsConfigPath<T[K]>}`
+        : K
+}[keyof T & string]
+
+export type SettingsConfigPath =
+  `settings.${NestedSettingsConfigPath<SettingsConfigState>}`
+
+export type SettingsConfigSaveTarget =
+  | SettingsConfigPath
+  | Partial<SettingsConfigState>
+
 type SaveSettingsConfigHandler = (
-  path: string | Partial<SettingsConfigState>,
+  path: SettingsConfigSaveTarget,
   value?: unknown
 ) => Promise<boolean>
 
@@ -266,11 +300,19 @@ export const settingLogLevel = {
 export type SettingLogLevel =
   ValueOf<typeof settingLogLevel>
 
+const defaultSettingsShortKeyMap: SettingsShortKeyMap = {
+  "picgo:upload": {
+    name: "upload",
+    label: "Quick Upload",
+    key: "CommandOrControl+Shift+U",
+    enable: true,
+  }
+}
+
 export const defaultSettingsConfig: SettingsConfigState = {
   appearance: settingsAppearance.Auto,
   pasteStyle: IPasteStyle.MARKDOWN,
   showUpdateTip: false,
-  showPicBedList: [],
   autoStart: false,
   rename: false,
   autoRename: false,
@@ -289,42 +331,16 @@ export const defaultSettingsConfig: SettingsConfigState = {
   customLink: "$url",
   npmProxy: "",
   npmRegistry: "",
-  proxy: "",
   server: {
     port: 36677,
     host: "127.0.0.1",
     enable: true,
   },
-  startupMode: settingsStartupMode.Hide,
-  shortcuts: [
-    {
-      id: "picgo:upload",
-      name: "upload",
-      label: "Quick Upload",
-      labelKey: "QUICK_UPLOAD",
-      key: "CommandOrControl+Shift+U",
-      enable: true,
-      from: "picgo",
-    },
-    {
-      id: "picgo:open-main-window",
-      name: "open-main-window",
-      label: "Open Main Window",
-      labelKey: "OPEN_MAIN_WINDOW",
-      key: "CommandOrControl+Shift+O",
-      enable: true,
-      from: "picgo",
-    },
-    {
-      id: "picgo-plugin-image-tools:optimize-and-upload",
-      name: "optimize-and-upload",
-      label: "Optimize and Upload",
-      key: "CommandOrControl+Shift+Alt+U",
-      enable: true,
-      from: "picgo-plugin-image-tools",
-    },
-  ],
-  urlRewriteRules: [],
+  startupMode: IStartupMode.HIDE,
+  shortKey: defaultSettingsShortKeyMap,
+  urlRewrite: {
+    rules: [],
+  },
 }
 
 export const defaultSettingsVersion: SettingsVersionState = {
@@ -435,7 +451,8 @@ function mergeSettingsSearchKeywords(
 
 export function buildSettingsSearchItems(
   config: SettingsConfigState,
-  providers: ProviderUploaderSummary[]
+  providers: ProviderUploaderSummary[],
+  picBedProxy: string
 ): SettingsSearchItem[] {
   const providerKeywords = providers.map((provider) => provider.name)
 
@@ -562,7 +579,7 @@ export function buildSettingsSearchItems(
       section: settingsSectionId.Network,
       title: "Set Proxy and Mirror",
       description: "Configure proxy and mirror",
-      keywords: mergeSettingsSearchKeywords("upload-proxy", [config.proxy, "proxy"]),
+      keywords: mergeSettingsSearchKeywords("upload-proxy", [picBedProxy, "proxy"]),
     },
     {
       id: "plugin-proxy",
@@ -793,19 +810,44 @@ export function sanitizeNumericInput(value: string) {
   return value.replace(/\D+/g, "")
 }
 
-export function buildProxySettingsPatch(draft: ProxyDraftState) {
-  return {
-    proxy: draft.proxy,
-    npmProxy: draft.npmProxy,
-    npmRegistry: draft.npmRegistry,
-  } satisfies Partial<SettingsConfigState>
+export function buildSettingsShortcutItems(
+  shortKeyMap: SettingsShortKeyMap
+) {
+  return Object.entries(shortKeyMap).map(([id, shortcut]) => {
+    const [from = "picgo", ...nameSegments] = id.split(":")
+    const fallbackName = nameSegments.join(":") || id
+
+    return {
+      id,
+      name: shortcut.name || fallbackName,
+      label: shortcut.label || fallbackName,
+      key: shortcut.key,
+      enable: shortcut.enable,
+      from,
+    } satisfies SettingsShortcutItem
+  })
 }
 
-export async function saveProxySettingsConfig(
-  onSaveConfig: SaveSettingsConfigHandler,
-  draft: ProxyDraftState
+function buildUrlRewriteDraftRuleId(
+  rule: SettingsUrlRewriteRule,
+  index: number
 ) {
-  return onSaveConfig(buildProxySettingsPatch(draft))
+  return `${index}:${rule.match}:${rule.replace}:${rule.enable ? "1" : "0"}`
+}
+
+export function buildSettingsUrlRewriteDraftRules(
+  rules: SettingsUrlRewriteRule[]
+) {
+  return rules.map((rule, index) => ({
+    ...rule,
+    id: buildUrlRewriteDraftRuleId(rule, index),
+  })) satisfies SettingsUrlRewriteDraftRule[]
+}
+
+export function stripSettingsUrlRewriteDraftRules(
+  rules: SettingsUrlRewriteDraftRule[]
+) {
+  return rules.map(({ id: _id, ...rule }) => rule) satisfies SettingsUrlRewriteRule[]
 }
 
 export function buildLogSettingsPatch(draft: LogDraftState) {
@@ -841,7 +883,7 @@ export function applyUrlRewriteRules(
   rules: SettingsUrlRewriteRule[]
 ) {
   for (const rule of rules) {
-    if (!rule.enabled) {
+    if (!rule.enable) {
       continue
     }
 

@@ -19,16 +19,18 @@ import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { useAppStore } from "@/store"
+import { appActions, settingsStoreActions, useAppStore, useSettingsStore } from "@/store"
 import { SettingsSidebar } from "./settings-sidebar"
 import {
   allSettingsSections,
   applyUrlRewriteRules,
   buildSettingsSearchItems,
+  buildSettingsUrlRewriteDraftRules,
   defaultSettingsConfig,
   filterSettingsSectionsBySearch,
   settingsSectionId,
-  type SettingsUrlRewriteRule,
+  stripSettingsUrlRewriteDraftRules,
+  type SettingsUrlRewriteDraftRule,
 } from "./utils"
 
 function createRuleId() {
@@ -44,7 +46,7 @@ function resolveErrorMessage(error: unknown, fallback: string) {
 }
 
 function moveRule(
-  list: SettingsUrlRewriteRule[],
+  list: SettingsUrlRewriteDraftRule[],
   index: number,
   direction: -1 | 1
 ) {
@@ -63,37 +65,36 @@ export function PicGoSettingsUrlRewrite() {
   const navigate = useNavigate()
   const { t } = useTranslation()
 
-  const providers = useAppStore((state) => state.providers)
-  const settingsConfig = useAppStore(
-    (state) => state.appConfig?.settings ?? defaultSettingsConfig
-  )
-  const settingsPage = useAppStore((state) => state.settingsPage)
-  const ensureHydrated = useAppStore((state) => state.ensureHydrated)
-  const ensureSettingsHydrated = useAppStore((state) => state.ensureSettingsHydrated)
-  const setSettingsSearchValue = useAppStore((state) => state.setSettingsSearchValue)
-  const saveUrlRewriteRules = useAppStore((state) => state.saveUrlRewriteRules)
+  const providers = useAppStore.use.providers()
+  const appConfig = useAppStore.use.appConfig()
+  const settingsSearchValue = useSettingsStore.use.searchValue()
+  const settingsConfig = appConfig?.settings ?? defaultSettingsConfig
+  const picBedProxy = appConfig?.picBed.proxy ?? ""
 
-  const [draftRules, setDraftRules] = useState<SettingsUrlRewriteRule[] | null>(null)
+  const [draftRules, setDraftRules] = useState<SettingsUrlRewriteDraftRule[] | null>(null)
   const [previewInput, setPreviewInput] = useState("")
-  const rules = draftRules ?? settingsConfig.urlRewriteRules
+  const persistedRules = settingsConfig.urlRewrite.rules
+  const rules = draftRules ?? buildSettingsUrlRewriteDraftRules(persistedRules)
 
-  const searchItems = buildSettingsSearchItems(settingsConfig, providers)
+  const searchItems = buildSettingsSearchItems(settingsConfig, providers, picBedProxy)
   const { matchedSections, matchedItemIds, hasQuery } = filterSettingsSectionsBySearch(
     allSettingsSections,
     searchItems,
-    settingsPage.searchValue
+    settingsSearchValue
   )
 
   const previewOutput =
-    previewInput.trim().length > 0 ? applyUrlRewriteRules(previewInput, rules) : ""
+    previewInput.trim().length > 0
+      ? applyUrlRewriteRules(previewInput, stripSettingsUrlRewriteDraftRules(rules))
+      : ""
 
   useEffect(() => {
     let isDisposed = false
 
     async function bootstrap() {
       try {
-        await ensureHydrated()
-        await ensureSettingsHydrated()
+        await appActions.ensureHydrated()
+        await appActions.ensureSettingsHydrated()
       } catch (error) {
         if (!isDisposed) {
           toast.error(resolveErrorMessage(error, "Failed"))
@@ -106,20 +107,24 @@ export function PicGoSettingsUrlRewrite() {
     return () => {
       isDisposed = true
     }
-  }, [ensureHydrated, ensureSettingsHydrated])
+  }, [])
 
   const updateRules = (
-    updater: (current: SettingsUrlRewriteRule[]) => SettingsUrlRewriteRule[]
+    updater: (
+      current: SettingsUrlRewriteDraftRule[]
+    ) => SettingsUrlRewriteDraftRule[]
   ) => {
     setDraftRules((prev) => {
-      const base = prev ?? settingsConfig.urlRewriteRules
+      const base = prev ?? buildSettingsUrlRewriteDraftRules(persistedRules)
       return updater(base)
     })
   }
 
   const handleSave = async () => {
     try {
-      await saveUrlRewriteRules(rules)
+      await settingsStoreActions.saveUrlRewriteRules(
+        stripSettingsUrlRewriteDraftRules(rules)
+      )
       setDraftRules(null)
       toast.success(t("SUCCESS"))
     } catch (error) {
@@ -131,12 +136,10 @@ export function PicGoSettingsUrlRewrite() {
     <>
       <SettingsSidebar
         selectedSection={settingsSectionId.Advanced}
-        searchValue={settingsPage.searchValue}
         matchedSections={matchedSections}
         matchedItemIds={matchedItemIds}
         isAdvancedRoute={true}
         activeAdvancedRoute="url-rewrite"
-        onSearchValueChange={setSettingsSearchValue}
         onSelectSection={(section) =>
           navigate({
             to: "/main/settings/settings",
@@ -202,7 +205,7 @@ export function PicGoSettingsUrlRewrite() {
                     type="button"
                     variant="outline"
                     className="mt-4"
-                    onClick={() => setSettingsSearchValue("")}
+                    onClick={() => settingsStoreActions.setSearchValue("")}
                   >
                     {t("GALLERY_CLEAR_SELECTION")}
                   </Button>
@@ -224,7 +227,7 @@ export function PicGoSettingsUrlRewrite() {
                               replace: "",
                               global: false,
                               ignoreCase: false,
-                              enabled: true,
+                              enable: true,
                             },
                           ])
                         }}
@@ -335,12 +338,12 @@ export function PicGoSettingsUrlRewrite() {
                               <div className="flex flex-wrap items-center gap-4">
                                 <Label className="gap-2">
                                   <Switch
-                                    checked={rule.enabled}
+                                    checked={rule.enable}
                                     onCheckedChange={(checked) => {
                                       updateRules((prev) =>
                                         prev.map((item) =>
                                           item.id === rule.id
-                                            ? { ...item, enabled: checked === true }
+                                            ? { ...item, enable: checked === true }
                                             : item
                                         )
                                       )

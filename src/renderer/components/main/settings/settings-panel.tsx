@@ -1,14 +1,11 @@
 import { ChevronRightIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
 
 import { AppMainCard } from "@/components/common/app-main-card"
 import { MainCardHeader } from "@/components/common/main-card-header"
-import type { ProviderUploaderSummary } from "@/components/main/providers/types"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import i18n from "@/i18n"
-import { useAppStore } from "@/store"
+import { settingsStoreActions } from "@/store"
 import { SettingsSectionAbout } from "./settings-section-about"
 import { SettingsSectionAdvanced } from "./settings-section-advanced"
 import { SettingsSectionAppearance } from "./settings-section-appearance"
@@ -18,64 +15,25 @@ import { SettingsSectionUploadWorkflow } from "./settings-section-upload-workflo
 import {
   sectionHasMatchedItems,
   settingsSectionId,
-  type SettingsConfigState,
   type SettingsSectionId,
-  type SettingsVersionState,
 } from "./utils"
 
 interface SettingsPanelProps {
   selectedSection: SettingsSectionId
   hasSearch: boolean
   matchedItemIds: Set<string>
-  settingsConfig: SettingsConfigState
-  settingsVersion: SettingsVersionState
-  providers: ProviderUploaderSummary[]
   isMac: boolean
   onNavigateUrlRewrite: () => void
-  onClearSearch: () => void
-}
-
-function resolveErrorMessage(error: unknown, fallback: string) {
-  if (error instanceof Error && error.message.trim().length > 0) {
-    return error.message
-  }
-
-  return fallback
-}
-
-function resolveLanguageToSync(
-  path: string | Partial<SettingsConfigState>,
-  value?: unknown
-) {
-  if (typeof path === "string") {
-    if (path === "settings.language" && typeof value === "string") {
-      return value
-    }
-
-    return null
-  }
-
-  if (typeof path.language === "string") {
-    return path.language
-  }
-
-  return null
 }
 
 export function SettingsPanel({
   selectedSection,
   hasSearch,
   matchedItemIds,
-  settingsConfig,
-  settingsVersion,
-  providers,
   isMac,
   onNavigateUrlRewrite,
-  onClearSearch,
 }: SettingsPanelProps) {
   const { t } = useTranslation()
-  const saveSettingsConfig = useAppStore((state) => state.saveSettingsConfig)
-
   const isItemVisible = (itemId: string) =>
     !hasSearch || matchedItemIds.has(itemId)
   const isAnyItemVisible = (itemIds: string[]) =>
@@ -83,24 +41,6 @@ export function SettingsPanel({
 
   const hasVisibleContent =
     !hasSearch || sectionHasMatchedItems(selectedSection, matchedItemIds)
-
-  const saveConfigValue = async (
-    path: string | Partial<SettingsConfigState>,
-    value?: unknown
-  ) => {
-    try {
-      await saveSettingsConfig(path, value)
-      const nextLanguage = resolveLanguageToSync(path, value)
-      if (nextLanguage) {
-        await i18n.changeLanguage(nextLanguage)
-      }
-      toast.success(t("SUCCESS"))
-      return true
-    } catch (error) {
-      toast.error(resolveErrorMessage(error, t("FAILED")))
-      return false
-    }
-  }
 
   const sectionTitleMap: Record<SettingsSectionId, string> = {
     [settingsSectionId.General]: t("SETTINGS_SECTION_GENERAL"),
@@ -116,44 +56,25 @@ export function SettingsPanel({
   const renderSectionContent = () => {
     if (selectedSection === settingsSectionId.General) {
       return (
-        <SettingsSectionGeneral
-          settingsConfig={settingsConfig}
-          isMac={isMac}
-          isItemVisible={isItemVisible}
-          onSaveConfig={saveConfigValue}
-        />
+        <SettingsSectionGeneral isMac={isMac} isItemVisible={isItemVisible} />
       )
     }
 
     if (selectedSection === settingsSectionId.Appearance) {
       return (
-        <SettingsSectionAppearance
-          settingsConfig={settingsConfig}
-          providers={providers}
-          isMac={isMac}
-          isItemVisible={isItemVisible}
-          onSaveConfig={saveConfigValue}
-        />
+        <SettingsSectionAppearance isMac={isMac} isItemVisible={isItemVisible} />
       )
     }
 
     if (selectedSection === settingsSectionId.UploadWorkflow) {
-      return (
-        <SettingsSectionUploadWorkflow
-          settingsConfig={settingsConfig}
-          isItemVisible={isItemVisible}
-          onSaveConfig={saveConfigValue}
-        />
-      )
+      return <SettingsSectionUploadWorkflow isItemVisible={isItemVisible} />
     }
 
     if (selectedSection === settingsSectionId.Network) {
       return (
         <SettingsSectionNetwork
-          settingsConfig={settingsConfig}
           isItemVisible={isItemVisible}
           isAnyItemVisible={isAnyItemVisible}
-          onSaveConfig={saveConfigValue}
         />
       )
     }
@@ -161,23 +82,14 @@ export function SettingsPanel({
     if (selectedSection === settingsSectionId.Advanced) {
       return (
         <SettingsSectionAdvanced
-          settingsConfig={settingsConfig}
           isItemVisible={isItemVisible}
           isAnyItemVisible={isAnyItemVisible}
-          onSaveConfig={saveConfigValue}
           onNavigateUrlRewrite={onNavigateUrlRewrite}
         />
       )
     }
 
-    return (
-      <SettingsSectionAbout
-        settingsConfig={settingsConfig}
-        settingsVersion={settingsVersion}
-        isItemVisible={isItemVisible}
-        onSaveConfig={saveConfigValue}
-      />
-    )
+    return <SettingsSectionAbout isItemVisible={isItemVisible} />
   }
 
   return (
@@ -208,7 +120,7 @@ export function SettingsPanel({
                   type="button"
                   variant="outline"
                   className="mt-4"
-                  onClick={onClearSearch}
+                  onClick={() => settingsStoreActions.setSearchValue("")}
                 >
                   {t("GALLERY_CLEAR_SELECTION")}
                 </Button>

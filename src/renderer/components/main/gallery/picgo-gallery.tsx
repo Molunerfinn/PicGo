@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useSidebar } from "@/components/ui/sidebar-context"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import { useAppStore } from "@/store"
+import { appActions, galleryStoreActions, useAppStore, useGalleryStore } from "@/store"
 import {
   GALLERY_MASONRY_COLUMN_COUNT_DEFAULT,
 } from "@/utils/consts"
@@ -67,12 +67,10 @@ export function PicGoGallery() {
   const [isLayoutFrozen, setIsLayoutFrozen] = useState(false)
   const [frozenWidth, setFrozenWidth] = useState<number | null>(null)
   const { state: sidebarState } = useSidebar()
-  const ensureHydrated = useAppStore((state) => state.ensureHydrated)
-  const ensureUiHydrated = useAppStore((state) => state.ensureUiHydrated)
-  const setGalleryViewMode = useAppStore((state) => state.setGalleryViewMode)
-  const setGalleryMasonryColumnCount = useAppStore((state) => state.setGalleryMasonryColumnCount)
-  const galleryUi = useAppStore((state) => state.ui.gallery)
-  const picBeds = useAppStore((state) => state.picBeds)
+  const viewMode = useGalleryStore.use.viewMode()
+  const masonryColumnCount =
+    useGalleryStore.use.masonryColumnCount() || GALLERY_MASONRY_COLUMN_COUNT_DEFAULT
+  const picBeds = useAppStore.use.picBeds()
 
   const scrollAreaWrapperRef = useRef<HTMLDivElement | null>(null)
   const scrollViewportRef = useRef<HTMLDivElement | null>(null)
@@ -94,8 +92,6 @@ export function PicGoGallery() {
     .filter((image): image is GalleryPhoto => Boolean(image))
 
   const filteredImages = filterGalleryImages(images, navContext, searchValue)
-  const viewMode = galleryUi.viewMode
-  const masonryColumnCount = galleryUi.masonryColumnCount || GALLERY_MASONRY_COLUMN_COUNT_DEFAULT
   const visibleProviders: GalleryProviderFilter[] = picBeds
     .filter((item) => item.visible)
     .map((item) => ({
@@ -125,19 +121,19 @@ export function PicGoGallery() {
   useEffect(() => {
     async function hydrateGalleryUiState () {
       try {
-        await ensureUiHydrated()
+        await galleryStoreActions.ensureHydrated()
       } catch (error) {
         console.error(error)
       }
     }
 
     hydrateGalleryUiState()
-  }, [ensureUiHydrated])
+  }, [])
 
   useEffect(() => {
     async function refreshGalleryPage () {
       try {
-        await ensureHydrated()
+        await appActions.ensureHydrated()
         const galleryItems = await galleryAdapter.getGalleryItems()
         setImages(buildGalleryPhotos(galleryItems, picBeds))
       } catch (error) {
@@ -154,7 +150,7 @@ export function PicGoGallery() {
     return () => {
       unsubscribe()
     }
-  }, [ensureHydrated, picBeds])
+  }, [picBeds])
 
   const handleScrollAreaWrapperRef = (node: HTMLDivElement | null) => {
     scrollAreaWrapperRef.current = node
@@ -534,17 +530,13 @@ export function PicGoGallery() {
         <section>
           <GalleryHeader
             activeBreadcrumb={activeBreadcrumb}
-            masonryColumnCount={masonryColumnCount}
             searchValue={searchValue}
             onSearchValueChange={setSearchValue}
-            onMasonryColumnCountChange={setGalleryMasonryColumnCount}
             onSelectAll={handleSelectAll}
             onOpenInspector={() => setInspectorOpen(true)}
             isAllSelected={isAllSelected}
             hasFilteredImages={filteredImages.length > 0}
             hasSelection={selectedIds.length > 0}
-            viewMode={viewMode}
-            onViewModeChange={setGalleryViewMode}
             onPreview={handleToolbarPreview}
           />
 
