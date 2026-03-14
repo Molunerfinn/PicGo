@@ -48,7 +48,7 @@ export function ProviderConfigPanel({
   onCreateConfigIntent,
   onDeleteConfigIntent,
 }: ProviderConfigPanelProps) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const search = useSearch({ from: "/main/providers" })
 
@@ -99,6 +99,30 @@ export function ProviderConfigPanel({
   const isDefaultConfig =
     Boolean(selectedPersistedConfig) &&
     activeConfigState?.defaultId === selectedPersistedConfig?._id
+
+  useEffect(() => {
+    let isDisposed = false
+
+    async function ensureSchemaReady() {
+      if (!selectedUploaderId || providerSchemas[selectedUploaderId]) {
+        return
+      }
+
+      try {
+        await providerStoreActions.ensureSchema(selectedUploaderId)
+      } catch (error) {
+        if (!isDisposed) {
+          toast.error(resolveErrorMessage(error, t("FAILED")))
+        }
+      }
+    }
+
+    ensureSchemaReady()
+
+    return () => {
+      isDisposed = true
+    }
+  }, [providerSchemas, selectedUploaderId, t])
 
   // Rebuild editable form values whenever URL-selected uploader/config changes.
   useEffect(() => {
@@ -377,10 +401,7 @@ export function ProviderConfigPanel({
                   <h2 className="text-lg font-semibold">{t("PROVIDER_CONFIGURATION")}</h2>
                   <span className="text-muted-foreground text-xs">
                     {t("PROVIDER_UPDATED_AT_LABEL")}: {
-                      formatConfigUpdatedAt(
-                        selectedConfig._updatedAt,
-                        i18n.resolvedLanguage
-                      )
+                      formatConfigUpdatedAt(selectedConfig._updatedAt)
                     }
                   </span>
                 </div>

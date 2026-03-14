@@ -9,6 +9,7 @@ import type { GalleryPhoto } from '@/components/main/gallery/utils'
 import { SearchInput } from '@/components/common/search-input'
 import { RECENT_UPLOAD_TYPE, type RecentUpload } from '@/types/dashboard'
 import { cn } from '@/lib/utils'
+import { DEFAULT_DATE_TIME_FORMAT } from '@/utils/consts'
 import type { DashboardHistoryRecord } from './hooks/use-dashboard-history'
 import { HistoryItem } from './history-item'
 
@@ -61,7 +62,7 @@ function formatHistoryTimestamp (timestamp: number) {
     return ''
   }
 
-  return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')
+  return dayjs(timestamp).format(DEFAULT_DATE_TIME_FORMAT)
 }
 
 function buildHistoryItems (items: DashboardHistoryRecord[]): DashboardHistoryItem[] {

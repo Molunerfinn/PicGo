@@ -14,7 +14,7 @@ export type ProviderFieldType =
 
 export interface ProviderPluginChoiceObject {
   name?: string
-  value: string
+  value: unknown
   checked?: boolean
 }
 

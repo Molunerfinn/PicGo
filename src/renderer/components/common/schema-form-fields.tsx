@@ -64,13 +64,16 @@ function CheckboxField({
   const anchorRef = useComboboxAnchor()
   const [open, setOpen] = useState(false)
   const choices = normalizePluginChoices(field.choices)
-  const options = choices.map((choice) => choice.value)
+  const optionValueMap = new Map(
+    choices.map((choice) => [String(choice.value), choice.value] as const)
+  )
+  const options = choices.map((choice) => String(choice.value))
   const selectedValues = Array.isArray(selectedValue)
     ? selectedValue.map((value) => String(value))
     : []
 
   const getLabelByValue = (value: string) => {
-    const matched = choices.find((choice) => choice.value === value)
+    const matched = choices.find((choice) => String(choice.value) === value)
     return matched?.label ?? value
   }
 
@@ -81,7 +84,7 @@ function CheckboxField({
       value={selectedValues}
       onValueChange={(nextValue) => {
         const next = Array.isArray(nextValue)
-          ? nextValue.map((value) => String(value))
+          ? nextValue.map((value) => optionValueMap.get(String(value)) ?? value)
           : []
         onValueChange(field.name, next)
       }}
@@ -162,6 +165,9 @@ export function SchemaFormFields({
       {schema.map((field) => {
         const value = values[field.name]
         const choices = normalizePluginChoices(field.choices)
+        const optionValueMap = new Map(
+          choices.map((choice) => [String(choice.value), choice.value] as const)
+        )
         const isPasswordVisible = Boolean(visiblePasswords[field.name])
         const fieldError = fieldErrors[field.name]
         const isInvalid = Boolean(fieldError)
@@ -239,14 +245,23 @@ export function SchemaFormFields({
             {field.type === "list" && (
               <Select
                 value={String(value ?? "")}
-                onValueChange={(nextValue) => onValueChange(field.name, nextValue)}
+                onValueChange={(nextValue) => {
+                  const resolvedValue = String(nextValue)
+                  onValueChange(
+                    field.name,
+                    optionValueMap.get(resolvedValue) ?? resolvedValue
+                  )
+                }}
               >
                 <SelectTrigger className="w-full" aria-invalid={isInvalid}>
                   <SelectValue placeholder={field.message || field.name} />
                 </SelectTrigger>
                 <SelectContent>
                   {choices.map((choice) => (
-                    <SelectItem key={choice.value} value={choice.value}>
+                    <SelectItem
+                      key={`${field.name}-${String(choice.value)}`}
+                      value={String(choice.value)}
+                    >
                       {choice.label}
                     </SelectItem>
                   ))}

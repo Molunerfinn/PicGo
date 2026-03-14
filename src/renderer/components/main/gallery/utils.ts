@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 
+import { DEFAULT_DATE_TIME_FORMAT } from '@/utils/consts'
 import type { ValueOf } from '@/types/utils'
 
 export type GalleryPhoto = {
@@ -100,7 +101,7 @@ function formatGalleryDate (timestamp?: number) {
     return ''
   }
 
-  return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')
+  return dayjs(timestamp).format(DEFAULT_DATE_TIME_FORMAT)
 }
 
 function formatGallerySize (size?: number) {

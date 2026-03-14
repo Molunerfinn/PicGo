@@ -93,10 +93,15 @@ export function PicGoProviders() {
 
     async function bootstrap() {
       try {
+        providerStoreActions.setHydrating(true)
         await appActions.ensureHydrated()
       } catch (error) {
         if (!isDisposed) {
           toast.error(resolveErrorMessage(error, t("FAILED")))
+        }
+      } finally {
+        if (!isDisposed) {
+          providerStoreActions.setHydrating(false)
         }
       }
     }
@@ -162,7 +167,9 @@ export function PicGoProviders() {
 
   const handleCreateConfigDraft = async (uploaderId: string, configName: string) => {
     try {
-      const resolvedSchema = providerSchemas[uploaderId]?.config
+      const resolvedSchema =
+        (await providerStoreActions.ensureSchema(uploaderId)).config ??
+        providerSchemas[uploaderId]?.config
 
       if (!resolvedSchema) {
         toast.error(t("FAILED"))

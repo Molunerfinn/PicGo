@@ -1,3 +1,4 @@
+import dayjs from "dayjs"
 import type {
   ProviderDraftConfigItem,
   ProviderPluginChoice,
@@ -8,6 +9,7 @@ import type {
   ProviderUploaderConfigItem,
   ProviderUploaderSchema,
 } from "./types"
+import { DEFAULT_DATE_TIME_FORMAT } from "@/utils/consts"
 
 export type ProviderFormValues = Record<string, unknown>
 export type ProviderConfigMap = Record<string, ProviderUploaderConfigList>
@@ -35,41 +37,23 @@ interface ResolveProviderSelectionStateParams {
 export const emptyProviderSchema: ProviderUploaderSchema["config"] = []
 export const emptyProviderConfigMap: ProviderConfigMap = {}
 
-const formatterByLocale = new Map<string, Intl.DateTimeFormat>()
-
-function getDateTimeFormatter(locale: string | undefined) {
-  const cacheKey = locale ?? "default"
-  const cachedFormatter = formatterByLocale.get(cacheKey)
-
-  if (cachedFormatter) {
-    return cachedFormatter
-  }
-
-  const formatter = new Intl.DateTimeFormat(locale, {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  })
-
-  formatterByLocale.set(cacheKey, formatter)
-  return formatter
-}
-
 function isChoiceObject(
   choice: ProviderPluginChoice
 ): choice is ProviderPluginChoiceObject {
   return typeof choice !== "string"
 }
 
+export interface NormalizedPluginChoice {
+  label: string
+  value: unknown
+  checked: boolean
+}
+
 export function normalizePluginChoices(choices: ProviderPluginChoice[] | undefined) {
-  return (choices ?? []).map((choice) => {
+  return (choices ?? []).map<NormalizedPluginChoice>((choice) => {
     if (isChoiceObject(choice)) {
       return {
-        label: choice.name ?? choice.value,
+        label: choice.name ?? String(choice.value ?? ""),
         value: choice.value,
         checked: Boolean(choice.checked),
       }
@@ -134,11 +118,10 @@ export function buildConfigPatch(
 }
 
 export function formatConfigUpdatedAt(
-  timestamp: number | undefined,
-  locale?: string
+  timestamp: number | undefined
 ) {
   if (!timestamp) return "--"
-  return getDateTimeFormatter(locale).format(new Date(timestamp))
+  return dayjs(timestamp).format(DEFAULT_DATE_TIME_FORMAT)
 }
 
 export function isRequiredFieldValueMissing(value: unknown) {
