@@ -21,8 +21,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@picgo/store':
-        specifier: ^2.1.0
-        version: 2.1.0
+        specifier: ^2.2.2
+        version: 2.2.2
       '@picgo/video-duration':
         specifier: ^1.0.1
         version: 1.0.1
@@ -1650,8 +1650,8 @@ packages:
   '@picgo/i18n@1.0.0':
     resolution: {integrity: sha512-D0fqwox9AZ1pnvgFqBKQe+16U08FkPLnUW1wQSBEdn+EvI48IC3jIWDTZd1MSQzXeODnh/w4eAiUyARrf2Hzig==}
 
-  '@picgo/store@2.1.0':
-    resolution: {integrity: sha512-oD/+4hGaioSVqWmaV5/LEXJ/xfpDrwUYPDGgJx3gEYoNPG2IdIZiO++asSZsafAc03TGPlvtR3L9eOTqPaKj9w==}
+  '@picgo/store@2.2.2':
+    resolution: {integrity: sha512-c2jGNq4TAekZx3pKIWkl67IxO6W1IGjbs6pLtIRBm4zlX7QvbHPR+GhSBHJBWLEgmt60sdMvvsp2Qq/ULJ7MNw==}
 
   '@picgo/video-duration@1.0.1':
     resolution: {integrity: sha512-onab36wVAuEDSnyyXYwSrRt672urJnSeY5MwXwk6NLYLUU1UTld2uazfYAZVnCnR6u69sfUeDdefL51RG5jcoA==}
@@ -2234,10 +2234,6 @@ packages:
   '@types/body-parser@1.19.6':
     resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
 
-  '@types/bson@4.2.4':
-    resolution: {integrity: sha512-SG23E3JDH6y8qF20a4G9txLuUl+TCV16gxsKyntmGiJez2V9VBJr1Y8WxTBBD6OgBVcvspQ7sxgdNMkXFVcaEA==}
-    deprecated: This is a stub types definition. bson provides its own type definitions, so you do not need this installed.
-
   '@types/cacheable-request@6.0.3':
     resolution: {integrity: sha512-IQ3EbTzGxIigb1I3qPZc1rWJnH0BmSKv5QYTalEwweFvyBDLSAe24zP0le/hyi7ecGfZVlIVAg4BZqb8WBwKqw==}
 
@@ -2273,9 +2269,6 @@ packages:
 
   '@types/fs-extra@9.0.13':
     resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
-
-  '@types/graceful-fs@4.1.9':
-    resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
 
   '@types/http-cache-semantics@4.0.4':
     resolution: {integrity: sha512-1m0bIFVc7eJWyve9S0RnuRgcQqF/Xd5QsUZAZeQFr1Q3/p9JWoQQEqmVy+DPTNpGXwhgIetAoYF8JSc33q29QA==}
@@ -2857,10 +2850,6 @@ packages:
     resolution: {integrity: sha512-ZC5Bd0LgJXgwGqUknZY/vkUQ04r8NXnJZ3yYi4vDmSiZmC/pdSN0NbNRPxZpbtO4uAfDUAFffO8IZoM3Gj8IkA==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
-
-  bson@7.0.0:
-    resolution: {integrity: sha512-Kwc6Wh4lQ5OmkqqKhYGKIuELXl+EPYSCObVE6bWsp1T/cGkOCBN0I8wF/T44BiuhHyNi1mmKVPXk60d41xZ7kw==}
-    engines: {node: '>=20.19.0'}
 
   buffer-crc32@0.2.13:
     resolution: {integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==}
@@ -4017,8 +4006,8 @@ packages:
     resolution: {integrity: sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==}
     engines: {node: ^12.20 || >= 14.13}
 
-  fflate@0.7.4:
-    resolution: {integrity: sha512-5u2V/CDW15QM1XbbgS+0DfPxVB+jUKhWEKuuFuHncbk3tEEqzmoXL+2KyOFuKGqOnmdIy0/davWF1CkuwtibCw==}
+  fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
 
   figures@2.0.0:
     resolution: {integrity: sha512-Oa2M9atig69ZkfwiApY8F2Yy+tzMbazyvqv21R0NsSC8floSOC09BbT1ITWAdoMGQvJ/aZnR1KMwdx9tvHnTNA==}
@@ -7136,10 +7125,6 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  write-file-atomic@4.0.2:
-    resolution: {integrity: sha512-7KxauUdBmSdWnmpaGFg+ppNjKF8uNLry8LyzjauQDOVONfFLNKrKvQOxZ/VuTIcS/gge/YNahf5RIIQWTSarlg==}
-    engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
-
   write-file-atomic@7.0.0:
     resolution: {integrity: sha512-YnlPC6JqnZl6aO4uRc+dx5PHguiR9S6WeoLtpxNT9wIG+BDya7ZNE1q7KOjVgaA73hKhKLpVPgJ5QA9THQ5BRg==}
     engines: {node: ^20.17.0 || >=22.9.0}
@@ -8940,18 +8925,15 @@ snapshots:
       chalk: 4.1.2
       tslib: 2.8.1
 
-  '@picgo/store@2.1.0':
+  '@picgo/store@2.2.2':
     dependencies:
       '@commonify/lowdb': 3.0.0
       '@commonify/steno': 2.1.0
-      '@types/bson': 4.2.4
-      '@types/graceful-fs': 4.1.9
-      '@types/lodash': 4.17.21
       comment-json: 4.5.1
-      fflate: 0.7.4
-      lodash: 4.17.21
+      fflate: 0.8.2
+      lodash: 4.17.23
       lodash-id: 0.14.1
-      write-file-atomic: 4.0.2
+      write-file-atomic: 7.0.0
 
   '@picgo/video-duration@1.0.1': {}
 
@@ -9611,10 +9593,6 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/node': 20.19.26
 
-  '@types/bson@4.2.4':
-    dependencies:
-      bson: 7.0.0
-
   '@types/cacheable-request@6.0.3':
     dependencies:
       '@types/http-cache-semantics': 4.0.4
@@ -9662,10 +9640,6 @@ snapshots:
       '@types/serve-static': 2.2.0
 
   '@types/fs-extra@9.0.13':
-    dependencies:
-      '@types/node': 20.19.26
-
-  '@types/graceful-fs@4.1.9':
     dependencies:
       '@types/node': 20.19.26
 
@@ -10387,8 +10361,6 @@ snapshots:
       electron-to-chromium: 1.5.267
       node-releases: 2.0.27
       update-browserslist-db: 1.2.2(browserslist@4.28.1)
-
-  bson@7.0.0: {}
 
   buffer-crc32@0.2.13: {}
 
@@ -11832,7 +11804,7 @@ snapshots:
       node-domexception: 1.0.0
       web-streams-polyfill: 3.3.3
 
-  fflate@0.7.4: {}
+  fflate@0.8.2: {}
 
   figures@2.0.0:
     dependencies:
@@ -13591,7 +13563,7 @@ snapshots:
     dependencies:
       '@hono/node-server': 1.19.9(hono@4.12.3)
       '@picgo/i18n': 1.0.0
-      '@picgo/store': 2.1.0
+      '@picgo/store': 2.2.2
       axios: 1.13.6
       chalk: 2.4.2
       commander: 8.3.0
@@ -15031,11 +15003,6 @@ snapshots:
       strip-ansi: 7.1.2
 
   wrappy@1.0.2: {}
-
-  write-file-atomic@4.0.2:
-    dependencies:
-      imurmurhash: 0.1.4
-      signal-exit: 3.0.7
 
   write-file-atomic@7.0.0:
     dependencies:

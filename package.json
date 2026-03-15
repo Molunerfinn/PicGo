@@ -37,7 +37,7 @@
     "@element-plus/icons-vue": "^2.3.2",
     "@fontsource-variable/inter": "^5.2.8",
     "@picgo/i18n": "^1.0.0",
-    "@picgo/store": "^2.1.0",
+    "@picgo/store": "^2.2.2",
     "@picgo/video-duration": "^1.0.1",
     "@tanstack/history": "^1.161.4",
     "@tanstack/react-router": "^1.166.2",
