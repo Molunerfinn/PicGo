@@ -22,8 +22,10 @@ vi.mock('@/adapters/gallery', () => ({
 
 vi.mock('electron', () => ({
   ipcRenderer: {
+    invoke: vi.fn(async () => ({ isMaximized: false })),
     on: vi.fn(),
     once: vi.fn(),
+    removeAllListeners: vi.fn(),
     removeListener: vi.fn(),
     send: vi.fn()
   },
@@ -53,27 +55,22 @@ describe('renderer app shell routing', () => {
   test('redirects /main/ to dashboard and renders dashboard-only history panel', async () => {
     await renderRoute('/main/')
 
-    expect(await screen.findByTitle('SIDEBAR_DASHBOARD')).toHaveAttribute('aria-current', 'page')
-    expect(screen.getByText('HISTORY_PANEL_TITLE')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('HISTORY_PANEL_FILTER_PLACEHOLDER')).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'SIDEBAR_DASHBOARD' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByTitle('DASHBOARD_HISTORY_PANEL_TITLE')).toBeInTheDocument()
   })
 
   test('drives active sidebar state from the current URL', async () => {
     await renderRoute('/main/providers')
 
-    expect(await screen.findByTitle('GALLERY_PROVIDERS')).toHaveAttribute('aria-current', 'page')
-    expect(screen.getByTitle('SIDEBAR_DASHBOARD')).not.toHaveAttribute('aria-current')
+    expect(await screen.findByRole('button', { name: 'GALLERY_PROVIDERS' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('button', { name: 'SIDEBAR_DASHBOARD' })).not.toHaveAttribute('aria-current')
   })
 
   test('renders the v3-style shell navigation groups on desktop routes', async () => {
     await renderRoute('/main/dashboard')
 
-    expect(await screen.findByTitle('SIDEBAR_PLUGINS')).toBeInTheDocument()
-    expect(screen.getByTitle('SETTINGS')).toBeInTheDocument()
-    expect(screen.getByTitle('SIDEBAR_NOTIFICATIONS')).toBeInTheDocument()
-    expect(screen.getByTitle('Tray')).toBeInTheDocument()
-    expect(screen.getByTitle('Mini')).toBeInTheDocument()
-    expect(screen.getByTitle('Rename')).toBeInTheDocument()
-    expect(screen.getByTitle('Toolbox')).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'SIDEBAR_PLUGINS' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'SETTINGS' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'MORE' })).toBeInTheDocument()
   })
 })

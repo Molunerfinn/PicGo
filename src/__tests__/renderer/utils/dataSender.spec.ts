@@ -10,6 +10,7 @@ vi.mock('electron', () => {
       on: vi.fn(),
       once: vi.fn(),
       send: vi.fn(),
+      removeAllListeners: vi.fn(),
       removeListener: vi.fn()
     }
   }
