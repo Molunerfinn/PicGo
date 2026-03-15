@@ -24,6 +24,7 @@ interface ILocales {
   CONFIG_THING: string
   FIND_NEW_VERSION: string
   NO_MORE_NOTICE: string
+  MORE: string
   SHOW_DEVTOOLS: string
   CURRENT_PICBED: string
   OPEN_TOOLBOX: string

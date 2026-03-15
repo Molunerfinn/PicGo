@@ -32,7 +32,7 @@ export function UtilityWindowLayout({
 }: UtilityWindowLayoutProps) {
   return (
     <main
-      className={cn("h-dvh w-full overflow-auto bg-background", className)}
+      className={cn("h-dvh w-full overflow-hidden bg-background", className)}
       style={buildUtilityWindowLayoutStyle(page)}
       data-testid={`utility-window-${page}`}
     >

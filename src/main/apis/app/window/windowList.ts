@@ -114,14 +114,6 @@ windowList.set(IWindowList.SETTING_WINDOW, {
   },
   callback (window, windowManager) {
     window.loadURL(handleWindowParams(SETTING_WINDOW_URL))
-    // TODO(release): remove the default DevTools auto-open before the official release build.
-    window.on('show', () => {
-      if (!window.webContents.isDevToolsOpened()) {
-        window.webContents.openDevTools({
-          mode: 'detach'
-        })
-      }
-    })
     window.on('maximize', () => {
       window.webContents.send(WINDOW_STATE_CHANGED, {
         isMaximized: true
@@ -234,7 +226,7 @@ windowList.set(IWindowList.TOOLBOX_WINDOW, {
   multiple: false,
   options () {
     const options: IBrowserWindowOptions = {
-      height: 450,
+      height: 480,
       width: 800,
       show: false,
       frame: true,
@@ -260,13 +252,13 @@ windowList.set(IWindowList.TOOLBOX_WINDOW, {
     if (currentWindow && currentWindow.isVisible()) {
     // bounds: { x: 821, y: 75, width: 800, height: 450 }
       const bounds = currentWindow.getBounds()
-      const positionX = bounds.x + bounds.width / 2 - 400
+      const positionX = Math.round(bounds.x + bounds.width / 2 - 400)
       let positionY
       // if is the settingWindow
       if (bounds.height > 400) {
-        positionY = bounds.y + bounds.height / 2 - 225
+        positionY = Math.round(bounds.y + bounds.height / 2 - 240)
       } else { // if is the miniWindow
-        positionY = bounds.y + bounds.height / 2
+        positionY = Math.round(bounds.y + bounds.height / 2)
       }
       window.setPosition(positionX, positionY, false)
     }

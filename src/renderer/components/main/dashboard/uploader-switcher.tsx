@@ -1,4 +1,4 @@
-import { ChevronDownIcon, CloudIcon } from "lucide-react"
+import { ChevronDownIcon, DatabaseIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
@@ -88,7 +88,7 @@ export function UploaderSwitcher({
         {providers.map((provider) => (
           <DropdownMenuSub key={provider.id}>
             <DropdownMenuSubTrigger className="rounded-md">
-              <CloudIcon className="text-muted-foreground" />
+              <DatabaseIcon className="text-muted-foreground" />
               <span className="flex-1">{provider.name}</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent className="min-w-40">

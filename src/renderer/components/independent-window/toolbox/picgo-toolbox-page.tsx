@@ -6,7 +6,7 @@ import {
   ChevronDownIcon,
   FolderSearch2Icon,
   LoaderCircleIcon,
-  RefreshCcwIcon,
+  SearchIcon,
   WrenchIcon,
 } from "lucide-react"
 
@@ -230,7 +230,6 @@ export function PicGoToolboxPage() {
         <Button
           type="button"
           size="sm"
-          className="rounded-full"
           disabled={isChecking || isFixing || items.length === 0}
           onClick={handleCheck}
           title="toolbox-start-scan"
@@ -238,7 +237,7 @@ export function PicGoToolboxPage() {
           {isChecking ? (
             <LoaderCircleIcon className="size-4 animate-spin" />
           ) : (
-            <RefreshCcwIcon className="size-4" />
+            <SearchIcon className="size-4" />
           )}
           {t("TOOLBOX_START_SCAN")}
         </Button>
@@ -258,7 +257,6 @@ export function PicGoToolboxPage() {
         <Button
           type="button"
           size="sm"
-          className="rounded-full"
           disabled={isFixing || isChecking}
           onClick={handleFix}
           title="toolbox-start-fix"
@@ -280,12 +278,11 @@ export function PicGoToolboxPage() {
           type="button"
           size="sm"
           variant="secondary"
-          className="rounded-full"
           disabled={isChecking || isFixing}
           onClick={handleCheck}
           title="toolbox-re-scan"
         >
-          <RefreshCcwIcon className="size-4" />
+          <SearchIcon className="size-4" />
           {t("TOOLBOX_RE_SCAN")}
         </Button>
       </div>
@@ -294,7 +291,7 @@ export function PicGoToolboxPage() {
 
   return (
     <UtilityWindowLayout page="toolbox">
-      <AppMainCard className="h-(--app-utility-shell-height) w-full flex-none rounded-xl border-(--app-panel-border) bg-(--app-panel-bg) px-6 py-5">
+      <AppMainCard className="flex h-(--app-utility-shell-height) w-full flex-col overflow-hidden rounded-xl border-(--app-panel-border) bg-(--app-panel-bg) px-6 py-5">
         <div className="flex h-full min-h-0 flex-col">
           <header className="flex items-center justify-between gap-6">
             <div className="flex min-w-0 items-center gap-4">
@@ -324,7 +321,7 @@ export function PicGoToolboxPage() {
           </section>
 
           <ScrollArea className="mt-5 min-h-0 flex-1">
-            <div className="space-y-2 pr-2">
+            <div className="space-y-2 pb-1 pr-2">
               {items.map((item) => {
                 const expanded = activeType === item.type
                 return (

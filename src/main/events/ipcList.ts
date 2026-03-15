@@ -26,6 +26,7 @@ import {
   WINDOW_STATE_CHANGED,
   SHOW_MAIN_PAGE_MENU,
   SHOW_UPLOAD_PAGE_MENU,
+  SHOW_PRIVACY_MESSAGE,
   OPEN_USER_STORE_FILE,
   OPEN_URL,
   SHOW_PLUGIN_PAGE_MENU,
@@ -43,6 +44,7 @@ import { buildMainPageMenu, buildMiniPageMenu, buildPluginPageMenu, buildPicBedL
 import path from 'path'
 import { T } from '~/main/i18n'
 import { STORE_PATH } from '~/main/utils/env'
+import { privacyManager } from '~/main/utils/privacyManager'
 
 export default {
   listen () {
@@ -182,6 +184,9 @@ export default {
       menu.popup({
         window
       })
+    })
+    ipcMain.on(SHOW_PRIVACY_MESSAGE, () => {
+      privacyManager.show(false)
     })
     ipcMain.on(SHOW_UPLOAD_PAGE_MENU, () => {
       const window = windowManager.get(IWindowList.SETTING_WINDOW)!

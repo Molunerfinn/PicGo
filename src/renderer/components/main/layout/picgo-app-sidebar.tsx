@@ -1,6 +1,7 @@
+import { useState } from "react"
 import {
-  BellIcon,
-  CloudIcon,
+  DatabaseIcon,
+  EllipsisIcon,
   ImageIcon,
   LayoutIcon,
   MoonIcon,
@@ -8,7 +9,6 @@ import {
   PuzzleIcon,
   SettingsIcon,
   SunIcon,
-  WrenchIcon,
 } from "lucide-react"
 import { useMatchRoute, useNavigate } from "@tanstack/react-router"
 import { useTranslation } from "react-i18next"
@@ -21,6 +21,7 @@ import { Sidebar } from "@/components/ui/sidebar"
 import { useSidebar } from "@/components/ui/sidebar-context"
 import { cn } from "@/lib/utils"
 import { SidebarNavButton } from "./sidebar-nav-button"
+import { MainMoreDialog } from "./main-more-dialog"
 
 const SIDEBAR_ICON_CLASSNAME = "size-[18px]"
 
@@ -36,7 +37,7 @@ export function PicGoAppSidebar({
   const matchRoute = useMatchRoute()
   const { state, setOpen } = useSidebar()
   const collapsed = state === "collapsed"
-  const isDevMode = import.meta.env.DEV
+  const [moreOpen, setMoreOpen] = useState(false)
 
   const matchActive = (to: string) =>
     !!matchRoute({ to, fuzzy: true, pending: false })
@@ -49,11 +50,6 @@ export function PicGoAppSidebar({
     matchActive("/main/settings/settings") ||
     matchActive("/main/settings/shortcuts") ||
     matchActive("/main/settings/url-rewrite")
-  const isNotificationsActive = matchActive("/main/settings/notifications")
-  const isTrayActive = matchActive("/tray")
-  const isMiniActive = matchActive("/mini")
-  const isRenameActive = matchActive("/rename")
-  const isToolboxActive = matchActive("/toolbox")
 
   return (
     <Sidebar
@@ -123,7 +119,7 @@ export function PicGoAppSidebar({
                 collapsed={collapsed}
               />
               <SidebarNavButton
-                icon={<CloudIcon className={SIDEBAR_ICON_CLASSNAME} />}
+                icon={<DatabaseIcon className={SIDEBAR_ICON_CLASSNAME} />}
                 label={t("GALLERY_PROVIDERS")}
                 active={isProviderActive}
                 onClick={() => navigate({ to: "/main/providers" })}
@@ -156,58 +152,14 @@ export function PicGoAppSidebar({
                   collapsed={collapsed}
                 />
                 <SidebarNavButton
-                  icon={<BellIcon className={SIDEBAR_ICON_CLASSNAME} />}
-                  label={t("SIDEBAR_NOTIFICATIONS")}
-                  badge="2"
-                  active={isNotificationsActive}
-                  onClick={() => navigate({ to: "/main/settings/notifications" })}
+                  icon={<EllipsisIcon className={SIDEBAR_ICON_CLASSNAME} />}
+                  label={t("MORE")}
+                  active={false}
+                  onClick={() => setMoreOpen(true)}
                   collapsed={collapsed}
                 />
               </nav>
             </div>
-
-            {isDevMode ? (
-              <div className="mt-8">
-                {!collapsed ? (
-                  <p className="text-muted-foreground animate-in fade-in mb-3 px-4 text-xs font-semibold uppercase tracking-wider">
-                    Dev
-                  </p>
-                ) : (
-                  <div className="bg-border mx-2 my-4 h-px" />
-                )}
-
-                <nav className="space-y-1">
-                  <SidebarNavButton
-                    icon={<LayoutIcon className={SIDEBAR_ICON_CLASSNAME} />}
-                    label="Tray"
-                    active={isTrayActive}
-                    onClick={() => navigate({ to: "/tray" })}
-                    collapsed={collapsed}
-                  />
-                  <SidebarNavButton
-                    icon={<ImageIcon className={SIDEBAR_ICON_CLASSNAME} />}
-                    label="Mini"
-                    active={isMiniActive}
-                    onClick={() => navigate({ to: "/mini" })}
-                    collapsed={collapsed}
-                  />
-                  <SidebarNavButton
-                    icon={<SettingsIcon className={SIDEBAR_ICON_CLASSNAME} />}
-                    label="Rename"
-                    active={isRenameActive}
-                    onClick={() => navigate({ to: "/rename" })}
-                    collapsed={collapsed}
-                  />
-                  <SidebarNavButton
-                    icon={<WrenchIcon className={SIDEBAR_ICON_CLASSNAME} />}
-                    label="Toolbox"
-                    active={isToolboxActive}
-                    onClick={() => navigate({ to: "/toolbox" })}
-                    collapsed={collapsed}
-                  />
-                </nav>
-              </div>
-            ) : null}
           </div>
         </ScrollArea>
 
@@ -259,6 +211,7 @@ export function PicGoAppSidebar({
           </Card>
         </div>
       </div>
+      <MainMoreDialog open={moreOpen} onOpenChange={setMoreOpen} />
     </Sidebar>
   )
 }

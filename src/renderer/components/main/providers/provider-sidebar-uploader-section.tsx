@@ -2,7 +2,7 @@ import {
   CheckIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-  CloudIcon,
+  DatabaseIcon,
   CopyIcon,
   LoaderCircleIcon,
   MoreHorizontalIcon,
@@ -219,13 +219,13 @@ export function ProviderSidebarUploaderSection({
           aria-current={isActiveUploader ? "page" : undefined}
           data-active={isActiveUploader ? "true" : "false"}
         >
-          <CloudIcon
+          <DatabaseIcon
             className={cn(
               "size-4 transition-colors",
               uploader.isDefaultUploader
-                ? "fill-(--app-provider-uploader-default-icon-color) text-(--app-provider-uploader-default-icon-color)"
+                ? "text-(--app-provider-uploader-default-icon-color)"
                 : isActiveUploader
-                  ? "fill-(--app-provider-uploader-selected-icon-color) text-(--app-provider-uploader-selected-icon-color)"
+                  ? "text-(--app-provider-uploader-selected-icon-color)"
                   : "text-muted-foreground"
             )}
           />

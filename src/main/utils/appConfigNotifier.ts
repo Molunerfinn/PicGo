@@ -5,7 +5,9 @@ import windowManager from 'apis/app/window/windowManager'
 const TARGET_WINDOWS: IWindowList[] = [
   IWindowList.SETTING_WINDOW,
   IWindowList.TRAY_WINDOW,
-  IWindowList.MINI_WINDOW
+  IWindowList.MINI_WINDOW,
+  IWindowList.RENAME_WINDOW,
+  IWindowList.TOOLBOX_WINDOW
 ]
 
 export const notifyAppConfigUpdated = (): void => {
