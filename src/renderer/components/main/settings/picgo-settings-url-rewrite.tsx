@@ -126,7 +126,7 @@ export function PicGoSettingsUrlRewrite() {
         stripSettingsUrlRewriteDraftRules(rules)
       )
       setDraftRules(null)
-      toast.success(t("SUCCESS"))
+      toast.success(t("TIPS_SET_SUCCEED"))
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))
     }

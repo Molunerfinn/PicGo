@@ -94,7 +94,6 @@ export function SettingsSectionAbout({
   const handleOpenExternalUrl = async (url: string) => {
     try {
       await openSettingsExternalUrl(url)
-      toast.success(t("SUCCESS"))
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))
     }

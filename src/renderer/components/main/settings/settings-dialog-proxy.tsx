@@ -56,7 +56,7 @@ export function SettingsProxyDialog({
         npmRegistry: npmRegistryDraft,
       })
       await settingsStoreActions.savePicBedProxy(proxyDraft)
-      toast.success(t("SUCCESS"))
+      toast.success(t("TIPS_SET_SUCCEED"))
       onOpenChange(false)
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))

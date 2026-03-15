@@ -47,7 +47,7 @@ export function SettingsSectionAppearance({
 
     try {
       await settingsStoreActions.saveVisiblePicBedNames(nextNames)
-      toast.success(t("SUCCESS"))
+      toast.success(t("TIPS_SET_SUCCEED"))
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t("FAILED"))
     }

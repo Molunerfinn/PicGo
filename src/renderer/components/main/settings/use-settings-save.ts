@@ -20,7 +20,7 @@ export function useSettingsSave () {
   ) => {
     try {
       await settingsStoreActions.saveSettingsConfig(path, value)
-      toast.success(t('SUCCESS'))
+      toast.success(t('TIPS_SET_SUCCEED'))
       return true
     } catch (error) {
       toast.error(resolveErrorMessage(error, t('FAILED')))

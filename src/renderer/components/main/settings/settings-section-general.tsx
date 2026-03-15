@@ -34,7 +34,7 @@ export function SettingsSectionGeneral({
   const handleLanguageChange = async (value: string) => {
     try {
       await settingsStoreActions.saveLanguage(value)
-      toast.success(t("SUCCESS"))
+      toast.success(t("TIPS_SET_SUCCEED"))
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t("FAILED"))
     }

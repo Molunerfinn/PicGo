@@ -12,6 +12,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       theme="system"
+      closeButton={true}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,
@@ -26,11 +27,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
+          WebkitAppRegion: "no-drag",
         } as CSSProperties
       }
       toastOptions={{
         classNames: {
-          toast: "cn-toast",
+          toast: "cn-toast [-webkit-app-region:no-drag]",
         },
       }}
       {...props}
