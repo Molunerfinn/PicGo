@@ -6,6 +6,9 @@ import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import { T } from '~/main/i18n'
 import { showNotification } from '~/main/utils/common'
 import { notifyAppConfigUpdated } from '~/main/utils/appConfigNotifier'
+import { dialog } from 'electron'
+import windowManager from '~/main/apis/app/window/windowManager'
+import { IWindowList } from '#/types/enum'
 
 function handleRestoreState (fullName: string) {
   const plugin = picgo.pluginLoader.getPlugin(fullName)
@@ -54,6 +57,40 @@ pluginsRouter
 
     shortKeyHandler.registerPluginShortKey(result.body[0])
     return ok(result.body[0])
+  })
+  .add(IRPCActionType.IMPORT_LOCAL_PLUGIN, async () => {
+    try {
+      const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)
+
+      if (!settingWindow) {
+        throw new Error('Setting window not found')
+      }
+
+      const dialogResult = await dialog.showOpenDialog(settingWindow, {
+        properties: ['openDirectory']
+      })
+
+      const filePaths = dialogResult.filePaths
+
+      if (filePaths.length === 0) {
+        return ok(null)
+      }
+
+      const result = await picgo.pluginHandler.install(filePaths)
+
+      if (!result.success) {
+        showNotification({
+          title: T('PLUGIN_IMPORT_FAILED'),
+          body: result.body as string
+        })
+        return fail(new Error(result.body as string))
+      }
+
+      shortKeyHandler.registerPluginShortKey(result.body[0])
+      return ok(result.body[0])
+    } catch (e) {
+      return fail(e)
+    }
   })
   .add(IRPCActionType.UNINSTALL_PLUGIN, async (args) => {
     const [fullName] = args as [string]

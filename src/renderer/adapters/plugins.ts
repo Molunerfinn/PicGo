@@ -49,15 +49,8 @@ export const pluginsAdapter = {
       errMsg: result.success ? '' : (result.error || '')
     }))
   },
-  importLocalPlugin (): Promise<void> {
-    return new Promise((resolve) => {
-      const handleResponse = () => {
-        resolve()
-      }
-
-      ipcRenderer.once('hideLoading', handleResponse)
-      sendToMain('importLocalPlugin')
-    })
+  importLocalPlugin () {
+    return invokeRPC<string | null>(IRPCActionType.IMPORT_LOCAL_PLUGIN)
   },
   uninstallPlugin (fullName: string) {
     return invokeRPC<string>(IRPCActionType.UNINSTALL_PLUGIN, fullName)

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEvent } from "react"
+import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
 
@@ -34,19 +34,6 @@ import {
 
 const awesomePluginListUrl = "https://github.com/PicGo/Awesome-PicGo"
 
-function resolveFolderPathFromFiles(files: FileList) {
-  const firstFile = files[0]
-
-  if (!firstFile) {
-    return null
-  }
-
-  const relativePath = firstFile.webkitRelativePath || firstFile.name
-  const folderName = relativePath.split("/").filter(Boolean)[0]
-
-  return folderName ?? null
-}
-
 export function PicGoPlugins() {
   const { t } = useTranslation()
 
@@ -64,7 +51,7 @@ export function PicGoPlugins() {
   const [activeTab, setActiveTab] = useState<PluginDetailTab>(pluginDetailTab.Readme)
   const pendingTabOnSelectionRef = useRef<PluginDetailTab | null>(null)
   const activePluginFullNameRef = useRef<string | undefined>(undefined)
-  const importInputRef = useRef<HTMLInputElement | null>(null)
+  const isImportingLocal = usePluginStore.use.isImportingLocal()
 
   const isSearchMode = pluginSearchValue.trim().length > 0
   const installedPluginMap = new Map(
@@ -126,15 +113,11 @@ export function PicGoPlugins() {
 
     pendingTabOnSelectionRef.current = jumpResolution.targetTab
     setSelectedPluginFullName(jumpResolution.targetPluginFullName)
+    setActiveTab(jumpResolution.targetTab)
   }
 
   useIPCOn('pluginList', (_event, list: IPicGoPlugin[]) => {
     pluginStoreActions.setInstalledPlugins(list.map(mapInstalledPluginItem))
-  })
-
-  useIPCOn('hideLoading', () => {
-    pluginStoreActions.setImportingLocal(false)
-    pluginStoreActions.setSearching(false)
   })
 
   useIPCOn(PICGO_HANDLE_PLUGIN_ING, (_event, fullName: string) => {
@@ -163,22 +146,6 @@ export function PicGoPlugins() {
         state.appConfig.needReload = true
       }
     })
-  })
-
-  useIPCOn('updateSuccess', async () => {
-    const installedPlugins = await pluginsAdapter.getInstalledPlugins()
-    pluginStoreActions.setInstalledPlugins(
-      installedPlugins.map(mapInstalledPluginItem)
-    )
-    await appActions.hydrateAppState()
-  })
-
-  useIPCOn('uninstallSuccess', async () => {
-    const installedPlugins = await pluginsAdapter.getInstalledPlugins()
-    pluginStoreActions.setInstalledPlugins(
-      installedPlugins.map(mapInstalledPluginItem)
-    )
-    await appActions.hydrateAppState()
   })
 
   useIPCOn(
@@ -244,18 +211,6 @@ export function PicGoPlugins() {
     }
   }, [t])
 
-  // Configure the hidden file input to allow folder selection for local plugin import.
-  useEffect(() => {
-    const input = importInputRef.current
-
-    if (!input) {
-      return
-    }
-
-    input.setAttribute("webkitdirectory", "")
-    input.setAttribute("directory", "")
-  }, [])
-
   // Debounce npm search requests while the search keyword changes.
   useEffect(() => {
     const query = pluginSearchValue
@@ -267,34 +222,6 @@ export function PicGoPlugins() {
       window.clearTimeout(timer)
     }
   }, [pluginSearchValue])
-
-  // Keep selected plugin in sync with the current sidebar list result set.
-  useEffect(() => {
-    if (!activeListItem) {
-      setSelectedPluginFullName(null)
-      return
-    }
-
-    if (selectedPluginFullName === activeListItem.fullName) {
-      return
-    }
-
-    setSelectedPluginFullName(activeListItem.fullName)
-  }, [activeListItem, selectedPluginFullName])
-
-  // Reset tab on plugin switch, but respect a pending tab jump requested from the main-process plugin menu.
-  useEffect(() => {
-    const activeFullName = activeListItem?.fullName
-
-    if (!activeFullName) {
-      return
-    }
-
-    const pendingTab = pendingTabOnSelectionRef.current
-    pendingTabOnSelectionRef.current = null
-
-    setActiveTab(pendingTab ?? pluginDetailTab.Readme)
-  }, [activeListItem?.fullName])
 
   // Fetch README lazily for the active plugin when it is still idle.
   useEffect(() => {
@@ -313,10 +240,8 @@ export function PicGoPlugins() {
     pluginStoreActions.fetchPluginReadme(fullName)
   }, [activeListItem?.fullName, readmeByPlugin])
 
-  // Guarantee the current active tab is always valid for the selected plugin.
-  useEffect(() => {
-    setActiveTab((currentTab) => resolveSupportedPluginTab(currentTab, availableTabs))
-  }, [availableTabs])
+  const resolvedSelectedPluginFullName = activeListItem?.fullName ?? null
+  const resolvedActiveTab = resolveSupportedPluginTab(activeTab, availableTabs)
 
   const handleOpenAwesomeList = async () => {
     openURL(awesomePluginListUrl)
@@ -351,48 +276,30 @@ export function PicGoPlugins() {
     }
   })
 
-  const handleOpenImportDialog = () => {
-    importInputRef.current?.click()
-  }
-
-  const handleImportInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files
-
-    if (!files || files.length === 0) {
-      return
-    }
-
-    const folderPath = resolveFolderPathFromFiles(files)
-
-    if (!folderPath) {
-      return
-    }
-
+  const handleOpenImportDialog = async () => {
     try {
-      const result = await pluginStoreActions.importLocalPlugin(folderPath)
-      toast.success(`${t("PLUGIN_IMPORT_SUCCEED")}: ${result.path}`)
+      const result = await pluginStoreActions.importLocalPlugin()
+      if (!result) {
+        return
+      }
       setSelectedPluginFullName(result.installedPlugin.fullName)
     } catch (error) {
-      toast.error(resolveErrorMessage(error, t("PLUGIN_IMPORT_FAILED")))
-    } finally {
-      event.target.value = ""
+      console.error(
+        `[plugins] import local failed: ${error instanceof Error ? error.message : t("PLUGIN_IMPORT_FAILED")}`
+      )
     }
   }
 
   return (
     <>
-      <input
-        ref={importInputRef}
-        type="file"
-        multiple
-        className="hidden"
-        onChange={handleImportInputChange}
-      />
-
       <PluginSidebar
         items={listItems}
-        selectedPluginFullName={selectedPluginFullName}
-        onSelectPlugin={setSelectedPluginFullName}
+        selectedPluginFullName={resolvedSelectedPluginFullName}
+        onSelectPlugin={(fullName) => {
+          pendingTabOnSelectionRef.current = null
+          setSelectedPluginFullName(fullName)
+          setActiveTab(pluginDetailTab.Readme)
+        }}
         onInstallPlugin={async (fullName) => {
           try {
             await pluginStoreActions.installPlugin(fullName)
@@ -425,7 +332,7 @@ export function PicGoPlugins() {
             : null
         }
         plugin={activePlugin}
-        activeTab={activeTab}
+        activeTab={resolvedActiveTab}
         availableTabs={availableTabs}
         readmeState={activeReadmeState}
         isMutating={
@@ -433,8 +340,19 @@ export function PicGoPlugins() {
             ? Boolean(isMutatingByPlugin[activeListItem.fullName])
             : false
         }
-        onTabChange={setActiveTab}
+        onTabChange={(tab) => {
+          setActiveTab(resolveSupportedPluginTab(tab, availableTabs))
+        }}
       />
+
+      {isImportingLocal ? (
+        <div className="absolute inset-0 z-50 flex items-center justify-center rounded-xl bg-background/60 backdrop-blur-sm">
+          <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-background px-4 py-3 shadow-lg">
+            <div className="size-5 animate-spin rounded-full border-2 border-primary/25 border-t-primary" />
+            <span className="text-sm font-medium">{t("PLUGIN_IMPORT_LOCAL")}</span>
+          </div>
+        </div>
+      ) : null}
     </>
   )
 }

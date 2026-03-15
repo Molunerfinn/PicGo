@@ -1,7 +1,6 @@
 import path from 'path'
 import GuiApi from 'apis/gui'
 import {
-  dialog,
   shell,
   IpcMainEvent,
   ipcMain,
@@ -9,7 +8,6 @@ import {
 } from 'electron'
 import fs from 'fs-extra'
 import { IPasteStyle, IPicGoHelperType, IWindowList } from '#/types/enum'
-import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import picgo from '@core/picgo'
 import { handleStreamlinePluginName, simpleClone } from '~/universal/utils/common'
 import { IGuiMenuItem, PicGo as PicGoCore } from 'picgo'
@@ -42,11 +40,6 @@ import { notifyAppConfigUpdated } from '~/main/utils/appConfigNotifier'
 import { rpcServer } from './rpc'
 
 const STORE_PATH = path.dirname(dbPathChecker())
-
-interface GuiMenuItem {
-  label: string
-  handle: (arg0: PicGoCore, arg1: GuiApi) => Promise<void>
-}
 
 // get uploader or transformer config
 const getConfig = (name: string, type: IPicGoHelperType, ctx: PicGoCore) => {
@@ -148,79 +141,6 @@ const handleGetPluginList = () => {
   })
 }
 
-const handlePluginInstall = () => {
-  ipcMain.on('installPlugin', async (event: IpcMainEvent, fullName: string) => {
-    const dispose = handleNPMError()
-    const res = await picgo.pluginHandler.install([fullName])
-    event.sender.send('installPlugin', {
-      success: res.success,
-      body: fullName,
-      errMsg: res.success ? '' : res.body
-    })
-    if (res.success) {
-      shortKeyHandler.registerPluginShortKey(res.body[0])
-    } else {
-      showNotification({
-        title: T('PLUGIN_INSTALL_FAILED'),
-        body: res.body as string
-      })
-    }
-    event.sender.send('hideLoading')
-    dispose()
-  })
-}
-
-const handlePluginUninstall = async (fullName: string) => {
-  const window = windowManager.get(IWindowList.SETTING_WINDOW)!
-  const dispose = handleNPMError()
-  const res = await picgo.pluginHandler.uninstall([fullName])
-  if (res.success) {
-    window.webContents.send('uninstallSuccess', res.body[0])
-    shortKeyHandler.unregisterPluginShortKey(res.body[0])
-  } else {
-    showNotification({
-      title: T('PLUGIN_UNINSTALL_FAILED'),
-      body: res.body as string
-    })
-  }
-  window.webContents.send('hideLoading')
-  dispose()
-}
-
-const handlePluginUpdate = async (fullName: string) => {
-  const window = windowManager.get(IWindowList.SETTING_WINDOW)!
-  const dispose = handleNPMError()
-  const res = await picgo.pluginHandler.update([fullName])
-  if (res.success) {
-    window.webContents.send('updateSuccess', res.body[0])
-  } else {
-    showNotification({
-      title: T('PLUGIN_UPDATE_FAILED'),
-      body: res.body as string
-    })
-  }
-  window.webContents.send('hideLoading')
-  dispose()
-}
-
-const handleNPMError = (): IDispose => {
-  const handler = (msg: string) => {
-    if (msg === 'NPM is not installed') {
-      dialog.showMessageBox({
-        title: T('TIPS_ERROR'),
-        message: T('TIPS_INSTALL_NODE_AND_RELOAD_PICGO'),
-        buttons: ['Yes']
-      }).then((res) => {
-        if (res.response === 0) {
-          shell.openExternal('https://nodejs.org/')
-        }
-      })
-    }
-  }
-  picgo.once('failed', handler)
-  return () => picgo.off('failed', handler)
-}
-
 const handleGetPicBedConfig = () => {
   ipcMain.on(GET_PICBED_CONFIG, (event: IpcMainEvent, type: string) => {
     const name = picgo.helper.uploader.get(type)?.name || type
@@ -230,21 +150,6 @@ const handleGetPicBedConfig = () => {
       event.sender.send(GET_PICBED_CONFIG, config, name)
     } else {
       event.sender.send(GET_PICBED_CONFIG, [], name)
-    }
-  })
-}
-
-// TODO: remove it
-const handlePluginActions = () => {
-  ipcMain.on('pluginActions', (event: IpcMainEvent, name: string, label: string) => {
-    const plugin = picgo.pluginLoader.getPlugin(name)
-    if (plugin?.guiMenu?.(picgo)?.length) {
-      const menu: GuiMenuItem[] = plugin.guiMenu(picgo)
-      menu.forEach(item => {
-        if (item.label === label) {
-          item.handle(picgo, GuiApi.getInstance())
-        }
-      })
     }
   })
 }
@@ -269,41 +174,6 @@ const handlePicGoGetConfig = () => {
   ipcMain.on(PICGO_GET_CONFIG, (event: IpcMainEvent, key: string | undefined, callbackId: string) => {
     const result = picgo.getConfig(key)
     event.sender.send(PICGO_GET_CONFIG, result, callbackId)
-  })
-}
-
-const handleImportLocalPlugin = () => {
-  ipcMain.on('importLocalPlugin', async (event: IpcMainEvent) => {
-    const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)!
-    const res = await dialog.showOpenDialog(settingWindow, {
-      properties: ['openDirectory']
-    })
-    const filePaths = res.filePaths
-    if (filePaths.length > 0) {
-      const res = await picgo.pluginHandler.install(filePaths)
-      if (res.success) {
-        try {
-          const list = simpleClone(getPluginList())
-          event.sender.send('pluginList', list)
-        } catch (e: any) {
-          event.sender.send('pluginList', [])
-          showNotification({
-            title: T('TIPS_GET_PLUGIN_LIST_FAILED'),
-            body: e.message
-          })
-        }
-        showNotification({
-          title: T('PLUGIN_IMPORT_SUCCEED'),
-          body: ''
-        })
-      } else {
-        showNotification({
-          title: T('PLUGIN_IMPORT_FAILED'),
-          body: res.body as string
-        })
-      }
-    }
-    event.sender.send('hideLoading')
   })
 }
 
@@ -404,20 +274,14 @@ const handleRPCActions = () => {
 export default {
   listen () {
     handleGetPluginList()
-    handlePluginInstall()
     handleGetPicBedConfig()
-    handlePluginActions()
     handleRemoveFiles()
     handlePicGoSaveConfig()
     handlePicGoGetConfig()
     handlePicGoGalleryDB()
-    handleImportLocalPlugin()
     handleOpenFile()
     handleOpenWindow()
     handleI18n()
     handleRPCActions()
-  },
-  // TODO: separate to single file
-  handlePluginUninstall,
-  handlePluginUpdate
+  }
 }

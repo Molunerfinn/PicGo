@@ -343,24 +343,33 @@ export const pluginStoreActions = {
       })
     }
   },
-  async importLocalPlugin (folderPath: string): Promise<PluginImportResult> {
+  async importLocalPlugin (): Promise<PluginImportResult | null> {
     pluginStoreActions.setImportingLocal(true)
 
     try {
-      await pluginsAdapter.importLocalPlugin()
+      const result = await pluginsAdapter.importLocalPlugin()
+      if (!result.success) {
+        throw new Error(result.error || 'Import local plugin failed')
+      }
+
+      if (!result.data) {
+        return null
+      }
+
       await appActions.hydrateAppState()
       const installedPlugins = await pluginsAdapter.getInstalledPlugins()
       pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
       const installedPlugin = useAppStore.getState().pluginsInstalled.find(
-        (item) => item.fullName === folderPath || item.name === folderPath
+        (item) => item.fullName === result.data || item.name === result.data
       )
 
       if (!installedPlugin) {
         throw new Error('Imported plugin not found')
       }
 
+      toast.success(i18n.t('PLUGIN_IMPORT_SUCCEED'))
       return {
-        path: folderPath,
+        path: result.data,
         installedPlugin
       }
     } finally {
