@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { openUrl } from "@/lib/utils"
+import { openURL } from "@/utils/dataSender"
 import type { PluginDetailSelectedItem, PluginInstalledItem } from "./types"
 import {
   normalizePluginDisplayName,
@@ -57,7 +57,7 @@ export function PluginDetailHeader({
   ])
 
   const handleOpenPluginHomepage = async () => {
-    await openUrl(pluginHomepageUrl)
+    openURL(pluginHomepageUrl)
   }
 
   const handleSetPluginEnabled = async (enabled: boolean) => {

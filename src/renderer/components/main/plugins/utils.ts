@@ -4,6 +4,7 @@ import {
   pluginGearActionKind,
   type PluginDetailTab,
   type PluginGearAction,
+  type PluginSearchResultItem,
   type PluginInstalledItem,
   type PluginReadmeState,
 } from "./types"
@@ -23,6 +24,88 @@ export function normalizePluginDisplayName(fullName: string) {
   return fullName.startsWith("picgo-plugin-")
     ? fullName.replace("picgo-plugin-", "")
     : fullName
+}
+
+export function mapInstalledPluginItem(item: IPicGoPlugin): PluginInstalledItem {
+  const rawConfig =
+    item.config && typeof item.config === "object" ? item.config : {}
+  const pluginSection =
+    rawConfig.plugin && typeof rawConfig.plugin === "object"
+      ? rawConfig.plugin
+      : { name: "", fullName: "", config: [] }
+  const transformerSection =
+    rawConfig.transformer && typeof rawConfig.transformer === "object"
+      ? rawConfig.transformer
+      : { name: "", fullName: "", config: [] }
+  const uploaderSection =
+    rawConfig.uploader && typeof rawConfig.uploader === "object"
+      ? rawConfig.uploader
+      : null
+
+  return {
+    name: item.name,
+    fullName: item.fullName,
+    author: item.author,
+    description: item.description,
+    logo: item.logo,
+    version: String(item.version),
+    gui: item.gui,
+    homepage: item.homepage,
+    enabled: item.enabled === undefined ? true : item.enabled,
+    hasInstall: true,
+    guiMenu: item.guiMenu ?? [],
+    config: {
+      plugin: {
+        name: typeof pluginSection.name === "string" ? pluginSection.name : "",
+        fullName:
+          typeof pluginSection.fullName === "string"
+            ? pluginSection.fullName
+            : undefined,
+        config: Array.isArray(pluginSection.config) ? pluginSection.config : [],
+      },
+      transformer: {
+        name:
+          typeof transformerSection.name === "string"
+            ? transformerSection.name
+            : "",
+        fullName:
+          typeof transformerSection.fullName === "string"
+            ? transformerSection.fullName
+            : undefined,
+        config: Array.isArray(transformerSection.config)
+          ? transformerSection.config
+          : [],
+      },
+    },
+    uploader:
+      uploaderSection && typeof uploaderSection.name === "string"
+        ? {
+          id: uploaderSection.name,
+          name: uploaderSection.name,
+          schema: Array.isArray(uploaderSection.config)
+            ? uploaderSection.config
+            : [],
+          configState: {
+            defaultId: "",
+            configList: [],
+          },
+        }
+        : undefined,
+  }
+}
+
+export function mapPluginSearchResult(item: IPicGoPlugin): PluginSearchResultItem {
+  return {
+    name: item.name,
+    fullName: item.fullName,
+    author: item.author,
+    description: item.description,
+    logo: item.logo,
+    version: String(item.version),
+    homepage: item.homepage,
+    gui: item.gui,
+    hasInstall: Boolean(item.hasInstall),
+  }
 }
 
 function normalizeHomepageUrl(url: string) {

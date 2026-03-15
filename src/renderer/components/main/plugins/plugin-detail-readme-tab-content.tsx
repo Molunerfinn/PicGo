@@ -15,7 +15,7 @@ import "prismjs/components/prism-yaml"
 import { useTranslation } from "react-i18next"
 
 import { Skeleton } from "@/components/ui/skeleton"
-import { openUrl } from "@/lib/utils"
+import { openURL } from "@/utils/dataSender"
 import {
   pluginReadmeStatus,
   type PluginDetailSelectedItem,
@@ -122,7 +122,7 @@ export function PluginDetailReadmeTabContent({
     event.preventDefault()
     event.stopPropagation()
 
-    openUrl(anchor.href)
+    openURL(anchor.href)
   }
 
   if (!selectedItem) {

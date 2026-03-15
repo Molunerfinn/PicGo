@@ -6,12 +6,10 @@ import { trayPageAdapter, type TrayPageGalleryItem } from '@/adapters/tray-page'
 import { AppMainCard } from '@/components/common/app-main-card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
+import type {
+  TrayWaitingItem
+} from '@/components/independent-window/tray/types'
 import { UtilityWindowLayout } from '@/components/independent-window/utility-window-layout'
-
-interface TrayWaitingItem {
-  id: string
-  imgUrl: string
-}
 
 function TraySectionTitle ({ title }: { title: string }) {
   return (
@@ -97,15 +95,16 @@ function resolveTrayUploadedItem (item: TrayPageGalleryItem) {
     id: item.id || item.imgUrl || item.fileName || `${Date.now()}`,
     fileName: item.fileName || item.imgUrl || 'unknown',
     imgUrl: item.imgUrl || item.originImgUrl || '',
+    link: item.imgUrl || item.originImgUrl || '',
     raw: item
   }
 }
 
+type TrayUploadedDisplayItem = ReturnType<typeof resolveTrayUploadedItem>
+
 export function PicGoTrayPage () {
   const { t } = useTranslation()
-  const [uploadedItems, setUploadedItems] = useState<
-    Array<ReturnType<typeof resolveTrayUploadedItem>>
-  >([])
+  const [uploadedItems, setUploadedItems] = useState<TrayUploadedDisplayItem[]>([])
   const [clipboardFiles, setClipboardFiles] = useState<TrayWaitingItem[]>([])
   const [loading, setLoading] = useState(true)
   const [uploadFlag, setUploadFlag] = useState(false)
@@ -180,9 +179,7 @@ export function PicGoTrayPage () {
     trayPageAdapter.uploadClipboardFiles()
   }
 
-  const handleCopyUploadedLink = async (
-    item: ReturnType<typeof resolveTrayUploadedItem>
-  ) => {
+  const handleCopyUploadedLink = async (item: TrayUploadedDisplayItem) => {
     try {
       await trayPageAdapter.copyUploadedLink(item.raw)
     } catch (error) {

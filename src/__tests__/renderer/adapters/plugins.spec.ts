@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ipcRenderer } from 'electron'
-import { PICGO_CONFIG_PLUGIN, PICGO_HANDLE_PLUGIN_DONE, PICGO_HANDLE_PLUGIN_ING, PICGO_TOGGLE_PLUGIN } from '#/events/constants'
+import { SHOW_PLUGIN_PAGE_MENU } from '#/events/constants'
 import { pluginsAdapter } from '@/adapters/plugins'
 
 vi.mock('electron', () => {
@@ -8,7 +8,8 @@ vi.mock('electron', () => {
     ipcRenderer: {
       on: vi.fn(),
       once: vi.fn(),
-      removeListener: vi.fn()
+      removeListener: vi.fn(),
+      send: vi.fn()
     }
   }
 })
@@ -20,26 +21,22 @@ describe('renderer/adapters plugins', () => {
     vi.clearAllMocks()
   })
 
-  it('subscribes and unsubscribes plugin lifecycle channels', () => {
-    const onPluginDone = vi.fn()
-    const onPluginIng = vi.fn()
-    const onPluginToggle = vi.fn()
-    const onConfigPlugin = vi.fn()
+  it('opens plugin page menu through ipc', () => {
+    const plugin = {
+      name: 'demo',
+      fullName: 'picgo-plugin-demo',
+      author: 'author',
+      description: 'desc',
+      logo: '',
+      version: '1.0.0',
+      gui: true,
+      config: {},
+      homepage: '',
+      ing: false
+    } as IPicGoPlugin
 
-    const unsubscribe = pluginsAdapter.subscribeLifecycle({
-      onConfigPlugin,
-      onPluginDone,
-      onPluginIng,
-      onPluginToggle
-    })
+    pluginsAdapter.openPluginMenu(plugin)
 
-    expect(ipcRendererMock.on).toHaveBeenCalledWith(PICGO_CONFIG_PLUGIN, expect.any(Function))
-    expect(ipcRendererMock.on).toHaveBeenCalledWith(PICGO_HANDLE_PLUGIN_DONE, expect.any(Function))
-    expect(ipcRendererMock.on).toHaveBeenCalledWith(PICGO_HANDLE_PLUGIN_ING, expect.any(Function))
-    expect(ipcRendererMock.on).toHaveBeenCalledWith(PICGO_TOGGLE_PLUGIN, expect.any(Function))
-
-    unsubscribe()
-
-    expect(ipcRendererMock.removeListener).toHaveBeenCalledTimes(4)
+    expect(ipcRendererMock.send).toHaveBeenCalledWith(SHOW_PLUGIN_PAGE_MENU, plugin)
   })
 })

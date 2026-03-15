@@ -12,13 +12,6 @@ import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
@@ -27,13 +20,9 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import { pluginStoreActions, useAppStore, usePluginStore } from "@/store"
-import {
-  pluginGearActionKind,
-  type PluginGearAction,
-  type PluginInstalledItem,
-} from "./types"
-import { buildPluginGearActions, pluginDefaultLogoUrl } from "./utils"
+import { pluginStoreActions, usePluginStore } from "@/store"
+import { type PluginInstalledItem } from "./types"
+import { pluginDefaultLogoUrl } from "./utils"
 
 export interface PluginSidebarListItem {
   fullName: string
@@ -54,7 +43,7 @@ interface PluginSidebarProps {
   onInstallPlugin: (fullName: string) => void
   onOpenAwesomeList: () => void
   onImportLocalPlugin: () => void
-  onGearAction: (plugin: PluginInstalledItem, action: PluginGearAction) => void
+  onOpenPluginMenu: (plugin: PluginInstalledItem) => void
 }
 
 export function PluginSidebar({
@@ -64,14 +53,12 @@ export function PluginSidebar({
   onInstallPlugin,
   onOpenAwesomeList,
   onImportLocalPlugin,
-  onGearAction,
+  onOpenPluginMenu,
 }: PluginSidebarProps) {
   const { t } = useTranslation()
-  const appConfig = useAppStore.use.appConfig()
   const searchValue = usePluginStore.use.searchValue()
   const isImportingLocal = usePluginStore.use.isImportingLocal()
   const loadingMap = usePluginStore.use.isMutatingByPlugin()
-  const currentTransformer = appConfig?.picBed.transformer ?? "path"
   const normalizedSearch = searchValue.trim().toLowerCase()
   const hasSearch = normalizedSearch.length > 0
 
@@ -158,9 +145,6 @@ export function PluginSidebar({
             const isMutating = Boolean(loadingMap[item.fullName])
             const installedPlugin = item.installedPlugin
             const isDisabled = Boolean(installedPlugin && !installedPlugin.enabled)
-            const gearActions = installedPlugin
-              ? buildPluginGearActions(installedPlugin, currentTransformer)
-              : []
 
             return (
               <div
@@ -211,61 +195,26 @@ export function PluginSidebar({
                       </p>
 
                       {item.hasInstall && installedPlugin ? (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon-xs"
-                              className="text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)"
-                              title={t("PROVIDER_CONFIG_ACTIONS")}
-                              aria-label={t("PROVIDER_CONFIG_ACTIONS")}
-                              onClick={(event) => {
-                                event.stopPropagation()
-                              }}
-                            >
-                              {isMutating ? (
-                                <LoaderCircleIcon className="size-4 animate-spin" />
-                              ) : isDisabled ? (
-                                <BanIcon className="size-4" />
-                              ) : (
-                                <SettingsIcon className="size-4" />
-                              )}
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-60">
-                            {gearActions.map((action, index) => {
-                              const needsSeparator =
-                                index > 0 &&
-                                action.kind === pluginGearActionKind.GuiMenu &&
-                                gearActions[index - 1]?.kind !==
-                                  pluginGearActionKind.GuiMenu
-
-                              const actionLabel =
-                                action.kind === pluginGearActionKind.Enable
-                                  ? t("ENABLE_PLUGIN")
-                                  : action.kind === pluginGearActionKind.Disable
-                                    ? t("DISABLE_PLUGIN")
-                                    : action.kind === pluginGearActionKind.Uninstall
-                                      ? t("UNINSTALL_PLUGIN")
-                                      : action.kind === pluginGearActionKind.Update
-                                        ? t("UPDATE_PLUGIN")
-                                        : action.label
-
-                              return (
-                                <div key={action.id}>
-                                  {needsSeparator ? <DropdownMenuSeparator /> : null}
-                                  <DropdownMenuItem
-                                    disabled={action.disabled || isMutating}
-                                    onSelect={() => onGearAction(installedPlugin, action)}
-                                  >
-                                    <span>{actionLabel}</span>
-                                  </DropdownMenuItem>
-                                </div>
-                              )
-                            })}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-xs"
+                          className="text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)"
+                          title={t("PROVIDER_CONFIG_ACTIONS")}
+                          aria-label={t("PROVIDER_CONFIG_ACTIONS")}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            onOpenPluginMenu(installedPlugin)
+                          }}
+                        >
+                          {isMutating ? (
+                            <LoaderCircleIcon className="size-4 animate-spin" />
+                          ) : isDisabled ? (
+                            <BanIcon className="size-4" />
+                          ) : (
+                            <SettingsIcon className="size-4" />
+                          )}
+                        </Button>
                       ) : (
                         <Tooltip>
                           <TooltipTrigger asChild>

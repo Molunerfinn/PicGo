@@ -1,20 +1,3 @@
-interface TrayBaseItem {
-  id: string
-  fileName: string
-  imgUrl: string
-}
-
-export type TrayWaitingItem = TrayBaseItem
-
-export interface TrayUploadedItem extends TrayBaseItem {
-  link: string
-}
-
-export interface TrayPageState {
-  waiting: TrayWaitingItem[]
-  uploaded: TrayUploadedItem[]
-}
-
 export interface RenameDraftState {
   id: string
   fileName: string
@@ -94,51 +77,6 @@ interface MiniUploadResult {
   uploadedCount: number
 }
 
-const trayWaitingTemplate: TrayWaitingItem[] = [
-  {
-    id: "tray-waiting-1",
-    fileName:
-      "clipboard-capture-from-very-long-context-menu-selection-for-dark-mode-visual-check.png",
-    imgUrl: "https://picsum.photos/seed/picgo-tray-waiting/160/100",
-  },
-]
-
-const trayUploadedTemplate: TrayUploadedItem[] = [
-  {
-    id: "tray-uploaded-1",
-    fileName: "project-cover.png",
-    imgUrl: "https://picsum.photos/seed/picgo-tray-uploaded-1/160/100",
-    link: "https://example.com/project-cover.png",
-  },
-  {
-    id: "tray-uploaded-2",
-    fileName: "demo-hero.jpg",
-    imgUrl: "https://picsum.photos/seed/picgo-tray-uploaded-2/160/100",
-    link: "https://example.com/demo-hero.jpg",
-  },
-  {
-    id: "tray-uploaded-3",
-    fileName: "release-note.webp",
-    imgUrl: "https://picsum.photos/seed/picgo-tray-uploaded-3/160/100",
-    link: "https://example.com/release-note.webp",
-  },
-  {
-    id: "tray-uploaded-4",
-    fileName:
-      "20260227175103382_super_long_file_name_to_verify_two_line_ellipsis_behavior_in_tray_page.png",
-    imgUrl: "https://picsum.photos/seed/picgo-tray-uploaded-4/160/100",
-    link: "https://example.com/20260227175103382_super_long_file_name_to_verify_two_line_ellipsis_behavior_in_tray_page.png",
-  },
-  {
-    id: "tray-uploaded-5",
-    fileName:
-      "final_marketing_banner_dark_mode_regression_snapshot_with_annotations_and_notes.jpeg",
-    imgUrl:
-      "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=900&q=80&h=1200&fit=crop&auto=format",
-    link: "https://example.com/final_marketing_banner_dark_mode_regression_snapshot_with_annotations_and_notes.jpeg",
-  },
-]
-
 const renameDraftTemplate: RenameDraftState = {
   id: "rename-file-1",
   fileName: "holiday-screenshot",
@@ -175,20 +113,6 @@ const toolboxFixableTypes = new Set<ToolboxItemType>([
   toolboxItemType.IsConfigFileBroken,
   toolboxItemType.HasProblemWithClipboardPicUpload,
 ])
-
-function cloneTrayState(state: TrayPageState): TrayPageState {
-  return {
-    waiting: state.waiting.map((item) => ({ ...item })),
-    uploaded: state.uploaded.map((item) => ({ ...item })),
-  }
-}
-
-function createDefaultTrayState(): TrayPageState {
-  return {
-    waiting: trayWaitingTemplate.map((item) => ({ ...item })),
-    uploaded: trayUploadedTemplate.map((item) => ({ ...item })),
-  }
-}
 
 function createDefaultRenameDraft(): RenameDraftState {
   return { ...renameDraftTemplate }
@@ -278,57 +202,13 @@ function wait(ms: number) {
   })
 }
 
-let trayState = createDefaultTrayState()
 let renameDraft = createDefaultRenameDraft()
 let toolboxFixedTypes = new Set<ToolboxItemType>()
 
 export const independentWindowMockApi = {
   async resetMockState() {
-    trayState = createDefaultTrayState()
     renameDraft = createDefaultRenameDraft()
     toolboxFixedTypes = new Set<ToolboxItemType>()
-  },
-
-  async getTrayPageState(): Promise<TrayPageState> {
-    await wait(100)
-    return cloneTrayState(trayState)
-  },
-
-  async openMainWindow() {
-    await wait(80)
-  },
-
-  async uploadTrayWaitingItem(itemId: string): Promise<TrayUploadedItem> {
-    const waitingItem = trayState.waiting.find((item) => item.id === itemId)
-    if (!waitingItem) {
-      throw new Error("Waiting upload item not found.")
-    }
-
-    await wait(500)
-
-    const uploadedItem: TrayUploadedItem = {
-      id: `tray-uploaded-${Date.now()}`,
-      fileName: waitingItem.fileName,
-      imgUrl: waitingItem.imgUrl,
-      link: `https://example.com/${waitingItem.fileName}`,
-    }
-
-    trayState = {
-      waiting: trayState.waiting.filter((item) => item.id !== itemId),
-      uploaded: [uploadedItem, ...trayState.uploaded].slice(0, 5),
-    }
-
-    return { ...uploadedItem }
-  },
-
-  async copyTrayUploadedLink(itemId: string): Promise<string> {
-    const uploadedItem = trayState.uploaded.find((item) => item.id === itemId)
-    if (!uploadedItem) {
-      throw new Error("Uploaded item not found.")
-    }
-
-    await wait(60)
-    return uploadedItem.link
   },
 
   async uploadMiniFiles({

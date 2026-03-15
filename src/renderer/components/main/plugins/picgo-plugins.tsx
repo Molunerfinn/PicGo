@@ -2,19 +2,26 @@ import { useEffect, useRef, useState, type ChangeEvent } from "react"
 import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
 
-import { openUrl } from "@/lib/utils"
+import {
+  PICGO_CONFIG_PLUGIN,
+  PICGO_HANDLE_PLUGIN_DONE,
+  PICGO_HANDLE_PLUGIN_ING,
+  PICGO_TOGGLE_PLUGIN,
+} from "#/events/constants"
+import { pluginsAdapter } from "@/adapters/plugins"
+import { useIPCOn } from "@/hooks/useIPC"
+import { openURL } from "@/utils/dataSender"
 import { appActions, pluginStoreActions, useAppStore, usePluginStore } from "@/store"
 import { PluginDetailPanel } from "./plugin-detail-panel"
 import { PluginSidebar, type PluginSidebarListItem } from "./plugin-sidebar"
 import {
   pluginDetailTab,
-  pluginGearActionKind,
   pluginReadmeStatus,
   type PluginDetailTab,
-  type PluginGearAction,
   type PluginInstalledItem,
 } from "./types"
 import {
+  mapInstalledPluginItem,
   resolveActivePlugin,
   resolvePluginTabJump,
   resolveSupportedPluginTab,
@@ -53,6 +60,7 @@ export function PicGoPlugins() {
   )
   const [activeTab, setActiveTab] = useState<PluginDetailTab>(pluginDetailTab.Readme)
   const pendingTabOnSelectionRef = useRef<PluginDetailTab | null>(null)
+  const activePluginFullNameRef = useRef<string | undefined>(undefined)
   const importInputRef = useRef<HTMLInputElement | null>(null)
 
   const isSearchMode = pluginSearchValue.trim().length > 0
@@ -92,6 +100,118 @@ export function PicGoPlugins() {
   )
   const availableTabs = resolvePluginDetailTabs(activePlugin)
 
+  useEffect(() => {
+    activePluginFullNameRef.current = activeListItem?.fullName
+  }, [activeListItem?.fullName])
+
+  const handleJumpToTab = (pluginFullName: string, tab: PluginDetailTab) => {
+    const jumpResolution = resolvePluginTabJump(
+      activePluginFullNameRef.current,
+      pluginFullName,
+      tab
+    )
+
+    if (jumpResolution.shouldSwitchImmediately) {
+      pendingTabOnSelectionRef.current = null
+      setActiveTab(jumpResolution.targetTab)
+      return
+    }
+
+    pendingTabOnSelectionRef.current = jumpResolution.targetTab
+    setSelectedPluginFullName(jumpResolution.targetPluginFullName)
+  }
+
+  useIPCOn('pluginList', (_event, list: IPicGoPlugin[]) => {
+    pluginStoreActions.setInstalledPlugins(list.map(mapInstalledPluginItem))
+  })
+
+  useIPCOn('hideLoading', () => {
+    pluginStoreActions.setImportingLocal(false)
+    pluginStoreActions.setSearching(false)
+  })
+
+  useIPCOn(PICGO_HANDLE_PLUGIN_ING, (_event, fullName: string) => {
+    pluginStoreActions.setMutating(fullName, true)
+  })
+
+  useIPCOn(PICGO_HANDLE_PLUGIN_DONE, (_event, fullName: string) => {
+    pluginStoreActions.setMutating(fullName, false)
+  })
+
+  useIPCOn(PICGO_TOGGLE_PLUGIN, (_event, fullName: string, enabled: boolean) => {
+    useAppStore.setState((state) => {
+      state.pluginsInstalled = state.pluginsInstalled.map((item) => {
+        if (item.fullName !== fullName) {
+          return item
+        }
+
+        return {
+          ...item,
+          enabled
+        }
+      })
+
+      if (state.appConfig) {
+        state.appConfig.picgoPlugins[fullName] = enabled
+        state.appConfig.needReload = true
+      }
+    })
+  })
+
+  useIPCOn('updateSuccess', async () => {
+    const installedPlugins = await pluginsAdapter.getInstalledPlugins()
+    pluginStoreActions.setInstalledPlugins(
+      installedPlugins.map(mapInstalledPluginItem)
+    )
+    await appActions.hydrateAppState()
+  })
+
+  useIPCOn('uninstallSuccess', async () => {
+    const installedPlugins = await pluginsAdapter.getInstalledPlugins()
+    pluginStoreActions.setInstalledPlugins(
+      installedPlugins.map(mapInstalledPluginItem)
+    )
+    await appActions.hydrateAppState()
+  })
+
+  useIPCOn(
+    PICGO_CONFIG_PLUGIN,
+    (_event, currentType: 'plugin' | 'transformer' | 'uploader', configName: string) => {
+      const installedPlugins = useAppStore.getState().pluginsInstalled
+      const matchedPlugin = installedPlugins.find((plugin) => {
+        if (currentType === 'plugin') {
+          return (
+            plugin.config.plugin.fullName === configName ||
+            plugin.config.plugin.name === configName
+          )
+        }
+
+        if (currentType === 'transformer') {
+          return (
+            plugin.config.transformer.fullName === configName ||
+            plugin.config.transformer.name === configName
+          )
+        }
+
+        return (
+          plugin.uploader?.name === configName ||
+          plugin.uploader?.id === configName
+        )
+      })
+
+      if (!matchedPlugin) {
+        return
+      }
+
+      handleJumpToTab(
+        matchedPlugin.fullName,
+        currentType === 'transformer'
+          ? pluginDetailTab.Transformer
+          : pluginDetailTab.Config
+      )
+    }
+  )
+
   // Hydrate initial plugin/provider/app config state when this page mounts.
   useEffect(() => {
     let isDisposed = false
@@ -99,6 +219,10 @@ export function PicGoPlugins() {
     async function bootstrap() {
       try {
         await appActions.ensureHydrated()
+        const installedPlugins = await pluginsAdapter.getInstalledPlugins()
+        pluginStoreActions.setInstalledPlugins(
+          installedPlugins.map(mapInstalledPluginItem)
+        )
       } catch (error) {
         if (!isDisposed) {
           toast.error(resolveErrorMessage(error, t("FAILED")))
@@ -151,7 +275,7 @@ export function PicGoPlugins() {
     setSelectedPluginFullName(activeListItem.fullName)
   }, [activeListItem, selectedPluginFullName])
 
-  // Reset tab on plugin switch, but respect a pending tab jump requested from the gear menu.
+  // Reset tab on plugin switch, but respect a pending tab jump requested from the main-process plugin menu.
   useEffect(() => {
     const activeFullName = activeListItem?.fullName
 
@@ -188,7 +312,7 @@ export function PicGoPlugins() {
   }, [availableTabs])
 
   const handleOpenAwesomeList = async () => {
-    await openUrl(awesomePluginListUrl)
+    openURL(awesomePluginListUrl)
   }
 
   const handleInstallPlugin = async (fullName: string) => {
@@ -228,74 +352,8 @@ export function PicGoPlugins() {
     }
   }
 
-  const handleJumpToTab = (pluginFullName: string, tab: PluginDetailTab) => {
-    const jumpResolution = resolvePluginTabJump(
-      activeListItem?.fullName,
-      pluginFullName,
-      tab
-    )
-
-    if (jumpResolution.shouldSwitchImmediately) {
-      pendingTabOnSelectionRef.current = null
-      setActiveTab(jumpResolution.targetTab)
-      return
-    }
-
-    pendingTabOnSelectionRef.current = jumpResolution.targetTab
-    setSelectedPluginFullName(jumpResolution.targetPluginFullName)
-  }
-
-  const handleGearAction = async (
-    plugin: PluginInstalledItem,
-    action: PluginGearAction
-  ) => {
-    if (action.kind === pluginGearActionKind.JumpConfig) {
-      handleJumpToTab(plugin.fullName, pluginDetailTab.Config)
-      return
-    }
-
-    if (action.kind === pluginGearActionKind.JumpTransformer) {
-      handleJumpToTab(plugin.fullName, pluginDetailTab.Transformer)
-      return
-    }
-
-    if (action.kind === pluginGearActionKind.Enable) {
-      await handleSetPluginEnabled(plugin.fullName, true)
-      return
-    }
-
-    if (action.kind === pluginGearActionKind.Disable) {
-      await handleSetPluginEnabled(plugin.fullName, false)
-      return
-    }
-
-    if (action.kind === pluginGearActionKind.Update) {
-      await handleUpdatePlugin(plugin.fullName)
-      return
-    }
-
-    if (action.kind === pluginGearActionKind.Uninstall) {
-      await handleUninstallPlugin(plugin.fullName)
-      return
-    }
-
-    try {
-      if (action.kind === pluginGearActionKind.ToggleTransformer) {
-        await pluginStoreActions.togglePluginTransformer(plugin.fullName)
-        toast.success(t("SUCCESS"))
-        return
-      }
-
-      if (action.kind === pluginGearActionKind.GuiMenu && action.guiMenuLabel) {
-        const result = await pluginStoreActions.runPluginGuiMenuAction(
-          plugin.fullName,
-          action.guiMenuLabel
-        )
-        toast.success(result.message)
-      }
-    } catch (error) {
-      toast.error(resolveErrorMessage(error, t("FAILED")))
-    }
+  const handleOpenPluginMenu = (plugin: PluginInstalledItem) => {
+    pluginsAdapter.openPluginMenu(plugin as unknown as IPicGoPlugin)
   }
 
   const handleSaveConfig = async (
@@ -356,7 +414,7 @@ export function PicGoPlugins() {
         onInstallPlugin={handleInstallPlugin}
         onOpenAwesomeList={handleOpenAwesomeList}
         onImportLocalPlugin={handleOpenImportDialog}
-        onGearAction={handleGearAction}
+        onOpenPluginMenu={handleOpenPluginMenu}
       />
 
       <PluginDetailPanel

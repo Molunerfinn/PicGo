@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { ipcRenderer } from 'electron'
-import { OPEN_URL, PICGO_CONFIG_PLUGIN, PICGO_HANDLE_PLUGIN_DONE, PICGO_HANDLE_PLUGIN_ING, PICGO_TOGGLE_PLUGIN, SHOW_PLUGIN_PAGE_MENU } from '#/events/constants'
+import { OPEN_URL, SHOW_PLUGIN_PAGE_MENU } from '#/events/constants'
 import { IRPCActionType } from '~/universal/types/enum'
 import { getConfig, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
 
@@ -23,16 +23,6 @@ interface NpmSearchResultObject {
       homepage?: string
     }
   }
-}
-
-interface PluginLifecycleListeners {
-  onConfigPlugin?: (currentType: 'plugin' | 'transformer' | 'uploader', configName: string, config: IPicGoPluginConfig[]) => void
-  onHideLoading?: () => void
-  onPluginDone?: (fullName: string) => void
-  onPluginIng?: (fullName: string) => void
-  onPluginToggle?: (fullName: string, enabled: boolean) => void
-  onUninstallSuccess?: (fullName: string) => void
-  onUpdateSuccess?: (fullName: string) => void
 }
 
 function streamlinePluginName (fullName: string) {
@@ -69,6 +59,32 @@ export const pluginsAdapter = {
       ipcRenderer.once('hideLoading', handleResponse)
       sendToMain('importLocalPlugin')
     })
+  },
+  uninstallPlugin (fullName: string) {
+    sendToMain('uninstallPlugin', fullName)
+  },
+  updatePlugin (fullName: string) {
+    sendToMain('updatePlugin', fullName)
+  },
+  togglePluginEnabled (fullName: string, enabled: boolean) {
+    return saveConfig({
+      [`picgoPlugins.${fullName}`]: enabled
+    })
+  },
+  async saveTransformer (transformer: string) {
+    await saveConfig({
+      'picBed.transformer': transformer
+    })
+  },
+  async fetchPluginReadme (fullName: string) {
+    const response = await axios.get<string>(
+      `https://cdn.jsdelivr.net/npm/${fullName}/README.md`,
+      {
+        responseType: 'text'
+      }
+    )
+
+    return response.data || ''
   },
   openPluginMenu (plugin: IPicGoPlugin) {
     sendToMain(SHOW_PLUGIN_PAGE_MENU, plugin)
@@ -113,38 +129,6 @@ export const pluginsAdapter = {
     await saveConfig({
       [`transformer.${configName}`]: values
     })
-  },
-  subscribeLifecycle (listeners: PluginLifecycleListeners) {
-    const disposers: Array<() => void> = []
-
-    const register = <T extends unknown[]>(channel: string, listener?: (...args: T) => void) => {
-      if (!listener) {
-        return
-      }
-
-      const handler = (_event: Electron.IpcRendererEvent, ...args: T) => {
-        listener(...args)
-      }
-
-      ipcRenderer.on(channel, handler)
-      disposers.push(() => {
-        ipcRenderer.removeListener(channel, handler)
-      })
-    }
-
-    register(PICGO_CONFIG_PLUGIN, listeners.onConfigPlugin)
-    register(PICGO_HANDLE_PLUGIN_DONE, listeners.onPluginDone)
-    register(PICGO_HANDLE_PLUGIN_ING, listeners.onPluginIng)
-    register(PICGO_TOGGLE_PLUGIN, listeners.onPluginToggle)
-    register('hideLoading', listeners.onHideLoading)
-    register('uninstallSuccess', listeners.onUninstallSuccess)
-    register('updateSuccess', listeners.onUpdateSuccess)
-
-    return () => {
-      disposers.forEach((dispose) => {
-        dispose()
-      })
-    }
   },
   async searchPlugins (searchText: string, installedPlugins: IPicGoPlugin[]) {
     const response = await axios.get<{ objects: NpmSearchResultObject[] }>(`https://registry.npmjs.com/-/v1/search?text=${searchText}`)
