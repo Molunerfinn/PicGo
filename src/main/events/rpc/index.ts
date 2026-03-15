@@ -7,6 +7,7 @@ import { toolboxRouter } from './routes/toolbox'
 import { systemRouter } from './routes/system'
 import { galleryToolboxRouter } from './routes/galleryToolbox'
 import { cloudRouter } from './routes/cloud'
+import { pluginsRouter } from './routes/plugins'
 import { fail, isIRPCResult, ok } from './utils'
 
 class RPCServer implements IRPCServer {
@@ -74,6 +75,7 @@ rpcServer.use(toolboxRouter.routes())
 rpcServer.use(systemRouter.routes())
 rpcServer.use(galleryToolboxRouter.routes())
 rpcServer.use(cloudRouter.routes())
+rpcServer.use(pluginsRouter.routes())
 
 export {
   rpcServer

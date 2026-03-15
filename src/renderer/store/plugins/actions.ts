@@ -10,6 +10,8 @@ import { pluginsAdapter } from '@/adapters/plugins'
 import { mapInstalledPluginItem, mapPluginSearchResult } from '@/components/main/plugins/utils'
 import { appActions } from '@/store/app-actions'
 import { useAppStore } from '@/store/app-store'
+import i18n from '@/i18n'
+import { toast } from 'sonner'
 import { usePluginStore } from './store'
 
 function buildPluginSearchKeyword (query: string) {
@@ -29,6 +31,18 @@ function filterPluginSearchResults (
 
   const keyword = buildPluginSearchKeyword(query)
   return results.filter((item) => item.fullName.includes(keyword))
+}
+
+function syncSearchResultsInstallState (
+  results: PluginSearchResultItem[],
+  installedPlugins: PluginInstalledItem[]
+) {
+  const installedNames = new Set(installedPlugins.map((item) => item.fullName))
+
+  return results.map((item) => ({
+    ...item,
+    hasInstall: installedNames.has(item.fullName)
+  }))
 }
 
 export const pluginStoreActions = {
@@ -68,6 +82,19 @@ export const pluginStoreActions = {
   setInstalledPlugins (pluginsInstalled: PluginInstalledItem[]) {
     useAppStore.setState((state) => {
       state.pluginsInstalled = pluginsInstalled
+    })
+
+    usePluginStore.setState((state) => {
+      const syncedResults = syncSearchResultsInstallState(
+        state.rawSearchResults,
+        pluginsInstalled
+      )
+      state.rawSearchResults = syncedResults
+      state.searchResults = filterPluginSearchResults(
+        syncedResults,
+        state.searchValue.trim(),
+        state.exactMatch
+      )
     })
   },
   setMutating (fullName: string, isMutating: boolean) {
@@ -156,6 +183,7 @@ export const pluginStoreActions = {
       await appActions.hydrateAppState()
       const installedPlugins = await pluginsAdapter.getInstalledPlugins()
       pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
+      toast.success(i18n.t('PLUGIN_INSTALL_SUCCEED'))
     } finally {
       pluginStoreActions.setMutating(fullName, false)
     }
@@ -164,26 +192,16 @@ export const pluginStoreActions = {
     pluginStoreActions.setMutating(fullName, true)
 
     try {
-      await pluginsAdapter.setNeedReload(true)
-      await pluginsAdapter.togglePluginEnabled(fullName, enabled)
+      const result = await pluginsAdapter.togglePluginEnabled(fullName, enabled)
 
-      useAppStore.setState((state) => {
-        state.pluginsInstalled = state.pluginsInstalled.map((item) => {
-          if (item.fullName !== fullName) {
-            return item
-          }
+      if (!result.success) {
+        throw new Error(result.error || 'Toggle plugin failed')
+      }
 
-          return {
-            ...item,
-            enabled
-          }
-        })
-
-        if (state.appConfig) {
-          state.appConfig.picgoPlugins[fullName] = enabled
-          state.appConfig.needReload = true
-        }
-      })
+      await appActions.hydrateAppState()
+      const installedPlugins = await pluginsAdapter.getInstalledPlugins()
+      pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
+      toast.success(i18n.t(enabled ? 'ENABLE_PLUGIN' : 'DISABLE_PLUGIN'))
     } finally {
       pluginStoreActions.setMutating(fullName, false)
     }
@@ -192,7 +210,10 @@ export const pluginStoreActions = {
     pluginStoreActions.setMutating(fullName, true)
 
     try {
-      await pluginsAdapter.updatePlugin(fullName)
+      const result = await pluginsAdapter.updatePlugin(fullName)
+      if (!result.success) {
+        throw new Error(result.error || 'Update plugin failed')
+      }
       await appActions.hydrateAppState()
       const installedPlugins = await pluginsAdapter.getInstalledPlugins()
       pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
@@ -203,6 +224,7 @@ export const pluginStoreActions = {
           state.appConfig.needReload = true
         }
       })
+      toast.success(i18n.t('PLUGIN_UPDATE_SUCCEED'))
     } finally {
       pluginStoreActions.setMutating(fullName, false)
     }
@@ -211,7 +233,10 @@ export const pluginStoreActions = {
     pluginStoreActions.setMutating(fullName, true)
 
     try {
-      await pluginsAdapter.uninstallPlugin(fullName)
+      const result = await pluginsAdapter.uninstallPlugin(fullName)
+      if (!result.success) {
+        throw new Error(result.error || 'Uninstall plugin failed')
+      }
       await appActions.hydrateAppState()
       const installedPlugins = await pluginsAdapter.getInstalledPlugins()
       pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
@@ -222,6 +247,7 @@ export const pluginStoreActions = {
           state.appConfig.needReload = true
         }
       })
+      toast.success(i18n.t('PLUGIN_UNINSTALL_SUCCEED'))
     } finally {
       pluginStoreActions.setMutating(fullName, false)
     }
@@ -253,7 +279,8 @@ export const pluginStoreActions = {
         values as IStringKeyMap
       )
       await appActions.refreshAppConfig()
-      await appActions.hydrateAppState()
+      const installedPlugins = await pluginsAdapter.getInstalledPlugins()
+      pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
     } finally {
       pluginStoreActions.setMutating(fullName, false)
     }

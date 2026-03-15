@@ -101,13 +101,22 @@ function resolveTrayUploadedItem (item: TrayPageGalleryItem) {
   }
 }
 
+function resolveRuntimeUploadedItem (item: ImgInfo): TrayUploadedDisplayItem {
+  return {
+    id: item.id || item.imgUrl || item.fileName || `${Date.now()}`,
+    fileName: item.fileName || item.imgUrl || 'unknown',
+    imgUrl: item.imgUrl || item.originImgUrl || '',
+    link: item.imgUrl || item.originImgUrl || '',
+    raw: item as TrayPageGalleryItem
+  }
+}
+
 type TrayUploadedDisplayItem = ReturnType<typeof resolveTrayUploadedItem>
 
 export function PicGoTrayPage () {
   const { t } = useTranslation()
   const [uploadedItems, setUploadedItems] = useState<TrayUploadedDisplayItem[]>([])
   const [clipboardFiles, setClipboardFiles] = useState<TrayWaitingItem[]>([])
-  const [loading, setLoading] = useState(true)
   const [uploadFlag, setUploadFlag] = useState(false)
 
   const refreshUploadedItems = async () => {
@@ -119,11 +128,22 @@ export function PicGoTrayPage () {
     setClipboardFiles(files.map(resolveTrayWaitingItem))
   })
 
-  useIPCOn('dragFiles', async () => {
+  useIPCOn('dragFiles', async (_event, items: ImgInfo[] = []) => {
+    if (items.length > 0) {
+      setUploadedItems(items.map(resolveRuntimeUploadedItem))
+      return
+    }
+
     await refreshUploadedItems()
   })
 
-  useIPCOn('uploadFiles', async () => {
+  useIPCOn('uploadFiles', async (_event, items: ImgInfo[] = []) => {
+    if (items.length > 0) {
+      setUploadedItems(items.map(resolveRuntimeUploadedItem))
+      setUploadFlag(false)
+      return
+    }
+
     await refreshUploadedItems()
     setUploadFlag(false)
   })
@@ -148,10 +168,6 @@ export function PicGoTrayPage () {
         console.error(
           `[tray-page] load state failed: ${error instanceof Error ? error.message : t('FAILED')}`
         )
-      } finally {
-        if (mounted) {
-          setLoading(false)
-        }
       }
     }
 
@@ -224,11 +240,7 @@ export function PicGoTrayPage () {
 
             <section className='space-y-1'>
               <TraySectionTitle title={t('ALREADY_UPLOAD')} />
-              {loading ? (
-                <p className='text-muted-foreground px-1 py-2 text-center text-xs'>
-                  {t('UPLOADING')}...
-                </p>
-              ) : uploadedItems.length === 0 ? (
+              {uploadedItems.length === 0 ? (
                 <p className='text-muted-foreground px-1 py-2 text-center text-xs'>
                   {t('TRAY_ALREADY_UPLOAD_EMPTY')}
                 </p>

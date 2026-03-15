@@ -28,7 +28,10 @@ interface PluginDetailReadmeTabContentProps {
 }
 
 function renderSanitizedMarkdown(markdown: string) {
-  const parsed = marked.parse(markdown)
+  const parsed = marked.parse(markdown, {
+    gfm: true,
+    breaks: true,
+  })
   const html = typeof parsed === "string" ? parsed : markdown
   return DOMPurify.sanitize(html)
 }
@@ -158,7 +161,7 @@ export function PluginDetailReadmeTabContent({
       {readmeState?.status === pluginReadmeStatus.Ready ? (
         <article
           ref={articleRef}
-          className="app-plugin-readme prose prose-sm max-w-none prose-a:no-underline prose-a:transition-colors hover:prose-a:text-(--app-plugin-tab-active-color) hover:prose-a:underline prose-code:rounded-md prose-code:bg-(--app-plugin-readme-inline-code-bg) prose-code:px-1 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-lg prose-pre:border prose-pre:border-(--app-plugin-readme-pre-border) prose-pre:bg-(--app-plugin-readme-pre-bg) prose-blockquote:text-muted-foreground prose-img:rounded-lg [&_pre]:overflow-x-auto"
+          className="app-plugin-readme prose prose-sm max-w-none prose-a:no-underline prose-a:transition-colors hover:prose-a:text-(--app-plugin-tab-active-color) hover:prose-a:underline prose-code:rounded-md prose-code:bg-(--app-plugin-readme-inline-code-bg) prose-code:px-1 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-lg prose-pre:border prose-pre:border-(--app-plugin-readme-pre-border) prose-pre:bg-(--app-plugin-readme-pre-bg) prose-blockquote:text-muted-foreground prose-img:rounded-lg prose-table:table prose-table:w-full prose-table:border-collapse prose-table:text-sm prose-thead:border-b prose-tr:border-b prose-th:border prose-th:border-border prose-th:bg-muted/40 prose-th:px-3 prose-th:py-2 prose-th:font-semibold prose-td:border prose-td:border-border prose-td:px-3 prose-td:py-2 [&_pre]:overflow-x-auto"
           onClick={handleReadmeLinkClick}
           dangerouslySetInnerHTML={{
             __html: renderSanitizedMarkdown(readmeState.content),

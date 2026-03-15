@@ -5,7 +5,6 @@ import { IWindowList } from '~/universal/types/enum'
 import i18n from '@/i18n'
 import db from '@/utils/db'
 import { showNotification } from '@/utils/notification'
-import { getRawData } from '@/utils/common'
 import { sendToMain } from '@/utils/dataSender'
 
 type TrayPageGalleryItem = IResult<ImgInfo>
@@ -18,7 +17,7 @@ export const trayPageAdapter = {
     return (await db.get<ImgInfo>({ orderBy: 'desc', limit })).data
   },
   async copyUploadedLink (item: ImgInfo) {
-    await ipcRenderer.invoke(PASTE_TEXT, getRawData(item))
+    await ipcRenderer.invoke(PASTE_TEXT, item)
     showNotification({
       title: i18n.t('COPY_LINK_SUCCEED'),
       body: item.imgUrl || ''

@@ -72,11 +72,14 @@ export function SettingsSectionAbout({
 
     try {
       const result = await settingsStoreActions.checkUpdates()
-      if (result.hasUpdate) {
-        toast.success(`${t("SETTINGS_NEWEST_VERSION")}: ${result.latestVersion}`)
-      } else {
-        toast.success(`${t("SETTINGS_CURRENT_VERSION")} ${result.currentVersion}`)
-      }
+      toast.success(
+        t("SETTINGS_UPDATE_CHECK_RESULT", {
+          version: result.latestVersion,
+          action: result.hasUpdate
+            ? t("SETTINGS_UPDATE_CHECK_CAN_UPDATE")
+            : t("SETTINGS_UPDATE_CHECK_NO_UPDATE")
+        })
+      )
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))
     } finally {

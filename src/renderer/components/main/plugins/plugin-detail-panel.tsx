@@ -6,6 +6,7 @@ import {
   type SchemaFieldErrorMap,
   type SchemaFormValues,
 } from "@/components/common/schema-form-fields"
+import { pluginStoreActions } from "@/store"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -34,15 +35,6 @@ interface PluginDetailPanelProps {
   readmeState: PluginReadmeState | null
   isMutating: boolean
   onTabChange: (tab: PluginDetailTab) => void
-  onInstallPlugin: (fullName: string) => Promise<void>
-  onSaveConfig: (
-    fullName: string,
-    tab: "config" | "transformer",
-    values: Record<string, unknown>
-  ) => Promise<void>
-  onSetPluginEnabled: (fullName: string, enabled: boolean) => Promise<void>
-  onUpdatePlugin: (fullName: string) => Promise<void>
-  onUninstallPlugin: (fullName: string) => Promise<void>
 }
 
 function resolveFieldLabel(schema: ProviderPluginConfig[], fieldName: string) {
@@ -74,11 +66,6 @@ export function PluginDetailPanel({
   readmeState,
   isMutating,
   onTabChange,
-  onInstallPlugin,
-  onSaveConfig,
-  onSetPluginEnabled,
-  onUpdatePlugin,
-  onUninstallPlugin,
 }: PluginDetailPanelProps) {
   const { t } = useTranslation()
   const [configValues, setConfigValues] = useState<SchemaFormValues>({})
@@ -146,7 +133,7 @@ export function PluginDetailPanel({
     setConfigErrors({})
     setIsSaving(true)
     try {
-      await onSaveConfig(plugin.fullName, "config", configValues)
+      await pluginStoreActions.savePluginConfig(plugin.fullName, "config", configValues)
     } finally {
       setIsSaving(false)
     }
@@ -176,7 +163,11 @@ export function PluginDetailPanel({
     setTransformerErrors({})
     setIsSaving(true)
     try {
-      await onSaveConfig(plugin.fullName, "transformer", transformerValues)
+      await pluginStoreActions.savePluginConfig(
+        plugin.fullName,
+        "transformer",
+        transformerValues
+      )
     } finally {
       setIsSaving(false)
     }
@@ -197,10 +188,6 @@ export function PluginDetailPanel({
               selectedItem={selectedItem}
               plugin={plugin}
               isMutating={isMutating}
-              onInstallPlugin={onInstallPlugin}
-              onSetPluginEnabled={onSetPluginEnabled}
-              onUpdatePlugin={onUpdatePlugin}
-              onUninstallPlugin={onUninstallPlugin}
             />
 
             <ScrollArea className="min-h-0 flex-1">
@@ -239,10 +226,6 @@ export function PluginDetailPanel({
             selectedItem={selectedItem}
             plugin={plugin}
             isMutating={isMutating}
-            onInstallPlugin={onInstallPlugin}
-            onSetPluginEnabled={onSetPluginEnabled}
-            onUpdatePlugin={onUpdatePlugin}
-            onUninstallPlugin={onUninstallPlugin}
           />
 
           <ScrollArea className="min-h-0 flex-1">
@@ -267,10 +250,6 @@ export function PluginDetailPanel({
           selectedItem={selectedItem}
           plugin={plugin}
           isMutating={isMutating}
-          onInstallPlugin={onInstallPlugin}
-          onSetPluginEnabled={onSetPluginEnabled}
-          onUpdatePlugin={onUpdatePlugin}
-          onUninstallPlugin={onUninstallPlugin}
         />
 
         <Tabs

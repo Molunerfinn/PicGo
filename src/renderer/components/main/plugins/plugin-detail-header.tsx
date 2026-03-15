@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { pluginStoreActions } from "@/store"
 import { Switch } from "@/components/ui/switch"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { openURL } from "@/utils/dataSender"
@@ -22,20 +23,12 @@ interface PluginDetailHeaderProps {
   selectedItem: PluginDetailSelectedItem | null
   plugin: PluginInstalledItem | null
   isMutating: boolean
-  onSetPluginEnabled: (fullName: string, enabled: boolean) => Promise<void>
-  onInstallPlugin: (fullName: string) => Promise<void>
-  onUpdatePlugin: (fullName: string) => Promise<void>
-  onUninstallPlugin: (fullName: string) => Promise<void>
 }
 
 export function PluginDetailHeader({
   selectedItem,
   plugin,
   isMutating,
-  onSetPluginEnabled,
-  onInstallPlugin,
-  onUpdatePlugin,
-  onUninstallPlugin,
 }: PluginDetailHeaderProps) {
   const { t } = useTranslation()
 
@@ -65,7 +58,7 @@ export function PluginDetailHeader({
       return
     }
 
-    await onSetPluginEnabled(plugin.fullName, enabled)
+    await pluginStoreActions.setPluginEnabled(plugin.fullName, enabled)
   }
 
   const handleUpdatePlugin = async () => {
@@ -73,7 +66,7 @@ export function PluginDetailHeader({
       return
     }
 
-    await onUpdatePlugin(plugin.fullName)
+    await pluginStoreActions.updatePlugin(plugin.fullName)
   }
 
   const handleUninstallPlugin = async () => {
@@ -81,11 +74,11 @@ export function PluginDetailHeader({
       return
     }
 
-    await onUninstallPlugin(plugin.fullName)
+    await pluginStoreActions.uninstallPlugin(plugin.fullName)
   }
 
   const handleInstallPlugin = async () => {
-    await onInstallPlugin(selectedItem.fullName)
+    await pluginStoreActions.installPlugin(selectedItem.fullName)
   }
 
   return (

@@ -6,8 +6,10 @@ import {
   PICGO_CONFIG_PLUGIN,
   PICGO_HANDLE_PLUGIN_DONE,
   PICGO_HANDLE_PLUGIN_ING,
+  PICGO_PLUGIN_MENU_ACTION,
   PICGO_TOGGLE_PLUGIN,
 } from "#/events/constants"
+import { IPluginMenuAction } from "~/universal/types/enum"
 import { pluginsAdapter } from "@/adapters/plugins"
 import { useIPCOn } from "@/hooks/useIPC"
 import { openURL } from "@/utils/dataSender"
@@ -320,59 +322,34 @@ export function PicGoPlugins() {
     openURL(awesomePluginListUrl)
   }
 
-  const handleInstallPlugin = async (fullName: string) => {
-    try {
-      await pluginStoreActions.installPlugin(fullName)
-      toast.success(t("PLUGIN_INSTALL_SUCCEED"))
-      setSelectedPluginFullName(fullName)
-    } catch (error) {
-      toast.error(resolveErrorMessage(error, t("PLUGIN_INSTALL_FAILED")))
-    }
-  }
-
-  const handleSetPluginEnabled = async (fullName: string, enabled: boolean) => {
-    try {
-      await pluginStoreActions.setPluginEnabled(fullName, enabled)
-      toast.success(t("SUCCESS"))
-    } catch (error) {
-      toast.error(resolveErrorMessage(error, t("FAILED")))
-    }
-  }
-
-  const handleUpdatePlugin = async (fullName: string) => {
-    try {
-      await pluginStoreActions.updatePlugin(fullName)
-      toast.success(t("PLUGIN_UPDATE_SUCCEED"))
-    } catch (error) {
-      toast.error(resolveErrorMessage(error, t("FAILED")))
-    }
-  }
-
-  const handleUninstallPlugin = async (fullName: string) => {
-    try {
-      await pluginStoreActions.uninstallPlugin(fullName)
-      toast.success(t("PLUGIN_UNINSTALL_SUCCEED"))
-    } catch (error) {
-      toast.error(resolveErrorMessage(error, t("FAILED")))
-    }
-  }
-
   const handleOpenPluginMenu = (plugin: PluginInstalledItem) => {
     pluginsAdapter.openPluginMenu(plugin as unknown as IPicGoPlugin)
   }
 
-  const handleSaveConfig = async (
-    fullName: string,
-    tab: "config" | "transformer",
-    values: Record<string, unknown>
-  ) => {
+  useIPCOn(PICGO_PLUGIN_MENU_ACTION, async (_event, fullName: string, action: IPluginMenuAction) => {
     try {
-      await pluginStoreActions.savePluginConfig(fullName, tab, values)
-      toast.success(t("SUCCESS"))
+      if (action === IPluginMenuAction.ENABLE) {
+        await pluginStoreActions.setPluginEnabled(fullName, true)
+        return
+      }
+
+      if (action === IPluginMenuAction.DISABLE) {
+        await pluginStoreActions.setPluginEnabled(fullName, false)
+        return
+      }
+
+      if (action === IPluginMenuAction.UPDATE) {
+        await pluginStoreActions.updatePlugin(fullName)
+        return
+      }
+
+      await pluginStoreActions.uninstallPlugin(fullName)
     } catch (error) {
-      toast.error(resolveErrorMessage(error, t("FAILED")))
+      console.error(
+        `[plugins] action failed: ${error instanceof Error ? error.message : t("FAILED")}`
+      )
     }
-  }
+  })
 
   const handleOpenImportDialog = () => {
     importInputRef.current?.click()
@@ -416,7 +393,16 @@ export function PicGoPlugins() {
         items={listItems}
         selectedPluginFullName={selectedPluginFullName}
         onSelectPlugin={setSelectedPluginFullName}
-        onInstallPlugin={handleInstallPlugin}
+        onInstallPlugin={async (fullName) => {
+          try {
+            await pluginStoreActions.installPlugin(fullName)
+            setSelectedPluginFullName(fullName)
+          } catch (error) {
+            console.error(
+              `[plugins] install failed: ${error instanceof Error ? error.message : t("PLUGIN_INSTALL_FAILED")}`
+            )
+          }
+        }}
         onOpenAwesomeList={handleOpenAwesomeList}
         onImportLocalPlugin={handleOpenImportDialog}
         onOpenPluginMenu={handleOpenPluginMenu}
@@ -448,11 +434,6 @@ export function PicGoPlugins() {
             : false
         }
         onTabChange={setActiveTab}
-        onInstallPlugin={handleInstallPlugin}
-        onSaveConfig={handleSaveConfig}
-        onSetPluginEnabled={handleSetPluginEnabled}
-        onUpdatePlugin={handleUpdatePlugin}
-        onUninstallPlugin={handleUninstallPlugin}
       />
     </>
   )

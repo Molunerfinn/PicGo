@@ -2,7 +2,7 @@ import axios from 'axios'
 import { ipcRenderer } from 'electron'
 import { OPEN_URL, SHOW_PLUGIN_PAGE_MENU } from '#/events/constants'
 import { IRPCActionType } from '~/universal/types/enum'
-import { getConfig, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
+import { getConfig, invokeRPC, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
 
 interface PluginInstallResult {
   success: boolean
@@ -29,6 +29,8 @@ function streamlinePluginName (fullName: string) {
   return fullName.replace(/^picgo-plugin-/, '')
 }
 
+const README_FILE_CANDIDATES = ['README.md', 'readme.md', 'Readme.md'] as const
+
 export const pluginsAdapter = {
   getInstalledPlugins (): Promise<IPicGoPlugin[]> {
     return new Promise((resolve) => {
@@ -41,14 +43,11 @@ export const pluginsAdapter = {
     })
   },
   installPlugin (fullName: string): Promise<PluginInstallResult> {
-    return new Promise((resolve) => {
-      const handleResponse = (_event: Electron.IpcRendererEvent, result: PluginInstallResult) => {
-        resolve(result)
-      }
-
-      ipcRenderer.once('installPlugin', handleResponse)
-      sendToMain('installPlugin', fullName)
-    })
+    return invokeRPC<string>(IRPCActionType.INSTALL_PLUGIN, fullName).then((result: IRPCResult<string>) => ({
+      success: result.success,
+      body: fullName,
+      errMsg: result.success ? '' : (result.error || '')
+    }))
   },
   importLocalPlugin (): Promise<void> {
     return new Promise((resolve) => {
@@ -61,15 +60,18 @@ export const pluginsAdapter = {
     })
   },
   uninstallPlugin (fullName: string) {
-    sendToMain('uninstallPlugin', fullName)
+    return invokeRPC<string>(IRPCActionType.UNINSTALL_PLUGIN, fullName)
   },
   updatePlugin (fullName: string) {
-    sendToMain('updatePlugin', fullName)
+    return invokeRPC<string>(IRPCActionType.UPDATE_PLUGIN, fullName)
   },
   togglePluginEnabled (fullName: string, enabled: boolean) {
-    return saveConfig({
-      [`picgoPlugins.${fullName}`]: enabled
-    })
+    return invokeRPC<string>(
+      enabled
+        ? IRPCActionType.ENABLE_PLUGIN
+        : IRPCActionType.DISABLE_PLUGIN,
+      fullName
+    )
   },
   async saveTransformer (transformer: string) {
     await saveConfig({
@@ -77,14 +79,26 @@ export const pluginsAdapter = {
     })
   },
   async fetchPluginReadme (fullName: string) {
-    const response = await axios.get<string>(
-      `https://cdn.jsdelivr.net/npm/${fullName}/README.md`,
-      {
-        responseType: 'text'
-      }
-    )
+    let lastError: unknown = null
 
-    return response.data || ''
+    for (const readmeFileName of README_FILE_CANDIDATES) {
+      try {
+        const response = await axios.get<string>(
+          `https://cdn.jsdelivr.net/npm/${fullName}/${readmeFileName}`,
+          {
+            responseType: 'text'
+          }
+        )
+
+        return response.data || ''
+      } catch (error) {
+        lastError = error
+      }
+    }
+
+    throw lastError instanceof Error
+      ? lastError
+      : new Error('Failed to fetch plugin readme')
   },
   openPluginMenu (plugin: IPicGoPlugin) {
     sendToMain(SHOW_PLUGIN_PAGE_MENU, plugin)

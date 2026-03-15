@@ -2,16 +2,15 @@ import { GET_PICBEDS, OPEN_URL, PICGO_GET_CONFIG, PICGO_OPEN_FILE, PICGO_SAVE_CO
 import { IpcRendererEvent, ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
 import { IRPCActionType } from '~/universal/types/enum'
-import { getRawData } from './common'
 
 export async function saveConfig (_config: IObj | string, value?: any) {
   let config
   if (typeof _config === 'string') {
     config = {
-      [_config]: getRawData(value)
+      [_config]: value
     }
   } else {
-    config = getRawData(_config)
+    config = _config
   }
   await ipcRenderer.invoke(PICGO_SAVE_CONFIG, config)
 }
@@ -46,8 +45,7 @@ export function getPicBeds (): Promise<IPicBedType[]> {
  * `ipcMain.handle(RPC_ACTIONS, ...)` in the main process RPC server.
  */
 export function invokeRPC<T> (action: IRPCActionType, ...args: any[]): Promise<IRPCResult<T>> {
-  const data = getRawData(args)
-  return ipcRenderer.invoke(RPC_ACTIONS, action, data) as Promise<IRPCResult<T>>
+  return ipcRenderer.invoke(RPC_ACTIONS, action, args) as Promise<IRPCResult<T>>
 }
 
 /**
@@ -56,16 +54,14 @@ export function invokeRPC<T> (action: IRPCActionType, ...args: any[]): Promise<I
  * or the response will be handled by other listener
  */
 export function sendRPC (action: IRPCActionType, ...args: any[]): void {
-  const data = getRawData(args)
-  ipcRenderer.send(RPC_ACTIONS, action, data)
+  ipcRenderer.send(RPC_ACTIONS, action, args)
 }
 
 /**
  * @deprecated will be replaced by sendRPC in the future
  */
 export function sendToMain (channel: string, ...args: any[]) {
-  const data = getRawData(args)
-  ipcRenderer.send(channel, ...data)
+  ipcRenderer.send(channel, ...args)
 }
 
 export function openFile (fileName: string) {

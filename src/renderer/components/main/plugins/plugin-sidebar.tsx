@@ -64,6 +64,7 @@ export function PluginSidebar({
   const loadingMap = usePluginStore.use.isMutatingByPlugin()
   const normalizedSearch = searchValue.trim().toLowerCase()
   const hasSearch = normalizedSearch.length > 0
+  const scrollAreaKey = `${hasSearch ? "search" : "installed"}:${items.length}`
 
   return (
     <aside className="bg-sidebar text-sidebar-foreground border-sidebar-border flex w-(--app-plugin-sidebar-width) shrink-0 flex-col overflow-hidden rounded-xl border backdrop-blur-xl">
@@ -163,7 +164,7 @@ export function PluginSidebar({
         ) : null}
       </div>
 
-      <ScrollArea className="min-h-0 flex-1">
+      <ScrollArea key={scrollAreaKey} className="min-h-0 flex-1">
         <div className="space-y-1 p-2">
           {!isSearching && items.length === 0 ? (
             <div className="text-muted-foreground px-3 py-10 text-center text-sm">

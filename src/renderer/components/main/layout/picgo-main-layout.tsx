@@ -2,6 +2,7 @@ import { type CSSProperties, useEffect, useState } from "react"
 import { Outlet } from "@tanstack/react-router"
 
 import { SidebarProvider } from "@/components/ui/sidebar"
+import { AppReloadBar } from "@/components/common/app-reload-bar"
 import { TitleBar } from "@/components/common/title-bar"
 import { isMacOS } from "@/lib/platform"
 import { PicGoAppSidebar } from "./picgo-app-sidebar"
@@ -48,6 +49,8 @@ export function PicGoMainLayout() {
         <div className="flex h-full min-h-0 min-w-0 flex-1 gap-4">
           <Outlet />
         </div>
+
+        <AppReloadBar />
       </SidebarProvider>
     </div>
   )

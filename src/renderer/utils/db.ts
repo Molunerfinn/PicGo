@@ -10,7 +10,6 @@ import { IGalleryDB } from '#/types/extra-vue'
 import { IFilter, IGetResult, IObject, IResult } from '@picgo/store/dist/types'
 import { IpcRendererEvent, ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
-import { getRawData } from './common'
 export class GalleryDB implements IGalleryDB {
   async get<T> (filter?: IFilter): Promise<IGetResult<T>> {
     const res = await this.msgHandler<IGetResult<T>>(PICGO_GET_DB, filter)
@@ -51,9 +50,8 @@ export class GalleryDB implements IGalleryDB {
           ipcRenderer.removeListener(method, callback)
         }
       }
-      const data = getRawData(args)
       ipcRenderer.on(method, callback)
-      ipcRenderer.send(method, ...data, callbackId)
+      ipcRenderer.send(method, ...args, callbackId)
     })
   }
 }

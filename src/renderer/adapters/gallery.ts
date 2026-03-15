@@ -1,7 +1,6 @@
 import { clipboard, ipcRenderer } from 'electron'
 import { PASTE_TEXT } from '#/events/constants'
 import db from '@/utils/db'
-import { getRawData } from '@/utils/common'
 import { sendToMain } from '@/utils/dataSender'
 
 interface GalleryHistoryItem extends ImgInfo {
@@ -43,7 +42,7 @@ export const galleryAdapter = {
     }
   },
   async copyImageLink (item: ImgInfo) {
-    return ipcRenderer.invoke(PASTE_TEXT, getRawData(item)) as Promise<string>
+    return ipcRenderer.invoke(PASTE_TEXT, item) as Promise<string>
   },
   copyBatchLinks (links: string[]) {
     clipboard.writeText(links.join('\n'))
