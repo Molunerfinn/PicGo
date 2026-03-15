@@ -10,13 +10,6 @@ import { sendToMain } from '@/utils/dataSender'
 
 type TrayPageGalleryItem = IResult<ImgInfo>
 
-type TrayFilesListeners = {
-  onClipboardFiles?: (files: ImgInfo[]) => Promise<void> | void
-  onDragFiles?: (items: ImgInfo[]) => Promise<void> | void
-  onUploadFiles?: () => Promise<void> | void
-  onUpdateFiles?: () => Promise<void> | void
-}
-
 export const trayPageAdapter = {
   openMainWindow () {
     sendToMain(OPEN_WINDOW, IWindowList.SETTING_WINDOW)
@@ -45,41 +38,6 @@ export const trayPageAdapter = {
     return () => {
       window.removeEventListener('dragover', preventDefault, false)
       window.removeEventListener('drop', preventDefault, false)
-    }
-  },
-  subscribeFiles (listeners: TrayFilesListeners) {
-    const clipboardHandler = async (
-      _event: Electron.IpcRendererEvent,
-      files: ImgInfo[]
-    ) => {
-      await listeners.onClipboardFiles?.(files)
-    }
-
-    const dragHandler = async (
-      _event: Electron.IpcRendererEvent,
-      files: ImgInfo[]
-    ) => {
-      await listeners.onDragFiles?.(files)
-    }
-
-    const uploadHandler = async () => {
-      await listeners.onUploadFiles?.()
-    }
-
-    const updateHandler = async () => {
-      await listeners.onUpdateFiles?.()
-    }
-
-    ipcRenderer.on('clipboardFiles', clipboardHandler)
-    ipcRenderer.on('dragFiles', dragHandler)
-    ipcRenderer.on('uploadFiles', uploadHandler)
-    ipcRenderer.on('updateFiles', updateHandler)
-
-    return () => {
-      ipcRenderer.removeListener('clipboardFiles', clipboardHandler)
-      ipcRenderer.removeListener('dragFiles', dragHandler)
-      ipcRenderer.removeListener('uploadFiles', uploadHandler)
-      ipcRenderer.removeListener('updateFiles', updateHandler)
     }
   }
 }

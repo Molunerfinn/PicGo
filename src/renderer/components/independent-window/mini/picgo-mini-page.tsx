@@ -1,8 +1,10 @@
-import { type CSSProperties, type ChangeEvent, type DragEvent, useRef, useState } from "react"
+import { type CSSProperties, type ChangeEvent, type DragEvent, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { miniPageAdapter } from "@/adapters/mini-page"
 import { cn } from "@/lib/utils"
 import { isLinux } from "@/lib/platform"
+import { showNotification } from "@/utils/notification"
 import { UtilityWindowLayout } from "@/components/independent-window/utility-window-layout"
 import { resolveIndependentWindowErrorMessage } from "@/components/independent-window/utils"
 import { useMiniUpload } from "./hooks/use-mini-upload"
@@ -40,18 +42,71 @@ export function PicGoMiniPage() {
   const isLinuxPlatform = isLinux()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [dragging, setDragging] = useState(false)
+  const [mouseDownX, setMouseDownX] = useState(-1)
+  const [mouseDownY, setMouseDownY] = useState(-1)
+  const [mouseDownScreenX, setMouseDownScreenX] = useState(-1)
+  const [mouseDownScreenY, setMouseDownScreenY] = useState(-1)
   const { showProgress, progress, hasError, uploadFiles } = useMiniUpload()
 
-  const handleSelectFiles = async (files: File[]) => {
+  const handleOpenFilePicker = () => {
+    fileInputRef.current?.click()
+  }
+
+  useEffect(() => {
+    const handleMouseDown = (event: MouseEvent) => {
+      setDragging(true)
+      setMouseDownX(event.pageX)
+      setMouseDownY(event.pageY)
+      setMouseDownScreenX(event.screenX)
+      setMouseDownScreenY(event.screenY)
+    }
+
+    const handleMouseMove = (event: MouseEvent) => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      if (!dragging) {
+        return
+      }
+
+      miniPageAdapter.moveMiniWindow({
+        x: event.screenX - mouseDownX,
+        y: event.screenY - mouseDownY,
+        width: 64,
+        height: 64
+      })
+    }
+
+    const handleMouseUp = (event: MouseEvent) => {
+      setDragging(false)
+      if (mouseDownScreenX === event.screenX && mouseDownScreenY === event.screenY) {
+        if (event.button === 0) {
+          handleOpenFilePicker()
+        } else {
+          miniPageAdapter.openMiniMenu()
+        }
+      }
+    }
+
+    window.addEventListener("mousedown", handleMouseDown, false)
+    window.addEventListener("mousemove", handleMouseMove, false)
+    window.addEventListener("mouseup", handleMouseUp, false)
+
+    return () => {
+      window.removeEventListener("mousedown", handleMouseDown, false)
+      window.removeEventListener("mousemove", handleMouseMove, false)
+      window.removeEventListener("mouseup", handleMouseUp, false)
+    }
+  }, [dragging, mouseDownScreenX, mouseDownScreenY, mouseDownX, mouseDownY])
+
+  const handleSelectFiles = async (files: FileList) => {
     if (files.length === 0) {
       return
     }
 
     try {
-      const uploadedCount = await uploadFiles(files)
-      if (uploadedCount > 0) {
-        console.info(`[mini-page] upload succeeded: ${uploadedCount} file(s)`)
-      }
+      await uploadFiles(files)
     } catch (error) {
       console.error(
         `[mini-page] upload failed: ${resolveIndependentWindowErrorMessage(error, t("UPLOAD_FAILED"))}`
@@ -59,13 +114,12 @@ export function PicGoMiniPage() {
     }
   }
 
-  const handleOpenFilePicker = () => {
-    fileInputRef.current?.click()
-  }
-
   const handleFileInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const nextFiles = event.target.files ? Array.from(event.target.files) : []
+    const nextFiles = event.target.files
     event.target.value = ""
+    if (!nextFiles) {
+      return
+    }
     await handleSelectFiles(nextFiles)
   }
 
@@ -73,10 +127,42 @@ export function PicGoMiniPage() {
     event.preventDefault()
     setIsDragOver(false)
     const droppedFiles = event.dataTransfer?.files
-    if (!droppedFiles || droppedFiles.length === 0) {
+
+    if (droppedFiles?.length) {
+      await handleSelectFiles(droppedFiles)
       return
     }
-    await handleSelectFiles(Array.from(droppedFiles))
+
+    const dataTransfer = event.dataTransfer
+    if (!dataTransfer) {
+      return
+    }
+
+    const uriList = dataTransfer.getData("text/uri-list")
+    if (uriList) {
+      const { urls, invalidLines } = miniPageAdapter.parseDroppedUriList(
+        uriList,
+        dataTransfer.getData("text/html")
+      )
+      if (urls.length) {
+        miniPageAdapter.uploadUrlList(urls, invalidLines)
+        return
+      }
+    }
+
+    const plainText = dataTransfer.getData("text/plain")
+    if (plainText) {
+      const { urls, invalidLines } = miniPageAdapter.parseDroppedPlainText(plainText)
+      if (urls.length) {
+        miniPageAdapter.uploadUrlList(urls, invalidLines)
+        return
+      }
+    }
+
+    showNotification({
+      title: t("TIPS_ERROR"),
+      body: t("TIPS_DRAG_VALID_PICTURE_OR_URL")
+    })
   }
 
   return (

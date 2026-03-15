@@ -3,15 +3,20 @@ import { useTranslation } from "react-i18next"
 import { XIcon } from "lucide-react"
 
 import { AppMainCard } from "@/components/common/app-main-card"
+import { renamePageAdapter } from "@/adapters/rename-page"
 import { Button } from "@/components/ui/button"
+import { useIPCOn } from "@/hooks/useIPC"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  independentWindowMockApi,
-  type RenameDraftState,
-} from "@/components/independent-window/mock"
 import { UtilityWindowLayout } from "@/components/independent-window/utility-window-layout"
 import { resolveIndependentWindowErrorMessage } from "@/components/independent-window/utils"
+import { RENAME_FILE_NAME } from "#/events/constants"
+
+interface RenameDraftState {
+  id: string
+  fileName: string
+  originalName: string
+}
 
 export function PicGoRenamePage() {
   const { t } = useTranslation()
@@ -20,34 +25,20 @@ export function PicGoRenamePage() {
   const [isInputInvalid, setIsInputInvalid] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
+  useIPCOn(RENAME_FILE_NAME, (_event, fileName: string, originalName: string, id: string) => {
+    setRenameDraft({
+      id,
+      fileName,
+      originalName
+    })
+    setFileName(fileName)
+    setIsInputInvalid(false)
+  })
+
   // Hydrate rename draft data once so confirm/cancel behavior can follow legacy semantics.
   useEffect(() => {
-    let mounted = true
-
-    const loadRenameDraft = async () => {
-      try {
-        const draft = await independentWindowMockApi.getRenameDraft()
-        if (!mounted) {
-          return
-        }
-        setRenameDraft(draft)
-        setFileName(draft.fileName)
-        setIsInputInvalid(false)
-      } catch (error) {
-        console.error(
-          `[rename-page] load draft failed: ${resolveIndependentWindowErrorMessage(error, t("FAILED"))}`
-        )
-      }
-    }
-
-    loadRenameDraft().catch(() => {
-      // Error handling is done in loadRenameDraft.
-    })
-
-    return () => {
-      mounted = false
-    }
-  }, [t])
+    renamePageAdapter.requestRenameDraft()
+  }, [])
 
   const handleConfirm = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -62,10 +53,8 @@ export function PicGoRenamePage() {
     setIsInputInvalid(false)
     setSubmitting(true)
     try {
-      const result = await independentWindowMockApi.confirmRename(normalized)
-      setFileName(result.fileName)
-      setIsInputInvalid(false)
-      console.info(`[rename-page] rename confirmed: ${result.fileName}`)
+      renamePageAdapter.submitRename(renameDraft?.id || '', normalized)
+      console.info(`[rename-page] rename confirmed: ${normalized}`)
     } catch (error) {
       console.error(
         `[rename-page] rename confirm failed: ${resolveIndependentWindowErrorMessage(error, t("FAILED"))}`
@@ -82,10 +71,10 @@ export function PicGoRenamePage() {
 
     setSubmitting(true)
     try {
-      const result = await independentWindowMockApi.cancelRename()
-      setFileName(result.fileName)
+      renamePageAdapter.submitRename(renameDraft.id, renameDraft.originalName)
+      setFileName(renameDraft.originalName)
       setIsInputInvalid(false)
-      console.info(`[rename-page] rename canceled: ${result.fileName}`)
+      console.info(`[rename-page] rename canceled: ${renameDraft.originalName}`)
     } catch (error) {
       console.error(
         `[rename-page] rename cancel failed: ${resolveIndependentWindowErrorMessage(error, t("FAILED"))}`

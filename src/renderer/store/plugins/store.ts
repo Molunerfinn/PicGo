@@ -8,6 +8,8 @@ import { createSelectors } from '@/store/create-selectors'
 
 export interface PluginStoreState {
   searchValue: string
+  exactMatch: boolean
+  rawSearchResults: PluginSearchResultItem[]
   searchResults: PluginSearchResultItem[]
   isSearching: boolean
   isImportingLocal: boolean
@@ -17,6 +19,8 @@ export interface PluginStoreState {
 
 const initialPluginStoreState: PluginStoreState = {
   searchValue: '',
+  exactMatch: false,
+  rawSearchResults: [],
   searchResults: [],
   isSearching: false,
   isImportingLocal: false,

@@ -293,6 +293,7 @@ TIPS_INPUT_VALID_URL: Input valid URL
 # plugins
 
 PLUGIN_SEARCH_PLACEHOLDER: Search picgo plugins on npm, or click the button to view the awesome plugins list
+PLUGIN_SEARCH_EXACT_MATCH: Exact match
 PLUGIN_INSTALL: Install
 PLUGIN_INSTALLING: Installing...
 PLUGIN_INSTALLED: Installed

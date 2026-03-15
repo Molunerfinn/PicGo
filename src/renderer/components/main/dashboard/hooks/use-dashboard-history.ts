@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useIPCOn } from '@/hooks/useIPC'
 import { galleryAdapter } from '@/adapters/gallery'
+import { IRPCActionType } from '~/universal/types/enum'
 
 export interface DashboardHistoryRecord extends ImgInfo {
   createdAt?: number
@@ -8,6 +10,11 @@ export interface DashboardHistoryRecord extends ImgInfo {
 
 export function useDashboardHistory () {
   const [historyItems, setHistoryItems] = useState<DashboardHistoryRecord[]>([])
+  const [refreshNonce, setRefreshNonce] = useState(0)
+
+  useIPCOn(IRPCActionType.UPDATE_GALLERY, () => {
+    setRefreshNonce((value) => value + 1)
+  })
 
   useEffect(() => {
     let disposed = false
@@ -32,18 +39,13 @@ export function useDashboardHistory () {
       refreshHistory()
     }, 300)
 
-    const unsubscribe = galleryAdapter.subscribeToUpdates(() => {
-      refreshHistory()
-    })
-
     return () => {
       disposed = true
       if (retryTimer !== null) {
         window.clearTimeout(retryTimer)
       }
-      unsubscribe()
     }
-  }, [])
+  }, [refreshNonce])
 
   return historyItems
 }

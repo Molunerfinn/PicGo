@@ -7,6 +7,7 @@ import {
   type SchemaFormValues,
 } from "@/components/common/schema-form-fields"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { buildFormValues, validateRequiredFields } from "@/components/main/providers/utils"
 import type { AppConfig, ProviderPluginConfig } from "@/components/main/providers/types"
@@ -16,6 +17,7 @@ import { PluginDetailReadmeTabContent } from "./plugin-detail-readme-tab-content
 import { PluginDetailTransformerTabContent } from "./plugin-detail-transformer-tab-content"
 import {
   pluginDetailTab,
+  pluginReadmeStatus,
   type PluginDetailSelectedItem,
   type PluginDetailTab,
   type PluginInstalledItem,
@@ -187,6 +189,49 @@ export function PluginDetailPanel({
   }
 
   if (!selectedItem) {
+    if (readmeState?.status === pluginReadmeStatus.Loading) {
+      return (
+        <AppMainCard asChild className="overflow-hidden">
+          <main>
+            <PluginDetailHeader
+              selectedItem={selectedItem}
+              plugin={plugin}
+              isMutating={isMutating}
+              onInstallPlugin={onInstallPlugin}
+              onSetPluginEnabled={onSetPluginEnabled}
+              onUpdatePlugin={onUpdatePlugin}
+              onUninstallPlugin={onUninstallPlugin}
+            />
+
+            <ScrollArea className="min-h-0 flex-1">
+              <div className="mx-auto w-full max-w-(--app-plugin-content-max-width) px-6 py-6">
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <Skeleton className="size-24 rounded-xl" />
+                    <div className="min-w-0 flex-1 space-y-3">
+                      <Skeleton className="h-8 w-52" />
+                      <Skeleton className="h-5 w-80" />
+                      <Skeleton className="h-4 w-36" />
+                    </div>
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                  </div>
+
+                  <div className="space-y-3">
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-72 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                  </div>
+                </div>
+              </div>
+            </ScrollArea>
+          </main>
+        </AppMainCard>
+      )
+    }
+
     return (
       <AppMainCard asChild className="overflow-hidden">
         <main>

@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import electronRenderer from '@molunerfinn/vite-plugin-electron-renderer'
 import { resolve } from 'path'
+import { i18nTypesPlugin } from './scripts/vite-plugin-i18n-types'
 
 const alias = {
   '@': resolve(__dirname, 'src/renderer'),
@@ -52,6 +53,7 @@ export default defineConfig({
       }),
       react(),
       electronRenderer(),
+      i18nTypesPlugin(),
       tailwindcss()
     ],
     build: {

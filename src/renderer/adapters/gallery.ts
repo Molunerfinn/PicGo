@@ -1,11 +1,8 @@
 import { clipboard, ipcRenderer } from 'electron'
 import { PASTE_TEXT } from '#/events/constants'
-import { IRPCActionType } from '~/universal/types/enum'
 import db from '@/utils/db'
 import { getRawData } from '@/utils/common'
 import { sendToMain } from '@/utils/dataSender'
-
-type GalleryListener = () => void
 
 interface GalleryHistoryItem extends ImgInfo {
   createdAt?: number
@@ -50,11 +47,5 @@ export const galleryAdapter = {
   },
   copyBatchLinks (links: string[]) {
     clipboard.writeText(links.join('\n'))
-  },
-  subscribeToUpdates (listener: GalleryListener) {
-    ipcRenderer.on(IRPCActionType.UPDATE_GALLERY, listener)
-    return () => {
-      ipcRenderer.removeListener(IRPCActionType.UPDATE_GALLERY, listener)
-    }
   }
 }

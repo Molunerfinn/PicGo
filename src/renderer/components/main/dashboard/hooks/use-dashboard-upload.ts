@@ -6,6 +6,7 @@ import {
   type RefObject
 } from 'react'
 import { webUtils } from 'electron'
+import { useIPCOn } from '@/hooks/useIPC'
 import { dashboardAdapter } from '@/adapters/dashboard'
 
 interface UseDashboardUploadResult {
@@ -41,29 +42,27 @@ export function useDashboardUpload (): UseDashboardUploadResult {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const resetTimeoutRef = useRef<number | null>(null)
 
-  useEffect(() => {
-    const unsubscribe = dashboardAdapter.subscribeToUploadProgress((_event, progress) => {
-      if (progress === -1) {
-        setIsUploading(false)
-        setUploadProgress(100)
+  useIPCOn('uploadProgress', (_event, progress: number) => {
+    if (progress === -1) {
+      setIsUploading(false)
+      setUploadProgress(100)
 
-        if (resetTimeoutRef.current !== null) {
-          window.clearTimeout(resetTimeoutRef.current)
-        }
-
-        resetTimeoutRef.current = window.setTimeout(() => {
-          setUploadProgress(0)
-        }, 800)
-        return
+      if (resetTimeoutRef.current !== null) {
+        window.clearTimeout(resetTimeoutRef.current)
       }
 
-      setIsUploading(progress < 100)
-      setUploadProgress(progress)
-    })
+      resetTimeoutRef.current = window.setTimeout(() => {
+        setUploadProgress(0)
+      }, 800)
+      return
+    }
 
+    setIsUploading(progress < 100)
+    setUploadProgress(progress)
+  })
+
+  useEffect(() => {
     return () => {
-      unsubscribe()
-
       if (resetTimeoutRef.current !== null) {
         window.clearTimeout(resetTimeoutRef.current)
       }

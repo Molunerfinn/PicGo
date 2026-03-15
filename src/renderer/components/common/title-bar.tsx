@@ -1,5 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react'
+import { ipcRenderer } from 'electron'
 import { Copy, Maximize2, Minus, Square, X } from 'lucide-react'
+import { WINDOW_STATE_CHANGED } from '#/events/constants'
 import { windowControlsAdapter } from '@/adapters/window-controls'
 import { cn } from '@/lib/utils'
 import pkg from 'root/package.json'
@@ -24,12 +26,17 @@ export function TitleBar ({ isMac = false }: TitleBarProps) {
 
     syncWindowState()
 
-    const unsubscribe = windowControlsAdapter.subscribeToWindowState((state) => {
+    const handleWindowStateChange = (
+      _event: Electron.IpcRendererEvent,
+      state: { isMaximized: boolean }
+    ) => {
       setIsMaximized(state.isMaximized)
-    })
+    }
+
+    ipcRenderer.on(WINDOW_STATE_CHANGED, handleWindowStateChange)
 
     return () => {
-      unsubscribe()
+      ipcRenderer.removeListener(WINDOW_STATE_CHANGED, handleWindowStateChange)
     }
   }, [])
 

@@ -8,6 +8,7 @@ import { galleryAdapter } from "@/adapters/gallery"
 import { AppMainCard } from "@/components/common/app-main-card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useSidebar } from "@/components/ui/sidebar-context"
+import { useIPCOn } from "@/hooks/useIPC"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { appActions, galleryStoreActions, useAppStore, useGalleryStore } from "@/store"
@@ -34,6 +35,7 @@ import {
   type NavContext,
   NavType,
 } from "./utils"
+import { IRPCActionType } from "~/universal/types/enum"
 
 // TODO(v3-post-launch): Restore tag suggestions when Tags UI returns.
 // const tagSuggestions = ["Work", "Meme", "Design"]
@@ -106,6 +108,12 @@ export function PicGoGallery() {
   const isAllSelected =
     filteredImages.length > 0 && selectedIds.length === filteredImages.length
 
+  const [refreshNonce, setRefreshNonce] = useState(0)
+
+  useIPCOn(IRPCActionType.UPDATE_GALLERY, () => {
+    setRefreshNonce((value) => value + 1)
+  })
+
   useEffect(() => {
     selectedIdsRef.current = selectedIds
   }, [selectedIds])
@@ -143,14 +151,7 @@ export function PicGoGallery() {
 
     refreshGalleryPage()
 
-    const unsubscribe = galleryAdapter.subscribeToUpdates(() => {
-      refreshGalleryPage()
-    })
-
-    return () => {
-      unsubscribe()
-    }
-  }, [picBeds])
+  }, [picBeds, refreshNonce])
 
   const handleScrollAreaWrapperRef = (node: HTMLDivElement | null) => {
     scrollAreaWrapperRef.current = node

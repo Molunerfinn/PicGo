@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/dialog'
 import { Sheet, SheetTrigger } from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
+import { useIPCOn } from '@/hooks/useIPC'
 import { cn } from '@/lib/utils'
 import { appActions, settingsStoreActions, useAppStore } from '@/store'
 import { DESKTOP_HISTORY_PANEL_BREAKPOINT } from '@/utils/consts'
@@ -119,6 +120,14 @@ export function PicGoDashboard () {
   const hasVisibleProviders = providerOptions.length > 0
   const linkFormat = resolveLinkFormat(appConfig?.settings.pasteStyle)
 
+  useIPCOn('syncPicBed', async () => {
+    try {
+      await Promise.all([appActions.refreshAppConfig(), appActions.refreshPicBeds()])
+    } catch (error) {
+      console.error(error)
+    }
+  })
+
   useEffect(() => {
     async function hydrateDashboard () {
       try {
@@ -129,20 +138,6 @@ export function PicGoDashboard () {
     }
 
     hydrateDashboard()
-  }, [])
-
-  useEffect(() => {
-    const unsubscribe = dashboardAdapter.subscribeToSyncPicBed(async () => {
-      try {
-        await Promise.all([appActions.refreshAppConfig(), appActions.refreshPicBeds()])
-      } catch (error) {
-        console.error(error)
-      }
-    })
-
-    return () => {
-      unsubscribe()
-    }
   }, [])
 
   useEffect(() => {

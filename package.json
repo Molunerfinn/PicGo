@@ -21,7 +21,6 @@
     "cz": "git-cz",
     "dev": "electron-vite dev",
     "preview": "electron-vite preview",
-    "gen-i18n": "node ./scripts/gen-i18n-types.js",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx,.vue src/",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",

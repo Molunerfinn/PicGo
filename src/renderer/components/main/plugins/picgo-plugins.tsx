@@ -52,6 +52,7 @@ export function PicGoPlugins() {
   const pluginsInstalled = useAppStore.use.pluginsInstalled()
   const pluginSearchValue = usePluginStore.use.searchValue()
   const pluginSearchResults = usePluginStore.use.searchResults()
+  const isSearching = usePluginStore.use.isSearching()
   const isMutatingByPlugin = usePluginStore.use.isMutatingByPlugin()
   const readmeByPlugin = usePluginStore.use.readmeByPlugin()
 
@@ -94,10 +95,14 @@ export function PicGoPlugins() {
 
   const activeListItem = resolveActivePlugin(listItems, selectedPluginFullName)
   const activePlugin: PluginInstalledItem | null = activeListItem?.installedPlugin ?? null
-  const activeReadmeState = resolveReadmeState(
-    readmeByPlugin,
-    activeListItem?.fullName
-  )
+  const activeReadmeState =
+    isSearchMode && isSearching && pluginSearchResults.length === 0
+      ? {
+        status: pluginReadmeStatus.Loading,
+        content: "",
+        errorMessage: null
+      }
+      : resolveReadmeState(readmeByPlugin, activeListItem?.fullName)
   const availableTabs = resolvePluginDetailTabs(activePlugin)
 
   useEffect(() => {

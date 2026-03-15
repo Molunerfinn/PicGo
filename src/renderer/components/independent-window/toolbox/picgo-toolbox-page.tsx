@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
   AlertCircleIcon,
@@ -11,33 +11,51 @@ import {
 } from "lucide-react"
 
 import { AppMainCard } from "@/components/common/app-main-card"
-import {
-  independentWindowMockApi,
-  type ToolboxCheckResult,
-  toolboxItemCheckStatus,
-  type ToolboxItemState,
-  type ToolboxItemType,
-} from "@/components/independent-window/mock"
+import { toolboxPageAdapter } from "@/adapters/toolbox-page"
+import { useIPCOn } from "@/hooks/useIPC"
 import { UtilityWindowLayout } from "@/components/independent-window/utility-window-layout"
 import { resolveIndependentWindowErrorMessage } from "@/components/independent-window/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
+import {
+  IRPCActionType,
+  IToolboxItemCheckStatus,
+  IToolboxItemType
+} from "~/universal/types/enum"
+
+type ToolboxHandlerTextKey = "SETTINGS_OPEN_CONFIG_FILE" | "OPEN_FILE_PATH"
+type ToolboxTitleKey =
+  | "TOOLBOX_CHECK_CONFIG_FILE_BROKEN"
+  | "TOOLBOX_CHECK_GALLERY_FILE_BROKEN"
+  | "TOOLBOX_CHECK_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD"
+  | "TOOLBOX_CHECK_PROBLEM_WITH_PROXY"
+
+interface ToolboxItemState {
+  type: IToolboxItemType
+  titleKey: ToolboxTitleKey
+  status: IToolboxItemCheckStatus
+  messageKey: string
+  messageVariables?: Record<string, string>
+  value: string
+  hasNoFixMethod?: boolean
+  handlerTextKey?: ToolboxHandlerTextKey
+}
 
 function ToolboxStatusIcon({
   status,
 }: {
   status: ToolboxItemState["status"]
 }) {
-  if (status === toolboxItemCheckStatus.Loading) {
+  if (status === IToolboxItemCheckStatus.LOADING) {
     return <LoaderCircleIcon className="size-4 animate-spin text-primary" />
   }
 
-  if (status === toolboxItemCheckStatus.Success) {
+  if (status === IToolboxItemCheckStatus.SUCCESS) {
     return <CheckCircle2Icon className="size-4 text-green-500" />
   }
 
-  if (status === toolboxItemCheckStatus.Error) {
+  if (status === IToolboxItemCheckStatus.ERROR) {
     return <AlertCircleIcon className="size-4 text-destructive" />
   }
 
@@ -46,8 +64,8 @@ function ToolboxStatusIcon({
 
 function applyToolboxResult(
   currentItems: ToolboxItemState[],
-  result: ToolboxCheckResult
-) {
+  result: IToolboxCheckRes
+): ToolboxItemState[] {
   return currentItems.map((item) => {
     if (item.type !== result.type) {
       return item
@@ -56,46 +74,57 @@ function applyToolboxResult(
     return {
       ...item,
       status: result.status,
-      messageKey: result.messageKey,
-      messageVariables: result.messageVariables,
-      value: result.value,
+      messageKey: result.msg ?? "",
+      value: typeof result.value === "string" ? result.value : "",
     }
   })
 }
 
 export function PicGoToolboxPage() {
   const { t } = useTranslation()
-  const [items, setItems] = useState<ToolboxItemState[]>([])
-  const [activeType, setActiveType] = useState<ToolboxItemType | null>(null)
+  const [items, setItems] = useState<ToolboxItemState[]>([
+    {
+      type: IToolboxItemType.IS_CONFIG_FILE_BROKEN,
+      titleKey: "TOOLBOX_CHECK_CONFIG_FILE_BROKEN",
+      status: IToolboxItemCheckStatus.INIT,
+      messageKey: "",
+      value: "",
+      handlerTextKey: "SETTINGS_OPEN_CONFIG_FILE",
+    },
+    {
+      type: IToolboxItemType.IS_GALLERY_FILE_BROKEN,
+      titleKey: "TOOLBOX_CHECK_GALLERY_FILE_BROKEN",
+      status: IToolboxItemCheckStatus.INIT,
+      messageKey: "",
+      value: "",
+    },
+    {
+      type: IToolboxItemType.HAS_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD,
+      titleKey: "TOOLBOX_CHECK_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD",
+      status: IToolboxItemCheckStatus.INIT,
+      messageKey: "",
+      value: "",
+      handlerTextKey: "OPEN_FILE_PATH",
+    },
+    {
+      type: IToolboxItemType.HAS_PROBLEM_WITH_PROXY,
+      titleKey: "TOOLBOX_CHECK_PROBLEM_WITH_PROXY",
+      status: IToolboxItemCheckStatus.INIT,
+      messageKey: "",
+      value: "",
+      hasNoFixMethod: true,
+    }
+  ])
+  const [activeType, setActiveType] = useState<IToolboxItemType | null>(null)
   const [isChecking, setIsChecking] = useState(false)
   const [isFixing, setIsFixing] = useState(false)
 
-  // Load toolbox diagnostics definitions once so the page mirrors legacy item grouping.
-  useEffect(() => {
-    let mounted = true
-
-    const loadToolboxInitialState = async () => {
-      try {
-        const initialState = await independentWindowMockApi.getToolboxInitialState()
-        if (!mounted) {
-          return
-        }
-        setItems(initialState)
-      } catch (error) {
-        console.error(
-          `[toolbox-page] load initial state failed: ${resolveIndependentWindowErrorMessage(error, t("FAILED"))}`
-        )
-      }
+  useIPCOn(IRPCActionType.TOOLBOX_CHECK_RES, (_event, result: IToolboxCheckRes) => {
+    applyResult(result)
+    if (result.status === IToolboxItemCheckStatus.ERROR) {
+      setActiveType(result.type)
     }
-
-    loadToolboxInitialState().catch(() => {
-      // Error handling is done in loadToolboxInitialState.
-    })
-
-    return () => {
-      mounted = false
-    }
-  }, [t])
+  })
 
   const progress =
     items.length === 0
@@ -103,8 +132,8 @@ export function PicGoToolboxPage() {
       : Math.round(
         (items.filter(
           (item) =>
-            item.status !== toolboxItemCheckStatus.Init &&
-            item.status !== toolboxItemCheckStatus.Loading
+            item.status !== IToolboxItemCheckStatus.INIT &&
+            item.status !== IToolboxItemCheckStatus.LOADING
         ).length /
         items.length) *
         100
@@ -112,15 +141,15 @@ export function PicGoToolboxPage() {
 
   const isAllSuccess =
     items.length > 0 &&
-    items.every((item) => item.status === toolboxItemCheckStatus.Success)
+    items.every((item) => item.status === IToolboxItemCheckStatus.SUCCESS)
 
   const canFixItems = items.filter(
     (item) =>
-      item.status === toolboxItemCheckStatus.Error && item.hasNoFixMethod !== true
+      item.status === IToolboxItemCheckStatus.ERROR && item.hasNoFixMethod !== true
   )
   const canFixLength = canFixItems.length
 
-  const applyResult = (result: ToolboxCheckResult) => {
+  const applyResult = (result: IToolboxCheckRes) => {
     setItems((currentItems) => applyToolboxResult(currentItems, result))
   }
 
@@ -131,12 +160,10 @@ export function PicGoToolboxPage() {
 
     setActiveType(null)
     setIsChecking(true)
-    const orderedTypes = items.map((item) => item.type)
-
     setItems((currentItems) =>
       currentItems.map((item) => ({
         ...item,
-        status: toolboxItemCheckStatus.Loading,
+        status: IToolboxItemCheckStatus.LOADING,
         messageKey: "",
         messageVariables: undefined,
         value: "",
@@ -144,14 +171,7 @@ export function PicGoToolboxPage() {
     )
 
     try {
-      for (const type of orderedTypes) {
-        const result = await independentWindowMockApi.runToolboxCheck(type)
-        applyResult(result)
-
-        if (result.status === toolboxItemCheckStatus.Error) {
-          setActiveType(type)
-        }
-      }
+      toolboxPageAdapter.runCheck()
       console.info("[toolbox-page] toolbox scan completed")
     } catch (error) {
       console.error(
@@ -172,14 +192,14 @@ export function PicGoToolboxPage() {
 
     try {
       for (const type of fixTypes) {
-        const result = await independentWindowMockApi.runToolboxFix(type)
+        const result = await toolboxPageAdapter.fixItem(type)
         applyResult(result)
       }
 
       console.info("[toolbox-page] toolbox fix completed")
       const shouldRestartNow = window.confirm(t("TOOLBOX_FIX_DONE_NEED_RELOAD"))
       if (shouldRestartNow) {
-        await independentWindowMockApi.restartToolboxAfterFix()
+        toolboxPageAdapter.reloadApp()
         console.info("[toolbox-page] restart confirmed")
       } else {
         console.info("[toolbox-page] restart skipped")
@@ -195,8 +215,8 @@ export function PicGoToolboxPage() {
 
   const handleOpenPath = async (path: string) => {
     try {
-      const openedPath = await independentWindowMockApi.openToolboxPath(path)
-      console.info(`[toolbox-page] opened path: ${openedPath}`)
+      toolboxPageAdapter.openFile(path)
+      console.info(`[toolbox-page] opened path: ${path}`)
     } catch (error) {
       console.error(
         `[toolbox-page] open path failed: ${resolveIndependentWindowErrorMessage(error, t("FAILED"))}`
@@ -339,7 +359,7 @@ export function PicGoToolboxPage() {
                         <div className="bg-border/60 mb-3 h-px w-full" />
                         <p className="text-muted-foreground text-sm leading-6">
                           {item.messageKey
-                            ? t(item.messageKey, item.messageVariables)
+                            ? t(item.messageKey as never, item.messageVariables)
                             : ""}
                         </p>
                         {item.handlerTextKey && item.value ? (

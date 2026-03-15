@@ -5,6 +5,7 @@ import { LoaderCircleIcon } from 'lucide-react'
 import { trayPageAdapter, type TrayPageGalleryItem } from '@/adapters/tray-page'
 import { AppMainCard } from '@/components/common/app-main-card'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { useIPCOn } from '@/hooks/useIPC'
 import { cn } from '@/lib/utils'
 import type {
   TrayWaitingItem
@@ -109,60 +110,56 @@ export function PicGoTrayPage () {
   const [loading, setLoading] = useState(true)
   const [uploadFlag, setUploadFlag] = useState(false)
 
+  const refreshUploadedItems = async () => {
+    const items = await trayPageAdapter.getRecentUploadedItems(5)
+    setUploadedItems(items.map(resolveTrayUploadedItem))
+  }
+
+  useIPCOn('clipboardFiles', (_event, files: ImgInfo[]) => {
+    setClipboardFiles(files.map(resolveTrayWaitingItem))
+  })
+
+  useIPCOn('dragFiles', async () => {
+    await refreshUploadedItems()
+  })
+
+  useIPCOn('uploadFiles', async () => {
+    await refreshUploadedItems()
+    setUploadFlag(false)
+  })
+
+  useIPCOn('updateFiles', async () => {
+    await refreshUploadedItems()
+  })
+
   useEffect(() => {
     let mounted = true
 
-    async function refreshUploadedItems () {
-      const items = await trayPageAdapter.getRecentUploadedItems(5)
-
-      if (!mounted) {
-        return
-      }
-
-      setUploadedItems(items.map(resolveTrayUploadedItem))
-    }
-
     const removeDragBlockers = trayPageAdapter.disableDragFile()
 
-    refreshUploadedItems()
-      .catch((error) => {
+    async function loadInitialUploadedItems () {
+      try {
+        const items = await trayPageAdapter.getRecentUploadedItems(5)
+        if (!mounted) {
+          return
+        }
+        setUploadedItems(items.map(resolveTrayUploadedItem))
+      } catch (error) {
         console.error(
           `[tray-page] load state failed: ${error instanceof Error ? error.message : t('FAILED')}`
         )
-      })
-      .finally(() => {
+      } finally {
         if (mounted) {
           setLoading(false)
         }
-      })
-
-    const unsubscribe = trayPageAdapter.subscribeFiles({
-      onClipboardFiles: async (files) => {
-        if (!mounted) {
-          return
-        }
-
-        setClipboardFiles(files.map(resolveTrayWaitingItem))
-      },
-      onDragFiles: async () => {
-        await refreshUploadedItems()
-      },
-      onUploadFiles: async () => {
-        await refreshUploadedItems()
-        if (!mounted) {
-          return
-        }
-        setUploadFlag(false)
-      },
-      onUpdateFiles: async () => {
-        await refreshUploadedItems()
       }
-    })
+    }
+
+    loadInitialUploadedItems()
 
     return () => {
       mounted = false
       removeDragBlockers()
-      unsubscribe()
     }
   }, [t])
 

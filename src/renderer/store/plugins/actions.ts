@@ -12,11 +12,36 @@ import { appActions } from '@/store/app-actions'
 import { useAppStore } from '@/store/app-store'
 import { usePluginStore } from './store'
 
+function buildPluginSearchKeyword (query: string) {
+  return query.includes('picgo-plugin-')
+    ? query
+    : `picgo-plugin-${query}`
+}
+
+function filterPluginSearchResults (
+  results: PluginSearchResultItem[],
+  query: string,
+  exactMatch: boolean
+) {
+  if (!exactMatch) {
+    return results
+  }
+
+  const keyword = buildPluginSearchKeyword(query)
+  return results.filter((item) => item.fullName.includes(keyword))
+}
+
 export const pluginStoreActions = {
   setSearchValue (value: string) {
     usePluginStore.setState((state) => {
       state.searchValue = value
     })
+  },
+  toggleExactMatch () {
+    usePluginStore.setState((state) => {
+      state.exactMatch = !state.exactMatch
+    })
+    pluginStoreActions.applySearchFilter()
   },
   setSearching (isSearching: boolean) {
     usePluginStore.setState((state) => {
@@ -25,8 +50,19 @@ export const pluginStoreActions = {
   },
   setSearchResults (searchResults: PluginSearchResultItem[]) {
     usePluginStore.setState((state) => {
+      state.rawSearchResults = searchResults
       state.searchResults = searchResults
       state.isSearching = false
+    })
+  },
+  applySearchFilter () {
+    usePluginStore.setState((state) => {
+      const normalizedQuery = state.searchValue.trim()
+      state.searchResults = filterPluginSearchResults(
+        state.rawSearchResults,
+        normalizedQuery,
+        state.exactMatch
+      )
     })
   },
   setInstalledPlugins (pluginsInstalled: PluginInstalledItem[]) {
@@ -50,17 +86,22 @@ export const pluginStoreActions = {
     })
   },
   async searchPlugins (query: string) {
-    if (!query.trim()) {
+    const normalizedQuery = query.trim()
+
+    if (!normalizedQuery) {
       pluginStoreActions.setSearchResults([])
       return
     }
+
+    const npmSearchText = buildPluginSearchKeyword(normalizedQuery)
+    const exactMatch = usePluginStore.getState().exactMatch
 
     pluginStoreActions.setSearching(true)
 
     try {
       const installedPlugins = useAppStore.getState().pluginsInstalled
       const searchResults = await pluginsAdapter.searchPlugins(
-        query,
+        npmSearchText,
         installedPlugins.map((item) => ({
           name: item.name,
           fullName: item.fullName,
@@ -88,7 +129,16 @@ export const pluginStoreActions = {
         }))
       )
 
-      pluginStoreActions.setSearchResults(searchResults.map(mapPluginSearchResult))
+      const normalizedResults = searchResults.map(mapPluginSearchResult)
+      const filteredResults = exactMatch
+        ? normalizedResults.filter((item) => item.fullName.includes(npmSearchText))
+        : normalizedResults
+
+      usePluginStore.setState((state) => {
+        state.rawSearchResults = normalizedResults
+        state.searchResults = filteredResults
+        state.isSearching = false
+      })
     } catch (error) {
       pluginStoreActions.setSearching(false)
       throw error

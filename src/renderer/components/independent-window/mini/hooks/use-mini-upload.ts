@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react"
 
-import { independentWindowMockApi } from "@/components/independent-window/mock"
+import { miniPageAdapter } from "@/adapters/mini-page"
+import { useIPCOn } from "@/hooks/useIPC"
 
 interface UseMiniUploadResult {
   showProgress: boolean
   progress: number
   hasError: boolean
-  uploadFiles: (files: File[]) => Promise<number>
+  uploadFiles: (files: FileList) => Promise<void>
 }
 
 export function useMiniUpload(): UseMiniUploadResult {
@@ -42,6 +43,21 @@ export function useMiniUpload(): UseMiniUploadResult {
     }, 1200)
   }
 
+  useIPCOn('uploadProgress', (_event, nextProgress: number) => {
+    if (!isMountedRef.current) {
+      return
+    }
+
+    if (nextProgress !== -1) {
+      setShowProgress(true)
+      setProgress(nextProgress)
+      return
+    }
+
+    setProgress(100)
+    setHasError(true)
+  })
+
   // Ensure delayed progress timers are cleaned up when the mini page unmounts.
   useEffect(() => {
     isMountedRef.current = true
@@ -52,23 +68,14 @@ export function useMiniUpload(): UseMiniUploadResult {
     }
   }, [])
 
-  const uploadFiles = async (files: File[]) => {
+  const uploadFiles = async (files: FileList) => {
     clearProgressTimers()
     setShowProgress(true)
     setHasError(false)
     setProgress(0)
 
     try {
-      const result = await independentWindowMockApi.uploadMiniFiles({
-        files,
-        onProgress: (nextProgress) => {
-          if (!isMountedRef.current) {
-            return
-          }
-          setProgress(nextProgress)
-        },
-      })
-      return result.uploadedCount
+      miniPageAdapter.uploadChosenFiles(files)
     } catch (error) {
       if (isMountedRef.current) {
         setProgress(100)

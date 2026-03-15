@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import { appConfigAdapter } from '@/adapters/app-config'
+import { ipcRenderer } from 'electron'
+import { APP_CONFIG_UPDATED } from '#/events/constants'
 import { appActions } from '@/store'
 
 export function RendererRuntimeBridge () {
@@ -12,17 +13,19 @@ export function RendererRuntimeBridge () {
 
   // Refresh config-derived state whenever the main process broadcasts an app-config update.
   useEffect(() => {
-    const unsubscribe = appConfigAdapter.subscribeToUpdates(() => {
+    const handleAppConfigUpdated = () => {
       Promise.all([
         appActions.refreshAppConfig(),
         appActions.refreshPicBeds()
       ]).catch((error) => {
         console.error('Failed to refresh renderer app state after config update', error)
       })
-    })
+    }
+
+    ipcRenderer.on(APP_CONFIG_UPDATED, handleAppConfigUpdated)
 
     return () => {
-      unsubscribe()
+      ipcRenderer.removeListener(APP_CONFIG_UPDATED, handleAppConfigUpdated)
     }
   }, [])
 

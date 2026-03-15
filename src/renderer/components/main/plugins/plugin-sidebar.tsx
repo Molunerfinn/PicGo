@@ -6,6 +6,7 @@ import {
   LoaderCircleIcon,
   SearchIcon,
   SettingsIcon,
+  SpellCheckIcon,
   XIcon,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -57,6 +58,8 @@ export function PluginSidebar({
 }: PluginSidebarProps) {
   const { t } = useTranslation()
   const searchValue = usePluginStore.use.searchValue()
+  const exactMatch = usePluginStore.use.exactMatch()
+  const isSearching = usePluginStore.use.isSearching()
   const isImportingLocal = usePluginStore.use.isImportingLocal()
   const loadingMap = usePluginStore.use.isMutatingByPlugin()
   const normalizedSearch = searchValue.trim().toLowerCase()
@@ -68,6 +71,27 @@ export function PluginSidebar({
         <div className="flex items-center justify-between gap-2">
           <h1 className="text-base font-semibold">{t("SIDEBAR_PLUGINS")}</h1>
           <div className="flex items-center gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  className={cn(
+                    "text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)",
+                    exactMatch
+                      ? "bg-(--app-plugin-sidebar-item-active-bg) text-(--app-plugin-sidebar-item-active-color)"
+                      : ""
+                  )}
+                  onClick={pluginStoreActions.toggleExactMatch}
+                  aria-pressed={exactMatch}
+                >
+                  <SpellCheckIcon className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t("PLUGIN_SEARCH_EXACT_MATCH")}</TooltipContent>
+            </Tooltip>
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -130,11 +154,18 @@ export function PluginSidebar({
             </InputGroupAddon>
           ) : null}
         </InputGroup>
+
+        {hasSearch && isSearching ? (
+          <div className="text-muted-foreground flex items-center justify-center gap-2 px-1 text-xs">
+            <LoaderCircleIcon className="size-3.5 animate-spin" />
+            <span>{t("SEARCH")}</span>
+          </div>
+        ) : null}
       </div>
 
       <ScrollArea className="min-h-0 flex-1">
         <div className="space-y-1 p-2">
-          {items.length === 0 ? (
+          {!isSearching && items.length === 0 ? (
             <div className="text-muted-foreground px-3 py-10 text-center text-sm">
               {t("PLUGIN_EMPTY")}
             </div>
