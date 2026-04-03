@@ -8,7 +8,6 @@ describe('renderer/utils/dataSender', () => {
       on: vi.fn(),
       once: vi.fn(),
       send: vi.fn(),
-      off: vi.fn(),
       removeAllListeners: vi.fn()
     },
     clipboard: {

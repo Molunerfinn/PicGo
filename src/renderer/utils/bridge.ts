@@ -18,80 +18,12 @@ const resolveBridgeApi = (): BridgeApi => {
   return bridgeApi
 }
 
-const listenerCleanupMap = new Map<string, Map<BridgeIpcListener, Set<BridgeIpcCleanup>>>()
-
-const getChannelListeners = (channel: string) => {
-  let channelListeners = listenerCleanupMap.get(channel)
-  if (!channelListeners) {
-    channelListeners = new Map()
-    listenerCleanupMap.set(channel, channelListeners)
-  }
-  return channelListeners
-}
-
-const untrackCleanup = (channel: string, listener: BridgeIpcListener, cleanup: BridgeIpcCleanup) => {
-  const channelListeners = listenerCleanupMap.get(channel)
-  if (!channelListeners) return
-
-  const cleanupSet = channelListeners.get(listener)
-  if (!cleanupSet) return
-
-  cleanupSet.delete(cleanup)
-  if (cleanupSet.size === 0) {
-    channelListeners.delete(listener)
-  }
-
-  if (channelListeners.size === 0) {
-    listenerCleanupMap.delete(channel)
-  }
-}
-
-const trackCleanup = (channel: string, listener: BridgeIpcListener, cleanup: BridgeIpcCleanup) => {
-  const channelListeners = getChannelListeners(channel)
-  const cleanupSet = channelListeners.get(listener) || new Set<BridgeIpcCleanup>()
-  const trackedCleanup = () => {
-    cleanup()
-    untrackCleanup(channel, listener, trackedCleanup)
-  }
-
-  cleanupSet.add(trackedCleanup)
-  channelListeners.set(listener, cleanupSet)
-
-  return trackedCleanup
-}
-
 export const ipc = {
   send: (channel: string, ...args: unknown[]) => resolveBridgeApi().ipc.send(channel, ...args),
   invoke: <T>(channel: string, ...args: unknown[]) => resolveBridgeApi().ipc.invoke<T>(channel, ...args),
-  on: (channel: string, listener: BridgeIpcListener) => {
-    const cleanup = resolveBridgeApi().ipc.on(channel, listener)
-    return trackCleanup(channel, listener, cleanup)
-  },
-  once: (channel: string, listener: BridgeIpcListener) => {
-    let trackedCleanup: BridgeIpcCleanup = () => {}
-
-    const wrappedListener: BridgeIpcListener = (...args) => {
-      untrackCleanup(channel, listener, trackedCleanup)
-      listener(...args)
-    }
-
-    const cleanup = resolveBridgeApi().ipc.once(channel, wrappedListener)
-    trackedCleanup = trackCleanup(channel, listener, cleanup)
-
-    return trackedCleanup
-  },
-  off: (channel: string, listener: BridgeIpcListener) => {
-    const cleanupSet = listenerCleanupMap.get(channel)?.get(listener)
-    if (!cleanupSet) return
-
-    Array.from(cleanupSet).forEach((cleanup) => {
-      cleanup()
-    })
-  },
-  removeAllListeners: (channel: string) => {
-    resolveBridgeApi().ipc.removeAllListeners(channel)
-    listenerCleanupMap.delete(channel)
-  }
+  on: (channel: string, listener: BridgeIpcListener) => resolveBridgeApi().ipc.on(channel, listener),
+  once: (channel: string, listener: BridgeIpcListener) => resolveBridgeApi().ipc.once(channel, listener),
+  removeAllListeners: (channel: string) => resolveBridgeApi().ipc.removeAllListeners(channel)
 }
 
 export const clipboard = {

@@ -3,26 +3,21 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 type CleanupFn = ReturnType<typeof vi.fn>
 
 describe('renderer/utils/bridge', () => {
-  const onCleanupFns: CleanupFn[] = []
-  const onceCleanupFns: CleanupFn[] = []
-  const onceWrappedListeners: BridgeIpcListener[] = []
+  let onCleanup: CleanupFn
+  let onceCleanup: CleanupFn
 
   const bridgeApiMock = {
     ipc: {
       invoke: vi.fn(),
       send: vi.fn(),
-      off: vi.fn(),
       removeAllListeners: vi.fn(),
       on: vi.fn((_channel: string, _listener: BridgeIpcListener) => {
-        const cleanup = vi.fn()
-        onCleanupFns.push(cleanup)
-        return cleanup
+        onCleanup = vi.fn()
+        return onCleanup
       }),
-      once: vi.fn((channel: string, listener: BridgeIpcListener) => {
-        onceWrappedListeners.push(listener)
-        const cleanup = vi.fn()
-        onceCleanupFns.push(cleanup)
-        return cleanup
+      once: vi.fn((_channel: string, _listener: BridgeIpcListener) => {
+        onceCleanup = vi.fn()
+        return onceCleanup
       })
     },
     clipboard: {
@@ -51,9 +46,8 @@ describe('renderer/utils/bridge', () => {
   beforeEach(() => {
     vi.resetModules()
     vi.clearAllMocks()
-    onCleanupFns.length = 0
-    onceCleanupFns.length = 0
-    onceWrappedListeners.length = 0
+    onCleanup = vi.fn()
+    onceCleanup = vi.fn()
     vi.stubGlobal('window', { bridgeApi: bridgeApiMock })
     vi.stubGlobal('bridgeApi', bridgeApiMock)
   })
@@ -62,47 +56,33 @@ describe('renderer/utils/bridge', () => {
     vi.unstubAllGlobals()
   })
 
-  it('cleans up all tracked listeners for off', async () => {
+  it('returns preload cleanup for on', async () => {
     const { ipc } = await import('@/utils/bridge')
     const listener = vi.fn()
 
-    ipc.on('demo', listener)
-    ipc.on('demo', listener)
-    ipc.off('demo', listener)
+    const cleanup = ipc.on('demo', listener)
+    cleanup()
 
-    expect(bridgeApiMock.ipc.on).toHaveBeenCalledTimes(2)
-    expect(onCleanupFns).toHaveLength(2)
-    expect(onCleanupFns[0]).toHaveBeenCalledTimes(1)
-    expect(onCleanupFns[1]).toHaveBeenCalledTimes(1)
+    expect(bridgeApiMock.ipc.on).toHaveBeenCalledWith('demo', listener)
+    expect(onCleanup).toHaveBeenCalledTimes(1)
   })
 
-  it('untracks once listeners after invocation so off no longer cleans them up', async () => {
+  it('returns preload cleanup for once', async () => {
     const { ipc } = await import('@/utils/bridge')
     const listener = vi.fn()
 
-    ipc.once('demo', listener)
+    const cleanup = ipc.once('demo', listener)
+    cleanup()
 
     expect(bridgeApiMock.ipc.once).toHaveBeenCalledTimes(1)
-    expect(onceWrappedListeners).toHaveLength(1)
-
-    onceWrappedListeners[0]('payload')
-    ipc.off('demo', listener)
-
-    expect(listener).toHaveBeenCalledWith('payload')
-    expect(onceCleanupFns[0]).not.toHaveBeenCalled()
+    expect(bridgeApiMock.ipc.once).toHaveBeenCalledWith('demo', listener)
+    expect(onceCleanup).toHaveBeenCalledTimes(1)
   })
 
-  it('clears local listener tracking after removeAllListeners', async () => {
+  it('delegates removeAllListeners to preload', async () => {
     const { ipc } = await import('@/utils/bridge')
-    const listener = vi.fn()
-
-    ipc.on('demo', listener)
-    ipc.on('demo', listener)
     ipc.removeAllListeners('demo')
-    ipc.off('demo', listener)
 
     expect(bridgeApiMock.ipc.removeAllListeners).toHaveBeenCalledWith('demo')
-    expect(onCleanupFns[0]).not.toHaveBeenCalled()
-    expect(onCleanupFns[1]).not.toHaveBeenCalled()
   })
 })

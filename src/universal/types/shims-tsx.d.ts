@@ -23,7 +23,6 @@ declare global {
       invoke: <T>(channel: string, ...args: unknown[]) => Promise<T>
       on: (channel: string, listener: BridgeIpcListener) => BridgeIpcCleanup
       once: (channel: string, listener: BridgeIpcListener) => BridgeIpcCleanup
-      off: (channel: string, listener: BridgeIpcListener) => void
       removeAllListeners: (channel: string) => void
     }
     clipboard: {
