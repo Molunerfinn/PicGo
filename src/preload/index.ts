@@ -70,8 +70,11 @@ const ipc = {
   },
   once: (channel: string, listener: PreloadIpcListener) => {
     const wrappedListener: ElectronIpcListener = (_event, ...args) => {
-      listener(...args)
-      untrackListener(channel, listener, wrappedListener)
+      try {
+        listener(...args)
+      } finally {
+        untrackListener(channel, listener, wrappedListener)
+      }
     }
 
     trackListener(channel, listener, wrappedListener)
