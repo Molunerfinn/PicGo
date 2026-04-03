@@ -109,9 +109,6 @@ windowList.set(IWindowList.SETTING_WINDOW, {
     return options
   },
   callback (window, windowManager) {
-    window.webContents.openDevTools({
-      mode: 'detach'
-    })
     window.loadURL(handleWindowParams(SETTING_WINDOW_URL))
     window.on('closed', () => {
       bus.emit(TOGGLE_SHORTKEY_MODIFIED_MODE, false)
