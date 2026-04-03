@@ -3,8 +3,8 @@ import {
   TALKING_DATA_APPID, TALKING_DATA_DEVICE_ID_EVENT, TALKING_DATA_EVENT
 } from '~/universal/events/constants'
 import pkg from 'root/package.json'
-import { ipcRenderer } from 'electron'
 import { handleTalkingDataEvent } from './common'
+import { ipc } from './bridge'
 const { version } = pkg
 
 export const initTalkingData = () => {
@@ -18,12 +18,14 @@ export const initTalkingData = () => {
   }, 0)
 }
 
-ipcRenderer.on(TALKING_DATA_EVENT, (_, data: ITalkingDataOptions) => {
+ipc.removeAllListeners(TALKING_DATA_EVENT)
+ipc.on(TALKING_DATA_EVENT, (data: ITalkingDataOptions) => {
   handleTalkingDataEvent(data)
 })
 // 0：ANONYMOUS，匿名账号；
 // 1：REGISTERED，自有帐户显性注册；
-ipcRenderer.on(TALKING_DATA_DEVICE_ID_EVENT, (_, deviceId: string) => {
+ipc.removeAllListeners(TALKING_DATA_DEVICE_ID_EVENT)
+ipc.on(TALKING_DATA_DEVICE_ID_EVENT, (deviceId: string) => {
   window.TDAPP.register({
     profileId: deviceId,
     profileType: 1
@@ -32,5 +34,5 @@ ipcRenderer.on(TALKING_DATA_DEVICE_ID_EVENT, (_, deviceId: string) => {
     profileId: deviceId,
     profileType: 1
   })
-  ipcRenderer.send(REGISTER_DEVICE_ID)
+  ipc.send(REGISTER_DEVICE_ID)
 })

@@ -226,10 +226,6 @@ import QrcodeVue from 'qrcode.vue'
 import pick from 'lodash/pick'
 import pkg from 'root/package.json'
 import * as config from '@/router/config'
-import {
-  ipcRenderer,
-  clipboard
-} from 'electron'
 import InputBoxDialog from '@/components/dialog/InputBoxDialog.vue'
 import {
   MINIMIZE_WINDOW,
@@ -239,9 +235,10 @@ import {
   SHOW_MAIN_PAGE_DONATION
 } from '~/universal/events/constants'
 import { getConfig, sendToMain } from '@/utils/dataSender'
+import { clipboard, isDevEnv, ipc } from '@/utils/bridge'
 import { useOS } from '@/hooks/useOS'
 import { useStore } from '@/hooks/useStore'
-const version = ref(process.env.NODE_ENV === 'production' ? pkg.version : 'Dev')
+const version = ref(isDevEnv() ? 'Dev' : pkg.version)
 const routerConfig = reactive(config)
 const defaultActive = ref(routerConfig.UPLOAD_PAGE)
 const visible = ref(false)
@@ -252,16 +249,18 @@ const picBed = computed(() => store?.state.picBeds ?? [])
 const qrcodeVisible = ref(false)
 const picBedConfigString = ref('')
 const choosedPicBedForQRCode: Ref<string[]> = ref([])
+let cleanupShowQRCode = () => {}
+let cleanupShowDonation = () => {}
 
 const keepAlivePages = $router.getRoutes().filter(item => item.meta.keepAlive).map(item => item.name as string)
 
 onBeforeMount(() => {
   store?.refreshPicBeds()
   handleGetPicPeds()
-  ipcRenderer.on(SHOW_MAIN_PAGE_QRCODE, () => {
+  cleanupShowQRCode = ipc.on(SHOW_MAIN_PAGE_QRCODE, () => {
     qrcodeVisible.value = true
   })
-  ipcRenderer.on(SHOW_MAIN_PAGE_DONATION, () => {
+  cleanupShowDonation = ipc.on(SHOW_MAIN_PAGE_DONATION, () => {
     visible.value = true
   })
 })
@@ -340,8 +339,8 @@ onBeforeRouteUpdate(async (to) => {
 })
 
 onBeforeUnmount(() => {
-  ipcRenderer.removeAllListeners(SHOW_MAIN_PAGE_QRCODE)
-  ipcRenderer.removeAllListeners(SHOW_MAIN_PAGE_DONATION)
+  cleanupShowQRCode()
+  cleanupShowDonation()
 })
 
 </script>

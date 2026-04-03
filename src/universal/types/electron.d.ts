@@ -18,4 +18,4 @@ declare interface IWindowManager {
   getAvailableWindow: () => BrowserWindow
 }
 
-type IpcRendererListener = (event: import('electron').IpcRendererEvent, ...args: any[]) => void
+type IpcRendererListener = (...args: any[]) => void

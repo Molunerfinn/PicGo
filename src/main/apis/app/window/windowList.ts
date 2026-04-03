@@ -1,4 +1,4 @@
-// import path from 'path'
+import path from 'path'
 import {
   SETTING_WINDOW_URL,
   TRAY_WINDOW_URL,
@@ -20,10 +20,10 @@ import picgo from '@core/picgo'
 const windowList = new Map<IWindowList, IWindowListItem>()
 
 const defaultWebPreferences = {
-  // preload: path.join(__dirname, '../preload/index.js'),
-  nodeIntegration: true,
-  contextIsolation: false,
-  nodeIntegrationInWorker: true,
+  preload: path.join(__dirname, '../preload/index.js'),
+  nodeIntegration: false,
+  contextIsolation: true,
+  nodeIntegrationInWorker: false,
   backgroundThrottling: false
 }
 
@@ -109,6 +109,9 @@ windowList.set(IWindowList.SETTING_WINDOW, {
     return options
   },
   callback (window, windowManager) {
+    window.webContents.openDevTools({
+      mode: 'detach'
+    })
     window.loadURL(handleWindowParams(SETTING_WINDOW_URL))
     window.on('closed', () => {
       bus.emit(TOGGLE_SHORTKEY_MODIFIED_MODE, false)

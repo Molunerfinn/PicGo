@@ -1,7 +1,5 @@
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import vue from '@vitejs/plugin-vue'
-// temp for webUtils
-import electronRenderer from '@molunerfinn/vite-plugin-electron-renderer'
 import { resolve } from 'path'
 
 const alias = {
@@ -27,7 +25,9 @@ export default defineConfig({
     }
   },
   preload: {
-    plugins: [externalizeDepsPlugin()],
+    plugins: [externalizeDepsPlugin({
+      exclude: ['@picgo/i18n']
+    })],
     resolve: { alias },
     build: {
       outDir: 'dist_electron/preload',
@@ -42,7 +42,7 @@ export default defineConfig({
     root: 'src/renderer',
     publicDir: resolve(__dirname, 'src/renderer/public'),
     resolve: { alias },
-    plugins: [vue(), electronRenderer()],
+    plugins: [vue()],
     build: {
       outDir: 'dist_electron/renderer',
       rollupOptions: {

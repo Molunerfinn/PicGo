@@ -56,11 +56,7 @@ import { Close } from '@element-plus/icons-vue'
 import { GET_RENAME_FILE_NAME, RENAME_FILE_NAME } from '#/events/constants'
 import { sendToMain } from '@/utils/dataSender'
 import { T as $T } from '@/i18n/index'
-import {
-  ipcRenderer,
-  IpcRendererEvent
-} from 'electron'
-import { onBeforeUnmount, onBeforeMount, ref, reactive } from 'vue'
+import { onBeforeMount, ref, reactive } from 'vue'
 import { useIPCOn } from '@/hooks/useIPC'
 import { FormInstance } from 'element-plus'
 const id = ref<string | null>(null)
@@ -71,7 +67,7 @@ const form = reactive({
   originName: ''
 })
 
-const handleFileName = (event: IpcRendererEvent, newName: string, _originName: string, _id: string) => {
+const handleFileName = (newName: string, _originName: string, _id: string) => {
   form.fileName = newName
   form.originName = _originName
   id.value = _id
@@ -80,7 +76,7 @@ const handleFileName = (event: IpcRendererEvent, newName: string, _originName: s
 useIPCOn(RENAME_FILE_NAME, handleFileName)
 
 onBeforeMount(() => {
-  ipcRenderer.send(GET_RENAME_FILE_NAME)
+  sendToMain(GET_RENAME_FILE_NAME)
 })
 
 function confirmName () {
@@ -95,10 +91,6 @@ function cancel () {
   // if cancel, use origin file name
   sendToMain(`${RENAME_FILE_NAME}${id.value}`, form.originName)
 }
-
-onBeforeUnmount(() => {
-  ipcRenderer.removeAllListeners(RENAME_FILE_NAME)
-})
 
 </script>
 <script lang="ts">

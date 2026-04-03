@@ -37,7 +37,7 @@ const width = ref(500)
 const handleConfigForm = useConfigForm()
 
 const visible = ref(false)
-useIPCOn(IRPCActionType.OPEN_CONFIG_DIALOG, (event, options: IPicGoPluginShowConfigDialogOption) => {
+useIPCOn(IRPCActionType.OPEN_CONFIG_DIALOG, (options: IPicGoPluginShowConfigDialogOption) => {
   visible.value = true
   configList.value = handleConfigForm(options.config, formModel)
   title.value = options.title

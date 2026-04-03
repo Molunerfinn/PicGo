@@ -1,20 +1,20 @@
-import { ipcRenderer } from 'electron'
 import { onUnmounted } from 'vue'
 import { IRPCActionType } from '~/universal/types/enum'
+import { ipc } from '@/utils/bridge'
 
-export const useIPCOn = (channel: string, listener: IpcRendererListener) => {
-  ipcRenderer.on(channel, listener)
+export const useIPCOn = (channel: string, listener: BridgeIpcListener) => {
+  const cleanup = ipc.on(channel, listener)
 
   onUnmounted(() => {
-    ipcRenderer.removeListener(channel, listener)
+    cleanup()
   })
 }
 
-export const useIPCOnce = (channel: string, listener: IpcRendererListener) => {
-  ipcRenderer.once(channel, listener)
+export const useIPCOnce = (channel: string, listener: BridgeIpcListener) => {
+  const cleanup = ipc.once(channel, listener)
 
   onUnmounted(() => {
-    ipcRenderer.removeListener(channel, listener)
+    cleanup()
   })
 }
 
@@ -23,7 +23,7 @@ export const useIPCOnce = (channel: string, listener: IpcRendererListener) => {
  */
 export const useIPC = () => {
   return {
-    on: (channel: IRPCActionType, listener: IpcRendererListener) => useIPCOn(channel, listener),
-    once: (channel: IRPCActionType, listener: IpcRendererListener) => useIPCOnce(channel, listener)
+    on: (channel: IRPCActionType, listener: BridgeIpcListener) => useIPCOn(channel, listener),
+    once: (channel: IRPCActionType, listener: BridgeIpcListener) => useIPCOnce(channel, listener)
   }
 }
