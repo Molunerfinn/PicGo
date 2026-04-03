@@ -1,5 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { saveConfig } from '@/utils/dataSender'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { PICGO_SAVE_CONFIG } from '#/events/constants'
 
 describe('renderer/utils/dataSender', () => {
@@ -36,12 +35,20 @@ describe('renderer/utils/dataSender', () => {
   }
 
   beforeEach(() => {
+    vi.resetModules()
     vi.clearAllMocks()
     vi.stubGlobal('window', { bridgeApi: bridgeApiMock })
+    vi.stubGlobal('bridgeApi', bridgeApiMock)
     bridgeApiMock.ipc.invoke.mockResolvedValue(true)
   })
 
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
   it('invokes save config IPC after saveConfig', async () => {
+    const { saveConfig } = await import('@/utils/dataSender')
+
     await saveConfig('settings.language', 'en')
 
     expect(bridgeApiMock.ipc.invoke).toHaveBeenCalledWith(PICGO_SAVE_CONFIG, {
