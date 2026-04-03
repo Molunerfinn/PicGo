@@ -1,6 +1,5 @@
 import './assets/css/tailwind.css'
 import { createApp } from 'vue'
-import { webFrame } from 'electron'
 import App from './App.vue'
 import router from './router'
 import ElementUI from 'element-plus'
@@ -16,6 +15,7 @@ import { getConfig, saveConfig, sendToMain } from '@/utils/dataSender'
 import { store } from '@/store'
 import vue3PhotoPreview from 'vue3-photo-preview'
 import 'vue3-photo-preview/dist/index.css'
+import { webFrame } from '@/utils/bridge'
 import { getRendererStaticFileUrl } from './utils/static'
 
 webFrame.setVisualZoomLevelLimits(1, 1)

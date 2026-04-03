@@ -105,10 +105,6 @@ import $bus from '@/utils/bus'
 import { getFilePath } from '@/utils/common'
 import { saveConfig, sendToMain } from '@/utils/dataSender'
 import { CaretBottom, UploadFilled } from '@element-plus/icons-vue'
-import {
-  IpcRendererEvent,
-  ipcRenderer
-} from 'electron'
 import { ElMessage as $message, ElMessageBox } from 'element-plus'
 import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
 import {
@@ -123,6 +119,7 @@ import {
   parseNewlineSeparatedUrls
 } from '~/universal/utils/common'
 import { useStore } from '@/hooks/useStore'
+import { ipc } from '@/utils/bridge'
 const dragover = ref(false)
 const progress = ref(0)
 const showProgress = ref(false)
@@ -147,8 +144,10 @@ const configName = computed(() => {
   return 'Default'
 })
 const $confirm = ElMessageBox.confirm
+let cleanupUploadProgress = () => {}
+let cleanupSyncPicBed = () => {}
 onBeforeMount(() => {
-  ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, _progress: number) => {
+  cleanupUploadProgress = ipc.on('uploadProgress', (_progress: number) => {
     if (_progress !== -1) {
       showProgress.value = true
       progress.value = _progress
@@ -159,7 +158,7 @@ onBeforeMount(() => {
   })
   store?.refreshAppConfig()
   store?.refreshPicBeds()
-  ipcRenderer.on('syncPicBed', () => {
+  cleanupSyncPicBed = ipc.on('syncPicBed', () => {
     store?.refreshAppConfig()
   })
   $bus.on(SHOW_INPUT_BOX_RESPONSE, handleInputBoxValue)
@@ -181,8 +180,8 @@ function onProgressChange (val: number) {
 
 onBeforeUnmount(() => {
   $bus.off(SHOW_INPUT_BOX_RESPONSE)
-  ipcRenderer.removeAllListeners('uploadProgress')
-  ipcRenderer.removeAllListeners('syncPicBed')
+  cleanupUploadProgress()
+  cleanupSyncPicBed()
 })
 
 async function onDrop (e: DragEvent) {
@@ -274,8 +273,9 @@ function openUploadWindow () {
 }
 
 function onChange (e: any) {
-  ipcSendFiles(e.target.files);
-  (document.getElementById('file-uploader') as HTMLInputElement).value = ''
+  ipcSendFiles(e.target.files)
+  const fileUploader = document.getElementById('file-uploader') as HTMLInputElement
+  fileUploader.value = ''
 }
 
 function ipcSendFiles (files: FileList) {

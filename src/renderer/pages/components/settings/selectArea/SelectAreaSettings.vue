@@ -20,7 +20,7 @@ import { saveConfig, sendToMain } from '@/utils/dataSender'
 import { GET_PICBEDS } from '~/universal/events/constants'
 import SelectFormItem from '@/components/settings/SelectFormItem.vue'
 import { IStartupMode } from '~/universal/types/enum'
-import { isMacOS } from '~/universal/utils/common'
+import { isMacOSPlatform } from '@/utils/bridge'
 
 interface IProps {
   settings: ISettingForm
@@ -42,7 +42,7 @@ const startupModeList = [
   {
     label: $T('SETTINGS_STARTUP_MODE_MINI_WINDOW'),
     value: IStartupMode.SHOW_MINI_WINDOW,
-    hide: isMacOS
+    hide: isMacOSPlatform()
   },
   {
     label: $T('SETTINGS_STARTUP_MODE_HIDE'),

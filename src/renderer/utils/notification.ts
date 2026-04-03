@@ -1,13 +1,13 @@
-import { ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
 import { sendRPC } from './dataSender'
 import { PICGO_NOTIFICATION_CLICKED } from '~/universal/events/constants'
 import { IRPCActionType } from '~/universal/types/enum'
+import { ipc } from './bridge'
 
 const notificationCallbacks = new Map<string, () => void>()
 const MAX_CALLBACK_LIMIT = 10
 
-const handleNotificationClick = (_event: Electron.IpcRendererEvent, id: string) => {
+const handleNotificationClick = (id: string) => {
   const callback = notificationCallbacks.get(id)
   if (!callback) return
   try {
@@ -18,8 +18,8 @@ const handleNotificationClick = (_event: Electron.IpcRendererEvent, id: string) 
 }
 
 // HMR Protection: Remove existing listener before adding a new one
-ipcRenderer.removeAllListeners(PICGO_NOTIFICATION_CLICKED)
-ipcRenderer.on(PICGO_NOTIFICATION_CLICKED, handleNotificationClick)
+ipc.removeAllListeners(PICGO_NOTIFICATION_CLICKED)
+ipc.on(PICGO_NOTIFICATION_CLICKED, handleNotificationClick)
 
 interface NotificationOptions {
   title: string

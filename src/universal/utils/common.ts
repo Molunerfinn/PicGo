@@ -1,3 +1,5 @@
+const runtimeProcess = typeof process !== 'undefined' ? process : undefined
+
 export const isUrl = (url: string): boolean => (url.startsWith('http://') || url.startsWith('https://'))
 
 export interface IParseNewlineSeparatedUrlsResult {
@@ -130,7 +132,7 @@ export const enforceNumber = (num: number | string) => {
   return isNaN(Number(num)) ? 0 : Number(num)
 }
 
-export const isDev = process.env.NODE_ENV === 'development'
+export const isDev = runtimeProcess?.env.NODE_ENV === 'development'
 
 export const trimValues = (obj: IStringKeyMap) => {
   const newObj = {} as IStringKeyMap
@@ -140,6 +142,6 @@ export const trimValues = (obj: IStringKeyMap) => {
   return newObj
 }
 
-export const isMacOS = process.platform === 'darwin'
-export const isWindows = process.platform === 'win32'
-export const isLinux = process.platform === 'linux'
+export const isMacOS = runtimeProcess?.platform === 'darwin'
+export const isWindows = runtimeProcess?.platform === 'win32'
+export const isLinux = runtimeProcess?.platform === 'linux'

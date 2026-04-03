@@ -1,8 +1,8 @@
 import { GET_PICBEDS, PICGO_GET_CONFIG, PICGO_SAVE_CONFIG, RPC_ACTIONS } from '#/events/constants'
-import { IpcRendererEvent, ipcRenderer } from 'electron'
 import { v4 as uuid } from 'uuid'
 import { IRPCActionType } from '~/universal/types/enum'
 import { getRawData } from './common'
+import { ipc } from './bridge'
 
 export async function saveConfig (_config: IObj | string, value?: any) {
   let config
@@ -13,41 +13,42 @@ export async function saveConfig (_config: IObj | string, value?: any) {
   } else {
     config = getRawData(_config)
   }
-  await ipcRenderer.invoke(PICGO_SAVE_CONFIG, config)
+  await ipc.invoke(PICGO_SAVE_CONFIG, config)
 }
 
 export function getConfig<T> (key?: string): Promise<T | undefined> {
   return new Promise((resolve) => {
     const callbackId = uuid()
-    const callback = (event: IpcRendererEvent, config: T | undefined, returnCallbackId: string) => {
+    let cleanup = () => {}
+    const callback = (config: T | undefined, returnCallbackId: string) => {
       if (returnCallbackId === callbackId) {
         resolve(config)
-        ipcRenderer.removeListener(PICGO_GET_CONFIG, callback)
+        cleanup()
       }
     }
-    ipcRenderer.on(PICGO_GET_CONFIG, callback)
-    ipcRenderer.send(PICGO_GET_CONFIG, key, callbackId)
+    cleanup = ipc.on(PICGO_GET_CONFIG, callback)
+    ipc.send(PICGO_GET_CONFIG, key, callbackId)
   })
 }
 
 export function getPicBeds (): Promise<IPicBedType[]> {
   return new Promise((resolve) => {
-    ipcRenderer.once(GET_PICBEDS, (_event: IpcRendererEvent, picBeds: IPicBedType[]) => {
+    ipc.once(GET_PICBEDS, (picBeds: IPicBedType[]) => {
       resolve(picBeds)
     })
-    ipcRenderer.send(GET_PICBEDS)
+    ipc.send(GET_PICBEDS)
   })
 }
 
 /**
  * Invoke an RPC action and await its return value.
  *
- * This uses `ipcRenderer.invoke(RPC_ACTIONS, action, args)` which is backed by
+ * This uses `bridgeApi.ipc.invoke(RPC_ACTIONS, action, args)` which is backed by
  * `ipcMain.handle(RPC_ACTIONS, ...)` in the main process RPC server.
  */
 export function invokeRPC<T> (action: IRPCActionType, ...args: any[]): Promise<IRPCResult<T>> {
   const data = getRawData(args)
-  return ipcRenderer.invoke(RPC_ACTIONS, action, data) as Promise<IRPCResult<T>>
+  return ipc.invoke<IRPCResult<T>>(RPC_ACTIONS, action, data)
 }
 
 /**
@@ -57,7 +58,7 @@ export function invokeRPC<T> (action: IRPCActionType, ...args: any[]): Promise<I
  */
 export function sendRPC (action: IRPCActionType, ...args: any[]): void {
   const data = getRawData(args)
-  ipcRenderer.send(RPC_ACTIONS, action, data)
+  ipc.send(RPC_ACTIONS, action, data)
 }
 
 /**
@@ -65,5 +66,5 @@ export function sendRPC (action: IRPCActionType, ...args: any[]): void {
  */
 export function sendToMain (channel: string, ...args: any[]) {
   const data = getRawData(args)
-  ipcRenderer.send(channel, ...data)
+  ipc.send(channel, ...data)
 }
