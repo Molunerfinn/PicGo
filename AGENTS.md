@@ -41,6 +41,8 @@ Static assets are served from `public/`. In the main process use `getStaticPath`
 - When updating nested Zustand state (especially config-like objects), use `zustand/middleware/immer`; do not reintroduce deep `...state` spread chains for nested updates.
 - Components must consume Zustand state through auto-generated selectors (for example `useAppStore.use.appConfig()`), not by destructuring the whole store or writing ad-hoc hook selectors in components.
 - Renderer-side shared constants (for example responsive breakpoints, UI timing values, fixed dimensions, thresholds, and repeated literal values used across components) should be centralized in `src/renderer/utils/consts.ts` instead of being hardcoded inline in components. When a new renderer constant may be reused or affects shared behavior, add it there first.
+- Renderer-side date/time formatting should use `dayjs` and shared format constants from `src/renderer/utils/consts.ts` (for example `DEFAULT_DATE_TIME_FORMAT`) instead of `Intl.DateTimeFormat` or ad-hoc inline format strings.
+- Enum-like object constants declared with `as const` (for example status maps, option maps, and value registries) must use PascalCase names, not camelCase. Prefer names like `PicGoCloudRequestStatusValues`, `SettingsAppearanceValues`, or `AppPlatformValues`.
 - If a renderer → main request mutates persisted config/state without using `saveConfig`, call `notifyAppConfigUpdated()` in main to inform renderers.
 - Prefer enums over union types for discrete value sets (e.g., encryption methods). Avoid introducing new string literal union types.
 - Renderer page/component styles should prefer Tailwind utility classes; avoid adding new Vue `<style>` blocks unless there's no reasonable Tailwind equivalent.

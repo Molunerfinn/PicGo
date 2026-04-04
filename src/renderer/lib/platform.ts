@@ -1,19 +1,20 @@
 import type { ValueOf } from "@/types/utils"
 
-export const appPlatform = {
+export const AppPlatformValues = {
   MacOS: "darwin",
   Windows: "win32",
   Linux: "linux",
 } as const
+export const appPlatform = AppPlatformValues
 
 export type AppPlatform =
-  ValueOf<typeof appPlatform>
+  ValueOf<typeof AppPlatformValues>
 
 let overridePlatform: AppPlatform | null = null
 
 function resolveFromNavigator() {
   if (typeof navigator === "undefined") {
-    return appPlatform.MacOS
+    return AppPlatformValues.MacOS
   }
 
   const navWithUserAgentData = navigator as Navigator & {
@@ -27,14 +28,14 @@ function resolveFromNavigator() {
   const normalized = platform.toLowerCase()
 
   if (normalized.includes("mac")) {
-    return appPlatform.MacOS
+    return AppPlatformValues.MacOS
   }
 
   if (normalized.includes("win")) {
-    return appPlatform.Windows
+    return AppPlatformValues.Windows
   }
 
-  return appPlatform.Linux
+  return AppPlatformValues.Linux
 }
 
 export function getAppPlatform(): AppPlatform {
@@ -42,15 +43,15 @@ export function getAppPlatform(): AppPlatform {
 }
 
 export function isMacOS() {
-  return getAppPlatform() === appPlatform.MacOS
+  return getAppPlatform() === AppPlatformValues.MacOS
 }
 
 export function isWindows() {
-  return getAppPlatform() === appPlatform.Windows
+  return getAppPlatform() === AppPlatformValues.Windows
 }
 
 export function isLinux() {
-  return getAppPlatform() === appPlatform.Linux
+  return getAppPlatform() === AppPlatformValues.Linux
 }
 
 export function setAppPlatformForTesting(nextPlatform: AppPlatform | null) {

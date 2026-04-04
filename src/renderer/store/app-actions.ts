@@ -1,4 +1,5 @@
 import type { IPicGoCloudUserInfo } from '#/types/cloud'
+import { cloudAdapter } from '@/adapters/cloud'
 import { appConfigAdapter } from '@/adapters/app-config'
 import {
   buildProviderSummaries,
@@ -10,7 +11,10 @@ import type {
   PicGoCloudLoginStatus,
   PicGoCloudRequestStatus
 } from './app-store'
-import { useAppStore } from './app-store'
+import {
+  PicGoCloudRequestStatusValues,
+  useAppStore
+} from './app-store'
 
 export const appActions = {
   async refreshAppConfig () {
@@ -67,6 +71,31 @@ export const appActions = {
 
     useAppStore.setState((state) => {
       state.hasSettingsHydrated = true
+    })
+  },
+  async hydratePicGoCloudUserInfo () {
+    if (useAppStore.getState().picgoCloud.userInfo !== undefined) {
+      return
+    }
+
+    useAppStore.setState((state) => {
+      state.picgoCloud.userInfoStatus = PicGoCloudRequestStatusValues.Loading
+      state.picgoCloud.userInfoError = null
+    })
+
+    const result = await cloudAdapter.getUserInfo()
+    if (!result.success) {
+      useAppStore.setState((state) => {
+        state.picgoCloud.userInfoStatus = PicGoCloudRequestStatusValues.Error
+        state.picgoCloud.userInfoError = result.error
+      })
+      return
+    }
+
+    useAppStore.setState((state) => {
+      state.picgoCloud.userInfo = result.data
+      state.picgoCloud.userInfoStatus = PicGoCloudRequestStatusValues.Idle
+      state.picgoCloud.userInfoError = null
     })
   },
   async setDefaultPicBed (type: string) {

@@ -3,8 +3,8 @@ import type { IConfig } from 'picgo'
 import { getConfig, getPicBeds } from '@/utils/dataSender'
 import {
   appActions,
-  picGoCloudLoginStatus,
-  picGoCloudRequestStatus,
+  PicGoCloudLoginStatusValues,
+  PicGoCloudRequestStatusValues,
   useStore
 } from '@/store'
 
@@ -23,9 +23,9 @@ const resetStore = () => {
     picBeds: [],
     picgoCloud: {
       userInfo: undefined,
-      userInfoStatus: picGoCloudRequestStatus.Idle,
+      userInfoStatus: PicGoCloudRequestStatusValues.Idle,
       userInfoError: null,
-      loginStatus: picGoCloudLoginStatus.Idle,
+      loginStatus: PicGoCloudLoginStatusValues.Idle,
       loginError: null,
       hasAgreedToTermsAndPrivacy: false
     }

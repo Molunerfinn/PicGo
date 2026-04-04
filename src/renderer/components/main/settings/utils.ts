@@ -2,7 +2,7 @@ import type { ProviderUploaderSummary } from "@/components/main/providers/types"
 import type { ValueOf } from "@/types/utils"
 import { IPasteStyle, IStartupMode } from "~/universal/types/enum"
 
-export const settingsSectionId = {
+export const SettingsSectionIdValues = {
   General: "general",
   Appearance: "appearance",
   UploadWorkflow: "upload-workflow",
@@ -10,26 +10,29 @@ export const settingsSectionId = {
   Advanced: "advanced",
   About: "about",
 } as const
+export const settingsSectionId = SettingsSectionIdValues
 
 export type SettingsSectionId =
-  ValueOf<typeof settingsSectionId>
+  ValueOf<typeof SettingsSectionIdValues>
 
-export const settingsNavItemKind = {
+export const SettingsNavItemKindValues = {
   Section: "section",
   Route: "route",
 } as const
+export const settingsNavItemKind = SettingsNavItemKindValues
 
 export type SettingsNavItemKind =
-  ValueOf<typeof settingsNavItemKind>
+  ValueOf<typeof SettingsNavItemKindValues>
 
-export const settingsAppearance = {
+export const SettingsAppearanceValues = {
   Light: "light",
   Dark: "dark",
   Auto: "auto",
 } as const
+export const settingsAppearance = SettingsAppearanceValues
 
 export type SettingsAppearance =
-  ValueOf<typeof settingsAppearance>
+  ValueOf<typeof SettingsAppearanceValues>
 
 export interface SettingsServerConfig {
   port: number

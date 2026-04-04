@@ -1,5 +1,7 @@
 import { useState } from "react"
 import {
+  CircleUserRoundIcon,
+  CloudIcon,
   DatabaseIcon,
   EllipsisIcon,
   ImageIcon,
@@ -13,13 +15,13 @@ import {
 import { useMatchRoute, useNavigate } from "@tanstack/react-router"
 import { useTranslation } from "react-i18next"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sidebar } from "@/components/ui/sidebar"
 import { useSidebar } from "@/components/ui/sidebar-context"
 import { cn } from "@/lib/utils"
+import { useAppStore } from "@/store"
 import { SidebarNavButton } from "./sidebar-nav-button"
 import { MainMoreDialog } from "./main-more-dialog"
 
@@ -36,6 +38,7 @@ export function PicGoAppSidebar({
   const navigate = useNavigate()
   const matchRoute = useMatchRoute()
   const { state, setOpen } = useSidebar()
+  const cloudUserInfo = useAppStore.use.picgoCloud().userInfo
   const collapsed = state === "collapsed"
   const [moreOpen, setMoreOpen] = useState(false)
 
@@ -45,6 +48,7 @@ export function PicGoAppSidebar({
   const isDashboardActive = matchActive("/main/dashboard")
   const isGalleryActive = matchActive("/main/gallery")
   const isProviderActive = matchActive("/main/providers")
+  const isCloudActive = matchActive("/main/cloud")
   const isPluginsActive = matchActive("/main/plugins")
   const isSettingsActive =
     matchActive("/main/settings/settings") ||
@@ -126,6 +130,13 @@ export function PicGoAppSidebar({
                 collapsed={collapsed}
               />
               <SidebarNavButton
+                icon={<CloudIcon className={SIDEBAR_ICON_CLASSNAME} />}
+                label="PicGo Cloud"
+                active={isCloudActive}
+                onClick={() => navigate({ to: "/main/cloud" })}
+                collapsed={collapsed}
+              />
+              <SidebarNavButton
                 icon={<PuzzleIcon className={SIDEBAR_ICON_CLASSNAME} />}
                 label={t("SIDEBAR_PLUGINS")}
                 active={isPluginsActive}
@@ -165,8 +176,9 @@ export function PicGoAppSidebar({
 
         <div className="p-4">
           <Card
+            onClick={() => navigate({ to: "/main/cloud" })}
             className={cn(
-              "bg-muted/30 hover:bg-muted/50 group cursor-pointer overflow-hidden border border-border shadow-none transition-colors",
+              "bg-muted/30 hover:bg-muted/50 group/user-card cursor-pointer overflow-hidden border border-border shadow-none transition-colors",
               collapsed ? "border-none bg-transparent py-0" : "py-0"
             )}
           >
@@ -176,18 +188,19 @@ export function PicGoAppSidebar({
                 collapsed ? "justify-center p-0" : ""
               )}
             >
-              <Avatar className="border-border group-hover:border-primary/50 size-9 border transition-colors">
-                <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                <AvatarFallback>MF</AvatarFallback>
-              </Avatar>
+              <div className="bg-muted text-muted-foreground group-hover/user-card:text-primary flex size-9 shrink-0 items-center justify-center rounded-full border border-border transition-colors">
+                <CircleUserRoundIcon className="size-6" />
+              </div>
 
               {!collapsed ? (
                 <>
                   <div className="animate-in fade-in min-w-0 flex-1 duration-300">
-                    <p className="group-hover:text-primary truncate text-sm font-bold transition-colors">
-                      Molunerfinn
+                    <p className="group-hover/user-card:text-primary truncate text-sm font-bold transition-colors">
+                      {cloudUserInfo?.user || t("PICGO_CLOUD_LOGIN")}
                     </p>
-                    <p className="text-muted-foreground truncate text-xs">Pro Plan</p>
+                    <p className="text-muted-foreground truncate text-xs">
+                      {cloudUserInfo ? 'Pro Plan' : t("PICGO_CLOUD_BRAND_NAME")}
+                    </p>
                   </div>
 
                   <Button

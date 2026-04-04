@@ -1,8 +1,8 @@
 export { useStore, useAppStore, useAppStoreBase } from './app-store'
 export { appActions } from './app-actions'
 export {
-  picGoCloudLoginStatus,
-  picGoCloudRequestStatus
+  PicGoCloudLoginStatusValues,
+  PicGoCloudRequestStatusValues
 } from './app-store'
 export {
   useGalleryStore,
@@ -24,6 +24,11 @@ export {
   usePluginStoreBase
 } from './plugins/store'
 export { pluginStoreActions } from './plugins/actions'
+export {
+  useCloudStore,
+  useCloudStoreBase
+} from './cloud/store'
+export { cloudStoreActions } from './cloud/actions'
 export type {
   AppStoreState,
   PicGoCloudLoginStatus,

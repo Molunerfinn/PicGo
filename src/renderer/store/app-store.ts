@@ -12,22 +12,22 @@ import type {
 } from '@/components/main/providers/types'
 import { createSelectors } from './create-selectors'
 
-export const picGoCloudRequestStatus = {
+export const PicGoCloudRequestStatusValues = {
   Idle: 'IDLE',
   Loading: 'LOADING',
   Error: 'ERROR'
 } as const
 
-export const picGoCloudLoginStatus = {
+export const PicGoCloudLoginStatusValues = {
   Idle: 'IDLE',
   InProgress: 'IN_PROGRESS'
 } as const
 
 export type PicGoCloudRequestStatus =
-  typeof picGoCloudRequestStatus[keyof typeof picGoCloudRequestStatus]
+  typeof PicGoCloudRequestStatusValues[keyof typeof PicGoCloudRequestStatusValues]
 
 export type PicGoCloudLoginStatus =
-  typeof picGoCloudLoginStatus[keyof typeof picGoCloudLoginStatus]
+  typeof PicGoCloudLoginStatusValues[keyof typeof PicGoCloudLoginStatusValues]
 
 export interface PicGoCloudUserInfoState {
   userInfo: IPicGoCloudUserInfo | null | undefined
@@ -66,9 +66,9 @@ export const initialAppStoreState: AppStoreState = {
   hasSettingsHydrated: false,
   picgoCloud: {
     userInfo: undefined,
-    userInfoStatus: picGoCloudRequestStatus.Idle,
+    userInfoStatus: PicGoCloudRequestStatusValues.Idle,
     userInfoError: null,
-    loginStatus: picGoCloudLoginStatus.Idle,
+    loginStatus: PicGoCloudLoginStatusValues.Idle,
     loginError: null,
     hasAgreedToTermsAndPrivacy: false
   }

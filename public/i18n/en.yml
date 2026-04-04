@@ -39,7 +39,10 @@ PICGO_SETTINGS: PicGo Settings
 PLUGIN_SETTINGS: Plugins Settings
 DASHBOARD_HISTORY_PANEL_TITLE: History Panel
 PICGO_CLOUD_TITLE: PicGo Cloud
+PICGO_CLOUD_DESCRIPTION: Sign in, sync configuration, and manage cloud encryption.
+PICGO_CLOUD_BRAND_NAME: PicGo Cloud
 PICGO_CLOUD_ERROR_TITLE: PicGo Cloud Error
+PICGO_CLOUD_LOADING: Loading PicGo Cloud status...
 PICGO_CLOUD_NOT_LOGGED_IN: Not logged in to PicGo Cloud.
 PICGO_CLOUD_LOGIN: Log In
 PICGO_CLOUD_LOGOUT: Log Out
