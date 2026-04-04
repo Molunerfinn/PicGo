@@ -32,10 +32,6 @@
 // import { Component, Vue, Watch } from 'vue-property-decorator'
 import { T as $T } from '@/i18n/index'
 import { showNotification } from '@/utils/notification'
-import {
-  ipcRenderer,
-  IpcRendererEvent
-} from 'electron'
 import { onBeforeUnmount, onBeforeMount, ref, watch } from 'vue'
 import { LOG_INVALID_URL_LINES, SHOW_MINI_PAGE_MENU, SET_MINI_WINDOW_POS } from '~/universal/events/constants'
 import {
@@ -43,6 +39,7 @@ import {
   parseNewlineSeparatedUrls
 } from '~/universal/utils/common'
 import { sendToMain } from '@/utils/dataSender'
+import { ipc } from '@/utils/bridge'
 import { getFilePath } from '@/utils/common'
 import { getRendererStaticFileUrl } from '@/utils/static'
 import { useOS } from '@/hooks/useOS'
@@ -57,9 +54,10 @@ const wY = ref(-1)
 const screenX = ref(-1)
 const screenY = ref(-1)
 const os = useOS()
+let cleanupUploadProgress = () => {}
 
 onBeforeMount(() => {
-  ipcRenderer.on('uploadProgress', (event: IpcRendererEvent, _progress: number) => {
+  cleanupUploadProgress = ipc.on('uploadProgress', (_progress: number) => {
     if (_progress !== -1) {
       showProgress.value = true
       progress.value = _progress
@@ -229,7 +227,7 @@ function openContextMenu () {
 }
 
 onBeforeUnmount(() => {
-  ipcRenderer.removeAllListeners('uploadProgress')
+  cleanupUploadProgress()
   window.removeEventListener('mousedown', handleMouseDown, false)
   window.removeEventListener('mousemove', handleMouseMove, false)
   window.removeEventListener('mouseup', handleMouseUp, false)

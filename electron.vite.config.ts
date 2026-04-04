@@ -2,7 +2,6 @@ import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
-import electronRenderer from '@molunerfinn/vite-plugin-electron-renderer'
 import { resolve } from 'path'
 import { i18nTypesPlugin } from './scripts/vite-plugin-i18n-types'
 
@@ -29,7 +28,9 @@ export default defineConfig({
     }
   },
   preload: {
-    plugins: [externalizeDepsPlugin()],
+    plugins: [externalizeDepsPlugin({
+      exclude: ['@picgo/i18n']
+    })],
     resolve: { alias },
     build: {
       outDir: 'dist_electron/preload',
@@ -52,7 +53,6 @@ export default defineConfig({
         generatedRouteTree: './routeTree.gen.ts'
       }),
       react(),
-      electronRenderer(),
       i18nTypesPlugin(),
       tailwindcss()
     ],

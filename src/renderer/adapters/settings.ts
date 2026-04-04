@@ -1,8 +1,8 @@
-import { ipcRenderer } from 'electron'
 import { GET_PICBEDS, OPEN_URL, PICGO_OPEN_FILE, TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { IRPCActionType } from '~/universal/types/enum'
 import { appConfigAdapter } from './app-config'
 import { getConfig, invokeRPC, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
+import { ipc } from '@/utils/bridge'
 
 export const settingsAdapter = {
   async savePatch (patch: IStringKeyMap) {
@@ -54,13 +54,17 @@ export const settingsAdapter = {
     sendToMain('bindOrUnbindShortKey', item, item.from)
   },
   updateShortcut (item: IShortKeyConfig, oldKey: string) {
-    return new Promise<boolean>((resolve) => {
-      const handleResponse = (_event: Electron.IpcRendererEvent, result: boolean) => {
+    return new Promise<boolean>((resolve, reject) => {
+      const cleanup = ipc.once('updateShortKeyResponse', (result: boolean) => {
         resolve(result)
-      }
+      })
 
-      ipcRenderer.once('updateShortKeyResponse', handleResponse)
-      sendToMain('updateShortKey', item, oldKey, item.from)
+      try {
+        sendToMain('updateShortKey', item, oldKey, item.from)
+      } catch (error) {
+        cleanup()
+        reject(error)
+      }
     })
   },
   async loadUrlRewriteRules () {

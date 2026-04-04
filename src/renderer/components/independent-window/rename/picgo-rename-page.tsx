@@ -25,7 +25,7 @@ export function PicGoRenamePage() {
   const [isInputInvalid, setIsInputInvalid] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  useIPCOn(RENAME_FILE_NAME, (_event, fileName: string, originalName: string, id: string) => {
+  useIPCOn(RENAME_FILE_NAME, (fileName: string, originalName: string, id: string) => {
     setRenameDraft({
       id,
       fileName,

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { ipcRenderer } from 'electron'
 import { APP_CONFIG_UPDATED } from '#/events/constants'
 import { appActions } from '@/store'
+import { ipc } from '@/utils/bridge'
 
 export function RendererRuntimeBridge () {
   // Hydrate the shared renderer state once when the React shell boots.
@@ -25,11 +25,7 @@ export function RendererRuntimeBridge () {
       })
     }
 
-    ipcRenderer.on(APP_CONFIG_UPDATED, handleAppConfigUpdated)
-
-    return () => {
-      ipcRenderer.removeListener(APP_CONFIG_UPDATED, handleAppConfigUpdated)
-    }
+    return ipc.on(APP_CONFIG_UPDATED, handleAppConfigUpdated)
   }, [])
 
   return null

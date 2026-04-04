@@ -2,9 +2,9 @@ import { useEffect } from "react"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import { toast } from "sonner"
 
-import { isMacOS } from "@/lib/platform"
 import { appActions, useAppStore, useSettingsStore } from "@/store"
 import i18n from "@/i18n"
+import { isMacOS } from "@/utils/bridge"
 import { SettingsPanel } from "./settings-panel"
 import { SettingsSidebar } from "./settings-sidebar"
 import {

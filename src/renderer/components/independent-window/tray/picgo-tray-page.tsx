@@ -124,11 +124,11 @@ export function PicGoTrayPage () {
     setUploadedItems(items.map(resolveTrayUploadedItem))
   }
 
-  useIPCOn('clipboardFiles', (_event, files: ImgInfo[]) => {
+  useIPCOn('clipboardFiles', (files: ImgInfo[]) => {
     setClipboardFiles(files.map(resolveTrayWaitingItem))
   })
 
-  useIPCOn('dragFiles', async (_event, items: ImgInfo[] = []) => {
+  useIPCOn('dragFiles', async (items: ImgInfo[] = []) => {
     if (items.length > 0) {
       setUploadedItems(items.map(resolveRuntimeUploadedItem))
       return
@@ -137,7 +137,7 @@ export function PicGoTrayPage () {
     await refreshUploadedItems()
   })
 
-  useIPCOn('uploadFiles', async (_event, items: ImgInfo[] = []) => {
+  useIPCOn('uploadFiles', async (items: ImgInfo[] = []) => {
     if (items.length > 0) {
       setUploadedItems(items.map(resolveRuntimeUploadedItem))
       setUploadFlag(false)

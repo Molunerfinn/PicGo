@@ -132,6 +132,25 @@ module.exports = [
     }
   },
   {
+    files: ['src/renderer/**/*.{ts,tsx,vue}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        paths: [
+          {
+            name: 'electron',
+            allowTypeImports: true,
+            message: 'Use the preload bridge from @/utils/bridge in renderer runtime code.'
+          },
+          {
+            name: 'electron/renderer',
+            allowTypeImports: true,
+            message: 'Use the preload bridge from @/utils/bridge in renderer runtime code.'
+          }
+        ]
+      }]
+    }
+  },
+  {
     files: ['**/*.{tsx,jsx}'],
     ignores: ['src/renderer/routes/**/*.tsx'],
     rules: {

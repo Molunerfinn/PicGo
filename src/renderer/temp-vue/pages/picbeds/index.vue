@@ -51,9 +51,6 @@ import { useRoute, useRouter } from 'vue-router'
 import ConfigForm from '@/components/ConfigForm.vue'
 import { ElMessage } from 'element-plus'
 // import mixin from '@/utils/ConfirmButtonMixin'
-import {
-  IpcRendererEvent
-} from 'electron'
 import { GET_PICBED_CONFIG } from '~/universal/events/constants'
 import { useIPCOn } from '@/hooks/useIPC'
 import { useStore } from '@/hooks/useStore'
@@ -93,7 +90,7 @@ const handleConfirm = async () => {
   }
 }
 
-function getPicBeds (event: IpcRendererEvent, _config: IPicGoPluginConfig[], name: string) {
+function getPicBeds (_config: IPicGoPluginConfig[], name: string) {
   config.value = _config
   picBedName.value = name
 }

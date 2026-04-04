@@ -1,33 +1,56 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { saveConfig } from '@/utils/dataSender'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { PICGO_SAVE_CONFIG } from '#/events/constants'
-import { ipcRenderer } from 'electron'
 
-vi.mock('electron', () => {
-  return {
-    ipcRenderer: {
+describe('renderer/utils/dataSender', () => {
+  const bridgeApiMock = {
+    ipc: {
       invoke: vi.fn(),
       on: vi.fn(),
       once: vi.fn(),
       send: vi.fn(),
-      removeAllListeners: vi.fn(),
-      removeListener: vi.fn()
+      removeAllListeners: vi.fn()
+    },
+    clipboard: {
+      writeText: vi.fn()
+    },
+    webUtils: {
+      getPathForFile: vi.fn()
+    },
+    webFrame: {
+      setVisualZoomLevelLimits: vi.fn()
+    },
+    env: {
+      platform: 'darwin' as NodeJS.Platform,
+      isDev: false
+    },
+    i18n: {
+      ObjectAdapter: {
+        create: vi.fn()
+      },
+      I18n: {
+        createFromLocales: vi.fn()
+      }
     }
   }
-})
-
-describe('renderer/utils/dataSender', () => {
-  const ipcRendererMock = vi.mocked(ipcRenderer)
 
   beforeEach(() => {
+    vi.resetModules()
     vi.clearAllMocks()
-    ipcRendererMock.invoke.mockResolvedValue(true)
+    vi.stubGlobal('window', { bridgeApi: bridgeApiMock })
+    vi.stubGlobal('bridgeApi', bridgeApiMock)
+    bridgeApiMock.ipc.invoke.mockResolvedValue(true)
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
   })
 
   it('invokes save config IPC after saveConfig', async () => {
+    const { saveConfig } = await import('@/utils/dataSender')
+
     await saveConfig('settings.language', 'en')
 
-    expect(ipcRendererMock.invoke).toHaveBeenCalledWith(PICGO_SAVE_CONFIG, {
+    expect(bridgeApiMock.ipc.invoke).toHaveBeenCalledWith(PICGO_SAVE_CONFIG, {
       'settings.language': 'en'
     })
   })

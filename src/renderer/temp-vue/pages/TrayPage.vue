@@ -63,16 +63,14 @@
 
 <script lang="ts" setup>
 import { reactive, ref, onBeforeUnmount, onBeforeMount } from 'vue'
-import { ipcRenderer } from 'electron'
 import $$db from '@/utils/db'
 import { T as $T } from '@/i18n/index'
 import type { IResult } from '@picgo/store/dist/types'
 import { PASTE_TEXT, OPEN_WINDOW } from '#/events/constants'
 import { IWindowList } from '#/types/enum'
 import { sendToMain } from '@/utils/dataSender'
-import { getRawData } from '@/utils/common'
 import { showNotification } from '@/utils/notification'
-import { IpcRendererEvent } from 'electron/renderer'
+import { ipc } from '@/utils/bridge'
 
 const files = ref<IResult<ImgInfo>[]>([])
 const notification = reactive({
@@ -82,6 +80,7 @@ const notification = reactive({
 
 const clipboardFiles = ref<ImgInfo[]>([])
 const uploadFlag = ref(false)
+const cleanupListeners: Array<() => void> = []
 
 // const reverseList = computed(() => files.value.slice().reverse())
 
@@ -95,7 +94,7 @@ async function getData () {
 
 async function copyTheLink (item: ImgInfo) {
   notification.body = item.imgUrl!
-  await ipcRenderer.invoke(PASTE_TEXT, getRawData(item))
+  await ipc.invoke(PASTE_TEXT, item)
   showNotification({
     title: notification.title,
     body: notification.body
@@ -128,30 +127,29 @@ function uploadClipboardFiles () {
 onBeforeMount(() => {
   disableDragFile()
   getData()
-  ipcRenderer.on('dragFiles', async (event: IpcRendererEvent, _files: string[]) => {
+  cleanupListeners.push(ipc.on('dragFiles', async (_files: string[]) => {
     for (let i = 0; i < _files.length; i++) {
       const item = _files[i]
       await $$db.insert(item)
     }
     files.value = (await $$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
-  })
-  ipcRenderer.on('clipboardFiles', (event: IpcRendererEvent, files: ImgInfo[]) => {
+  }))
+  cleanupListeners.push(ipc.on('clipboardFiles', (files: ImgInfo[]) => {
     clipboardFiles.value = files
-  })
-  ipcRenderer.on('uploadFiles', async () => {
+  }))
+  cleanupListeners.push(ipc.on('uploadFiles', async () => {
     files.value = (await $$db.get<ImgInfo>({ orderBy: 'desc', limit: 5 })).data
     uploadFlag.value = false
-  })
-  ipcRenderer.on('updateFiles', () => {
+  }))
+  cleanupListeners.push(ipc.on('updateFiles', () => {
     getData()
-  })
+  }))
 })
 
 onBeforeUnmount(() => {
-  ipcRenderer.removeAllListeners('dragFiles')
-  ipcRenderer.removeAllListeners('clipboardFiles')
-  ipcRenderer.removeAllListeners('uploadClipboardFiles')
-  ipcRenderer.removeAllListeners('updateFiles')
+  cleanupListeners.splice(0).forEach((cleanup) => {
+    cleanup()
+  })
 })
 </script>
 

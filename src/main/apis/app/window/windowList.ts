@@ -1,4 +1,4 @@
-// import path from 'path'
+import path from 'path'
 import {
   SETTING_WINDOW_URL,
   TRAY_WINDOW_URL,
@@ -21,10 +21,10 @@ import { getMainWindowState, saveMainWindowState } from './windowState'
 const windowList = new Map<IWindowList, IWindowListItem>()
 
 const defaultWebPreferences = {
-  // preload: path.join(__dirname, '../preload/index.js'),
-  nodeIntegration: true,
-  contextIsolation: false,
-  nodeIntegrationInWorker: true,
+  preload: path.join(__dirname, '../preload/index.js'),
+  nodeIntegration: false,
+  contextIsolation: true,
+  nodeIntegrationInWorker: false,
   backgroundThrottling: false
 }
 

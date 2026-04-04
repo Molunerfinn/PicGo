@@ -190,10 +190,6 @@ import type { IResult } from '@picgo/store/dist/types'
 import { PASTE_TEXT } from '#/events/constants'
 import { CheckboxValueType, ElMessageBox } from 'element-plus'
 import { Close, CaretBottom, Document, Edit, Delete, CaretTop } from '@element-plus/icons-vue'
-import {
-  ipcRenderer,
-  clipboard
-} from 'electron'
 import { computed, nextTick, onActivated, onBeforeUnmount, onBeforeMount, reactive, ref, watch } from 'vue'
 import { saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
 import { onBeforeRouteUpdate } from 'vue-router'
@@ -201,9 +197,9 @@ import { T as $T } from '@/i18n/index'
 import $$db from '@/utils/db'
 import GalleryToolbar from './components/gallery/GalleryToolbar.vue'
 import { IRPCActionType } from '~/universal/types/enum'
-import { getRawData } from '@/utils/common'
 import { showNotification } from '@/utils/notification'
 import { useStore } from '@/hooks/useStore'
+import { clipboard, ipc } from '@/utils/bridge'
 const images = ref<ImgInfo[]>([])
 const dialogVisible = ref(false)
 const imgInfo = reactive({
@@ -232,6 +228,7 @@ const pasteStyleMap = {
 const store = useStore()
 const picBed = computed(() => store?.state.picBeds ?? [])
 const visiblePicBedList = computed(() => picBed.value.filter(item => item.visible))
+let cleanupUpdateGallery = () => {}
 onBeforeRouteUpdate((to, from) => {
   if (from.name === 'gallery') {
     clearSelectedList()
@@ -242,7 +239,7 @@ onBeforeRouteUpdate((to, from) => {
 })
 
 onBeforeMount(async () => {
-  ipcRenderer.on(IRPCActionType.UPDATE_GALLERY, () => {
+  cleanupUpdateGallery = ipc.on(IRPCActionType.UPDATE_GALLERY, () => {
     nextTick(async () => {
       updateGallery()
     })
@@ -373,7 +370,7 @@ function handleClose () {
 }
 
 async function copy (item: ImgInfo) {
-  const copyLink = await ipcRenderer.invoke(PASTE_TEXT, getRawData(item))
+  const copyLink = await ipc.invoke<string>(PASTE_TEXT, item)
   const obj = {
     title: $T('COPY_LINK_SUCCEED'),
     body: copyLink
@@ -504,7 +501,7 @@ async function multiCopy () {
       if (selectedList[key]) {
         const item = await $$db.getById<ImgInfo>(key)
         if (item) {
-          const txt = await ipcRenderer.invoke(PASTE_TEXT, getRawData(item))
+          const txt = await ipc.invoke<string>(PASTE_TEXT, item)
           copyString.push(txt)
           selectedList[key] = false
         }
@@ -532,7 +529,7 @@ async function handlePasteStyleChange (val: string) {
 }
 
 onBeforeUnmount(() => {
-  ipcRenderer.removeAllListeners('updateGallery')
+  cleanupUpdateGallery()
 })
 
 const applyAppConfig = () => {

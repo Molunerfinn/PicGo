@@ -48,7 +48,7 @@ import { ElForm } from 'element-plus'
 import { Reading } from '@element-plus/icons-vue'
 import { IConfig } from 'picgo'
 import { T as $T } from '@/i18n/index'
-import { enforceNumber, isLinux } from '~/universal/utils/common'
+import { enforceNumber } from '~/universal/utils/common'
 import { computed, onBeforeMount, reactive, ref, watch, type DeepReadonly } from 'vue'
 import ButtonAreaSettings from './components/settings/buttonArea/ButtonAreaSettings.vue'
 import SwitchAreaSettings from './components/settings/switchArea/SwitchAreaSettings.vue'
@@ -57,6 +57,7 @@ import SelectAreaSettings from './components/settings/selectArea/SelectAreaSetti
 import { openURL } from '@/utils/dataSender'
 import { IStartupMode } from '#/types/enum'
 import { useStore } from '@/hooks/useStore'
+import { isLinuxPlatform } from '@/utils/bridge'
 
 const form = reactive<ISettingForm>({
   showUpdateTip: false,
@@ -125,7 +126,7 @@ const applyAppConfig = (config: DeepReadonly<IConfig> | null) => {
   form.logFileSizeLimit = enforceNumber(settings.logFileSizeLimit ?? 10) || 10
   form.showDockIcon = settings.showDockIcon === undefined ? true : settings.showDockIcon
   form.showMenubarIcon = settings.showMenubarIcon === undefined ? true : settings.showMenubarIcon
-  form.startupMode = settings.startupMode || (isLinux ? IStartupMode.SHOW_MINI_WINDOW : IStartupMode.HIDE)
+  form.startupMode = settings.startupMode || (isLinuxPlatform() ? IStartupMode.SHOW_MINI_WINDOW : IStartupMode.HIDE)
 }
 
 watch(appConfig, (config) => {

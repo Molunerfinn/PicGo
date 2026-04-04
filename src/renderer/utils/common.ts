@@ -1,6 +1,6 @@
-import { webUtils } from 'electron'
+import { env, webUtils } from './bridge'
 
-const isDevelopment = process.env.NODE_ENV !== 'production'
+const isDevelopment = env.isDev
 export const handleTalkingDataEvent = (data: ITalkingDataOptions) => {
   const { EventId, Label = '', MapKv = {} } = data
   MapKv.from = window.location.href

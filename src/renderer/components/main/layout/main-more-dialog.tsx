@@ -3,7 +3,6 @@ import { QrCodeIcon, WrenchIcon, InfoIcon, HeartHandshakeIcon, ShieldCheckIcon, 
 import { QRCodeSVG } from 'qrcode.react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from '@tanstack/react-router'
-import { clipboard, ipcRenderer } from 'electron'
 
 import { SHOW_MAIN_PAGE_DONATION, SHOW_MAIN_PAGE_QRCODE } from '#/events/constants'
 import { Button } from '@/components/ui/button'
@@ -15,6 +14,7 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { getConfig, getPicBeds } from '@/utils/dataSender'
+import { clipboard, ipc } from '@/utils/bridge'
 import { toast } from 'sonner'
 import { mainMoreAdapter } from '@/adapters/main-more'
 
@@ -41,12 +41,12 @@ export function MainMoreDialog ({ open, onOpenChange }: MainMoreDialogProps) {
       setQrcodeOpen(true)
     }
 
-    ipcRenderer.on(SHOW_MAIN_PAGE_DONATION, handleDonation)
-    ipcRenderer.on(SHOW_MAIN_PAGE_QRCODE, handleQrcode)
+    const donationCleanup = ipc.on(SHOW_MAIN_PAGE_DONATION, handleDonation)
+    const qrcodeCleanup = ipc.on(SHOW_MAIN_PAGE_QRCODE, handleQrcode)
 
     return () => {
-      ipcRenderer.removeListener(SHOW_MAIN_PAGE_DONATION, handleDonation)
-      ipcRenderer.removeListener(SHOW_MAIN_PAGE_QRCODE, handleQrcode)
+      donationCleanup()
+      qrcodeCleanup()
     }
   }, [])
 

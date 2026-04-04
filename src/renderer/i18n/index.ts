@@ -1,9 +1,9 @@
-import { ipcRenderer } from 'electron'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { parse } from 'yaml'
 import { GET_CURRENT_LANGUAGE, SET_CURRENT_LANGUAGE } from '#/events/constants'
 import { builtinI18nList } from '#/i18n'
+import { ipc } from '@/utils/bridge'
 import enRaw from '../../../public/i18n/en.yml?raw'
 import zhCNRaw from '../../../public/i18n/zh-CN.yml?raw'
 import zhTWRaw from '../../../public/i18n/zh-TW.yml?raw'
@@ -45,11 +45,11 @@ export function initializeI18n () {
       }
     })
     .then(async () => {
-      ipcRenderer.send(GET_CURRENT_LANGUAGE)
-      ipcRenderer.once(GET_CURRENT_LANGUAGE, (_event, lang: string) => {
+      ipc.send(GET_CURRENT_LANGUAGE)
+      ipc.once(GET_CURRENT_LANGUAGE, (lang: string) => {
         applyLanguage(lang)
       })
-      ipcRenderer.on(SET_CURRENT_LANGUAGE, (_event, lang: string) => {
+      ipc.on(SET_CURRENT_LANGUAGE, (lang: string) => {
         applyLanguage(lang)
       })
       return i18n
@@ -59,7 +59,7 @@ export function initializeI18n () {
 }
 
 export function setCurrentLanguage (lang: string) {
-  ipcRenderer.send(SET_CURRENT_LANGUAGE, lang)
+  ipc.send(SET_CURRENT_LANGUAGE, lang)
 }
 
 export function getLanguageList () {

@@ -115,11 +115,11 @@
 </template>
 <script lang="ts" setup>
 import keyBinding from '@/utils/key-binding'
-import { ipcRenderer, IpcRendererEvent } from 'electron'
 import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { onBeforeUnmount, onBeforeMount, ref, watch } from 'vue'
 import { getConfig, sendToMain } from '@/utils/dataSender'
 import { T as $T } from '@/i18n/index'
+import { ipc } from '@/utils/bridge'
 
 const list = ref<IShortKeyConfig[]>([])
 const keyBindingVisible = ref(false)
@@ -177,7 +177,7 @@ async function confirmKeyBinding () {
   const config = Object.assign({}, list.value[currentIndex.value])
   config.key = shortKey.value
   sendToMain('updateShortKey', config, oldKey, config.from)
-  ipcRenderer.once('updateShortKeyResponse', (evt: IpcRendererEvent, result) => {
+  ipc.once('updateShortKeyResponse', (result: boolean) => {
     if (result) {
       keyBindingVisible.value = false
       list.value[currentIndex.value].key = shortKey.value

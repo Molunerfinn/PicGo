@@ -116,19 +116,19 @@ export function PicGoPlugins() {
     setActiveTab(jumpResolution.targetTab)
   }
 
-  useIPCOn('pluginList', (_event, list: IPicGoPlugin[]) => {
+  useIPCOn('pluginList', (list: IPicGoPlugin[]) => {
     pluginStoreActions.setInstalledPlugins(list.map(mapInstalledPluginItem))
   })
 
-  useIPCOn(PICGO_HANDLE_PLUGIN_ING, (_event, fullName: string) => {
+  useIPCOn(PICGO_HANDLE_PLUGIN_ING, (fullName: string) => {
     pluginStoreActions.setMutating(fullName, true)
   })
 
-  useIPCOn(PICGO_HANDLE_PLUGIN_DONE, (_event, fullName: string) => {
+  useIPCOn(PICGO_HANDLE_PLUGIN_DONE, (fullName: string) => {
     pluginStoreActions.setMutating(fullName, false)
   })
 
-  useIPCOn(PICGO_TOGGLE_PLUGIN, (_event, fullName: string, enabled: boolean) => {
+  useIPCOn(PICGO_TOGGLE_PLUGIN, (fullName: string, enabled: boolean) => {
     useAppStore.setState((state) => {
       state.pluginsInstalled = state.pluginsInstalled.map((item) => {
         if (item.fullName !== fullName) {
@@ -150,7 +150,7 @@ export function PicGoPlugins() {
 
   useIPCOn(
     PICGO_CONFIG_PLUGIN,
-    (_event, currentType: 'plugin' | 'transformer' | 'uploader', configName: string) => {
+    (currentType: 'plugin' | 'transformer' | 'uploader', configName: string) => {
       const installedPlugins = useAppStore.getState().pluginsInstalled
       const matchedPlugin = installedPlugins.find((plugin) => {
         if (currentType === 'plugin') {
@@ -251,7 +251,7 @@ export function PicGoPlugins() {
     pluginsAdapter.openPluginMenu(plugin as unknown as IPicGoPlugin)
   }
 
-  useIPCOn(PICGO_PLUGIN_MENU_ACTION, async (_event, fullName: string, action: IPluginMenuAction) => {
+  useIPCOn(PICGO_PLUGIN_MENU_ACTION, async (fullName: string, action: IPluginMenuAction) => {
     try {
       if (action === IPluginMenuAction.ENABLE) {
         await pluginStoreActions.setPluginEnabled(fullName, true)

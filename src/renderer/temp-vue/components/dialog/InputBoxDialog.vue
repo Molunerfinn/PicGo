@@ -46,7 +46,6 @@
 </template>
 <script lang="ts" setup>
 import { ref, reactive, onBeforeUnmount, onBeforeMount, watch } from 'vue'
-import { ipcRenderer, IpcRendererEvent } from 'electron'
 import {
   SHOW_INPUT_BOX,
   SHOW_INPUT_BOX_RESPONSE
@@ -54,6 +53,7 @@ import {
 import $bus from '@/utils/bus'
 import { sendToMain } from '@/utils/dataSender'
 import { T as $T } from '@/i18n/index'
+import { ipc } from '@/utils/bridge'
 const inputBoxValue = ref('')
 const inputBoxConfirmValue = ref('')
 const confirmError = ref('')
@@ -66,13 +66,14 @@ const inputBoxOptions = reactive({
   hasConfirm: false,
   confirmPlaceholder: ''
 })
+let cleanupShowInputBox = () => {}
 
 onBeforeMount(() => {
-  ipcRenderer.on(SHOW_INPUT_BOX, ipcEventHandler)
+  cleanupShowInputBox = ipc.on(SHOW_INPUT_BOX, ipcEventHandler)
   $bus.on(SHOW_INPUT_BOX, initInputBoxValue)
 })
 
-function ipcEventHandler (evt: IpcRendererEvent, options: IShowInputBoxOption) {
+function ipcEventHandler (options: IShowInputBoxOption) {
   initInputBoxValue(options)
 }
 
@@ -111,7 +112,7 @@ watch([inputBoxValue, inputBoxConfirmValue], () => {
 })
 
 onBeforeUnmount(() => {
-  ipcRenderer.removeListener(SHOW_INPUT_BOX, ipcEventHandler)
+  cleanupShowInputBox()
   $bus.off(SHOW_INPUT_BOX)
 })
 

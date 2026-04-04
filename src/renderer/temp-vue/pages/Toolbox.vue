@@ -170,7 +170,7 @@ const format = (percentage: number) => ''
 
 const ipc = useIPC()
 
-ipc.on(IRPCActionType.TOOLBOX_CHECK_RES, (event, { type, msg = '', status, value = '' }: IToolboxCheckRes) => {
+ipc.on(IRPCActionType.TOOLBOX_CHECK_RES, ({ type, msg = '', status, value = '' }: IToolboxCheckRes) => {
   fixList[type].status = status
   fixList[type].msg = msg
   fixList[type].value = value

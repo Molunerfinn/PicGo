@@ -4,7 +4,7 @@ import { Outlet } from "@tanstack/react-router"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppReloadBar } from "@/components/common/app-reload-bar"
 import { TitleBar } from "@/components/common/title-bar"
-import { isMacOS } from "@/lib/platform"
+import { isMacOS } from "@/utils/bridge"
 import { PicGoAppSidebar } from "./picgo-app-sidebar"
 import { useAppearanceTheme } from "./hooks/use-appearance-theme"
 

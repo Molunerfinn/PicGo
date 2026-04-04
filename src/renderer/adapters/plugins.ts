@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { ipcRenderer } from 'electron'
 import { OPEN_URL, SHOW_PLUGIN_PAGE_MENU } from '#/events/constants'
 import { IRPCActionType } from '~/universal/types/enum'
 import { getConfig, invokeRPC, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
+import { ipc } from '@/utils/bridge'
 
 interface PluginInstallResult {
   success: boolean
@@ -33,13 +33,17 @@ const README_FILE_CANDIDATES = ['README.md', 'readme.md', 'Readme.md'] as const
 
 export const pluginsAdapter = {
   getInstalledPlugins (): Promise<IPicGoPlugin[]> {
-    return new Promise((resolve) => {
-      const handleResponse = (_event: Electron.IpcRendererEvent, list: IPicGoPlugin[]) => {
+    return new Promise((resolve, reject) => {
+      const cleanup = ipc.once('pluginList', (list: IPicGoPlugin[]) => {
         resolve(list)
-      }
+      })
 
-      ipcRenderer.once('pluginList', handleResponse)
-      sendToMain('getPluginList')
+      try {
+        sendToMain('getPluginList')
+      } catch (error) {
+        cleanup()
+        reject(error)
+      }
     })
   },
   installPlugin (fullName: string): Promise<PluginInstallResult> {

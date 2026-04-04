@@ -1,29 +1,25 @@
 import { useEffect, useRef } from 'react'
-import { ipcRenderer } from 'electron'
 import { IRPCActionType } from '~/universal/types/enum'
+import { ipc } from '@/utils/bridge'
 
-type IPCListener = Parameters<typeof ipcRenderer.on>[1]
-type IPCCleanup = () => void
+type IPCListener = BridgeIpcListener
+type IPCCleanup = BridgeIpcCleanup
 
 export function useIPCOn (channel: string, listener: IPCListener) {
   // Subscribe to an IPC channel for the lifetime of the current component.
   useEffect(() => {
-    ipcRenderer.on(channel, listener)
+    const cleanup = ipc.on(channel, listener)
 
-    return () => {
-      ipcRenderer.removeListener(channel, listener)
-    }
+    return cleanup
   }, [channel, listener])
 }
 
 export function useIPCOnce (channel: string, listener: IPCListener) {
   // Subscribe once to an IPC channel and always clean up the listener on unmount.
   useEffect(() => {
-    ipcRenderer.once(channel, listener)
+    const cleanup = ipc.once(channel, listener)
 
-    return () => {
-      ipcRenderer.removeListener(channel, listener)
-    }
+    return cleanup
   }, [channel, listener])
 }
 
@@ -42,16 +38,10 @@ export function useIPC () {
 
   return {
     on: (channel: IRPCActionType, listener: IPCListener) => {
-      ipcRenderer.on(channel, listener)
-      cleanupRef.current.push(() => {
-        ipcRenderer.removeListener(channel, listener)
-      })
+      cleanupRef.current.push(ipc.on(channel, listener))
     },
     once: (channel: IRPCActionType, listener: IPCListener) => {
-      ipcRenderer.once(channel, listener)
-      cleanupRef.current.push(() => {
-        ipcRenderer.removeListener(channel, listener)
-      })
+      cleanupRef.current.push(ipc.once(channel, listener))
     }
   }
 }

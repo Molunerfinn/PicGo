@@ -199,7 +199,6 @@ import { Close, Download, Goods, Remove, Setting } from '@element-plus/icons-vue
 import { T as $T } from '@/i18n/index'
 import ConfigForm from '@/components/ConfigForm.vue'
 import { debounce, DebouncedFunc } from 'lodash'
-import type { IpcRendererEvent } from 'electron'
 import { handleStreamlinePluginName } from '~/universal/utils/common'
 import {
   OPEN_URL,
@@ -267,7 +266,7 @@ useIPCOn('hideLoading', () => {
   loading.value = false
 })
 
-useIPCOn(PICGO_HANDLE_PLUGIN_DONE, (evt: IpcRendererEvent, fullName: string) => {
+useIPCOn(PICGO_HANDLE_PLUGIN_DONE, (fullName: string) => {
   pluginList.value.forEach(item => {
     if (item.fullName === fullName || (item.name === fullName)) {
       item.ing = false
@@ -276,13 +275,13 @@ useIPCOn(PICGO_HANDLE_PLUGIN_DONE, (evt: IpcRendererEvent, fullName: string) => 
   loading.value = false
 })
 
-useIPCOn('pluginList', (evt: IpcRendererEvent, list: IPicGoPlugin[]) => {
+useIPCOn('pluginList', (list: IPicGoPlugin[]) => {
   pluginList.value = list
   pluginNameList.value = list.map(item => item.fullName)
   loading.value = false
 })
 
-useIPCOn('installPlugin', (evt: IpcRendererEvent, { success, body }: {
+useIPCOn('installPlugin', ({ success, body }: {
   success: boolean,
   body: string
 }) => {
@@ -295,7 +294,7 @@ useIPCOn('installPlugin', (evt: IpcRendererEvent, { success, body }: {
   })
 })
 
-useIPCOn('updateSuccess', (evt: IpcRendererEvent, plugin: string) => {
+useIPCOn('updateSuccess', (plugin: string) => {
   loading.value = false
   pluginList.value.forEach(item => {
     if (item.fullName === plugin) {
@@ -308,7 +307,7 @@ useIPCOn('updateSuccess', (evt: IpcRendererEvent, plugin: string) => {
   getPluginList()
 })
 
-useIPCOn('uninstallSuccess', (evt: IpcRendererEvent, plugin: string) => {
+useIPCOn('uninstallSuccess', (plugin: string) => {
   loading.value = false
   pluginList.value = pluginList.value.filter(item => {
     if (item.fullName === plugin) { // restore Uploader & Transformer after uninstalling
@@ -325,14 +324,14 @@ useIPCOn('uninstallSuccess', (evt: IpcRendererEvent, plugin: string) => {
   pluginNameList.value = pluginNameList.value.filter(item => item !== plugin)
 })
 
-useIPCOn(PICGO_CONFIG_PLUGIN, (evt: IpcRendererEvent, _currentType: 'plugin' | 'transformer' | 'uploader', _configName: string, _config: IPicGoPluginConfig[]) => {
+useIPCOn(PICGO_CONFIG_PLUGIN, (_currentType: 'plugin' | 'transformer' | 'uploader', _configName: string, _config: IPicGoPluginConfig[]) => {
   currentType.value = _currentType
   configName.value = _configName
   config.value = _config
   dialogVisible.value = true
 })
 
-useIPCOn(PICGO_HANDLE_PLUGIN_ING, (evt: IpcRendererEvent, fullName: string) => {
+useIPCOn(PICGO_HANDLE_PLUGIN_ING, (fullName: string) => {
   pluginList.value.forEach(item => {
     if (item.fullName === fullName || (item.name === fullName)) {
       item.ing = true
@@ -341,7 +340,7 @@ useIPCOn(PICGO_HANDLE_PLUGIN_ING, (evt: IpcRendererEvent, fullName: string) => {
   loading.value = true
 })
 
-useIPCOn(PICGO_TOGGLE_PLUGIN, (evt: IpcRendererEvent, fullName: string, enabled: boolean) => {
+useIPCOn(PICGO_TOGGLE_PLUGIN, (fullName: string, enabled: boolean) => {
   const plugin = pluginList.value.find(item => item.fullName === fullName)
   if (plugin) {
     plugin.enabled = enabled

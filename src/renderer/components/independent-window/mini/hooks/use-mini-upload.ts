@@ -43,7 +43,7 @@ export function useMiniUpload(): UseMiniUploadResult {
     }, 1200)
   }
 
-  useIPCOn('uploadProgress', (_event, nextProgress: number) => {
+  useIPCOn('uploadProgress', (nextProgress: number) => {
     if (!isMountedRef.current) {
       return
     }

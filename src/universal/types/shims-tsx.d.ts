@@ -1,8 +1,51 @@
 import Vue, { VNode } from 'vue'
 
 declare global {
-  interface ElectronApi {
-    getFilePath: (file: File) => string
+  type BridgeIpcListener = (...args: any[]) => void
+  type BridgeIpcCleanup = () => void
+
+  interface BridgeObjectAdapter {
+    getLocale: (language: string) => ILocales | undefined
+    setLocales: (locales: Record<string, ILocales>) => void
+    setLocale: (language: string, locale: ILocales) => void
+  }
+
+  interface BridgeI18nInstance {
+    getLanguage: () => string
+    setLanguage: (language: string) => void
+    setDefaultLanguage: (language: string) => void
+    translate: (key: ILocalesKey, args?: IStringKeyMap) => string
+  }
+
+  interface BridgeApi {
+    ipc: {
+      send: (channel: string, ...args: unknown[]) => void
+      invoke: <T>(channel: string, ...args: unknown[]) => Promise<T>
+      on: (channel: string, listener: BridgeIpcListener) => BridgeIpcCleanup
+      once: (channel: string, listener: BridgeIpcListener) => BridgeIpcCleanup
+      removeAllListeners: (channel: string) => void
+    }
+    clipboard: {
+      writeText: (text: string) => void
+    }
+    webUtils: {
+      getPathForFile: (file: File) => string
+    }
+    webFrame: {
+      setVisualZoomLevelLimits: (minimumLevel: number, maximumLevel: number) => void
+    }
+    env: {
+      platform: NodeJS.Platform
+      isDev: boolean
+    }
+    i18n: {
+      ObjectAdapter: {
+        create: (locales: Record<string, ILocales>) => BridgeObjectAdapter
+      }
+      I18n: {
+        createFromLocales: (locales: Record<string, ILocales>, defaultLanguage: string) => BridgeI18nInstance
+      }
+    }
   }
 
   namespace JSX {
@@ -16,7 +59,7 @@ declare global {
   }
 
   interface Window {
-    electronApi: ElectronApi
+    bridgeApi: BridgeApi
     TDAPP: {
       onEvent: (EventId: string, Label?: string, MapKv?: IStringKeyMap) => void
       register: (opt: {

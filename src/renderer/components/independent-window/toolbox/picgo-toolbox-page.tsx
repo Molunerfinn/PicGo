@@ -119,7 +119,7 @@ export function PicGoToolboxPage() {
   const [isChecking, setIsChecking] = useState(false)
   const [isFixing, setIsFixing] = useState(false)
 
-  useIPCOn(IRPCActionType.TOOLBOX_CHECK_RES, (_event, result: IToolboxCheckRes) => {
+  useIPCOn(IRPCActionType.TOOLBOX_CHECK_RES, (result: IToolboxCheckRes) => {
     applyResult(result)
     if (result.status === IToolboxItemCheckStatus.ERROR) {
       setActiveType(result.type)

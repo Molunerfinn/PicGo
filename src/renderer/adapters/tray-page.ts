@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron'
 import type { IResult } from '@picgo/store/dist/types'
 import { OPEN_WINDOW, PASTE_TEXT } from '#/events/constants'
 import { IWindowList } from '~/universal/types/enum'
@@ -6,6 +5,7 @@ import i18n from '@/i18n'
 import db from '@/utils/db'
 import { showNotification } from '@/utils/notification'
 import { sendToMain } from '@/utils/dataSender'
+import { ipc } from '@/utils/bridge'
 
 type TrayPageGalleryItem = IResult<ImgInfo>
 
@@ -17,7 +17,7 @@ export const trayPageAdapter = {
     return (await db.get<ImgInfo>({ orderBy: 'desc', limit })).data
   },
   async copyUploadedLink (item: ImgInfo) {
-    await ipcRenderer.invoke(PASTE_TEXT, item)
+    await ipc.invoke(PASTE_TEXT, item)
     showNotification({
       title: i18n.t('COPY_LINK_SUCCEED'),
       body: item.imgUrl || ''

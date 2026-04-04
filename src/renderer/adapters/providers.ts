@@ -1,8 +1,8 @@
-import { ipcRenderer } from 'electron'
 import { toast } from 'sonner'
 import { GET_PICBED_CONFIG } from '#/events/constants'
 import { IRPCActionType } from '~/universal/types/enum'
 import { invokeRPC, sendToMain } from '@/utils/dataSender'
+import { ipc } from '@/utils/bridge'
 
 export interface ProviderSchemaResult {
   config: IPicGoPluginConfig[]
@@ -61,16 +61,14 @@ export const providersAdapter = {
   },
   getProviderSchema (type: string): Promise<ProviderSchemaResult> {
     return new Promise((resolve, reject) => {
-      const handleResponse = (_event: Electron.IpcRendererEvent, config: IPicGoPluginConfig[], name: string) => {
+      const cleanup = ipc.once(GET_PICBED_CONFIG, (config: IPicGoPluginConfig[], name: string) => {
         resolve({ config, name })
-      }
-
-      ipcRenderer.once(GET_PICBED_CONFIG, handleResponse)
+      })
 
       try {
         sendToMain(GET_PICBED_CONFIG, type)
       } catch (error) {
-        ipcRenderer.removeListener(GET_PICBED_CONFIG, handleResponse)
+        cleanup()
         reject(error)
       }
     })

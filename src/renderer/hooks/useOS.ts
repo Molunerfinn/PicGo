@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { getAppPlatform } from '@/lib/platform'
+import { getPlatform } from '@/utils/bridge'
 
 export function useOS () {
-  const [os] = useState(getAppPlatform())
+  const [os] = useState(getPlatform())
   return os
 }

@@ -15,7 +15,7 @@ import { appActions, galleryStoreActions, useAppStore, useGalleryStore } from "@
 import {
   GALLERY_MASONRY_COLUMN_COUNT_DEFAULT,
 } from "@/utils/consts"
-import { isMacOS } from "@/lib/platform"
+import { isMacOS } from "@/utils/bridge"
 import { GalleryHeader } from "./gallery-header"
 import { GallerySidebar, allPhotosKey } from "./gallery-sidebar"
 import { GalleryList } from "./gallery-list"
