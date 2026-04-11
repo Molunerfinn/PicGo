@@ -322,6 +322,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: PicGo-*
 
       - name: List artifacts
         run: ls -laR artifacts/
