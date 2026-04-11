@@ -304,7 +304,7 @@ export function PicGoCloud () {
 
         <div className="flex min-h-0 flex-1 justify-center overflow-auto p-6">
           <div className="flex w-full max-w-4xl flex-col gap-6">
-            <section className="rounded-xl border bg-card p-6 shadow-xs">
+            <section className="rounded-xl border border-border/60 bg-card p-6">
               {isUserInfoLoading ? (
                 <div className="text-muted-foreground flex items-center gap-2 text-sm">
                   <LoaderCircleIcon className="size-4 animate-spin" />

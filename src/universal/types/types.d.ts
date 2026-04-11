@@ -46,16 +46,46 @@ interface IServerConfig {
 
 // Image && PicBed
 interface ImgInfo {
+  /**
+   * will be deleted after uploading.
+   */
   buffer?: Buffer
+  /**
+   * will be deleted after uploading.
+   */
   base64Image?: string
   fileName?: string
   width?: number
   height?: number
   extname?: string
+  /**
+   * basic url for image item.
+   */
   imgUrl?: string
-  id?: string
-  type?: string
+  /**
+   * originImgUrl is used for some special cases, such as url rewrite. we will keep the original url in originalImgUrl and do the url rewrite in imgUrl, so that we can use the original url when we need it.
+   */
   originImgUrl?: string
+  /**
+   * if item is a file not image, this will be the file url for downloading
+   */
+  url?: string
+  /**
+   * unique id. if item saved in db, it will have an id
+   */
+  id?: string
+  /**
+   * uploader type. such as "picgo-cloud", "smms", "github", etc
+   */
+  type?: string
+  /**
+   * uploaded time, Date.now().
+   */
+  createdAt?: number
+  /**
+   * updated time, Date.now(). if item is updated, such as url rewrite, this will be updated. otherwise, it will be the same as createdAt.
+   */
+  updatedAt?: number
   [propName: string]: any
 }
 

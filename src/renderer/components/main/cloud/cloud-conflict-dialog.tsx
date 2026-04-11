@@ -86,7 +86,11 @@ export function CloudConflictDialog ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="flex max-h-[75vh] max-w-6xl flex-col gap-0 p-0">
+      <DialogContent
+        showCloseButton={false}
+        overlayClassName="top-8"
+        className="flex h-[min(80vh,720px)] min-h-[min(400px,calc(100vh-2rem))] w-[min(90vw,72rem)] min-w-[min(700px,calc(100vw-2rem))] max-h-[calc(100vh-2rem)] max-w-[calc(100vw-2rem)] flex-col gap-0 p-0"
+      >
         <DialogHeader className="border-b px-6 pt-6 pb-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="space-y-1">
@@ -144,12 +148,12 @@ export function CloudConflictDialog ({
                     ) : null}
                   </div>
 
-                  <div className="grid gap-3 p-4 lg:grid-cols-[1fr_auto_1fr]">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-3 p-4">
                     <button
                       type="button"
                       onClick={() => setChoice(item.path, IPicGoCloudConfigSyncConflictChoice.LOCAL)}
                       className={cn(
-                        'rounded-lg border p-4 text-left transition-colors',
+                        'min-w-0 rounded-lg border p-4 text-left transition-colors',
                         currentChoice === IPicGoCloudConfigSyncConflictChoice.LOCAL
                           ? 'border-primary bg-primary/5'
                           : 'hover:bg-muted/40'
@@ -178,7 +182,7 @@ export function CloudConflictDialog ({
                       type="button"
                       onClick={() => setChoice(item.path, IPicGoCloudConfigSyncConflictChoice.CLOUD)}
                       className={cn(
-                        'rounded-lg border p-4 text-left transition-colors',
+                        'min-w-0 rounded-lg border p-4 text-left transition-colors',
                         currentChoice === IPicGoCloudConfigSyncConflictChoice.CLOUD
                           ? 'border-primary bg-primary/5'
                           : 'hover:bg-muted/40'
@@ -199,7 +203,7 @@ export function CloudConflictDialog ({
           </div>
         </ScrollArea>
 
-        <DialogFooter className="border-t px-6 py-4 sm:justify-between">
+        <DialogFooter className="items-center border-t px-6 py-4 sm:justify-between">
           <div className="text-muted-foreground text-sm">
             {remainingCount > 0
               ? t('PICGO_CLOUD_CONFIG_SYNC_CONFLICT_PENDING')

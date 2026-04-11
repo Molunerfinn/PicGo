@@ -90,15 +90,17 @@ function DialogContent({
   children,
   showCloseButton = true,
   showMask = true,
+  overlayClassName,
   style,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Popup> & {
   showCloseButton?: boolean
   showMask?: boolean
+  overlayClassName?: string
 }) {
   return (
     <DialogPortal>
-      {showMask ? <DialogOverlay /> : null}
+      {showMask ? <DialogOverlay className={overlayClassName} /> : null}
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
