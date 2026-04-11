@@ -201,19 +201,19 @@ jobs:
       - name: Replace Unsigned with Signed & Update latest.yml
         shell: powershell
         run: |
-          Write-Host "📂 Contents of signed-artifact:"
+          Write-Host "[Info] Contents of signed-artifact:"
           Get-ChildItem -Path "signed-artifact" -Recurse | Format-Table FullName, Length
 
           # If returned zip files, extract them first
           $zips = Get-ChildItem -Path "signed-artifact\*.zip" -ErrorAction SilentlyContinue
           if ($zips) {
-            Write-Host "📦 Found zip file(s), extracting..."
+            Write-Host "[Info] Found zip file(s), extracting..."
             foreach ($zip in $zips) {
               Expand-Archive -Path $zip.FullName -DestinationPath "signed-artifact" -Force
               Remove-Item -Path $zip.FullName -Force
-              Write-Host "✅ Extracted: $($zip.Name)"
+              Write-Host "[Done] Extracted: $($zip.Name)"
             }
-            Write-Host "📂 Contents after extraction:"
+            Write-Host "[Info] Contents after extraction:"
             Get-ChildItem -Path "signed-artifact" -Recurse | Format-Table FullName, Length
           }
 
@@ -222,10 +222,10 @@ jobs:
           if ($exeFiles) {
             foreach ($exe in $exeFiles) {
               Move-Item -Path $exe.FullName -Destination "dist\" -Force
-              Write-Host "✅ Moved signed artifact: $($exe.Name)"
+              Write-Host "[Done] Moved signed artifact: $($exe.Name)"
             }
           } else {
-            Write-Host "❌ No .exe files found in signed-artifact!"
+            Write-Host "[Error] No .exe files found in signed-artifact!"
             Get-ChildItem -Path "signed-artifact" -Recurse
             exit 1
           }
