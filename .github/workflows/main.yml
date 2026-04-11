@@ -201,9 +201,34 @@ jobs:
       - name: Replace Unsigned with Signed & Update latest.yml
         shell: powershell
         run: |
-          # Move signed artifacts to dist folder, overwriting existing ones
-          Move-Item -Path "signed-artifact\*.exe" -Destination "dist\" -Force
-          Write-Host "✅ Signed artifacts moved to dist folder."
+          Write-Host "📂 Contents of signed-artifact:"
+          Get-ChildItem -Path "signed-artifact" -Recurse | Format-Table FullName, Length
+
+          # If returned zip files, extract them first
+          $zips = Get-ChildItem -Path "signed-artifact\*.zip" -ErrorAction SilentlyContinue
+          if ($zips) {
+            Write-Host "📦 Found zip file(s), extracting..."
+            foreach ($zip in $zips) {
+              Expand-Archive -Path $zip.FullName -DestinationPath "signed-artifact" -Force
+              Remove-Item -Path $zip.FullName -Force
+              Write-Host "✅ Extracted: $($zip.Name)"
+            }
+            Write-Host "📂 Contents after extraction:"
+            Get-ChildItem -Path "signed-artifact" -Recurse | Format-Table FullName, Length
+          }
+
+          $exeFiles = Get-ChildItem -Path "signed-artifact\*.exe" -ErrorAction SilentlyContinue
+
+          if ($exeFiles) {
+            foreach ($exe in $exeFiles) {
+              Move-Item -Path $exe.FullName -Destination "dist\" -Force
+              Write-Host "✅ Moved signed artifact: $($exe.Name)"
+            }
+          } else {
+            Write-Host "❌ No .exe files found in signed-artifact!"
+            Get-ChildItem -Path "signed-artifact" -Recurse
+            exit 1
+          }
 
           # Run the Node.js script to update latest.yml
           node scripts/update-win-yaml.js
