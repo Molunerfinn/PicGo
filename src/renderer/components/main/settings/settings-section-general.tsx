@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { IStartupMode } from "~/universal/types/enum"
+import i18n from "@/i18n"
 
 import {
   Select,
@@ -34,7 +35,7 @@ export function SettingsSectionGeneral({
   const handleLanguageChange = async (value: string) => {
     try {
       await settingsStoreActions.saveLanguage(value)
-      toast.success(t("TIPS_SET_SUCCEED"))
+      toast.success(i18n.t("TIPS_SET_SUCCEED", { lng: value }))
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t("FAILED"))
     }

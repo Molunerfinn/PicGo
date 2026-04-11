@@ -259,7 +259,7 @@ const handleI18n = () => {
       const miniWindow = windowManager.get(IWindowList.MINI_WINDOW)
       miniWindow?.webContents.send(SET_CURRENT_LANGUAGE, lang, locales)
     }
-    // event.sender.send(SET_CURRENT_LANGUAGE, lang, locales)
+    notifyAppConfigUpdated()
   })
   ipcMain.on(GET_CURRENT_LANGUAGE, (event: IpcMainEvent) => {
     const { lang, locales } = i18nManager.getCurrentLocales()

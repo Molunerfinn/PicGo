@@ -58,7 +58,8 @@ export function initializeI18n () {
   return initializePromise
 }
 
-export function setCurrentLanguage (lang: string) {
+export async function setCurrentLanguage (lang: string) {
+  await applyLanguage(lang)
   ipc.send(SET_CURRENT_LANGUAGE, lang)
 }
 

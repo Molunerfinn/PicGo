@@ -38,7 +38,7 @@ export const settingsStoreActions = {
   },
   async saveLanguage (language: string) {
     await settingsStoreActions.saveSettingsConfig('settings.language', language)
-    setCurrentLanguage(language)
+    await setCurrentLanguage(language)
   },
   async saveSettingsConfig (
     path: SettingsConfigSaveTarget,
