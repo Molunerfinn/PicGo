@@ -1,5 +1,8 @@
 export interface IPicGoCloudUserInfo {
-  user: string
+  user: string | null
+  avatar?: string | null
+  plan?: number
+  autoImport?: boolean
 }
 
 export enum IPicGoCloudErrorCode {

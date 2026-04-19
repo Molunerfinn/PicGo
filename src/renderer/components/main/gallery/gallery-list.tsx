@@ -16,6 +16,7 @@ export type GalleryListItem = {
   collection: string
   sizeMb: number
   date: string
+  isVideo?: boolean
 }
 
 export type GalleryListLabels = {
@@ -129,16 +130,17 @@ const galleryTableComponents: TableComponents<GalleryListItem, GalleryListContex
 function GalleryListThumbnail({
   imgUrl,
   alt,
+  isVideo,
   onClick,
   label,
 }: {
   imgUrl: string
   alt: string
+  isVideo?: boolean
   onClick: () => void
   label: string
 }) {
-  const [loadedSrc, setLoadedSrc] = useState<string | null>(null)
-  const isLoaded = loadedSrc === imgUrl
+  const [isLoaded, setIsLoaded] = useState(false)
 
   return (
     <button
@@ -153,18 +155,33 @@ function GalleryListThumbnail({
       }}
     >
       {!isLoaded ? <Skeleton className="h-full w-full rounded-none" /> : null}
-      <img
-        src={imgUrl}
-        alt={alt}
-        className={cn(
-          "h-full w-full object-cover transition-opacity duration-300",
-          isLoaded ? "opacity-100" : "opacity-0"
-        )}
-        loading="lazy"
-        decoding="async"
-        draggable={false}
-        onLoad={() => setLoadedSrc(imgUrl)}
-      />
+      {isVideo ? (
+        <video
+          src={imgUrl}
+          className={cn(
+            "h-full w-full object-cover transition-opacity duration-300",
+            isLoaded ? "opacity-100" : "opacity-0"
+          )}
+          draggable={false}
+          preload="metadata"
+          muted
+          playsInline
+          onLoadedData={() => setIsLoaded(true)}
+        />
+      ) : (
+        <img
+          src={imgUrl}
+          alt={alt}
+          className={cn(
+            "h-full w-full object-cover transition-opacity duration-300",
+            isLoaded ? "opacity-100" : "opacity-0"
+          )}
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+          onLoad={() => setIsLoaded(true)}
+        />
+      )}
     </button>
   )
 }
@@ -254,6 +271,7 @@ export function GalleryList({
                     <GalleryListThumbnail
                       imgUrl={item.imgUrl}
                       alt={item.alt ?? ""}
+                      isVideo={item.isVideo}
                       onClick={() => context.onPreviewOpen(item.id)}
                       label={context.previewLabel}
                     />

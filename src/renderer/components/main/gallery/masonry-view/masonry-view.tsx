@@ -44,6 +44,7 @@ type MasonryContext = {
   onToggleSelection: (id: number, checked?: boolean) => void
   onPreview: (id: number) => void
   onImageLoad: (image: GalleryPhoto) => (event: SyntheticEvent<HTMLImageElement>) => void
+  onVideoLoad: (image: GalleryPhoto) => (event: SyntheticEvent<HTMLVideoElement>) => void
   onItemRefChange: (id: number, node: HTMLDivElement | null) => void
 }
 
@@ -77,11 +78,18 @@ function getSelectionBoxRect(box: SelectionBox) {
   }
 }
 
+type LazyMediaProps = ComponentPropsWithoutRef<"img"> & {
+  isVideo?: boolean
+  onVideoLoad?: (event: SyntheticEvent<HTMLVideoElement>) => void
+}
+
 function LazyImage({
   className,
   style,
+  isVideo,
+  onVideoLoad,
   ...imgProps
-}: ComponentPropsWithoutRef<"img">) {
+}: LazyMediaProps) {
   const {
     src,
     alt,
@@ -95,15 +103,18 @@ function LazyImage({
     draggable,
     onLoad,
   } = imgProps
-  const [loadedSrc, setLoadedSrc] = useState<string | null>(null)
-  const isLoaded = loadedSrc !== null
-  const imageClassName = cn(
+  const [isLoaded, setIsLoaded] = useState(false)
+  const mediaClassName = cn(
     "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
     isLoaded ? "opacity-100" : "opacity-0"
   )
-  const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
-    setLoadedSrc(src ?? null)
+  const handleImageLoad = (event: SyntheticEvent<HTMLImageElement>) => {
+    setIsLoaded(true)
     onLoad?.(event)
+  }
+  const handleVideoLoad = (event: SyntheticEvent<HTMLVideoElement>) => {
+    setIsLoaded(true)
+    onVideoLoad?.(event)
   }
 
   return (
@@ -111,22 +122,36 @@ function LazyImage({
       {!isLoaded ? (
         <Skeleton className="absolute inset-0 h-full w-full rounded-none" />
       ) : null}
-      <img
-        src={src}
-        alt={alt ?? ""}
-        srcSet={srcSet}
-        sizes={sizes}
-        width={width}
-        height={height}
-        crossOrigin={crossOrigin}
-        referrerPolicy={referrerPolicy}
-        useMap={useMap}
-        draggable={draggable}
-        className={imageClassName}
-        loading="lazy"
-        decoding="async"
-        onLoad={handleLoad}
-      />
+      {isVideo ? (
+        <video
+          src={src}
+          width={width}
+          height={height}
+          draggable={draggable}
+          className={mediaClassName}
+          preload="metadata"
+          muted
+          playsInline
+          onLoadedData={handleVideoLoad}
+        />
+      ) : (
+        <img
+          src={src}
+          alt={alt ?? ""}
+          srcSet={srcSet}
+          sizes={sizes}
+          width={width}
+          height={height}
+          crossOrigin={crossOrigin}
+          referrerPolicy={referrerPolicy}
+          useMap={useMap}
+          draggable={draggable}
+          className={mediaClassName}
+          loading="lazy"
+          decoding="async"
+          onLoad={handleImageLoad}
+        />
+      )}
     </div>
   )
 }
@@ -173,7 +198,9 @@ const MasonryItem: ItemContent<GalleryPhoto, MasonryContext> = ({
           draggable={false}
           className="w-full"
           style={{ aspectRatio }}
+          isVideo={photo.isVideo}
           onLoad={context.onImageLoad(photo)}
+          onVideoLoad={context.onVideoLoad(photo)}
         />
         <div
           data-gallery-interactive="true"
@@ -311,6 +338,26 @@ export function MasonryView({
       })
     }
 
+  const handleMasonryVideoLoad =
+    (image: GalleryPhoto) => (event: SyntheticEvent<HTMLVideoElement>) => {
+      if (image.height) return
+      const { videoWidth, videoHeight } = event.currentTarget
+      if (!videoWidth || !videoHeight) return
+      setImageSizeOverrides((prev) => {
+        const current = prev[image.id]
+        if (
+          current?.width === videoWidth &&
+          current?.height === videoHeight
+        ) {
+          return prev
+        }
+        return {
+          ...prev,
+          [image.id]: { width: videoWidth, height: videoHeight },
+        }
+      })
+    }
+
   const masonryGap = getMasonryGap(galleryWidth)
   const masonryColumnCount = columnCount
 
@@ -323,6 +370,7 @@ export function MasonryView({
     onToggleSelection,
     onPreview,
     onImageLoad: handleMasonryImageLoad,
+    onVideoLoad: handleMasonryVideoLoad,
     onItemRefChange,
   }
 

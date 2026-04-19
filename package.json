@@ -43,7 +43,7 @@
     "@tanstack/react-router": "^1.166.2",
     "@tanstack/router-plugin": "^1.166.2",
     "@virtuoso.dev/masonry": "^1.4.2",
-    "axios": "^0.19.0",
+    "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",
     "clip-filepaths": "^0.3.0",
     "clsx": "^2.1.1",

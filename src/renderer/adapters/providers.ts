@@ -10,7 +10,7 @@ export interface ProviderSchemaResult {
 }
 
 export const providersAdapter = {
-  async changeCurrentUploader (type: string, configName: string) {
+  async changeCurrentUploader (type: string, configName?: string) {
     const result = await invokeRPC<string>(IRPCActionType.CHANGE_CURRENT_UPLOADER, type, configName)
     if (!result.success) {
       throw new Error(result.error || 'Failed to change current uploader')

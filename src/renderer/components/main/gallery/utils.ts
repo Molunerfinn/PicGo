@@ -19,6 +19,25 @@ export type GalleryPhoto = {
   raw: ImgInfo
   collection: string
   tags: string[]
+  isVideo: boolean
+}
+
+const VIDEO_EXTENSIONS = new Set(['.mp4', '.mov', '.webm', '.avi', '.mkv', '.m4v', '.ogv'])
+
+function resolveIsVideo (item: ImgInfo): boolean {
+  const ext = item.extname || ''
+  if (ext && VIDEO_EXTENSIONS.has(ext.toLowerCase())) {
+    return true
+  }
+
+  const fileName = item.fileName || item.imgUrl || ''
+  const dotIndex = fileName.lastIndexOf('.')
+  if (dotIndex >= 0) {
+    const fileExt = fileName.slice(dotIndex).toLowerCase().split('?')[0]
+    return VIDEO_EXTENSIONS.has(fileExt)
+  }
+
+  return false
 }
 
 export type GalleryProviderFilter = {
@@ -144,7 +163,8 @@ export function buildGalleryPhotos (
       providerType,
       raw: item,
       collection: '',
-      tags: []
+      tags: [],
+      isVideo: resolveIsVideo(item)
     } satisfies GalleryPhoto
   })
 }

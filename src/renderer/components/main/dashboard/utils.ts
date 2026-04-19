@@ -27,7 +27,7 @@ export function buildVisibleProviderOptions(
     )
 
     return appConfig.picBed.list
-      .filter((provider) => provider.visible)
+      .filter((provider) => provider.visible !== false)
       .map((provider) => {
         const summary = providerSummaryMap.get(provider.type)
 
@@ -40,7 +40,7 @@ export function buildVisibleProviderOptions(
   }
 
   return providers
-    .filter((provider) => provider.visible)
+    .filter((provider) => provider.visible !== false)
     .map((provider) => ({
       id: provider.id,
       name: provider.name,

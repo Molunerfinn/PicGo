@@ -472,6 +472,7 @@ PROVIDER_SIDEBAR_COLLAPSE: Collapse
 PROVIDER_SIDEBAR_EXPAND: Expand
 PROVIDER_CONFIG_ACTIONS: Config actions
 PROVIDER_CREATE_CONFIG: Create config
+PROVIDER_CREATE_CONFIG_DISABLED_EMPTY_SCHEMA: This uploader has no configuration options, creating additional configs is unnecessary
 PROVIDER_INSTALL_MORE_UPLOADERS: Install more uploaders
 PROVIDER_NO_UPLOADER_SELECTED: No uploader selected.
 PROVIDER_NO_CONFIG_YET: No config yet

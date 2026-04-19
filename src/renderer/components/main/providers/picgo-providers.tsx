@@ -59,7 +59,7 @@ export function PicGoProviders() {
   const queriedConfigId = search.configId ?? null
 
   const configMap = appConfig?.uploader ?? emptyProviderConfigMap
-  const visibleProviders = providers.filter((provider) => provider.visible)
+  const visibleProviders = providers.filter((provider) => provider.visible !== false)
 
   const { selectedUploaderId, selectedConfigId } = resolveProviderSelectionState({
     queriedUploaderId,

@@ -16,7 +16,7 @@ export const buildPicBedListMenu = () => {
   }, {
     type: 'separator'
   }]
-  let submenu = picBeds.filter(item => item.visible).map(item => {
+  let submenu = picBeds.filter(item => item.visible !== false).map(item => {
     const configList = picBedConfigList?.[item.type]?.configList
     const defaultId = picBedConfigList?.[item.type]?.defaultId
     const hasSubmenu = !!configList

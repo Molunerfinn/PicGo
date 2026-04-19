@@ -216,7 +216,8 @@ export function HistoryPanel ({
       providerType: item.raw.type || '',
       raw: item.raw,
       collection: '',
-      tags: []
+      tags: [],
+      isVideo: false
     }))
 
   const handleCopy = async (item: DashboardHistoryItem) => {

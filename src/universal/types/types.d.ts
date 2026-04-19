@@ -81,11 +81,11 @@ interface ImgInfo {
   /**
    * uploaded time, Date.now().
    */
-  createdAt?: number
+  createdAt?: number | string | Date
   /**
    * updated time, Date.now(). if item is updated, such as url rewrite, this will be updated. otherwise, it will be the same as createdAt.
    */
-  updatedAt?: number
+  updatedAt?: number | string | Date
   [propName: string]: any
 }
 

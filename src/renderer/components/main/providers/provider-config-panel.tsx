@@ -64,7 +64,7 @@ export function ProviderConfigPanel({
   const queriedUploaderId = search.uploader ?? null
   const queriedConfigId = search.configId ?? null
   const configMap = appConfig?.uploader ?? emptyProviderConfigMap
-  const visibleProviders = providers.filter((provider) => provider.visible)
+  const visibleProviders = providers.filter((provider) => provider.visible !== false)
   const { selectedUploaderId, selectedConfigId } = resolveProviderSelectionState({
     queriedUploaderId,
     queriedConfigId,

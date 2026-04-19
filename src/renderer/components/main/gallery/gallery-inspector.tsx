@@ -252,14 +252,25 @@ export function GalleryInspector({
                           aria-label={t("GALLERY_PREVIEW")}
                           className="relative h-full w-full overflow-hidden rounded-lg cursor-zoom-in"
                         >
-                          <img
-                            src={image.imgUrl}
-                            alt={image.alt}
-                            className="h-full w-full object-cover"
-                            loading="lazy"
-                            decoding="async"
-                            draggable={false}
-                          />
+                          {image.isVideo ? (
+                            <video
+                              src={image.imgUrl}
+                              className="h-full w-full object-cover"
+                              draggable={false}
+                              preload="metadata"
+                              muted
+                              playsInline
+                            />
+                          ) : (
+                            <img
+                              src={image.imgUrl}
+                              alt={image.alt}
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                              decoding="async"
+                              draggable={false}
+                            />
+                          )}
                           {!isOverflow ? (
                             <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 overflow-hidden bg-background/60 text-foreground shadow-sm backdrop-blur-sm dark:bg-background/45">
                               <div className="truncate px-2 py-1 text-center text-[10px] font-medium leading-none sm:text-xs">
@@ -284,14 +295,25 @@ export function GalleryInspector({
                     aria-label={t("GALLERY_PREVIEW")}
                     className="relative h-full w-full cursor-zoom-in overflow-hidden"
                   >
-                    <img
-                      src={selectedImages[0].imgUrl}
-                      alt={selectedImages[0].alt}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                      draggable={false}
-                    />
+                    {selectedImages[0].isVideo ? (
+                      <video
+                        src={selectedImages[0].imgUrl}
+                        className="h-full w-full object-cover"
+                        draggable={false}
+                        preload="metadata"
+                        muted
+                        playsInline
+                      />
+                    ) : (
+                      <img
+                        src={selectedImages[0].imgUrl}
+                        alt={selectedImages[0].alt}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        draggable={false}
+                      />
+                    )}
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 overflow-hidden bg-background/60 text-foreground shadow-sm backdrop-blur-sm dark:bg-background/45">
                       <div className="truncate px-2 py-1 text-center text-[10px] font-medium leading-none sm:text-xs">
                         {selectedImages[0].name}

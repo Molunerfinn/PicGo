@@ -199,7 +199,12 @@ export function normalizePicBedList (
     : undefined
 
   if (Array.isArray(rawList) && rawList.length > 0) {
-    return rawList
+    const knownTypes = new Set(rawList.map((item) => item.type))
+    const newUploaders = picBeds
+      .filter((item) => !knownTypes.has(item.type))
+      .map((item) => ({ type: item.type, name: item.name, visible: true as boolean }))
+
+    return newUploaders.length > 0 ? [...rawList, ...newUploaders] : rawList
   }
 
   return picBeds.map((item) => ({

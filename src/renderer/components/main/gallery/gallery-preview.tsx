@@ -178,24 +178,40 @@ export function GalleryPreview({
           onClick={handleClose}
         >
           <div className="relative flex h-full w-full items-center justify-center p-(--app-gallery-preview-padding)">
-            <motion.img
-              key={activeImage.id}
-              src={activeImageUrl}
-              alt={activeImage.alt ?? ""}
-              className={cn(
-                "max-h-full max-w-full rounded-(--radius-gallery-preview) object-contain shadow-(--app-gallery-preview-shadow)",
-                isSlideMode
-                  ? "opacity-0 pointer-events-none"
-                  : "opacity-100"
-              )}
-              loading="lazy"
-              decoding="async"
-              draggable={false}
-              onClick={(event) => {
-                event.stopPropagation()
-                handleClose()
-              }}
-            />
+            {activeImage.isVideo ? (
+              <motion.video
+                key={activeImage.id}
+                src={activeImageUrl}
+                controls
+                className={cn(
+                  "max-h-full max-w-full rounded-(--radius-gallery-preview) object-contain shadow-(--app-gallery-preview-shadow)",
+                  isSlideMode
+                    ? "opacity-0 pointer-events-none"
+                    : "opacity-100"
+                )}
+                draggable={false}
+                onClick={(event) => event.stopPropagation()}
+              />
+            ) : (
+              <motion.img
+                key={activeImage.id}
+                src={activeImageUrl}
+                alt={activeImage.alt ?? ""}
+                className={cn(
+                  "max-h-full max-w-full rounded-(--radius-gallery-preview) object-contain shadow-(--app-gallery-preview-shadow)",
+                  isSlideMode
+                    ? "opacity-0 pointer-events-none"
+                    : "opacity-100"
+                )}
+                loading="lazy"
+                decoding="async"
+                draggable={false}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  handleClose()
+                }}
+              />
+            )}
             <AnimatePresence
               custom={direction}
               mode="wait"
@@ -203,35 +219,62 @@ export function GalleryPreview({
               onExitComplete={handleSlideExitComplete}
             >
               {isSlideMode ? (
-                <motion.img
-                  key={activeImage.id}
-                  custom={direction}
-                  variants={{
-                    enter: (value: number) => ({
-                      x: value > 0 ? 60 : value < 0 ? -60 : 0,
-                      opacity: value === 0 ? 1 : 0,
-                    }),
-                    center: { x: 0, opacity: 1 },
-                    exit: (value: number) => ({
-                      x: value > 0 ? -60 : value < 0 ? 60 : 0,
-                      opacity: value === 0 ? 1 : 0,
-                    }),
-                  }}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.26, ease: "easeOut" }}
-                  src={activeImageUrl}
-                  alt={activeImage.alt ?? ""}
-                  className="absolute inset-0 m-auto max-h-full max-w-full rounded-(--radius-gallery-preview) object-contain shadow-(--app-gallery-preview-shadow)"
-                  loading="lazy"
-                  decoding="async"
-                  draggable={false}
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    handleClose()
-                  }}
-                />
+                activeImage.isVideo ? (
+                  <motion.video
+                    key={activeImage.id}
+                    custom={direction}
+                    variants={{
+                      enter: (value: number) => ({
+                        x: value > 0 ? 60 : value < 0 ? -60 : 0,
+                        opacity: value === 0 ? 1 : 0,
+                      }),
+                      center: { x: 0, opacity: 1 },
+                      exit: (value: number) => ({
+                        x: value > 0 ? -60 : value < 0 ? 60 : 0,
+                        opacity: value === 0 ? 1 : 0,
+                      }),
+                    }}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ duration: 0.26, ease: "easeOut" }}
+                    src={activeImageUrl}
+                    controls
+                    className="absolute inset-0 m-auto max-h-full max-w-full rounded-(--radius-gallery-preview) object-contain shadow-(--app-gallery-preview-shadow)"
+                    draggable={false}
+                    onClick={(event) => event.stopPropagation()}
+                  />
+                ) : (
+                  <motion.img
+                    key={activeImage.id}
+                    custom={direction}
+                    variants={{
+                      enter: (value: number) => ({
+                        x: value > 0 ? 60 : value < 0 ? -60 : 0,
+                        opacity: value === 0 ? 1 : 0,
+                      }),
+                      center: { x: 0, opacity: 1 },
+                      exit: (value: number) => ({
+                        x: value > 0 ? -60 : value < 0 ? 60 : 0,
+                        opacity: value === 0 ? 1 : 0,
+                      }),
+                    }}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ duration: 0.26, ease: "easeOut" }}
+                    src={activeImageUrl}
+                    alt={activeImage.alt ?? ""}
+                    className="absolute inset-0 m-auto max-h-full max-w-full rounded-(--radius-gallery-preview) object-contain shadow-(--app-gallery-preview-shadow)"
+                    loading="lazy"
+                    decoding="async"
+                    draggable={false}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      handleClose()
+                    }}
+                  />
+                )
               ) : null}
             </AnimatePresence>
           </div>

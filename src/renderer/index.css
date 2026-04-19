@@ -81,7 +81,7 @@
     --app-plugin-readme-token-function: #4078f2;
     --app-plugin-readme-token-operator: #383a42;
     --app-plugin-readme-token-punctuation: #383a42;
-    --app-gallery-sidebar-width: 14rem;
+    --app-gallery-sidebar-width: 18rem;
     --app-gallery-inspector-width: min(24rem, 75vw);
     --app-gallery-masonry-intrinsic-size: 200px;
     --app-gallery-header-height: 3.75rem;
@@ -169,7 +169,7 @@
     --app-plugin-readme-token-function: #61afef;
     --app-plugin-readme-token-operator: #abb2bf;
     --app-plugin-readme-token-punctuation: #abb2bf;
-    --app-gallery-sidebar-width: 14rem;
+    --app-gallery-sidebar-width: 18rem;
     --app-gallery-inspector-width: min(24rem, 75vw);
     --app-gallery-masonry-intrinsic-size: 200px;
     --app-gallery-header-height: 3.75rem;

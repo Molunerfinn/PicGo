@@ -34,6 +34,7 @@ interface FilteredUploaderItem {
   visibleConfigs: Array<ProviderUploaderConfigItem | ProviderDraftConfigItem>
   defaultConfigId: string | undefined
   isLoadingConfigs: boolean
+  canCreateConfig: boolean
 }
 
 export function ProviderSidebar({
@@ -49,6 +50,7 @@ export function ProviderSidebar({
 
   const appConfig = useAppStore.use.appConfig()
   const providers = useAppStore.use.providers()
+  const providerSchemas = useAppStore.use.providerSchemas()
   const loadingMap = useProviderStore.use.isLoadingByProvider()
   const isLoadingUploaders = useProviderStore.use.isHydrating()
   const searchValue = useProviderStore.use.searchValue()
@@ -57,7 +59,7 @@ export function ProviderSidebar({
   const queriedUploaderId = search.uploader ?? null
   const queriedConfigId = search.configId ?? null
   const configMap = appConfig?.uploader ?? emptyProviderConfigMap
-  const uploaders = providers.filter((provider) => provider.visible)
+  const uploaders = providers.filter((provider) => provider.visible !== false)
   const { selectedUploaderId, selectedConfigId } = resolveProviderSelectionState({
     queriedUploaderId,
     queriedConfigId,
@@ -113,6 +115,9 @@ export function ProviderSidebar({
     const persistedConfigs = configState?.configList ?? []
     const draftConfig = draftConfigMap[uploader.id]
     const allConfigs = draftConfig ? [...persistedConfigs, draftConfig] : persistedConfigs
+    const schema = providerSchemas[uploader.id]
+    const isEmptySchema = schema !== undefined && schema.config.length === 0
+    const canCreateConfig = !(isEmptySchema && persistedConfigs.length >= 1)
 
     if (!hasSearch) {
       return [
@@ -122,6 +127,7 @@ export function ProviderSidebar({
           visibleConfigs: allConfigs,
           defaultConfigId: configState?.defaultId,
           isLoadingConfigs: Boolean(loadingMap[uploader.id]),
+          canCreateConfig,
         },
       ]
     }
@@ -136,6 +142,7 @@ export function ProviderSidebar({
           visibleConfigs: allConfigs,
           defaultConfigId: configState?.defaultId,
           isLoadingConfigs: Boolean(loadingMap[uploader.id]),
+          canCreateConfig,
         },
       ]
     }
@@ -155,6 +162,7 @@ export function ProviderSidebar({
         visibleConfigs: matchedConfigs,
         defaultConfigId: configState?.defaultId,
         isLoadingConfigs: Boolean(loadingMap[uploader.id]),
+        canCreateConfig,
       },
     ]
   })
@@ -186,6 +194,7 @@ export function ProviderSidebar({
                 isActiveUploader={item.uploader.id === selectedUploaderId}
                 isExpanded={hasSearch || expandedUploaderIds.includes(item.uploader.id)}
                 hasSearch={hasSearch}
+                canCreateConfig={item.canCreateConfig}
                 selectedConfigId={selectedConfigId}
                 onSelectUploader={handleSelectUploader}
                 onSetDefaultUploader={handleSetDefaultUploader}

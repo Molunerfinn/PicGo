@@ -95,7 +95,7 @@ export function PicGoGallery() {
 
   const filteredImages = filterGalleryImages(images, navContext, searchValue)
   const visibleProviders: GalleryProviderFilter[] = picBeds
-    .filter((item) => item.visible)
+    .filter((item) => item.visible !== false)
     .map((item) => ({
       type: item.type,
       name: item.name,

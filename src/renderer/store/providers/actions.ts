@@ -170,9 +170,9 @@ export const providerStoreActions = {
       return selectedId
     })
   },
-  async selectDashboardProviderConfig (providerId: string, configId: string) {
+  async selectDashboardProviderConfig (providerId: string, configId?: string) {
     return runWithProviderLoading(providerId, async () => {
-      const configName = getConfigNameById(providerId, configId)
+      const configName = configId ? getConfigNameById(providerId, configId) : undefined
 
       await providersAdapter.changeCurrentUploader(providerId, configName)
       await appActions.hydrateAppState()

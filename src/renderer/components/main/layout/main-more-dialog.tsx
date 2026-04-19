@@ -57,7 +57,7 @@ export function MainMoreDialog ({ open, onOpenChange }: MainMoreDialogProps) {
 
     async function loadPicBeds () {
       const nextPicBeds = await getPicBeds()
-      setPicBeds(nextPicBeds.filter((item) => item.visible))
+      setPicBeds(nextPicBeds.filter((item) => item.visible !== false))
     }
 
     loadPicBeds()

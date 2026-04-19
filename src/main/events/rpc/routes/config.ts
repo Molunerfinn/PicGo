@@ -25,17 +25,14 @@ configRouter
         return ok(activeConfig._id)
       }
 
-      picgo.saveConfig({
-        'picBed.current': type,
-        'picBed.uploader': type
-      })
+      const activeConfig = picgo.uploaderConfig.use(type)
 
       if (windowManager.has(IWindowList.SETTING_WINDOW)) {
         windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('syncPicBed')
       }
 
       notifyAppConfigUpdated()
-      return ok(type)
+      return ok(activeConfig._id)
     } catch (e) {
       return fail(e)
     }

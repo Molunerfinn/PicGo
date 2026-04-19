@@ -125,37 +125,36 @@ export function GallerySidebar({
   // const sidebarTags = buildSidebarTags(images, tagSuggestions)
 
   return (
-    <aside className="bg-sidebar text-sidebar-foreground border-sidebar-border w-(--app-gallery-sidebar-width) flex shrink-0 flex-col overflow-hidden rounded-xl border backdrop-blur-xl">
-      <ScrollArea className="h-full">
-        <div className="flex flex-col gap-6 px-4 py-5">
-          <div className="space-y-3">
-            <div className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">
-              {t("GALLERY")}
-            </div>
-            <div className="space-y-1">
+    <aside className="bg-sidebar text-sidebar-foreground border-sidebar-border flex w-(--app-gallery-sidebar-width) shrink-0 flex-col overflow-hidden rounded-xl border backdrop-blur-xl">
+      <div className="border-sidebar-border/60 flex flex-col gap-3 border-b px-4 py-4">
+        <h1 className="text-base font-semibold">{t("GALLERY")}</h1>
+      </div>
+
+      <ScrollArea className="min-h-0 flex-1">
+        <div className="relative p-2">
+          <div className="space-y-1">
+            <GalleryNavButton
+              label={t("GALLERY_ALL_PHOTOS")}
+              count={images.length}
+              active={navContext.type === NavType.All}
+              onClick={() =>
+                onFilterChange({ type: NavType.All, value: allPhotosKey })
+              }
+            />
+            {providers.map((provider) => (
               <GalleryNavButton
-                label={t("GALLERY_ALL_PHOTOS")}
-                count={images.length}
-                active={navContext.type === NavType.All}
+                key={provider.type}
+                label={provider.name}
+                count={provider.count}
+                active={
+                  navContext.type === NavType.Provider &&
+                  navContext.value === provider.type
+                }
                 onClick={() =>
-                  onFilterChange({ type: NavType.All, value: allPhotosKey })
+                  onFilterChange({ type: NavType.Provider, value: provider.type })
                 }
               />
-              {providers.map((provider) => (
-                <GalleryNavButton
-                  key={provider.type}
-                  label={provider.name}
-                  count={provider.count}
-                  active={
-                    navContext.type === NavType.Provider &&
-                    navContext.value === provider.type
-                  }
-                  onClick={() =>
-                    onFilterChange({ type: NavType.Provider, value: provider.type })
-                  }
-                />
-              ))}
-            </div>
+            ))}
           </div>
 
           {/* TODO(v3-post-launch): Restore Collections sidebar section for v3+ feature reactivation.

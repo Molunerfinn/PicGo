@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "react-i18next"
 
 import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -42,6 +43,7 @@ interface ProviderSidebarConfigItemRowProps {
   isActiveUploader: boolean
   selectedConfigId: string | null
   canDeletePersistedConfig: boolean
+  canCreateConfig: boolean
   onSelectConfig: (uploaderId: string, configId: string) => void
   onRenameIntent: (uploaderId: string, configId: string, configName: string) => void
   onCopyIntent: (uploaderId: string, configId: string, configName: string) => void
@@ -57,6 +59,7 @@ interface ProviderSidebarUploaderSectionProps {
   isActiveUploader: boolean
   isExpanded: boolean
   hasSearch: boolean
+  canCreateConfig: boolean
   selectedConfigId: string | null
   onSelectUploader: (uploaderId: string) => void
   onSetDefaultUploader: (uploaderId: string) => Promise<void>
@@ -78,6 +81,7 @@ function ProviderSidebarConfigItemRow({
   isActiveUploader,
   selectedConfigId,
   canDeletePersistedConfig,
+  canCreateConfig,
   onSelectConfig,
   onRenameIntent,
   onCopyIntent,
@@ -157,6 +161,7 @@ function ProviderSidebarConfigItemRow({
 
           {!isDraft ? (
             <DropdownMenuItem
+              disabled={!canCreateConfig}
               onSelect={() => onCopyIntent(uploader.id, config._id, config._configName)}
             >
               <CopyIcon className="size-4" />
@@ -189,6 +194,7 @@ export function ProviderSidebarUploaderSection({
   isActiveUploader,
   isExpanded,
   hasSearch,
+  canCreateConfig,
   selectedConfigId,
   onSelectUploader,
   onSetDefaultUploader,
@@ -303,6 +309,7 @@ export function ProviderSidebarUploaderSection({
                 isActiveUploader={isActiveUploader}
                 selectedConfigId={selectedConfigId}
                 canDeletePersistedConfig={canDeletePersistedConfig}
+                canCreateConfig={canCreateConfig}
                 onSelectConfig={onSelectConfig}
                 onRenameIntent={onRenameIntent}
                 onCopyIntent={onCopyIntent}
@@ -312,16 +319,38 @@ export function ProviderSidebarUploaderSection({
             : null}
 
           {!hasSearch ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground w-full justify-start transition-all duration-300 hover:bg-(--app-provider-sidebar-item-hover-bg) hover:text-(--app-provider-sidebar-item-active-color)"
-              onClick={() => onCreateIntent(uploader.id)}
-            >
-              <PlusIcon className="size-4" />
-              <span>{t("PROVIDER_CREATE_CONFIG")}</span>
-            </Button>
+            canCreateConfig ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground w-full justify-start transition-all duration-300 hover:bg-(--app-provider-sidebar-item-hover-bg) hover:text-(--app-provider-sidebar-item-active-color)"
+                onClick={() => onCreateIntent(uploader.id)}
+              >
+                <PlusIcon className="size-4" />
+                <span>{t("PROVIDER_CREATE_CONFIG")}</span>
+              </Button>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="w-full" tabIndex={0}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled
+                      className="text-muted-foreground w-full justify-start"
+                    >
+                      <PlusIcon className="size-4" />
+                      <span>{t("PROVIDER_CREATE_CONFIG")}</span>
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={4}>
+                  {t("PROVIDER_CREATE_CONFIG_DISABLED_EMPTY_SCHEMA")}
+                </TooltipContent>
+              </Tooltip>
+            )
           ) : null}
         </div>
       ) : null}

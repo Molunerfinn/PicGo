@@ -33,7 +33,7 @@ export function SettingsSectionAppearance({
   const providers = useAppStore.use.providers()
   const settingsConfig = appConfig?.settings ?? defaultSettingsConfig
   const visiblePicBedNames = (appConfig?.picBed.list ?? [])
-    .filter((provider) => provider.visible)
+    .filter((provider) => provider.visible !== false)
     .map((provider) => provider.name)
   const saveSettingsConfig = useSettingsSave()
 

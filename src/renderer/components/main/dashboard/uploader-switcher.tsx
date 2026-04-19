@@ -47,11 +47,11 @@ export function UploaderSwitcher({
 }: UploaderSwitcherProps) {
   const { t } = useTranslation()
 
-  const handleConfigSelect = async (next: UploaderSwitcherValue) => {
+  const handleSelect = async (providerId: string, configId?: string) => {
     try {
       await providerStoreActions.selectDashboardProviderConfig(
-        next.providerId,
-        next.configId
+        providerId,
+        configId
       )
     } catch (error) {
       const message =
@@ -85,39 +85,44 @@ export function UploaderSwitcher({
           {t("UPLOADER_SWITCHER_SELECT_PROVIDER")}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {providers.map((provider) => (
-          <DropdownMenuSub key={provider.id}>
-            <DropdownMenuSubTrigger className="rounded-md">
+        {providers.map((provider) =>
+          provider.configs.length <= 1 ? (
+            <DropdownMenuItem
+              key={provider.id}
+              className="rounded-md"
+              onSelect={async () => {
+                await handleSelect(
+                  provider.id,
+                  provider.configs[0]?.id
+                )
+              }}
+            >
               <DatabaseIcon className="text-muted-foreground" />
               <span className="flex-1">{provider.name}</span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="min-w-40">
-              <DropdownMenuLabel>{t("UPLOADER_SWITCHER_CONFIG")}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {provider.configs.length > 0 ? (
-                provider.configs.map((config) => (
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuSub key={provider.id}>
+              <DropdownMenuSubTrigger className="rounded-md">
+                <DatabaseIcon className="text-muted-foreground" />
+                <span className="flex-1">{provider.name}</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="min-w-40">
+                <DropdownMenuLabel>{t("UPLOADER_SWITCHER_CONFIG")}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {provider.configs.map((config) => (
                   <DropdownMenuItem
                     key={`${provider.id}:${config.id}`}
                     onSelect={async () => {
-                      await handleConfigSelect({
-                        providerId: provider.id,
-                        providerName: provider.name,
-                        configId: config.id,
-                        configName: config.name,
-                      })
+                      await handleSelect(provider.id, config.id)
                     }}
                   >
                     {config.name}
                   </DropdownMenuItem>
-                ))
-              ) : (
-                <DropdownMenuItem disabled>
-                  {t("UPLOADER_SWITCHER_NO_CONFIG")}
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
-        ))}
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          )
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
