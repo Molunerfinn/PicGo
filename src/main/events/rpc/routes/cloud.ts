@@ -2,6 +2,23 @@ import { IRPCActionType } from '~/universal/types/enum'
 import { RPCRouter } from '../router'
 import picgo from '@core/picgo'
 import type { IPicGoCloudUserInfo } from '#/types/cloud'
+import type {
+  CloudAlbumListResponse,
+  CloudAlbumBatchUpdateResult,
+  CloudAlbumImportResult,
+  CloudAlbumFiltersResponse,
+  CloudAlbumStatsResponse
+} from '#/types/cloudAlbum'
+import {
+  ConfigSyncManager,
+  ConflictType,
+  E2EAskPinReason,
+  EncryptionMethod,
+  SyncStatus,
+  type AlbumListQuery,
+  type IDiffNode,
+  type IConfig
+} from 'picgo'
 import { T } from '~/main/i18n'
 import { fail, ok } from '../utils'
 import GuiApi from 'apis/gui'
@@ -10,15 +27,6 @@ import { parse } from 'comment-json'
 import { cloneDeep, isPlainObject, set, unset } from 'lodash'
 import path from 'path'
 import logger from 'apis/core/picgo/logger'
-import {
-  ConfigSyncManager,
-  ConflictType,
-  E2EAskPinReason,
-  EncryptionMethod,
-  SyncStatus,
-  type IDiffNode,
-  type IConfig
-} from 'picgo'
 import {
   IPicGoCloudConfigSyncConflictChoice,
   IPicGoCloudConfigSyncRunStatus,
@@ -553,6 +561,88 @@ cloudRouter
         state: await buildConfigSyncState()
       }
       return ok(runRes)
+    }
+  })
+
+// --- Cloud Album RPC handlers ---
+
+cloudRouter
+  .add(IRPCActionType.PICGO_CLOUD_ALBUM_LIST, async (args) => {
+    try {
+      const [query] = args as [AlbumListQuery | undefined]
+      logger.debug('[PicGo Cloud][album][list]', JSON.stringify(query ?? {}))
+      const result = await picgo.cloud.album.list(query ?? {})
+      return ok(result as CloudAlbumListResponse)
+    } catch (e) {
+      return fail(e)
+    }
+  })
+  .add(IRPCActionType.PICGO_CLOUD_ALBUM_DELETE, async (args) => {
+    try {
+      const [ids] = args as [string | string[]]
+      logger.debug('[PicGo Cloud][album][delete]', JSON.stringify(ids))
+      await picgo.cloud.album.delete(ids)
+      return ok(true)
+    } catch (e) {
+      return fail(e)
+    }
+  })
+  .add(IRPCActionType.PICGO_CLOUD_ALBUM_UPDATE, async (args) => {
+    try {
+      const [id, data] = args as [string, Partial<ImgInfo>]
+      logger.debug('[PicGo Cloud][album][update]', `id=${id}`, JSON.stringify(data))
+      const result = await picgo.cloud.album.update(id, data)
+      return ok(result)
+    } catch (e) {
+      return fail(e)
+    }
+  })
+  .add(IRPCActionType.PICGO_CLOUD_ALBUM_BATCH_UPDATE, async (args) => {
+    try {
+      const [items] = args as [{ id: string, data: Partial<ImgInfo> }[]]
+      logger.debug('[PicGo Cloud][album][batchUpdate]', `count=${items.length}`)
+      const result = await picgo.cloud.album.batchUpdate(items)
+      return ok(result as CloudAlbumBatchUpdateResult)
+    } catch (e) {
+      return fail(e)
+    }
+  })
+  .add(IRPCActionType.PICGO_CLOUD_ALBUM_IMPORT, async (args) => {
+    try {
+      const [items] = args as [ImgInfo[]]
+      logger.debug('[PicGo Cloud][album][import]', `count=${items.length}`)
+      const result = await picgo.cloud.album.import(items)
+      return ok(result as CloudAlbumImportResult)
+    } catch (e) {
+      return fail(e)
+    }
+  })
+  .add(IRPCActionType.PICGO_CLOUD_ALBUM_GET_STATS, async () => {
+    try {
+      logger.debug('[PicGo Cloud][album][getStats]')
+      const result = await picgo.cloud.album.getStats()
+      return ok(result as CloudAlbumStatsResponse)
+    } catch (e) {
+      return fail(e)
+    }
+  })
+  .add(IRPCActionType.PICGO_CLOUD_ALBUM_GET_FILTERS, async () => {
+    try {
+      logger.debug('[PicGo Cloud][album][getFilters]')
+      const result = await picgo.cloud.album.getFilters()
+      return ok(result as CloudAlbumFiltersResponse)
+    } catch (e) {
+      return fail(e)
+    }
+  })
+  .add(IRPCActionType.PICGO_CLOUD_SET_AUTO_IMPORT, async (args) => {
+    try {
+      const [autoImport] = args as [boolean]
+      logger.debug('[PicGo Cloud][album][setAutoImport]', `autoImport=${autoImport}`)
+      const userInfo = await picgo.cloud.setAutoImport(autoImport)
+      return ok(userInfo)
+    } catch (e) {
+      return fail(e)
     }
   })
 

@@ -5,6 +5,7 @@ import {
   useState,
 } from "react"
 import { galleryAdapter } from "@/adapters/gallery"
+import { cloudAlbumAdapter } from "@/adapters/cloud-album"
 import { AppMainCard } from "@/components/common/app-main-card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useSidebar } from "@/components/ui/sidebar-context"
@@ -13,9 +14,11 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { appActions, galleryStoreActions, useAppStore, useGalleryStore } from "@/store"
 import {
+  CLOUD_ALBUM_PAGE_SIZE,
   GALLERY_MASONRY_COLUMN_COUNT_DEFAULT,
 } from "@/utils/consts"
 import { isMacOS } from "@/utils/bridge"
+import { AlbumSource } from "#/types/cloudAlbum"
 import { GalleryHeader } from "./gallery-header"
 import { GallerySidebar, allPhotosKey } from "./gallery-sidebar"
 import { GalleryList } from "./gallery-list"
@@ -36,6 +39,9 @@ import {
   NavType,
 } from "./utils"
 import { IRPCActionType } from "~/universal/types/enum"
+import { CloudEmptyState } from "./cloud-empty-state"
+import { CloudImportProgressBanner } from "./cloud-import-progress"
+import { CloudGalleryLoading } from "./cloud-loading"
 
 // TODO(v3-post-launch): Restore tag suggestions when Tags UI returns.
 // const tagSuggestions = ["Work", "Meme", "Design"]
@@ -73,6 +79,16 @@ export function PicGoGallery() {
   const masonryColumnCount =
     useGalleryStore.use.masonryColumnCount() || GALLERY_MASONRY_COLUMN_COUNT_DEFAULT
   const picBeds = useAppStore.use.picBeds()
+  const cloudUserInfo = useAppStore.use.picgoCloud().userInfo
+  const albumSource = useGalleryStore.use.albumSource()
+  const cloudItems = useGalleryStore.use.cloudItems()
+  const cloudTotal = useGalleryStore.use.cloudTotal()
+  const cloudLoading = useGalleryStore.use.cloudLoading()
+  const cloudSearch = useGalleryStore.use.cloudSearch()
+  const cloudTypeFilter = useGalleryStore.use.cloudTypeFilter()
+  const cloudProviderStats = useGalleryStore.use.cloudProviderStats()
+  const isCloud = albumSource === AlbumSource.CLOUD
+  const [debouncedCloudSearch, setDebouncedCloudSearch] = useState("")
 
   const scrollAreaWrapperRef = useRef<HTMLDivElement | null>(null)
   const scrollViewportRef = useRef<HTMLDivElement | null>(null)
@@ -94,6 +110,7 @@ export function PicGoGallery() {
     .filter((image): image is GalleryPhoto => Boolean(image))
 
   const filteredImages = filterGalleryImages(images, navContext, searchValue)
+  const displayImages = isCloud ? cloudItems : filteredImages
   const visibleProviders: GalleryProviderFilter[] = picBeds
     .filter((item) => item.visible !== false)
     .map((item) => ({
@@ -101,17 +118,47 @@ export function PicGoGallery() {
       name: item.name,
       count: images.filter((image) => image.type === item.type).length,
     }))
+  const cloudProviderFilters: GalleryProviderFilter[] = cloudProviderStats.length > 0
+    ? cloudProviderStats.map((stat) => {
+      const bed = picBeds.find((b) => b.type === stat.type)
+      return {
+        type: stat.type,
+        name: bed?.name ?? stat.type,
+        count: stat.count,
+      }
+    })
+    : (() => {
+      // Fallback: derive providers from loaded cloud items when stats API is unavailable
+      const countMap = new Map<string, number>()
+      for (const item of cloudItems) {
+        if (item.type) {
+          countMap.set(item.type, (countMap.get(item.type) ?? 0) + 1)
+        }
+      }
+      return Array.from(countMap.entries()).map(([type, count]) => {
+        const bed = picBeds.find((b) => b.type === type)
+        return { type, name: bed?.name ?? type, count }
+      })
+    })()
 
   // TODO(v3-post-launch): Restore selected tag derivation when Tags inspector actions return.
   // const selectedTags = getSelectedTags(selectedImages)
 
   const isAllSelected =
-    filteredImages.length > 0 && selectedIds.length === filteredImages.length
+    displayImages.length > 0 && selectedIds.length === displayImages.length
 
   const [refreshNonce, setRefreshNonce] = useState(0)
 
   useIPCOn(IRPCActionType.UPDATE_GALLERY, () => {
-    setRefreshNonce((value) => value + 1)
+    if (!isCloud) {
+      setRefreshNonce((value) => value + 1)
+    }
+  })
+
+  useIPCOn(IRPCActionType.UPDATE_CLOUD_ALBUM, () => {
+    if (isCloud) {
+      loadCloudFirstPage()
+    }
   })
 
   useEffect(() => {
@@ -138,7 +185,91 @@ export function PicGoGallery() {
     hydrateGalleryUiState()
   }, [])
 
+  // Cloud search debounce (300ms)
   useEffect(() => {
+    if (!isCloud) return
+    const timer = window.setTimeout(() => {
+      setDebouncedCloudSearch(searchValue)
+    }, 300)
+    return () => window.clearTimeout(timer)
+  }, [searchValue, isCloud])
+
+  // Cloud search → trigger store update
+  useEffect(() => {
+    if (!isCloud) return
+    galleryStoreActions.setCloudSearch(debouncedCloudSearch)
+  }, [debouncedCloudSearch, isCloud])
+
+  const loadCloudFirstPage = async () => {
+    galleryStoreActions.setCloudLoading(true)
+    galleryStoreActions.resetCloudPagination()
+    try {
+      // Load stats first so sidebar can render immediately
+      const statsPromise = cloudAlbumAdapter.getStats().then((statsResult) => {
+        if (statsResult.success) {
+          galleryStoreActions.setCloudProviderStats(statsResult.data.types)
+          galleryStoreActions.setCloudTotal(statsResult.data.total)
+        }
+      }).catch(() => {})
+
+      const query = {
+        limit: CLOUD_ALBUM_PAGE_SIZE,
+        offset: 0,
+        sort: 'newest' as const,
+        ...(cloudSearch ? { search: cloudSearch } : {}),
+        ...(cloudTypeFilter ? { type: cloudTypeFilter } : {})
+      }
+      const result = await cloudAlbumAdapter.list(query)
+      if (result.success) {
+        const photos = buildGalleryPhotos(result.data.items, picBeds)
+        galleryStoreActions.setCloudItems(photos)
+        galleryStoreActions.setCloudTotal(result.data.total)
+        galleryStoreActions.setCloudOffset(result.data.items.length)
+        galleryStoreActions.setCloudHasMore(result.data.items.length < result.data.total)
+      }
+
+      await statsPromise
+    } catch (error) {
+      console.error(error)
+      toast.error(t("GALLERY_CLOUD_LOAD_FAILED"))
+    } finally {
+      galleryStoreActions.setCloudLoading(false)
+    }
+  }
+
+  const cloudLoadingLockRef = useRef(false)
+  const loadCloudNextPage = async () => {
+    if (cloudLoadingLockRef.current) return
+    const state = useGalleryStore.getState()
+    if (!state.cloudHasMore) return
+    cloudLoadingLockRef.current = true
+    galleryStoreActions.setCloudLoading(true)
+    try {
+      const query = {
+        limit: CLOUD_ALBUM_PAGE_SIZE,
+        offset: state.cloudOffset,
+        sort: 'newest' as const,
+        ...(state.cloudSearch ? { search: state.cloudSearch } : {}),
+        ...(state.cloudTypeFilter ? { type: state.cloudTypeFilter } : {})
+      }
+      const result = await cloudAlbumAdapter.list(query)
+      if (result.success) {
+        const photos = buildGalleryPhotos(result.data.items, picBeds)
+        galleryStoreActions.appendCloudItems(photos)
+        galleryStoreActions.setCloudOffset(state.cloudOffset + result.data.items.length)
+        galleryStoreActions.setCloudHasMore(state.cloudOffset + result.data.items.length < result.data.total)
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      cloudLoadingLockRef.current = false
+      galleryStoreActions.setCloudLoading(false)
+    }
+  }
+
+  // Local gallery data fetch
+  useEffect(() => {
+    if (isCloud) return
     async function refreshGalleryPage () {
       try {
         await appActions.ensureHydrated()
@@ -150,8 +281,14 @@ export function PicGoGallery() {
     }
 
     refreshGalleryPage()
+  }, [picBeds, refreshNonce, isCloud])
 
-  }, [picBeds, refreshNonce])
+  // Cloud gallery data fetch
+   
+  useEffect(() => {
+    if (!isCloud) return
+    loadCloudFirstPage()
+  }, [isCloud, cloudSearch, cloudTypeFilter])
 
   const handleScrollAreaWrapperRef = (node: HTMLDivElement | null) => {
     scrollAreaWrapperRef.current = node
@@ -250,9 +387,24 @@ export function PicGoGallery() {
     })
   }
 
+  const handleAlbumSourceChange = (source: AlbumSource) => {
+    galleryStoreActions.setAlbumSource(source)
+    setNavContext({ type: NavType.All, value: allPhotosKey })
+    setSelection([])
+    setSearchValue("")
+    if (source === AlbumSource.CLOUD) {
+      galleryStoreActions.setCloudTypeFilter("")
+      galleryStoreActions.setCloudSearch("")
+    }
+  }
+
   const handleFilterChange = (next: NavContext) => {
     setNavContext(next)
     setSelection([])
+    if (isCloud) {
+      const typeFilter = next.type === NavType.Provider ? next.value : ""
+      galleryStoreActions.setCloudTypeFilter(typeFilter)
+    }
   }
 
   const { selectionBox, handleMouseDown, consumeSuppressCardClick } =
@@ -281,14 +433,14 @@ export function PicGoGallery() {
       : modifier?.ctrlKey === true
 
     if (modifier?.shiftKey) {
-      const currentIndex = filteredImages.findIndex((image) => image.id === id)
+      const currentIndex = displayImages.findIndex((image) => image.id === id)
       const anchorId = selectionAnchorIdRef.current ?? selectedIdsRef.current[selectedIdsRef.current.length - 1] ?? id
-      const anchorIndex = filteredImages.findIndex((image) => image.id === anchorId)
+      const anchorIndex = displayImages.findIndex((image) => image.id === anchorId)
 
       if (currentIndex >= 0 && anchorIndex >= 0) {
         const minIndex = Math.min(anchorIndex, currentIndex)
         const maxIndex = Math.max(anchorIndex, currentIndex)
-        const rangedIds = filteredImages.slice(minIndex, maxIndex + 1).map((image) => image.id)
+        const rangedIds = displayImages.slice(minIndex, maxIndex + 1).map((image) => image.id)
 
         if (isMultiKey) {
           setSelection((prev) => Array.from(new Set([...prev, ...rangedIds])))
@@ -325,8 +477,8 @@ export function PicGoGallery() {
   }
 
   const handleSelectAll = () => {
-    if (filteredImages.length === 0) return
-    setSelection(isAllSelected ? [] : filteredImages.map((image) => image.id))
+    if (displayImages.length === 0) return
+    setSelection(isAllSelected ? [] : displayImages.map((image) => image.id))
   }
 
   // TODO(v3-post-launch): Restore collection edit handler when Collections inspector actions return.
@@ -409,7 +561,7 @@ export function PicGoGallery() {
 
   const handleToolbarPreview = () => {
     const imagesToPreview =
-      selectedImages.length > 0 ? selectedImages : filteredImages
+      selectedImages.length > 0 ? selectedImages : displayImages
     openPreviewWithImages(imagesToPreview, imagesToPreview[0]?.id)
   }
 
@@ -512,10 +664,83 @@ export function PicGoGallery() {
   }
 
 
+  const handleCloudStartImport = async () => {
+    try {
+      // Enable auto-import first
+      const autoImportResult = await cloudAlbumAdapter.setAutoImport(true)
+      if (autoImportResult.success) {
+        appActions.setPicGoCloudUserInfo(autoImportResult.data)
+      }
+      // Import all local gallery items
+      const localItems = await galleryAdapter.getGalleryItems()
+      if (localItems.length > 0) {
+        const importResult = await cloudAlbumAdapter.importItems(localItems)
+        if (importResult.success) {
+          toast.success(t("GALLERY_CLOUD_IMPORT_SUCCESS", { num: String(importResult.data.created) }))
+          loadCloudFirstPage()
+        }
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error(t("GALLERY_CLOUD_IMPORT_FAILED"))
+    }
+  }
+
+  const handleCloudDeleteSelection = async () => {
+    if (selectedIdsRef.current.length === 0) return
+    const dbIds = selectedImages.map((image) => image.dbId)
+    try {
+      const result = await cloudAlbumAdapter.deleteItems(dbIds)
+      if (result.success) {
+        galleryStoreActions.setCloudItems(
+          cloudItems.filter((item) => !dbIds.includes(item.dbId))
+        )
+        galleryStoreActions.setCloudTotal(cloudTotal - dbIds.length)
+        setSelection([])
+        toast.success(t("OPERATION_SUCCEED"))
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error(t("GALLERY_CLOUD_DELETE_FAILED"))
+    }
+  }
+
+  const handleCloudUrlRewrite = (changes: GalleryUrlRewriteChange[]) => {
+    if (changes.length === 0) return
+    const items = changes.map((change) => ({
+      id: images.find((img) => img.id === change.id)?.dbId ?? cloudItems.find((img) => img.id === change.id)?.dbId ?? '',
+      data: { imgUrl: change.nextSrc }
+    })).filter((item) => item.id !== '')
+
+    cloudAlbumAdapter.batchUpdate(items).then((result) => {
+      if (result.success) {
+        const changeMap = new Map(changes.map((c) => [c.id, c]))
+        galleryStoreActions.setCloudItems(
+          cloudItems.map((item) => {
+            const change = changeMap.get(item.id)
+            if (!change) return item
+            return { ...item, imgUrl: change.nextSrc, raw: { ...item.raw, imgUrl: change.nextSrc } }
+          })
+        )
+      }
+    }).catch((error) => {
+      console.error(error)
+    })
+  }
+
+  const isCloudPaidUser = cloudUserInfo !== null && cloudUserInfo !== undefined &&
+    typeof cloudUserInfo.plan === 'number' && cloudUserInfo.plan > 0
+  const isCloudAvailable = isCloudPaidUser
+
+  const shouldShowCloudEmptyState = isCloud && (
+    !isCloudAvailable || (cloudTotal === 0 && !cloudLoading)
+  )
+
+  const activeProviders = isCloud ? cloudProviderFilters : visibleProviders
   const activeBreadcrumb = navContext.type === NavType.All
     ? t("GALLERY_ALL_PHOTOS")
     : navContext.type === NavType.Provider
-      ? visibleProviders.find((provider) => provider.type === navContext.value)?.name ?? navContext.value
+      ? activeProviders.find((provider) => provider.type === navContext.value)?.name ?? navContext.value
       : navContext.value
 
   return (
@@ -524,6 +749,12 @@ export function PicGoGallery() {
         images={images}
         providers={visibleProviders}
         navContext={navContext}
+        albumSource={albumSource}
+        isCloudAvailable={isCloudAvailable}
+        cloudLoading={cloudLoading}
+        cloudProviders={cloudProviderFilters}
+        cloudTotal={cloudTotal}
+        onAlbumSourceChange={handleAlbumSourceChange}
         onFilterChange={handleFilterChange}
       />
 
@@ -536,15 +767,26 @@ export function PicGoGallery() {
             onSelectAll={handleSelectAll}
             onOpenInspector={() => setInspectorOpen(true)}
             isAllSelected={isAllSelected}
-            hasFilteredImages={filteredImages.length > 0}
+            hasFilteredImages={displayImages.length > 0}
             hasSelection={selectedIds.length > 0}
             onPreview={handleToolbarPreview}
           />
 
+          {isCloud ? <CloudImportProgressBanner onComplete={loadCloudFirstPage} /> : null}
+
           <div className="relative flex min-h-0 flex-1">
-            {viewMode === GalleryViewMode.Masonry ? (
+            {shouldShowCloudEmptyState ? (
+              <CloudEmptyState
+                userInfo={cloudUserInfo}
+                cloudTotal={cloudTotal}
+                cloudLoading={cloudLoading}
+                onStartImport={handleCloudStartImport}
+              />
+            ) : isCloud && cloudLoading && cloudItems.length === 0 ? (
+              <CloudGalleryLoading />
+            ) : viewMode === GalleryViewMode.Masonry ? (
               <MasonryView
-                images={filteredImages}
+                images={displayImages}
                 columnCount={masonryColumnCount}
                 selectedSet={selectedSet}
                 galleryWidth={galleryWidth}
@@ -560,6 +802,7 @@ export function PicGoGallery() {
                 onItemRefChange={handleMasonryItemRef}
                 previewLabel={t("GALLERY_PREVIEW")}
                 selectionBox={selectionBox}
+                onEndReached={isCloud ? loadCloudNextPage : undefined}
               />
             ) : (
               <div
@@ -575,7 +818,7 @@ export function PicGoGallery() {
                       style={frozenWidth ? { width: frozenWidth } : undefined}
                     >
                       <GalleryList
-                        items={filteredImages}
+                        items={displayImages}
                         selectedIds={selectedSet}
                         onSelect={handleCardClick}
                         onToggleSelection={toggleSelection}
@@ -592,6 +835,7 @@ export function PicGoGallery() {
                         selectAllLabel={t("SELECT_ALL")}
                         clearSelectionLabel={t("GALLERY_CLEAR_SELECTION")}
                         previewLabel={t("GALLERY_PREVIEW")}
+                        onEndReached={isCloud ? loadCloudNextPage : undefined}
                       />
                     </div>
                   </div>
@@ -605,9 +849,10 @@ export function PicGoGallery() {
               onOpenChange={setInspectorOpen}
               selectedIds={selectedIds}
               selectedImages={selectedImages}
-              onDelete={handleDeleteSelection}
+              onDelete={isCloud ? handleCloudDeleteSelection : handleDeleteSelection}
               onPreviewOpen={openPreviewFromInspector}
-              onUrlRewrite={handleUrlRewrite}
+              onUrlRewrite={isCloud ? handleCloudUrlRewrite : handleUrlRewrite}
+              albumSource={albumSource}
             />
           ) : null}
           <GalleryPreview

@@ -3,6 +3,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
+import { AlbumSource } from "#/types/cloudAlbum"
+import { CloudFeatureHighlights } from "./cloud-feature-highlights"
+import { CloudSidebarSkeleton } from "./cloud-loading"
 import {
   NavType,
   type GalleryProviderFilter,
@@ -30,6 +33,12 @@ type GallerySidebarProps = {
   images: GalleryPhoto[]
   providers: GalleryProviderFilter[]
   navContext: NavContext
+  albumSource: AlbumSource
+  isCloudAvailable: boolean
+  cloudLoading?: boolean
+  cloudProviders?: GalleryProviderFilter[]
+  cloudTotal?: number
+  onAlbumSourceChange: (source: AlbumSource) => void
   // TODO(v3-post-launch): Restore tag suggestions input when Tags feature returns.
   // tagSuggestions: string[]
   onFilterChange: (next: NavContext) => void
@@ -105,11 +114,24 @@ export function GallerySidebar({
   images,
   providers,
   navContext,
+  albumSource,
+  isCloudAvailable,
+  cloudLoading,
+  cloudProviders,
+  cloudTotal,
+  onAlbumSourceChange,
   // TODO(v3-post-launch): Restore tagSuggestions usage when Tags sidebar filter is re-enabled.
   // tagSuggestions,
   onFilterChange,
 }: GallerySidebarProps) {
   const { t } = useTranslation()
+  const isCloud = albumSource === AlbumSource.CLOUD
+  const showCloudNav = isCloud && isCloudAvailable
+  const displayProviders = showCloudNav ? (cloudProviders ?? []) : isCloud ? [] : providers
+  const allPhotosCount = showCloudNav ? (cloudTotal ?? 0) : isCloud ? 0 : images.length
+  const hasCloudData = (cloudProviders ?? []).length > 0 || (cloudTotal ?? 0) > 0
+  const isCloudLoading = isCloud && isCloudAvailable && (cloudLoading ?? false) && !hasCloudData
+  const showNavList = !isCloud || showCloudNav
 
   // TODO(v3-post-launch): Restore collection count aggregation when Collections sidebar section is re-enabled.
   // const collectionCounts: Record<string, number> = {}
@@ -127,35 +149,69 @@ export function GallerySidebar({
   return (
     <aside className="bg-sidebar text-sidebar-foreground border-sidebar-border flex w-(--app-gallery-sidebar-width) shrink-0 flex-col overflow-hidden rounded-xl border backdrop-blur-xl">
       <div className="border-sidebar-border/60 flex flex-col gap-3 border-b px-4 py-4">
-        <h1 className="text-base font-semibold">{t("GALLERY")}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-base font-semibold">{t("GALLERY")}</h1>
+          <div className="flex items-center rounded-md bg-muted p-0.5">
+            <button
+              type="button"
+              className={cn(
+                "rounded px-2 py-0.5 text-xs font-medium transition-all",
+                isCloud
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+              onClick={() => onAlbumSourceChange(AlbumSource.CLOUD)}
+            >
+              {t("GALLERY_SOURCE_CLOUD")}
+            </button>
+            <button
+              type="button"
+              className={cn(
+                "rounded px-2 py-0.5 text-xs font-medium transition-all",
+                !isCloud
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+              onClick={() => onAlbumSourceChange(AlbumSource.LOCAL)}
+            >
+              {t("GALLERY_SOURCE_LOCAL")}
+            </button>
+          </div>
+        </div>
       </div>
 
       <ScrollArea className="min-h-0 flex-1">
         <div className="relative p-2">
-          <div className="space-y-1">
-            <GalleryNavButton
-              label={t("GALLERY_ALL_PHOTOS")}
-              count={images.length}
-              active={navContext.type === NavType.All}
-              onClick={() =>
-                onFilterChange({ type: NavType.All, value: allPhotosKey })
-              }
-            />
-            {providers.map((provider) => (
+          {isCloudLoading ? (
+            <CloudSidebarSkeleton />
+          ) : showNavList ? (
+            <div className="space-y-1">
               <GalleryNavButton
-                key={provider.type}
-                label={provider.name}
-                count={provider.count}
-                active={
-                  navContext.type === NavType.Provider &&
-                  navContext.value === provider.type
-                }
+                label={t("GALLERY_ALL_PHOTOS")}
+                count={allPhotosCount}
+                active={navContext.type === NavType.All}
                 onClick={() =>
-                  onFilterChange({ type: NavType.Provider, value: provider.type })
+                  onFilterChange({ type: NavType.All, value: allPhotosKey })
                 }
               />
-            ))}
-          </div>
+              {displayProviders.map((provider) => (
+                <GalleryNavButton
+                  key={provider.type}
+                  label={provider.name}
+                  count={provider.count}
+                  active={
+                    navContext.type === NavType.Provider &&
+                  navContext.value === provider.type
+                  }
+                  onClick={() =>
+                    onFilterChange({ type: NavType.Provider, value: provider.type })
+                  }
+                />
+              ))}
+            </div>
+          ) : (
+            <CloudFeatureHighlights />
+          )}
 
           {/* TODO(v3-post-launch): Restore Collections sidebar section for v3+ feature reactivation.
           <div className="space-y-3">

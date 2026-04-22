@@ -166,11 +166,15 @@ function buildHistoryEntries (groups: DashboardHistoryGroup[]): DashboardHistory
 export function HistoryPanel ({
   className,
   loadThumbnails = true,
-  items
+  items,
+  historySource = 'local',
+  onHistorySourceChange
 }: {
   className?: string
   loadThumbnails?: boolean
   items: DashboardHistoryRecord[]
+  historySource?: 'local' | 'cloud'
+  onHistorySourceChange?: (source: 'local' | 'cloud') => void
 }) {
   const { t } = useTranslation()
   const [searchText, setSearchText] = useState('')
@@ -238,6 +242,34 @@ export function HistoryPanel ({
         <div className="px-4 pb-4 pt-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold">{t('HISTORY_PANEL_TITLE')}</h2>
+            {onHistorySourceChange ? (
+              <div className="flex items-center rounded-md bg-muted p-0.5">
+                <button
+                  type="button"
+                  className={cn(
+                    'rounded px-2 py-0.5 text-xs font-medium transition-all',
+                    historySource === 'local'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                  onClick={() => onHistorySourceChange('local')}
+                >
+                  {t('GALLERY_SOURCE_LOCAL')}
+                </button>
+                <button
+                  type="button"
+                  className={cn(
+                    'rounded px-2 py-0.5 text-xs font-medium transition-all',
+                    historySource === 'cloud'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                  onClick={() => onHistorySourceChange('cloud')}
+                >
+                  {t('GALLERY_SOURCE_CLOUD')}
+                </button>
+              </div>
+            ) : null}
           </div>
           <SearchInput
             value={searchText}

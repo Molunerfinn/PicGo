@@ -12,6 +12,7 @@ import { Maximize2 } from "lucide-react"
 import { VirtuosoMasonry, type ItemContent } from "@virtuoso.dev/masonry"
 
 import { Button } from "@/components/ui/button"
+import { MasonryEndSentinel } from "./masonry-end-sentinel"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
@@ -277,6 +278,7 @@ export type MasonryViewProps = {
   onItemRefChange: (id: number, node: HTMLDivElement | null) => void
   previewLabel: string
   selectionBox: SelectionBox
+  onEndReached?: () => void
 }
 
 export function MasonryView({
@@ -296,6 +298,7 @@ export function MasonryView({
   onItemRefChange,
   previewLabel,
   selectionBox,
+  onEndReached,
 }: MasonryViewProps) {
   const [imageSizeOverrides, setImageSizeOverrides] = useState<
     Record<number, ImageSize>
@@ -404,6 +407,7 @@ export function MasonryView({
           className="relative h-full w-full px-5 py-4 select-none"
           style={{ columnGap: masonryGap }}
         />
+        {onEndReached ? <MasonryEndSentinel onEndReached={onEndReached} /> : null}
         {selectionBoxPortal}
       </div>
     </div>

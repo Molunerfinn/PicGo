@@ -7,10 +7,10 @@ import {
   clipboard
 } from 'electron'
 import fs from 'fs-extra'
-import { IPasteStyle, IPicGoHelperType, IWindowList } from '#/types/enum'
+import { IPasteStyle, IPicGoHelperType, IRPCActionType, IWindowList } from '#/types/enum'
 import picgo from '@core/picgo'
 import { handleStreamlinePluginName, simpleClone } from '~/universal/utils/common'
-import { IGuiMenuItem, PicGo as PicGoCore } from 'picgo'
+import { IBuildInEvent, IGuiMenuItem, PicGo as PicGoCore } from 'picgo'
 import windowManager from 'apis/app/window/windowManager'
 import { showNotification } from '~/main/utils/common'
 import { dbPathChecker } from 'apis/core/datastore/dbChecker'
@@ -267,6 +267,25 @@ const handleI18n = () => {
   })
 }
 
+const handleCloudAlbumEvents = () => {
+  picgo.on(IBuildInEvent.CLOUD_ALBUM_UPDATED, () => {
+    if (windowManager.has(IWindowList.SETTING_WINDOW)) {
+      windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send(
+        IRPCActionType.UPDATE_CLOUD_ALBUM
+      )
+    }
+  })
+
+  picgo.on(IBuildInEvent.CLOUD_IMPORT_PROGRESS, (progress: unknown) => {
+    if (windowManager.has(IWindowList.SETTING_WINDOW)) {
+      windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send(
+        'CLOUD_IMPORT_PROGRESS',
+        progress
+      )
+    }
+  })
+}
+
 const handleRPCActions = () => {
   rpcServer.start()
 }
@@ -282,6 +301,7 @@ export default {
     handleOpenFile()
     handleOpenWindow()
     handleI18n()
+    handleCloudAlbumEvents()
     handleRPCActions()
   }
 }

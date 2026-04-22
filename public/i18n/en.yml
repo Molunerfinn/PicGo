@@ -421,6 +421,30 @@ GALLERY_COLUMN_PROVIDER: Provider
 GALLERY_COLUMN_SIZE: Size
 GALLERY_COLUMN_DATE: Date
 GALLERY_ADD: Add
+GALLERY_SOURCE_LOCAL: Local
+GALLERY_SOURCE_CLOUD: Cloud
+GALLERY_CLOUD_LOAD_FAILED: Failed to load cloud gallery
+GALLERY_CLOUD_LOGIN_REQUIRED_TITLE: Login Required
+GALLERY_CLOUD_LOGIN_REQUIRED_DESC: Sign in to a paid PicGo Cloud account to use cloud gallery
+GALLERY_CLOUD_LOGIN_BUTTON: Log In
+GALLERY_CLOUD_UPGRADE_TITLE: Upgrade Required
+GALLERY_CLOUD_UPGRADE_DESC: Cloud gallery requires a paid plan
+GALLERY_CLOUD_UPGRADE_BUTTON: Upgrade
+GALLERY_CLOUD_FEATURES_TITLE: Why Cloud Gallery?
+GALLERY_CLOUD_FEATURE_SYNC: Access your upload history across all devices
+GALLERY_CLOUD_FEATURE_AUTO_IMPORT: Auto-import new uploads (requires opt-in)
+GALLERY_CLOUD_FEATURE_SECURE: Encrypted and securely stored
+GALLERY_CLOUD_IMPORT_GUIDE_TITLE: Import Local Records
+GALLERY_CLOUD_IMPORT_GUIDE_DESC: Import your local upload history to cloud gallery. Only records are imported, not the actual image files.
+GALLERY_CLOUD_IMPORT_GUIDE_BUTTON: Start Import
+GALLERY_CLOUD_EMPTY_TITLE: No Items
+GALLERY_CLOUD_EMPTY_DESC: Your cloud gallery is empty. Upload an image to get started.
+GALLERY_CLOUD_IMPORTING: Importing to cloud gallery...
+GALLERY_CLOUD_IMPORT_SUCCESS: Successfully imported ${num} items to cloud gallery
+GALLERY_CLOUD_IMPORT_FAILED: Failed to import to cloud gallery
+GALLERY_CLOUD_DELETE_FAILED: Failed to delete from cloud gallery
+PICGO_CLOUD_AUTO_IMPORT_LABEL: Auto Import
+PICGO_CLOUD_AUTO_IMPORT_DESC: Automatically import upload records to cloud gallery
 SIDEBAR_PLUGINS: Plugins
 SIDEBAR_SYSTEM: System
 SIDEBAR_NOTIFICATIONS: Notifications

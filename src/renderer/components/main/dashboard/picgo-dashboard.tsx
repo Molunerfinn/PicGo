@@ -36,6 +36,7 @@ import { UploaderSwitcher } from './uploader-switcher'
 import { buildVisibleProviderOptions, resolveCurrentSwitcherValue } from './utils'
 import { HistoryPanel } from './history-panel'
 import { useDashboardHistory } from './hooks/use-dashboard-history'
+import { useDashboardCloudHistory } from './hooks/use-dashboard-cloud-history'
 import { useDashboardUpload } from './hooks/use-dashboard-upload'
 import type { LinkFormat } from '@/types/dashboard'
 
@@ -99,7 +100,10 @@ export function PicGoDashboard () {
   })
   const [urlDialogOpen, setUrlDialogOpen] = useState(false)
   const [urlInput, setUrlInput] = useState('')
-  const historyItems = useDashboardHistory()
+  const localHistoryItems = useDashboardHistory()
+  const cloudHistoryItems = useDashboardCloudHistory()
+  const [historySource, setHistorySource] = useState<'local' | 'cloud'>('local')
+  const historyItems = historySource === 'cloud' ? cloudHistoryItems : localHistoryItems
 
   const {
     fileInputRef,
@@ -317,7 +321,7 @@ export function PicGoDashboard () {
                 side="right"
                 className="w-[300px] border-(--app-panel-border) bg-(--app-panel-bg) text-foreground backdrop-blur-xl sm:w-[350px]"
               >
-                <HistoryPanel items={historyItems} loadThumbnails={isHistorySheetThumbnailReady} />
+                <HistoryPanel items={historyItems} loadThumbnails={isHistorySheetThumbnailReady} historySource={historySource} onHistorySourceChange={setHistorySource} />
               </FloatingPanelSheetContent>
             </Sheet>
           </div>
@@ -458,7 +462,7 @@ export function PicGoDashboard () {
       {isDesktopHistoryVisible
         ? (
           <AppMainCard className="h-full w-80 flex-none gap-0 py-0">
-            <HistoryPanel items={historyItems} loadThumbnails />
+            <HistoryPanel items={historyItems} loadThumbnails historySource={historySource} onHistorySourceChange={setHistorySource} />
           </AppMainCard>
         )
         : null}

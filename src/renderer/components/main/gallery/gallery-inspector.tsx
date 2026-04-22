@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { Copy, Trash2, X } from "lucide-react"
 import type { ValueOf } from "@/types/utils"
+import { AlbumSource } from "#/types/cloudAlbum"
 
 import {
   AlertDialog,
@@ -56,6 +57,7 @@ type GalleryInspectorProps = {
   onDelete: () => Promise<void>
   onPreviewOpen: (imageId: number) => void
   onUrlRewrite: (changes: GalleryUrlRewriteChange[]) => void
+  albumSource?: AlbumSource
 }
 
 function InspectorActionButton({
@@ -107,6 +109,7 @@ export function GalleryInspector({
   onDelete,
   onPreviewOpen,
   onUrlRewrite,
+  albumSource: _albumSource,
 }: GalleryInspectorProps) {
   const { t } = useTranslation()
   const canAct = selectedImages.length > 0

@@ -47,6 +47,7 @@ type GalleryListProps = {
   selectAllLabel: string
   clearSelectionLabel: string
   previewLabel: string
+  onEndReached?: () => void
 }
 
 type GalleryListContext = {
@@ -200,6 +201,7 @@ export function GalleryList({
   selectAllLabel,
   clearSelectionLabel,
   previewLabel,
+  onEndReached,
 }: GalleryListProps) {
   const selectedCount = items.reduce(
     (count, item) => count + Number(selectedIds.has(item.id)),
@@ -228,6 +230,7 @@ export function GalleryList({
           customScrollParent={scrollParent ?? undefined}
           components={galleryTableComponents}
           computeItemKey={(_, item) => item.id}
+          endReached={onEndReached}
           fixedHeaderContent={() => (
             <TableRow>
               <TableHead className="text-muted-foreground text-xs uppercase tracking-wide">

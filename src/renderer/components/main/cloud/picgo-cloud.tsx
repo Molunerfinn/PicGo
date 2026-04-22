@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   CircleAlertIcon,
@@ -28,9 +28,11 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { toast } from 'sonner'
 import { cloudAdapter } from '@/adapters/cloud'
+import { cloudAlbumAdapter } from '@/adapters/cloud-album'
 import {
   appActions,
   PicGoCloudLoginStatusValues,
@@ -71,6 +73,7 @@ export function PicGoCloud () {
   const loginStatus = useAppStore.use.picgoCloud().loginStatus
   const loginError = useAppStore.use.picgoCloud().loginError
   const hasAgreedToTermsAndPrivacy = useAppStore.use.picgoCloud().hasAgreedToTermsAndPrivacy
+  const [isAutoImportUpdating, setIsAutoImportUpdating] = useState(false)
   const configSyncState = useCloudStore.use.configSyncState()
   const isConfigSyncStateLoading = useCloudStore.use.isConfigSyncStateLoading()
   const isEnableE2EConfirmOpen = useCloudStore.use.isEnableE2EConfirmOpen()
@@ -265,6 +268,21 @@ export function PicGoCloud () {
     })
   }
 
+  const handleAutoImportChange = async (checked: boolean) => {
+    setIsAutoImportUpdating(true)
+    try {
+      const result = await cloudAlbumAdapter.setAutoImport(checked)
+      if (result.success) {
+        appActions.setPicGoCloudUserInfo(result.data)
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error(String(error))
+    } finally {
+      setIsAutoImportUpdating(false)
+    }
+  }
+
   const handleEncryptionChange = async (value: unknown) => {
     if (typeof value !== 'string') {
       return
@@ -413,6 +431,20 @@ export function PicGoCloud () {
                     {t('PICGO_CLOUD_LAST_SYNC_TIME', {
                       time: lastSyncedAtText
                     })}
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-border/60 pt-4">
+                    <div className="space-y-0.5">
+                      <div className="text-sm font-medium">{t('PICGO_CLOUD_AUTO_IMPORT_LABEL')}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {t('PICGO_CLOUD_AUTO_IMPORT_DESC')}
+                      </div>
+                    </div>
+                    <Switch
+                      checked={userInfo?.autoImport ?? false}
+                      onCheckedChange={handleAutoImportChange}
+                      disabled={isAutoImportUpdating}
+                    />
                   </div>
                 </div>
               ) : (
