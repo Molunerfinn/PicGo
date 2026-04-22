@@ -12,7 +12,8 @@ export type GalleryListItem = {
   originImgUrl?: string
   alt?: string
   name: string
-  provider: string
+  type: string
+  typeName?: string
   collection: string
   sizeMb: number
   date: string
@@ -21,7 +22,7 @@ export type GalleryListItem = {
 
 export type GalleryListLabels = {
   name: string
-  provider: string
+  type: string
   size: string
   date: string
 }
@@ -241,7 +242,7 @@ export function GalleryList({
                 </div>
               </TableHead>
               <TableHead className="text-muted-foreground min-w-0 w-32 text-xs uppercase tracking-wide">
-                <span className="block truncate">{labels.provider}</span>
+                <span className="block truncate">{labels.type}</span>
               </TableHead>
               <TableHead className="text-muted-foreground w-20 text-right text-xs uppercase tracking-wide">
                 {labels.size}
@@ -289,7 +290,7 @@ export function GalleryList({
                 </div>
               </TableCell>
               <TableCell className="text-muted-foreground min-w-0 w-32 text-xs">
-                <span className="block truncate">{item.provider}</span>
+                <span className="block truncate">{item.typeName || item.type}</span>
               </TableCell>
               <TableCell className="text-muted-foreground w-20 text-right text-xs">
                 {context.formatSize(item.sizeMb)}

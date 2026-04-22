@@ -4,6 +4,8 @@ import { LoaderCircleIcon } from 'lucide-react'
 
 import { trayPageAdapter, type TrayPageGalleryItem } from '@/adapters/tray-page'
 import { AppMainCard } from '@/components/common/app-main-card'
+import { MediaThumbnail } from '@/components/common/media-thumbnail'
+import { resolveIsVideo } from '@/components/main/gallery/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useIPCOn } from '@/hooks/useIPC'
 import { cn } from '@/lib/utils'
@@ -24,6 +26,7 @@ function TrayImageButton ({
   label,
   fileName,
   imgUrl,
+  isVideo = false,
   title,
   onClick,
   disabled,
@@ -33,6 +36,7 @@ function TrayImageButton ({
   label: string
   fileName: string
   imgUrl: string
+  isVideo?: boolean
   title: string
   onClick: () => void
   disabled?: boolean
@@ -60,9 +64,10 @@ function TrayImageButton ({
       title={title}
     >
       <div className='relative w-full overflow-hidden rounded-md border border-border/70 bg-card'>
-        <img
+        <MediaThumbnail
           src={imgUrl}
           alt={fileName}
+          isVideo={isVideo}
           className='block h-auto w-full'
           loading='lazy'
         />
@@ -87,7 +92,8 @@ function TrayImageButton ({
 function resolveTrayWaitingItem (item: ImgInfo, index: number): TrayWaitingItem {
   return {
     id: item.id || item.imgUrl || `waiting-${index}`,
-    imgUrl: item.imgUrl || item.originImgUrl || ''
+    imgUrl: item.imgUrl || item.originImgUrl || '',
+    isVideo: resolveIsVideo(item)
   }
 }
 
@@ -97,6 +103,7 @@ function resolveTrayUploadedItem (item: TrayPageGalleryItem) {
     fileName: item.fileName || item.imgUrl || 'unknown',
     imgUrl: item.imgUrl || item.originImgUrl || '',
     link: item.imgUrl || item.originImgUrl || '',
+    isVideo: resolveIsVideo(item),
     raw: item
   }
 }
@@ -107,6 +114,7 @@ function resolveRuntimeUploadedItem (item: ImgInfo): TrayUploadedDisplayItem {
     fileName: item.fileName || item.imgUrl || 'unknown',
     imgUrl: item.imgUrl || item.originImgUrl || '',
     link: item.imgUrl || item.originImgUrl || '',
+    isVideo: resolveIsVideo(item),
     raw: item as TrayPageGalleryItem
   }
 }
@@ -224,6 +232,7 @@ export function PicGoTrayPage () {
                     label={t('WAIT_TO_UPLOAD')}
                     fileName=''
                     imgUrl={item.imgUrl}
+                    isVideo={item.isVideo}
                     title='tray-waiting-item'
                     onClick={handleUploadClipboardFiles}
                     disabled={uploadFlag}
@@ -251,6 +260,7 @@ export function PicGoTrayPage () {
                     label={t('ALREADY_UPLOAD')}
                     fileName={item.fileName}
                     imgUrl={item.imgUrl}
+                    isVideo={item.isVideo}
                     title='tray-uploaded-item'
                     onClick={() => handleCopyUploadedLink(item)}
                   />

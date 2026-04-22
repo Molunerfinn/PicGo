@@ -1,31 +1,39 @@
 import { useState } from 'react'
 import { ClockIcon, CopyIcon, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { MediaThumbnail } from '@/components/common/media-thumbnail'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
-import type { RecentUpload } from '@/types/dashboard'
+
+export interface HistoryItemData {
+  id: number | string
+  name: string
+  time: string
+  imgUrl: string
+  isVideo: boolean
+}
 
 function HistoryThumbnail ({
-  thumbnailUrl,
+  imgUrl,
   alt,
+  isVideo = false,
   loadThumbnail = true,
   previewLabel,
   onPreview
 }: {
-  thumbnailUrl?: string
+  imgUrl: string
   alt: string
+  isVideo?: boolean
   loadThumbnail?: boolean
   previewLabel: string
   onPreview?: () => void
 }) {
-  const [loadedSrc, setLoadedSrc] = useState<string | null>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
   const [hasLoadError, setHasLoadError] = useState(false)
   const hasThumbnail =
     loadThumbnail &&
-    typeof thumbnailUrl === 'string' &&
-    thumbnailUrl.length > 0 &&
+    imgUrl.length > 0 &&
     !hasLoadError
-  const isLoaded = loadedSrc === thumbnailUrl
 
   return (
     <button
@@ -44,18 +52,17 @@ function HistoryThumbnail ({
             {!isLoaded
               ? <Skeleton className="absolute inset-0 h-full w-full rounded-none" />
               : null}
-            <img
-              src={thumbnailUrl}
+            <MediaThumbnail
+              src={imgUrl}
               alt={alt}
+              isVideo={isVideo}
               className={cn(
-                'h-full w-full object-cover transition-opacity duration-300',
+                'h-full w-full object-cover',
                 isLoaded ? 'opacity-100' : 'opacity-0'
               )}
-              loading="lazy"
-              decoding="async"
               draggable={false}
               onLoad={() => {
-                setLoadedSrc(thumbnailUrl)
+                setIsLoaded(true)
               }}
               onError={() => {
                 setHasLoadError(true)
@@ -77,14 +84,12 @@ export function HistoryItem ({
   onPreview,
   previewLabel
 }: {
-  item: RecentUpload
+  item: HistoryItemData
   onCopy?: () => void
   loadThumbnail?: boolean
   onPreview?: () => void
   previewLabel: string
 }) {
-  const thumbnailUrl = item.thumbnailUrl ?? item.subtitle
-
   return (
     <div
       className="group hover:bg-primary/10 flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-colors"
@@ -101,9 +106,10 @@ export function HistoryItem ({
       }}
     >
       <HistoryThumbnail
-        key={thumbnailUrl ?? item.id}
-        thumbnailUrl={thumbnailUrl}
+        key={item.imgUrl || String(item.id)}
+        imgUrl={item.imgUrl}
         alt={item.name}
+        isVideo={item.isVideo}
         loadThumbnail={loadThumbnail}
         previewLabel={previewLabel}
         onPreview={onPreview}

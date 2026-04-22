@@ -1,6 +1,7 @@
 export interface TrayWaitingItem {
   id: string
   imgUrl: string
+  isVideo: boolean
 }
 
 export interface TrayUploadedItem {

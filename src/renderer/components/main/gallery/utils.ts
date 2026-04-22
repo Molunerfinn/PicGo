@@ -1,5 +1,7 @@
 import dayjs from 'dayjs'
+import mime from 'mime/lite'
 
+import { resolveTimestampValue } from '@/utils/common'
 import { DEFAULT_DATE_TIME_FORMAT } from '@/utils/consts'
 import type { ValueOf } from '@/types/utils'
 
@@ -14,30 +16,36 @@ export type GalleryPhoto = {
   name: string
   sizeMb: number
   date: string
-  provider: string
-  providerType: string
+  type: string
+  typeName?: string
   raw: ImgInfo
   collection: string
   tags: string[]
   isVideo: boolean
 }
 
-const VIDEO_EXTENSIONS = new Set(['.mp4', '.mov', '.webm', '.avi', '.mkv', '.m4v', '.ogv'])
-
-function resolveIsVideo (item: ImgInfo): boolean {
-  const ext = item.extname || ''
-  if (ext && VIDEO_EXTENSIONS.has(ext.toLowerCase())) {
-    return true
+function resolveExtname (item: ImgInfo): string {
+  if (item.extname) {
+    return item.extname.toLowerCase()
   }
 
   const fileName = item.fileName || item.imgUrl || ''
   const dotIndex = fileName.lastIndexOf('.')
   if (dotIndex >= 0) {
-    const fileExt = fileName.slice(dotIndex).toLowerCase().split('?')[0]
-    return VIDEO_EXTENSIONS.has(fileExt)
+    return fileName.slice(dotIndex).toLowerCase().split('?')[0]
   }
 
-  return false
+  return ''
+}
+
+export function resolveIsVideo (item: ImgInfo): boolean {
+  const ext = resolveExtname(item)
+  if (!ext) {
+    return false
+  }
+
+  const mimeType = mime.getType(ext)
+  return typeof mimeType === 'string' && mimeType.startsWith('video/')
 }
 
 export type GalleryProviderFilter = {
@@ -79,14 +87,14 @@ export function filterGalleryImages (
       navContext.type === NavType.All
         ? true
         : navContext.type === NavType.Provider
-          ? image.providerType === navContext.value
+          ? image.type === navContext.value
           : navContext.type === NavType.Collection
             ? image.collection === navContext.value
             : image.tags.includes(navContext.value)
 
     const matchesSearch = query
       ? image.name.toLowerCase().includes(query) ||
-        image.provider.toLowerCase().includes(query) ||
+        (image.typeName || image.type).toLowerCase().includes(query) ||
         image.collection.toLowerCase().includes(query)
       : true
 
@@ -135,17 +143,12 @@ export function buildGalleryPhotos (
   items: ImgInfo[],
   picBeds: IPicBedType[]
 ) {
-  const picBedMap = new Map(picBeds.map((item) => [item.type, item.name]))
+  const picBedMap = new Map(picBeds.map((bed) => [bed.type, bed.name]))
 
   return items.map((item, index) => {
     const dbId = item.id || `${index}`
-    const providerType = typeof item.type === 'string' ? item.type : ''
-    const providerName = picBedMap.get(providerType) || providerType || 'Unknown'
-    const timestamp = typeof item.updatedAt === 'number'
-      ? item.updatedAt
-      : typeof item.createdAt === 'number'
-        ? item.createdAt
-        : undefined
+    const itemType = typeof item.type === 'string' ? item.type : ''
+    const timestamp = resolveTimestampValue(item.createdAt) || resolveTimestampValue(item.updatedAt) || undefined
     const size = typeof item.size === 'number' ? item.size : undefined
 
     return {
@@ -159,8 +162,8 @@ export function buildGalleryPhotos (
       name: item.fileName || item.imgUrl || 'Untitled',
       sizeMb: formatGallerySize(size),
       date: formatGalleryDate(timestamp),
-      provider: providerName,
-      providerType,
+      type: itemType,
+      typeName: picBedMap.get(itemType) || itemType,
       raw: item,
       collection: '',
       tags: [],

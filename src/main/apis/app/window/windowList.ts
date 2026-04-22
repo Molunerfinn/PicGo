@@ -114,6 +114,7 @@ windowList.set(IWindowList.SETTING_WINDOW, {
   },
   callback (window, windowManager) {
     window.loadURL(handleWindowParams(SETTING_WINDOW_URL))
+    window.webContents.openDevTools({ mode: 'detach' })
     window.on('maximize', () => {
       window.webContents.send(WINDOW_STATE_CHANGED, {
         isMaximized: true

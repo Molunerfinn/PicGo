@@ -3,21 +3,10 @@ import db from '@/utils/db'
 import { sendToMain } from '@/utils/dataSender'
 import { clipboard, ipc } from '@/utils/bridge'
 
-interface GalleryHistoryItem extends ImgInfo {
-  createdAt?: number
-  updatedAt?: number
-}
+import { resolveTimestampValue } from '@/utils/common'
 
-function resolveGalleryItemTimestamp (item: GalleryHistoryItem) {
-  if (typeof item.updatedAt === 'number') {
-    return item.updatedAt
-  }
-
-  if (typeof item.createdAt === 'number') {
-    return item.createdAt
-  }
-
-  return 0
+function resolveGalleryItemTimestamp (item: ImgInfo) {
+  return resolveTimestampValue(item.createdAt) || resolveTimestampValue(item.updatedAt)
 }
 
 export const galleryAdapter = {
@@ -26,7 +15,7 @@ export const galleryAdapter = {
     return result.data
   },
   async getRecentUploads (limit = 100) {
-    const result = await db.get<GalleryHistoryItem>({ orderBy: 'desc' })
+    const result = await db.get<ImgInfo>({ orderBy: 'desc' })
     return [...result.data]
       .sort((left, right) => resolveGalleryItemTimestamp(right) - resolveGalleryItemTimestamp(left))
       .slice(0, limit)

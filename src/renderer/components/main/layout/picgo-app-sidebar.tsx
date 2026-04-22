@@ -27,6 +27,15 @@ import { MainMoreDialog } from "./main-more-dialog"
 
 const SIDEBAR_ICON_CLASSNAME = "size-[18px]"
 
+function resolvePlanLabel (plan?: number): string {
+  switch (plan) {
+    case 1: return 'Starter Plan'
+    case 2: return 'Pro Plan'
+    case 3: return 'Max Plan'
+    default: return 'Free Plan'
+  }
+}
+
 export function PicGoAppSidebar({
   isDark,
   onToggleTheme,
@@ -40,6 +49,7 @@ export function PicGoAppSidebar({
   const { state, setOpen } = useSidebar()
   const cloudUserInfo = useAppStore.use.picgoCloud().userInfo
   const collapsed = state === "collapsed"
+  const [avatarError, setAvatarError] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
 
   const matchActive = (to: string) =>
@@ -188,8 +198,10 @@ export function PicGoAppSidebar({
                 collapsed ? "justify-center p-0" : ""
               )}
             >
-              <div className="bg-muted text-muted-foreground group-hover/user-card:text-primary flex size-9 shrink-0 items-center justify-center rounded-full border border-border transition-colors">
-                <CircleUserRoundIcon className="size-6" />
+              <div className="bg-muted text-muted-foreground group-hover/user-card:text-primary flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border transition-colors">
+                {cloudUserInfo?.avatar && !avatarError
+                  ? <img src={cloudUserInfo.avatar} alt="" className="size-full object-cover" draggable={false} onError={() => setAvatarError(true)} />
+                  : <CircleUserRoundIcon className="size-6" />}
               </div>
 
               {!collapsed ? (
@@ -199,7 +211,7 @@ export function PicGoAppSidebar({
                       {cloudUserInfo?.user || t("PICGO_CLOUD_LOGIN")}
                     </p>
                     <p className="text-muted-foreground truncate text-xs">
-                      {cloudUserInfo ? 'Pro Plan' : t("PICGO_CLOUD_BRAND_NAME")}
+                      {cloudUserInfo ? resolvePlanLabel(cloudUserInfo.plan) : t("PICGO_CLOUD_BRAND_NAME")}
                     </p>
                   </div>
 

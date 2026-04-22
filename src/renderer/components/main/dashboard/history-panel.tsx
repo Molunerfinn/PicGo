@@ -5,16 +5,21 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { galleryAdapter } from '@/adapters/gallery'
 import { GalleryPreview } from '@/components/main/gallery/gallery-preview'
-import type { GalleryPhoto } from '@/components/main/gallery/utils'
+import { type GalleryPhoto, resolveIsVideo } from '@/components/main/gallery/utils'
 import { SearchInput } from '@/components/common/search-input'
-import { RECENT_UPLOAD_TYPE, type RecentUpload } from '@/types/dashboard'
 import { cn } from '@/lib/utils'
+import { resolveTimestampValue } from '@/utils/common'
 import { DEFAULT_DATE_TIME_FORMAT } from '@/utils/consts'
 import type { DashboardHistoryRecord } from './hooks/use-dashboard-history'
 import { HistoryItem } from './history-item'
 
-interface DashboardHistoryItem extends RecentUpload {
+interface DashboardHistoryItem {
+  id: number | string
   previewId: number
+  name: string
+  time: string
+  imgUrl: string
+  isVideo: boolean
   timestamp: number
   raw: DashboardHistoryRecord
   keywords: string[]
@@ -40,15 +45,7 @@ type DashboardHistoryEntry =
   }
 
 function resolveGalleryTimestamp (item: DashboardHistoryRecord) {
-  if (typeof item.updatedAt === 'number') {
-    return item.updatedAt
-  }
-
-  if (typeof item.createdAt === 'number') {
-    return item.createdAt
-  }
-
-  return 0
+  return resolveTimestampValue(item.createdAt) || resolveTimestampValue(item.updatedAt)
 }
 
 function isSameDay (left: Date, right: Date) {
@@ -79,9 +76,8 @@ function buildHistoryItems (items: DashboardHistoryRecord[]): DashboardHistoryIt
         previewId: index,
         name,
         time: formatHistoryTimestamp(timestamp),
-        type: item.type === 'file' ? RECENT_UPLOAD_TYPE.FILE : RECENT_UPLOAD_TYPE.IMAGE,
-        subtitle: item.imgUrl || item.originImgUrl,
-        thumbnailUrl: item.imgUrl || item.originImgUrl,
+        imgUrl: item.imgUrl || item.originImgUrl || '',
+        isVideo: resolveIsVideo(item),
         timestamp,
         raw: item,
         keywords
@@ -200,24 +196,21 @@ export function HistoryPanel ({
   const entries = buildHistoryEntries(groups)
   const virtuosoKey = buildVirtuosoResetKey(groups, keyword)
   const previewItems: GalleryPhoto[] = filteredItems
-    .filter((item) => {
-      return Boolean(item.thumbnailUrl || item.subtitle)
-    })
+    .filter((item) => Boolean(item.imgUrl))
     .map((item) => ({
       id: item.previewId,
       dbId: String(item.id),
-      imgUrl: item.thumbnailUrl || item.subtitle || '',
-      originImgUrl: item.subtitle,
+      imgUrl: item.imgUrl,
+      originImgUrl: item.raw.originImgUrl,
       alt: item.name,
       name: item.name,
       sizeMb: 0,
       date: item.time,
-      provider: item.raw.type || '',
-      providerType: item.raw.type || '',
+      type: item.raw.type || '',
       raw: item.raw,
       collection: '',
       tags: [],
-      isVideo: false
+      isVideo: item.isVideo
     }))
 
   const handleCopy = async (item: DashboardHistoryItem) => {
@@ -231,7 +224,7 @@ export function HistoryPanel ({
   }
 
   const handlePreview = (item: DashboardHistoryItem) => {
-    if (!(item.thumbnailUrl || item.subtitle)) {
+    if (!item.imgUrl) {
       return
     }
 

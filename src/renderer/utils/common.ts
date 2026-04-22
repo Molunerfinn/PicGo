@@ -21,3 +21,20 @@ export const trimValues = (obj: IStringKeyMap) => {
 export const getFilePath = (file: File) => {
   return webUtils.getPathForFile(file)
 }
+
+/**
+ * Normalize a timestamp value (number, string, or Date) to milliseconds.
+ * Returns 0 if the value is missing or not a valid date.
+ */
+export function resolveTimestampValue (value?: number | string | Date): number {
+  if (typeof value === 'number') {
+    return value
+  }
+
+  if (typeof value === 'string' || value instanceof Date) {
+    const ms = new Date(value).getTime()
+    return Number.isFinite(ms) ? ms : 0
+  }
+
+  return 0
+}

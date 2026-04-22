@@ -104,6 +104,9 @@ importers:
       marked:
         specifier: ^7.0.4
         version: 7.0.5
+      mime:
+        specifier: ^4.1.0
+        version: 4.1.0
       mime-types:
         specifier: ^3.0.2
         version: 3.0.2
@@ -237,6 +240,9 @@ importers:
       '@types/lowdb':
         specifier: ^1.0.9
         version: 1.0.15
+      '@types/mime-types':
+        specifier: ^3.0.1
+        version: 3.0.1
       '@types/multer':
         specifier: ^1.4.12
         version: 1.4.13
@@ -2302,6 +2308,9 @@ packages:
 
   '@types/lowdb@1.0.15':
     resolution: {integrity: sha512-xaMNIveDCryK4UvnUJOc2BCOH0lPivdvWHrutsLryo9r9Id3RqZq2RDmT4eddiEPYzu7nJMw6nFIcVifcqjWqg==}
+
+  '@types/mime-types@3.0.1':
+    resolution: {integrity: sha512-xRMsfuQbnRq1Ef+C+RKaENOxXX87Ygl38W1vDfPHRku02TgQr+Qd8iivLtAMcR0KF5/29xlnFihkTlbqFrGOVQ==}
 
   '@types/minimist@1.2.5':
     resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
@@ -5182,6 +5191,11 @@ packages:
   mime@2.6.0:
     resolution: {integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==}
     engines: {node: '>=4.0.0'}
+    hasBin: true
+
+  mime@4.1.0:
+    resolution: {integrity: sha512-X5ju04+cAzsojXKes0B/S4tcYtFAJ6tTMuSPBEn9CPGlrWr8Fiw7qYeLT0XyH80HSoAoqWCaz+MWKh22P7G1cw==}
+    engines: {node: '>=16'}
     hasBin: true
 
   mimic-fn@1.2.0:
@@ -9581,6 +9595,8 @@ snapshots:
     dependencies:
       '@types/lodash': 4.17.21
 
+  '@types/mime-types@3.0.1': {}
+
   '@types/minimist@1.2.5': {}
 
   '@types/ms@2.1.0': {}
@@ -12901,6 +12917,8 @@ snapshots:
       mime-db: 1.54.0
 
   mime@2.6.0: {}
+
+  mime@4.1.0: {}
 
   mimic-fn@1.2.0: {}
 

@@ -99,7 +99,7 @@ export function PicGoGallery() {
     .map((item) => ({
       type: item.type,
       name: item.name,
-      count: images.filter((image) => image.providerType === item.type).length,
+      count: images.filter((image) => image.type === item.type).length,
     }))
 
   // TODO(v3-post-launch): Restore selected tag derivation when Tags inspector actions return.
@@ -585,7 +585,7 @@ export function PicGoGallery() {
                         scrollParent={scrollRoot}
                         labels={{
                           name: t("GALLERY_COLUMN_NAME"),
-                          provider: t("GALLERY_COLUMN_PROVIDER"),
+                          type: t("GALLERY_COLUMN_PROVIDER"),
                           size: t("GALLERY_COLUMN_SIZE"),
                           date: t("GALLERY_COLUMN_DATE"),
                         }}
