@@ -1,4 +1,6 @@
 import type { IPicGoCloudUserInfo } from '#/types/cloud'
+import { AlbumSource } from '#/types/cloudAlbum'
+import { galleryStoreActions } from '@/store/gallery/actions'
 import { cloudAdapter } from '@/adapters/cloud'
 import { appConfigAdapter } from '@/adapters/app-config'
 import {
@@ -106,9 +108,17 @@ export const appActions = {
     await appActions.hydrateAppState()
   },
   setPicGoCloudUserInfo (userInfo: IPicGoCloudUserInfo | null | undefined) {
+    const prev = useAppStore.getState().picgoCloud.userInfo
     useAppStore.setState((state) => {
       state.picgoCloud.userInfo = userInfo
     })
+
+    // Auto-switch to cloud tab when a paid user logs in
+    const wasPaid = prev !== null && prev !== undefined && typeof prev.plan === 'number' && prev.plan > 0
+    const isPaid = userInfo !== null && userInfo !== undefined && typeof userInfo.plan === 'number' && userInfo.plan > 0
+    if (!wasPaid && isPaid) {
+      galleryStoreActions.setAlbumSource(AlbumSource.CLOUD)
+    }
   },
   setPicGoCloudUserInfoStatus (status: PicGoCloudRequestStatus) {
     useAppStore.setState((state) => {

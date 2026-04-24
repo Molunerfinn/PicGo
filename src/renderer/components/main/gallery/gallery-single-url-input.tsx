@@ -58,7 +58,7 @@ export function GallerySingleUrlInput({
   }
 
   return (
-    <div className="flex items-center gap-2" onBlur={handleContainerBlur}>
+    <div className={cn("flex items-center", hasPendingChange && "gap-2")} onBlur={handleContainerBlur}>
       <Input
         value={draftUrl}
         onFocus={() => setIsEditing(true)}

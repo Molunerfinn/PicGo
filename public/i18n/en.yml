@@ -443,6 +443,25 @@ GALLERY_CLOUD_IMPORTING: Importing to cloud gallery...
 GALLERY_CLOUD_IMPORT_SUCCESS: Successfully imported ${num} items to cloud gallery
 GALLERY_CLOUD_IMPORT_FAILED: Failed to import to cloud gallery
 GALLERY_CLOUD_DELETE_FAILED: Failed to delete from cloud gallery
+GALLERY_INSPECTOR_DETAILS_TITLE: Details
+GALLERY_INSPECTOR_FILE_NAME: File name
+GALLERY_INSPECTOR_UPLOADER: Uploader
+GALLERY_INSPECTOR_CONTENT_TYPE: Content type
+GALLERY_INSPECTOR_CREATED_AT: Created
+GALLERY_INSPECTOR_UPDATED_AT: Updated
+GALLERY_INSPECTOR_FILE_SIZE: Size
+GALLERY_CLOUD_IMPORT_STATUS_TITLE: Cloud Gallery
+GALLERY_CLOUD_IMPORTED: Imported to cloud
+GALLERY_CLOUD_IMPORTED_TOOLTIP: This is a local marker. If the record was deleted from cloud, this status won't update. You can re-import if needed.
+GALLERY_CLOUD_REIMPORT: Re-import
+GALLERY_CLOUD_NATIVE: Uploaded via PicGo Cloud
+GALLERY_CLOUD_IMPORT_BUTTON: Import to Cloud Gallery
+GALLERY_CLOUD_IMPORT_BUTTON_COUNT: Import ${num} item(s) to Cloud Gallery
+GALLERY_CLOUD_ALL_IMPORTED: All in cloud gallery
+GALLERY_CLOUD_AUTO_IMPORT_REQUIRED_TITLE: Enable Auto Import
+GALLERY_CLOUD_AUTO_IMPORT_REQUIRED_DESC: Auto import needs to be enabled before importing items to cloud gallery. Enable it now and continue?
+GALLERY_CLOUD_AUTO_IMPORT_ENABLE_AND_IMPORT: Enable & Import
+GALLERY_CLOUD_IMPORT_SINGLE_SUCCESS: Successfully imported to cloud gallery
 PICGO_CLOUD_AUTO_IMPORT_LABEL: Auto Import
 PICGO_CLOUD_AUTO_IMPORT_DESC: Automatically import upload records to cloud gallery
 SIDEBAR_PLUGINS: Plugins

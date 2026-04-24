@@ -1,4 +1,5 @@
 import { type CSSProperties, useEffect, useState } from 'react'
+import { useMemoizedFn } from 'ahooks'
 import { useTranslation } from 'react-i18next'
 import { LoaderCircleIcon } from 'lucide-react'
 
@@ -9,6 +10,9 @@ import { resolveIsVideo } from '@/components/main/gallery/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useIPCOn } from '@/hooks/useIPC'
 import { cn } from '@/lib/utils'
+import { useGalleryStore } from '@/store'
+import { AlbumSource } from '#/types/cloudAlbum'
+import { IRPCActionType } from '#/types/enum'
 import type {
   TrayWaitingItem
 } from '@/components/independent-window/tray/types'
@@ -126,18 +130,20 @@ export function PicGoTrayPage () {
   const [uploadedItems, setUploadedItems] = useState<TrayUploadedDisplayItem[]>([])
   const [clipboardFiles, setClipboardFiles] = useState<TrayWaitingItem[]>([])
   const [uploadFlag, setUploadFlag] = useState(false)
+  const albumSource = useGalleryStore.use.albumSource()
+  const isCloudSource = albumSource === AlbumSource.CLOUD
 
-  const refreshUploadedItems = async () => {
-    const items = await trayPageAdapter.getRecentUploadedItems(5)
+  const refreshUploadedItems = useMemoizedFn(async () => {
+    const items = await trayPageAdapter.getRecentUploadedItems(albumSource, 5)
     setUploadedItems(items.map(resolveTrayUploadedItem))
-  }
+  })
 
   useIPCOn('clipboardFiles', (files: ImgInfo[]) => {
     setClipboardFiles(files.map(resolveTrayWaitingItem))
   })
 
   useIPCOn('dragFiles', async (items: ImgInfo[] = []) => {
-    if (items.length > 0) {
+    if (!isCloudSource && items.length > 0) {
       setUploadedItems(items.map(resolveRuntimeUploadedItem))
       return
     }
@@ -146,7 +152,7 @@ export function PicGoTrayPage () {
   })
 
   useIPCOn('uploadFiles', async (items: ImgInfo[] = []) => {
-    if (items.length > 0) {
+    if (!isCloudSource && items.length > 0) {
       setUploadedItems(items.map(resolveRuntimeUploadedItem))
       setUploadFlag(false)
       return
@@ -160,6 +166,11 @@ export function PicGoTrayPage () {
     await refreshUploadedItems()
   })
 
+  useIPCOn(IRPCActionType.UPDATE_CLOUD_ALBUM, async () => {
+    if (!isCloudSource) return
+    await refreshUploadedItems()
+  })
+
   useEffect(() => {
     let mounted = true
 
@@ -167,7 +178,7 @@ export function PicGoTrayPage () {
 
     async function loadInitialUploadedItems () {
       try {
-        const items = await trayPageAdapter.getRecentUploadedItems(5)
+        const items = await trayPageAdapter.getRecentUploadedItems(albumSource, 5)
         if (!mounted) {
           return
         }
@@ -185,7 +196,7 @@ export function PicGoTrayPage () {
       mounted = false
       removeDragBlockers()
     }
-  }, [t])
+  }, [albumSource, t])
 
   const handleOpenMainWindow = () => {
     trayPageAdapter.openMainWindow()

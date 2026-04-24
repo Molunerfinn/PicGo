@@ -14,6 +14,7 @@ import { IBuildInEvent, IGuiMenuItem, PicGo as PicGoCore } from 'picgo'
 import windowManager from 'apis/app/window/windowManager'
 import { showNotification } from '~/main/utils/common'
 import { dbPathChecker } from 'apis/core/datastore/dbChecker'
+import logger from 'apis/core/picgo/logger'
 import {
   PICGO_SAVE_CONFIG,
   PICGO_GET_CONFIG,
@@ -267,12 +268,37 @@ const handleI18n = () => {
   })
 }
 
+const PICGO_CLOUD_TYPE = 'picgo-cloud'
+
+const markImportedItemsInGalleryDB = async (items: Array<{ id?: string, type?: string }>): Promise<void> => {
+  const dbStore = GalleryDB.getInstance()
+  const itemsToMark = items.filter(
+    (item) => typeof item.id === 'string' && item.id.trim() !== '' && item.type !== PICGO_CLOUD_TYPE
+  )
+
+  for (const item of itemsToMark) {
+    try {
+      await dbStore.updateById(item.id!, { _importToPicGoCloud: true })
+    } catch {
+      // Silently skip items that don't exist in local DB
+    }
+  }
+}
+
 const handleCloudAlbumEvents = () => {
-  picgo.on(IBuildInEvent.CLOUD_ALBUM_UPDATED, () => {
+  picgo.on(IBuildInEvent.CLOUD_ALBUM_UPDATED, (payload: { items?: Array<{ id?: string, type?: string }> } | undefined) => {
     if (windowManager.has(IWindowList.SETTING_WINDOW)) {
       windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send(
         IRPCActionType.UPDATE_CLOUD_ALBUM
       )
+    }
+
+    // Write back _importToPicGoCloud flag to local gallery DB for non-picgo-cloud items
+    const items = payload?.items
+    if (Array.isArray(items) && items.length > 0) {
+      markImportedItemsInGalleryDB(items).catch((error) => {
+        logger.error('[PicGo Cloud][album] failed to mark imported items in gallery DB', error)
+      })
     }
   })
 

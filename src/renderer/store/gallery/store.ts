@@ -12,6 +12,7 @@ export interface GalleryStoreState {
 
   albumSource: AlbumSource
   cloudItems: GalleryPhoto[]
+  cloudAllTotal: number
   cloudTotal: number
   cloudOffset: number
   cloudLoading: boolean
@@ -28,6 +29,7 @@ const initialGalleryStoreState: GalleryStoreState = {
 
   albumSource: AlbumSource.LOCAL,
   cloudItems: [],
+  cloudAllTotal: 0,
   cloudTotal: 0,
   cloudOffset: 0,
   cloudLoading: false,

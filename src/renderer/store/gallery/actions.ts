@@ -12,6 +12,7 @@ import {
 } from '@/store/utils'
 import { useGalleryStore } from './store'
 import { AlbumSource, type CloudAlbumProviderStat } from '#/types/cloudAlbum'
+import { useAppStore } from '@/store/app-store'
 
 function normalizeAlbumSource (value: unknown): AlbumSource {
   return value === AlbumSource.CLOUD ? AlbumSource.CLOUD : AlbumSource.LOCAL
@@ -38,12 +39,18 @@ export const galleryStoreActions = {
       )
     ])
 
+    // If user is already a paid cloud user, default to cloud source
+    const userInfo = useAppStore.getState().picgoCloud.userInfo
+    const isPaidUser = userInfo !== null && userInfo !== undefined &&
+      typeof userInfo.plan === 'number' && userInfo.plan > 0
+    const resolvedSource = isPaidUser ? AlbumSource.CLOUD : normalizeAlbumSource(storedAlbumSource)
+
     useGalleryStore.setState((state) => {
       state.viewMode = normalizeGalleryViewMode(storedViewMode)
       state.masonryColumnCount = normalizeGalleryMasonryColumnCount(
         storedMasonryColumnCount
       )
-      state.albumSource = normalizeAlbumSource(storedAlbumSource)
+      state.albumSource = resolvedSource
       state.hasHydrated = true
     })
   },
@@ -78,6 +85,11 @@ export const galleryStoreActions = {
   setCloudItems (items: GalleryPhoto[]) {
     useGalleryStore.setState((state) => {
       state.cloudItems = items
+    })
+  },
+  setCloudAllTotal (total: number) {
+    useGalleryStore.setState((state) => {
+      state.cloudAllTotal = total
     })
   },
   appendCloudItems (items: GalleryPhoto[]) {
@@ -128,6 +140,7 @@ export const galleryStoreActions = {
   resetCloudPagination () {
     useGalleryStore.setState((state) => {
       state.cloudItems = []
+      state.cloudTotal = 0
       state.cloudOffset = 0
       state.cloudHasMore = true
     })

@@ -2,18 +2,10 @@ import type { ReactNode } from "react"
 import { Copy, Trash2, X } from "lucide-react"
 import type { ValueOf } from "@/types/utils"
 import { AlbumSource } from "#/types/cloudAlbum"
+import { CloudImportStatus } from "./cloud-import-status"
+import { GalleryDeleteDialog } from "./gallery-delete-dialog"
+import { GalleryInspectorDetails } from "./gallery-inspector-details"
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { FloatingPanelSheetContent } from "@/components/common/floating-panel-sheet-content"
@@ -150,12 +142,6 @@ export function GalleryInspector({
   //   })
   // }
 
-  const handleDelete = async () => {
-    await onDelete()
-    toast.success(t("SUCCESS"), {
-      description: t("DELETE"),
-    })
-  }
 
   return (
     <Sheet
@@ -203,45 +189,24 @@ export function GalleryInspector({
                 onClick={handleDownload}
               />
               */}
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
+              <GalleryDeleteDialog
+                selectedCount={selectedIds.length}
+                onConfirm={onDelete}
+                trigger={
                   <InspectorActionButton
                     icon={<Trash2 />}
                     label={t("DELETE")}
                     variant="destructive"
                     disabled={!canAct}
                   />
-                </AlertDialogTrigger>
-                <AlertDialogContent size="sm">
-                  <AlertDialogHeader className="place-items-start text-left">
-                    <AlertDialogTitle className="text-left">
-                      {t("DELETE")}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t("TIPS_WILL_REMOVE_CHOOSED_IMAGES", {
-                        m: selectedIds.length,
-                      })}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{t("CANCEL")}</AlertDialogCancel>
-                    <AlertDialogAction
-                      variant="destructive"
-                      onClick={async () => {
-                        await handleDelete()
-                      }}
-                    >
-                      {t("DELETE")}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                }
+              />
             </div>
           </div>
 
           <ScrollArea className="min-h-0 flex-1">
-            <div className="flex flex-col gap-5 px-4 py-4">
-              <div className="border-border/60 mb-2 aspect-video overflow-hidden rounded-xl border">
+            <div className="space-y-5 px-4 py-4">
+              <div className="border-border/60 mb-2 aspect-video overflow-hidden rounded-lg border">
                 {selectedImages.length > 1 ? (
                   <div className="grid h-full grid-cols-2 gap-1 p-1">
                     {selectedImages.slice(0, 4).map((image, index) => {
@@ -372,6 +337,14 @@ export function GalleryInspector({
                 </Select>
               </div>
               */}
+
+              {_albumSource === AlbumSource.LOCAL && selectedImages.length > 0 ? (
+                <CloudImportStatus images={selectedImages} />
+              ) : null}
+
+              {selectedImages.length === 1 && selectedImages[0] ? (
+                <GalleryInspectorDetails image={selectedImages[0]} />
+              ) : null}
 
               {/* TODO(v3-post-launch): Restore tags editor in inspector when Tags feature returns.
               <div className="space-y-3">

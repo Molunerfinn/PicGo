@@ -23,6 +23,9 @@ export const galleryAdapter = {
   async updateImageUrl (id: string, imgUrl: string) {
     await db.updateById(id, { imgUrl })
   },
+  async updateImportFlag (id: string, imported: boolean) {
+    await db.updateById(id, { _importToPicGoCloud: imported })
+  },
   async removeById (id: string) {
     const file = await db.getById<ImgInfo>(id)
     await db.removeById(id)

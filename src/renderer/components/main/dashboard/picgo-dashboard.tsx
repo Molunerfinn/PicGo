@@ -30,7 +30,7 @@ import { Sheet, SheetTrigger } from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
 import { useIPCOn } from '@/hooks/useIPC'
 import { cn } from '@/lib/utils'
-import { appActions, settingsStoreActions, useAppStore } from '@/store'
+import { appActions, settingsStoreActions, useAppStore , useGalleryStore } from '@/store'
 import { DESKTOP_HISTORY_PANEL_BREAKPOINT } from '@/utils/consts'
 import { UploaderSwitcher } from './uploader-switcher'
 import { buildVisibleProviderOptions, resolveCurrentSwitcherValue } from './utils'
@@ -38,6 +38,7 @@ import { HistoryPanel } from './history-panel'
 import { useDashboardHistory } from './hooks/use-dashboard-history'
 import { useDashboardCloudHistory } from './hooks/use-dashboard-cloud-history'
 import { useDashboardUpload } from './hooks/use-dashboard-upload'
+import { AlbumSource } from '#/types/cloudAlbum'
 import type { LinkFormat } from '@/types/dashboard'
 
 function ProgressBar ({ value }: { value: number }) {
@@ -101,9 +102,11 @@ export function PicGoDashboard () {
   const [urlDialogOpen, setUrlDialogOpen] = useState(false)
   const [urlInput, setUrlInput] = useState('')
   const localHistoryItems = useDashboardHistory()
-  const cloudHistoryItems = useDashboardCloudHistory()
-  const [historySource, setHistorySource] = useState<'local' | 'cloud'>('local')
-  const historyItems = historySource === 'cloud' ? cloudHistoryItems : localHistoryItems
+  const cloudHistory = useDashboardCloudHistory()
+  const albumSource = useGalleryStore.use.albumSource()
+  const isCloudSource = albumSource === AlbumSource.CLOUD
+  const historyItems = isCloudSource ? cloudHistory.items : localHistoryItems
+  const historyLoading = isCloudSource ? cloudHistory.loading : false
 
   const {
     fileInputRef,
@@ -131,18 +134,6 @@ export function PicGoDashboard () {
       console.error(error)
     }
   })
-
-  useEffect(() => {
-    async function hydrateDashboard () {
-      try {
-        await appActions.ensureHydrated()
-      } catch (error) {
-        console.error(error)
-      }
-    }
-
-    hydrateDashboard()
-  }, [])
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -321,7 +312,7 @@ export function PicGoDashboard () {
                 side="right"
                 className="w-[300px] border-(--app-panel-border) bg-(--app-panel-bg) text-foreground backdrop-blur-xl sm:w-[350px]"
               >
-                <HistoryPanel items={historyItems} loadThumbnails={isHistorySheetThumbnailReady} historySource={historySource} onHistorySourceChange={setHistorySource} />
+                <HistoryPanel items={historyItems} loadThumbnails={isHistorySheetThumbnailReady} loading={historyLoading} />
               </FloatingPanelSheetContent>
             </Sheet>
           </div>
@@ -462,7 +453,7 @@ export function PicGoDashboard () {
       {isDesktopHistoryVisible
         ? (
           <AppMainCard className="h-full w-80 flex-none gap-0 py-0">
-            <HistoryPanel items={historyItems} loadThumbnails historySource={historySource} onHistorySourceChange={setHistorySource} />
+            <HistoryPanel items={historyItems} loadThumbnails loading={historyLoading} />
           </AppMainCard>
         )
         : null}

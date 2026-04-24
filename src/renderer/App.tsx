@@ -4,6 +4,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router"
 import { routeTree } from "./routeTree.gen"
 import { GlobalAppearanceSync } from "@/components/common/global-appearance-sync"
 import { RendererRuntimeBridge } from "@/components/common/renderer-runtime-bridge"
+import { RendererStoreHydrator } from "@/components/common/renderer-store-hydrator"
 import { Toaster } from "@/components/ui/sonner"
 
 const router = createRouter({
@@ -20,6 +21,7 @@ declare module "@tanstack/react-router" {
 export function App() {
   return (
     <>
+      <RendererStoreHydrator />
       <RendererRuntimeBridge />
       <GlobalAppearanceSync />
       <RouterProvider router={router} />

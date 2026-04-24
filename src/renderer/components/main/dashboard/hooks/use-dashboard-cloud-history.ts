@@ -6,6 +6,7 @@ import type { DashboardHistoryRecord } from './use-dashboard-history'
 
 export function useDashboardCloudHistory () {
   const [historyItems, setHistoryItems] = useState<DashboardHistoryRecord[]>([])
+  const [loading, setLoading] = useState(false)
   const [refreshNonce, setRefreshNonce] = useState(0)
 
   useIPCOn(IRPCActionType.UPDATE_CLOUD_ALBUM, () => {
@@ -16,6 +17,7 @@ export function useDashboardCloudHistory () {
     let disposed = false
 
     async function refreshHistory () {
+      setLoading(true)
       try {
         const result = await cloudAlbumAdapter.list({ limit: 100, sort: 'newest' })
         if (!disposed && result.success) {
@@ -24,6 +26,10 @@ export function useDashboardCloudHistory () {
       } catch (error) {
         if (!disposed) {
           console.error(error)
+        }
+      } finally {
+        if (!disposed) {
+          setLoading(false)
         }
       }
     }
@@ -35,5 +41,5 @@ export function useDashboardCloudHistory () {
     }
   }, [refreshNonce])
 
-  return historyItems
+  return { items: historyItems, loading }
 }

@@ -1,21 +1,24 @@
 import {
+  useEffect,
   useRef,
   useState,
   type CSSProperties,
   type ComponentPropsWithoutRef,
-  type MutableRefObject,
+  type RefObject,
   type MouseEvent,
   type SyntheticEvent,
+  type UIEvent,
 } from "react"
+import { useMemoizedFn } from "ahooks"
 import { createPortal } from "react-dom"
-import { Maximize2 } from "lucide-react"
+import { LoaderCircleIcon, Maximize2 } from "lucide-react"
 import { VirtuosoMasonry, type ItemContent } from "@virtuoso.dev/masonry"
 
 import { Button } from "@/components/ui/button"
-import { MasonryEndSentinel } from "./masonry-end-sentinel"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { GALLERY_CLOUD_LOAD_MORE_THRESHOLD } from "@/utils/consts"
 import type { GalleryPhoto } from "../utils"
 import type { SelectionBox } from "../hooks/use-gallery-selection-box"
 
@@ -178,7 +181,7 @@ const MasonryItem: ItemContent<GalleryPhoto, MasonryContext> = ({
         data-gallery-item="true"
         ref={(node) => context.onItemRefChange(photo.id, node)}
         className={cn(
-          "group relative overflow-hidden rounded-xl border transition-shadow",
+          "group relative overflow-hidden rounded-lg border transition-shadow",
           isSelected
             ? "border-primary/40 ring-2 ring-ring/40"
             : "border-transparent hover:border-border/80"
@@ -256,12 +259,13 @@ const MasonryItem: ItemContent<GalleryPhoto, MasonryContext> = ({
 
 export type MasonryViewProps = {
   images: GalleryPhoto[]
+  layoutScopeKey: string
   columnCount: number
   selectedSet: Set<number>
   galleryWidth: number
   scrollRoot: HTMLElement | null
-  scrollViewportRef: MutableRefObject<HTMLDivElement | null>
-  galleryContentRef: MutableRefObject<HTMLDivElement | null>
+  scrollViewportRef: RefObject<HTMLDivElement | null>
+  galleryContentRef: RefObject<HTMLDivElement | null>
   frozenWidth: number | null
   onScrollRootChange: (root: HTMLElement | null) => void
   onMouseDown: (event: MouseEvent<HTMLDivElement>) => void
@@ -279,10 +283,13 @@ export type MasonryViewProps = {
   previewLabel: string
   selectionBox: SelectionBox
   onEndReached?: () => void
+  hasMore?: boolean
+  isLoadingMore?: boolean
 }
 
 export function MasonryView({
   images,
+  layoutScopeKey,
   columnCount,
   selectedSet,
   galleryWidth,
@@ -299,26 +306,98 @@ export function MasonryView({
   previewLabel,
   selectionBox,
   onEndReached,
+  hasMore = false,
+  isLoadingMore = false,
 }: MasonryViewProps) {
   const [imageSizeOverrides, setImageSizeOverrides] = useState<
     Record<number, ImageSize>
   >({})
   const masonryRootRef = useRef<HTMLDivElement | null>(null)
+  const lastSyncedScrollerRef = useRef<HTMLDivElement | null>(null)
+  const masonryGap = getMasonryGap(galleryWidth)
+  const masonryColumnCount = columnCount
 
-  const handleMasonryRootRef = (node: HTMLDivElement | null) => {
+  // Virtuoso creates its own scrolling element, so we grab that inner scroller
+  // after mount and use it as the shared scroll root for selection and paging logic.
+  const handleMasonryRootRef = useMemoizedFn((node: HTMLDivElement | null) => {
+    if (masonryRootRef.current === node) {
+      return
+    }
+
     masonryRootRef.current = node
-    if (!node) return
+    if (!node) {
+      lastSyncedScrollerRef.current = null
+      scrollViewportRef.current = null
+      onScrollRootChange(null)
+      return
+    }
+
     requestAnimationFrame(() => {
+      if (masonryRootRef.current !== node) {
+        return
+      }
+
       const scroller =
         node.querySelector<HTMLDivElement>(
           "[data-testid='virtuoso-scroller']"
         ) ?? null
+
+      if (lastSyncedScrollerRef.current === scroller) {
+        return
+      }
+
       if (scroller) {
         scroller.style.position = "relative"
       }
+
+      lastSyncedScrollerRef.current = scroller
       scrollViewportRef.current = scroller
       onScrollRootChange(scroller)
     })
+  })
+
+  useEffect(() => {
+    if (!scrollRoot || !onEndReached) return
+
+    // If the first page does not overflow yet, auto-load the next page once.
+    // Without this, the user would be stuck on an unscrollable viewport.
+    const maybeFillViewport = () => {
+      if (isLoadingMore || !hasMore) return
+
+      const hasOverflow = scrollRoot.scrollHeight > scrollRoot.clientHeight
+      if (hasOverflow) return
+
+      onEndReached()
+    }
+
+    const frameId = window.requestAnimationFrame(maybeFillViewport)
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+    }
+  }, [scrollRoot, onEndReached, isLoadingMore, hasMore, images.length])
+
+  // Scroll events come from Virtuoso's internal scroller, so capture them here
+  // and only fetch more when the real scrolling container is close to the bottom.
+  const handleMasonryScroll = (event: UIEvent<HTMLDivElement>) => {
+    if (!onEndReached || isLoadingMore || !hasMore) return
+
+    const currentTarget = event.currentTarget
+
+    if (scrollViewportRef.current !== currentTarget) {
+      scrollViewportRef.current = currentTarget
+    }
+
+    if (scrollRoot !== currentTarget) {
+      onScrollRootChange(currentTarget)
+    }
+
+    const remainingDistance =
+      currentTarget.scrollHeight - currentTarget.clientHeight - currentTarget.scrollTop
+
+    if (remainingDistance > GALLERY_CLOUD_LOAD_MORE_THRESHOLD) return
+
+    onEndReached()
   }
 
   const handleMasonryImageLoad =
@@ -361,9 +440,6 @@ export function MasonryView({
       })
     }
 
-  const masonryGap = getMasonryGap(galleryWidth)
-  const masonryColumnCount = columnCount
-
   const masonryContext: MasonryContext = {
     selectedSet,
     imageSizeOverrides,
@@ -395,19 +471,26 @@ export function MasonryView({
     >
       <div
         ref={galleryContentRef}
-        className="min-h-0 min-w-0 flex-1"
+        className="relative min-h-0 min-w-0 flex-1"
         style={frozenWidth ? { width: frozenWidth } : undefined}
       >
         <VirtuosoMasonry
-          key={`${masonryColumnCount}:${images.map((img) => img.id).join("-")}`}
+          key={`${masonryColumnCount}:${layoutScopeKey}`}
           data={images}
           columnCount={masonryColumnCount}
           ItemContent={MasonryItem}
           context={masonryContext}
           className="relative h-full w-full px-5 py-4 select-none"
           style={{ columnGap: masonryGap }}
+          onScrollCapture={handleMasonryScroll}
         />
-        {onEndReached ? <MasonryEndSentinel onEndReached={onEndReached} /> : null}
+        {isLoadingMore && images.length > 0 ? (
+          <div className="pointer-events-none absolute inset-x-0 bottom-4 z-10 flex justify-center">
+            <div className="bg-background/85 text-muted-foreground flex items-center gap-2 rounded-full border px-3 py-1.5 shadow-sm backdrop-blur-sm">
+              <LoaderCircleIcon className="size-4 animate-spin" />
+            </div>
+          </div>
+        ) : null}
         {selectionBoxPortal}
       </div>
     </div>

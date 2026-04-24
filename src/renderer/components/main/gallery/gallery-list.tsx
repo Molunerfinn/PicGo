@@ -1,5 +1,6 @@
 import { forwardRef, useState, type HTMLAttributes } from "react"
 import { TableVirtuoso, type TableComponents } from "react-virtuoso"
+import { LoaderCircleIcon } from "lucide-react"
 
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -48,6 +49,7 @@ type GalleryListProps = {
   clearSelectionLabel: string
   previewLabel: string
   onEndReached?: () => void
+  isLoadingMore?: boolean
 }
 
 type GalleryListContext = {
@@ -202,6 +204,7 @@ export function GalleryList({
   clearSelectionLabel,
   previewLabel,
   onEndReached,
+  isLoadingMore = false,
 }: GalleryListProps) {
   const selectedCount = items.reduce(
     (count, item) => count + Number(selectedIds.has(item.id)),
@@ -304,6 +307,13 @@ export function GalleryList({
             </>
           )}
         />
+        {isLoadingMore && items.length > 0 ? (
+          <div className="pointer-events-none sticky bottom-4 z-10 mt-2 flex justify-center">
+            <div className="bg-background/85 text-muted-foreground flex items-center gap-2 rounded-full border px-3 py-1.5 shadow-sm backdrop-blur-sm">
+              <LoaderCircleIcon className="size-4 animate-spin" />
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   )

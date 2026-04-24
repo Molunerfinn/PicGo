@@ -1,19 +1,25 @@
-import type { IResult } from '@picgo/store/dist/types'
 import { OPEN_WINDOW, PASTE_TEXT } from '#/events/constants'
+import { AlbumSource } from '#/types/cloudAlbum'
 import { IWindowList } from '~/universal/types/enum'
+import { cloudAlbumAdapter } from '@/adapters/cloud-album'
 import i18n from '@/i18n'
 import db from '@/utils/db'
 import { showNotification } from '@/utils/notification'
 import { sendToMain } from '@/utils/dataSender'
 import { ipc } from '@/utils/bridge'
 
-type TrayPageGalleryItem = IResult<ImgInfo>
+type TrayPageGalleryItem = ImgInfo
 
 export const trayPageAdapter = {
   openMainWindow () {
     sendToMain(OPEN_WINDOW, IWindowList.SETTING_WINDOW)
   },
-  async getRecentUploadedItems (limit = 5) {
+  async getRecentUploadedItems (source: AlbumSource, limit = 5) {
+    if (source === AlbumSource.CLOUD) {
+      const result = await cloudAlbumAdapter.list({ limit, sort: 'newest' })
+      return result.success ? result.data.items : []
+    }
+
     return (await db.get<ImgInfo>({ orderBy: 'desc', limit })).data
   },
   async copyUploadedLink (item: ImgInfo) {

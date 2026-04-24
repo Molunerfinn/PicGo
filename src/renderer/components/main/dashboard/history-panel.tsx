@@ -8,6 +8,8 @@ import { GalleryPreview } from '@/components/main/gallery/gallery-preview'
 import { type GalleryPhoto, resolveIsVideo } from '@/components/main/gallery/utils'
 import { SearchInput } from '@/components/common/search-input'
 import { cn } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
+import { AlbumSourceSwitcher } from '@/components/common/album-source-switcher'
 import { resolveTimestampValue } from '@/utils/common'
 import { DEFAULT_DATE_TIME_FORMAT } from '@/utils/consts'
 import type { DashboardHistoryRecord } from './hooks/use-dashboard-history'
@@ -163,18 +165,28 @@ function buildHistoryEntries (groups: DashboardHistoryGroup[]): DashboardHistory
   })
 }
 
+function HistoryItemSkeleton () {
+  return (
+    <div className="flex items-center gap-3 px-4 py-2">
+      <Skeleton className="size-10 shrink-0 rounded-md" />
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <Skeleton className="h-3.5 w-3/4" />
+        <Skeleton className="h-3 w-1/2" />
+      </div>
+    </div>
+  )
+}
+
 export function HistoryPanel ({
   className,
   loadThumbnails = true,
   items,
-  historySource = 'local',
-  onHistorySourceChange
+  loading = false
 }: {
   className?: string
   loadThumbnails?: boolean
   items: DashboardHistoryRecord[]
-  historySource?: 'local' | 'cloud'
-  onHistorySourceChange?: (source: 'local' | 'cloud') => void
+  loading?: boolean
 }) {
   const { t } = useTranslation()
   const [searchText, setSearchText] = useState('')
@@ -240,36 +252,9 @@ export function HistoryPanel ({
     <>
       <div className={cn('flex h-full min-h-0 flex-col', className)}>
         <div className="px-4 pb-4 pt-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-bold">{t('HISTORY_PANEL_TITLE')}</h2>
-            {onHistorySourceChange ? (
-              <div className="flex items-center rounded-md bg-muted p-0.5">
-                <button
-                  type="button"
-                  className={cn(
-                    'rounded px-2 py-0.5 text-xs font-medium transition-all',
-                    historySource === 'local'
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  )}
-                  onClick={() => onHistorySourceChange('local')}
-                >
-                  {t('GALLERY_SOURCE_LOCAL')}
-                </button>
-                <button
-                  type="button"
-                  className={cn(
-                    'rounded px-2 py-0.5 text-xs font-medium transition-all',
-                    historySource === 'cloud'
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  )}
-                  onClick={() => onHistorySourceChange('cloud')}
-                >
-                  {t('GALLERY_SOURCE_CLOUD')}
-                </button>
-              </div>
-            ) : null}
+          <div className="mb-4 flex items-center gap-2">
+            <h2 className="min-w-0 flex-1 text-lg font-bold">{t('HISTORY_PANEL_TITLE')}</h2>
+            <AlbumSourceSwitcher className="mr-6 shrink-0 xl:mr-0" />
           </div>
           <SearchInput
             value={searchText}
@@ -281,52 +266,60 @@ export function HistoryPanel ({
         </div>
 
         <div className="min-h-0 flex-1">
-          {entries.length > 0
+          {loading && items.length === 0
             ? (
-              <Virtuoso
-                key={virtuosoKey}
-                style={{ height: '100%' }}
-                data={entries}
-                overscan={320}
-                increaseViewportBy={320}
-                computeItemKey={(index, entry) => entry?.key ?? `history-entry-${index}`}
-                itemContent={(_, entry) => {
-                  if (!entry) {
-                    return null
-                  }
+              <div className="space-y-1 py-2">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <HistoryItemSkeleton key={index} />
+                ))}
+              </div>
+            )
+            : entries.length > 0
+              ? (
+                <Virtuoso
+                  key={virtuosoKey}
+                  style={{ height: '100%' }}
+                  data={entries}
+                  overscan={320}
+                  increaseViewportBy={320}
+                  computeItemKey={(index, entry) => entry?.key ?? `history-entry-${index}`}
+                  itemContent={(_, entry) => {
+                    if (!entry) {
+                      return null
+                    }
 
-                  if (entry.type === 'header') {
+                    if (entry.type === 'header') {
+                      return (
+                        <div
+                          className={cn(
+                            'px-4 pb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground',
+                            entry.isFirstGroup ? 'pt-0' : 'pt-6'
+                          )}
+                        >
+                          {entry.label}
+                        </div>
+                      )
+                    }
+
                     return (
-                      <div
-                        className={cn(
-                          'px-4 pb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground',
-                          entry.isFirstGroup ? 'pt-0' : 'pt-6'
-                        )}
-                      >
-                        {entry.label}
+                      <div className="px-4 pb-3">
+                        <HistoryItem
+                          item={entry.item}
+                          loadThumbnail={loadThumbnails}
+                          previewLabel={previewLabel}
+                          onPreview={() => {
+                            handlePreview(entry.item)
+                          }}
+                          onCopy={async () => {
+                            await handleCopy(entry.item)
+                          }}
+                        />
                       </div>
                     )
-                  }
-
-                  return (
-                    <div className="px-4 pb-3">
-                      <HistoryItem
-                        item={entry.item}
-                        loadThumbnail={loadThumbnails}
-                        previewLabel={previewLabel}
-                        onPreview={() => {
-                          handlePreview(entry.item)
-                        }}
-                        onCopy={async () => {
-                          await handleCopy(entry.item)
-                        }}
-                      />
-                    </div>
-                  )
-                }}
-              />
-            )
-            : <div className="px-4 pb-6 text-sm text-muted-foreground" />}
+                  }}
+                />
+              )
+              : <div className="px-4 pb-6 text-sm text-muted-foreground" />}
         </div>
       </div>
 

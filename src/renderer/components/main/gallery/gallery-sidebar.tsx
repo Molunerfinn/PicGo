@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { AlbumSource } from "#/types/cloudAlbum"
+import { AlbumSourceSwitcher } from "@/components/common/album-source-switcher"
 import { CloudFeatureHighlights } from "./cloud-feature-highlights"
 import { CloudSidebarSkeleton } from "./cloud-loading"
 import {
@@ -37,8 +38,7 @@ type GallerySidebarProps = {
   isCloudAvailable: boolean
   cloudLoading?: boolean
   cloudProviders?: GalleryProviderFilter[]
-  cloudTotal?: number
-  onAlbumSourceChange: (source: AlbumSource) => void
+  cloudAllTotal?: number
   // TODO(v3-post-launch): Restore tag suggestions input when Tags feature returns.
   // tagSuggestions: string[]
   onFilterChange: (next: NavContext) => void
@@ -118,8 +118,7 @@ export function GallerySidebar({
   isCloudAvailable,
   cloudLoading,
   cloudProviders,
-  cloudTotal,
-  onAlbumSourceChange,
+  cloudAllTotal,
   // TODO(v3-post-launch): Restore tagSuggestions usage when Tags sidebar filter is re-enabled.
   // tagSuggestions,
   onFilterChange,
@@ -128,8 +127,8 @@ export function GallerySidebar({
   const isCloud = albumSource === AlbumSource.CLOUD
   const showCloudNav = isCloud && isCloudAvailable
   const displayProviders = showCloudNav ? (cloudProviders ?? []) : isCloud ? [] : providers
-  const allPhotosCount = showCloudNav ? (cloudTotal ?? 0) : isCloud ? 0 : images.length
-  const hasCloudData = (cloudProviders ?? []).length > 0 || (cloudTotal ?? 0) > 0
+  const allPhotosCount = showCloudNav ? (cloudAllTotal ?? 0) : isCloud ? 0 : images.length
+  const hasCloudData = (cloudProviders ?? []).length > 0 || (cloudAllTotal ?? 0) > 0
   const isCloudLoading = isCloud && isCloudAvailable && (cloudLoading ?? false) && !hasCloudData
   const showNavList = !isCloud || showCloudNav
 
@@ -151,32 +150,7 @@ export function GallerySidebar({
       <div className="border-sidebar-border/60 flex flex-col gap-3 border-b px-4 py-4">
         <div className="flex items-center justify-between">
           <h1 className="text-base font-semibold">{t("GALLERY")}</h1>
-          <div className="flex items-center rounded-md bg-muted p-0.5">
-            <button
-              type="button"
-              className={cn(
-                "rounded px-2 py-0.5 text-xs font-medium transition-all",
-                isCloud
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              onClick={() => onAlbumSourceChange(AlbumSource.CLOUD)}
-            >
-              {t("GALLERY_SOURCE_CLOUD")}
-            </button>
-            <button
-              type="button"
-              className={cn(
-                "rounded px-2 py-0.5 text-xs font-medium transition-all",
-                !isCloud
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              onClick={() => onAlbumSourceChange(AlbumSource.LOCAL)}
-            >
-              {t("GALLERY_SOURCE_LOCAL")}
-            </button>
-          </div>
+          <AlbumSourceSwitcher />
         </div>
       </div>
 
