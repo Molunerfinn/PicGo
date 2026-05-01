@@ -10,7 +10,7 @@ This is usually because the `Set URL` (access URL) in your Qiniu image host conf
 
 Reference: [issue#79](https://github.com/Molunerfinn/PicGo/issues/79)
 
-通常是你的七牛图床配置里的`设定访问网址`没有加上`http://`或者`https//`头。
+通常是你的七牛图床配置里的`设定访问网址`没有加上`http://`或者`https://`头。
 
 参考：[issue#79](https://github.com/Molunerfinn/PicGo/issues/79)
 
