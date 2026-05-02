@@ -19,7 +19,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { TooltipIconButton } from "@/components/common/tooltip-icon-button"
 import { cn } from "@/lib/utils"
 import { pluginStoreActions, usePluginStore } from "@/store"
 import { type PluginInstalledItem } from "./types"
@@ -72,61 +72,25 @@ export function PluginSidebar({
         <div className="flex items-center justify-between gap-2">
           <h1 className="text-base font-semibold">{t("SIDEBAR_PLUGINS")}</h1>
           <div className="flex items-center gap-1">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  className={cn(
-                    "text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)",
-                    exactMatch
-                      ? "bg-(--app-plugin-sidebar-item-active-bg) text-(--app-plugin-sidebar-item-active-color)"
-                      : ""
-                  )}
-                  onClick={pluginStoreActions.toggleExactMatch}
-                  aria-pressed={exactMatch}
-                >
-                  <SpellCheckIcon className="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t("PLUGIN_SEARCH_EXACT_MATCH")}</TooltipContent>
-            </Tooltip>
+            <TooltipIconButton
+              tooltip={t("PLUGIN_SEARCH_EXACT_MATCH")}
+              icon={<SpellCheckIcon className="size-4" />}
+              pressed={exactMatch}
+              onClick={pluginStoreActions.toggleExactMatch}
+            />
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  className="text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)"
-                  onClick={onOpenAwesomeList}
-                >
-                  <BlocksIcon className="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t("PLUGIN_LIST")}</TooltipContent>
-            </Tooltip>
+            <TooltipIconButton
+              tooltip={t("PLUGIN_LIST")}
+              icon={<BlocksIcon className="size-4" />}
+              onClick={onOpenAwesomeList}
+            />
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  className="text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)"
-                  onClick={onImportLocalPlugin}
-                  disabled={isImportingLocal}
-                >
-                  {isImportingLocal ? (
-                    <LoaderCircleIcon className="size-4 animate-spin" />
-                  ) : (
-                    <FolderInputIcon className="size-4" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t("PLUGIN_IMPORT_LOCAL")}</TooltipContent>
-            </Tooltip>
+            <TooltipIconButton
+              tooltip={t("PLUGIN_IMPORT_LOCAL")}
+              icon={<FolderInputIcon className="size-4" />}
+              isLoading={isImportingLocal}
+              onClick={onImportLocalPlugin}
+            />
           </div>
         </div>
 
@@ -248,29 +212,15 @@ export function PluginSidebar({
                           )}
                         </Button>
                       ) : (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon-xs"
-                              className="text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)"
-                              onClick={(event) => {
-                                event.stopPropagation()
-                                onInstallPlugin(item.fullName)
-                              }}
-                              disabled={isMutating}
-                              aria-label={t("PLUGIN_INSTALL")}
-                            >
-                              {isMutating ? (
-                                <LoaderCircleIcon className="size-4 animate-spin" />
-                              ) : (
-                                <DownloadIcon className="size-4" />
-                              )}
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>{t("PLUGIN_INSTALL")}</TooltipContent>
-                        </Tooltip>
+                        <TooltipIconButton
+                          tooltip={t("PLUGIN_INSTALL")}
+                          icon={<DownloadIcon className="size-4" />}
+                          isLoading={isMutating}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            onInstallPlugin(item.fullName)
+                          }}
+                        />
                       )}
                     </div>
                   </div>

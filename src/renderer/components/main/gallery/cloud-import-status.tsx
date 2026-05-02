@@ -33,8 +33,7 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
   const [showAutoImportDialog, setShowAutoImportDialog] = useState(false)
   const [autoImportEnabling, setAutoImportEnabling] = useState(false)
 
-  const isPaid = userInfo !== null && userInfo !== undefined &&
-    typeof userInfo.plan === 'number' && userInfo.plan > 0
+  const isPaid = (userInfo?.plan ?? 0) > 0
   if (!isPaid) return null
 
   const autoImportEnabled = userInfo?.autoImport === true

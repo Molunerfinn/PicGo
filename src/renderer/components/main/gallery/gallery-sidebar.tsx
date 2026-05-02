@@ -5,7 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { AlbumSource } from "#/types/cloudAlbum"
 import { AlbumSourceSwitcher } from "@/components/common/album-source-switcher"
-import { CloudFeatureHighlights } from "./cloud-feature-highlights"
+import { CloudFeatureHighlights } from "@/components/common/cloud-feature-highlights"
+import { CloudRefreshButton } from "@/components/common/cloud-refresh-button"
 import { CloudSidebarSkeleton } from "./cloud-loading"
 import {
   NavType,
@@ -42,6 +43,7 @@ type GallerySidebarProps = {
   // TODO(v3-post-launch): Restore tag suggestions input when Tags feature returns.
   // tagSuggestions: string[]
   onFilterChange: (next: NavContext) => void
+  onCloudRefresh?: () => Promise<void> | void
 }
 
 // TODO(v3-post-launch): Restore TagButton when Tags sidebar filter is re-enabled.
@@ -122,6 +124,7 @@ export function GallerySidebar({
   // TODO(v3-post-launch): Restore tagSuggestions usage when Tags sidebar filter is re-enabled.
   // tagSuggestions,
   onFilterChange,
+  onCloudRefresh,
 }: GallerySidebarProps) {
   const { t } = useTranslation()
   const isCloud = albumSource === AlbumSource.CLOUD
@@ -148,8 +151,13 @@ export function GallerySidebar({
   return (
     <aside className="bg-sidebar text-sidebar-foreground border-sidebar-border flex w-(--app-gallery-sidebar-width) shrink-0 flex-col overflow-hidden rounded-xl border backdrop-blur-xl">
       <div className="border-sidebar-border/60 flex flex-col gap-3 border-b px-4 py-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-base font-semibold">{t("GALLERY")}</h1>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-1">
+            <h1 className="text-base font-semibold">{t("GALLERY")}</h1>
+            {showCloudNav && onCloudRefresh ? (
+              <CloudRefreshButton onRefresh={onCloudRefresh} />
+            ) : null}
+          </div>
           <AlbumSourceSwitcher />
         </div>
       </div>

@@ -1,8 +1,10 @@
 import { IRPCActionType } from '~/universal/types/enum'
 import { RPCRouter } from '../router'
 import picgo from '@core/picgo'
+import { GalleryDB } from '~/main/apis/core/datastore'
 import type { IPicGoCloudUserInfo } from '#/types/cloud'
 import type {
+  CloudAlbumImportAllResult,
   CloudAlbumListResponse,
   CloudAlbumBatchUpdateResult,
   CloudAlbumImportResult,
@@ -14,6 +16,7 @@ import {
   ConflictType,
   E2EAskPinReason,
   EncryptionMethod,
+  IBuildInEvent,
   SyncStatus,
   type AlbumListQuery,
   type IDiffNode,
@@ -641,6 +644,32 @@ cloudRouter
       logger.debug('[PicGo Cloud][album][setAutoImport]', `autoImport=${autoImport}`)
       const userInfo = await picgo.cloud.setAutoImport(autoImport)
       return ok(userInfo)
+    } catch (e) {
+      return fail(e)
+    }
+  })
+
+cloudRouter
+  .add(IRPCActionType.PICGO_CLOUD_ALBUM_IMPORT_ALL, async () => {
+    try {
+      logger.debug('[PicGo Cloud][album][importAll] starting')
+      // 1. Enable auto-import
+      const userInfo = await picgo.cloud.setAutoImport(true)
+      logger.debug('[PicGo Cloud][album][importAll] user info', JSON.stringify(userInfo, null, 2))
+      // 2. Read all local gallery items
+      const galleryResult = await GalleryDB.getInstance().get({ orderBy: 'desc' })
+      const localItems = galleryResult.data as ImgInfo[]
+      logger.debug('[PicGo Cloud][album][importAll]', `localItems=${localItems.length}`)
+      let created = 0
+      if (localItems.length > 0) {
+        const importResult = await picgo.cloud.album.import(localItems)
+        created = importResult.created
+        if (created > 0) {
+          picgo.emit(IBuildInEvent.CLOUD_ALBUM_UPDATED)
+        }
+      }
+      const result: CloudAlbumImportAllResult = { userInfo, created }
+      return ok(result)
     } catch (e) {
       return fail(e)
     }

@@ -114,8 +114,8 @@ export const appActions = {
     })
 
     // Auto-switch to cloud tab when a paid user logs in
-    const wasPaid = prev !== null && prev !== undefined && typeof prev.plan === 'number' && prev.plan > 0
-    const isPaid = userInfo !== null && userInfo !== undefined && typeof userInfo.plan === 'number' && userInfo.plan > 0
+    const wasPaid = (prev?.plan ?? 0) > 0
+    const isPaid = (userInfo?.plan ?? 0) > 0
     if (!wasPaid && isPaid) {
       galleryStoreActions.setAlbumSource(AlbumSource.CLOUD)
     }

@@ -6,7 +6,7 @@ import {
 } from "react"
 import { useMemoizedFn } from "ahooks"
 import { galleryAdapter } from "@/adapters/gallery"
-import { cloudAlbumAdapter } from "@/adapters/cloud-album"
+import { cloudAlbumAdapter, handleCloudImportAll as handleCloudImportAllFn } from "@/adapters/cloud-album"
 import { AppMainCard } from "@/components/common/app-main-card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useSidebar } from "@/components/ui/sidebar-context"
@@ -40,7 +40,7 @@ import {
   NavType,
 } from "./utils"
 import { IRPCActionType } from "~/universal/types/enum"
-import { CloudEmptyState } from "./cloud-empty-state"
+import { CloudEmptyState } from "@/components/common/cloud-empty-state"
 import { CloudImportProgressBanner } from "./cloud-import-progress"
 import { CloudGalleryLoading } from "./cloud-loading"
 
@@ -690,27 +690,7 @@ export function PicGoGallery() {
   }
 
 
-  const handleCloudStartImport = async () => {
-    try {
-      // Enable auto-import first
-      const autoImportResult = await cloudAlbumAdapter.setAutoImport(true)
-      if (autoImportResult.success) {
-        appActions.setPicGoCloudUserInfo(autoImportResult.data)
-      }
-      // Import all local gallery items
-      const localItems = await galleryAdapter.getGalleryItems()
-      if (localItems.length > 0) {
-        const importResult = await cloudAlbumAdapter.importItems(localItems)
-        if (importResult.success) {
-          toast.success(t("GALLERY_CLOUD_IMPORT_SUCCESS", { num: String(importResult.data.created) }))
-          handleCloudFirstPageRefresh()
-        }
-      }
-    } catch (error) {
-      console.error(error)
-      toast.error(t("GALLERY_CLOUD_IMPORT_FAILED"))
-    }
-  }
+  const handleCloudImportAll = () => handleCloudImportAllFn(handleCloudFirstPageRefresh)
 
   const handleCloudDeleteSelection = async () => {
     if (selectedIdsRef.current.length === 0) return
@@ -754,8 +734,7 @@ export function PicGoGallery() {
     })
   }
 
-  const isCloudPaidUser = cloudUserInfo !== null && cloudUserInfo !== undefined &&
-    typeof cloudUserInfo.plan === 'number' && cloudUserInfo.plan > 0
+  const isCloudPaidUser = (cloudUserInfo?.plan ?? 0) > 0
   const isCloudAvailable = isCloudPaidUser
 
   const shouldShowCloudEmptyState = isCloud && (
@@ -781,6 +760,7 @@ export function PicGoGallery() {
         cloudProviders={cloudProviderFilters}
         cloudAllTotal={cloudAllTotal}
         onFilterChange={handleFilterChange}
+        onCloudRefresh={loadCloudFirstPage}
       />
 
       <AppMainCard asChild>
@@ -805,7 +785,7 @@ export function PicGoGallery() {
                 userInfo={cloudUserInfo}
                 cloudTotal={cloudTotal}
                 cloudLoading={cloudLoading}
-                onStartImport={handleCloudStartImport}
+                onStartImport={handleCloudImportAll}
               />
             ) : isCloud && cloudLoading && cloudItems.length === 0 ? (
               <CloudGalleryLoading />

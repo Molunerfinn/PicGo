@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next"
-import { CloudIcon, RefreshCwIcon, ShieldCheckIcon } from "lucide-react"
+import { CloudIcon, RefreshCwIcon, UploadCloudIcon } from "lucide-react"
 
 const FEATURES = [
   { icon: CloudIcon, key: 'GALLERY_CLOUD_FEATURE_SYNC' },
   { icon: RefreshCwIcon, key: 'GALLERY_CLOUD_FEATURE_AUTO_IMPORT' },
-  { icon: ShieldCheckIcon, key: 'GALLERY_CLOUD_FEATURE_SECURE' },
+  { icon: UploadCloudIcon, key: 'GALLERY_CLOUD_FEATURE_SECURE' },
 ] as const
 
 export function CloudFeatureHighlights () {

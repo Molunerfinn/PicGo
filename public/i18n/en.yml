@@ -432,8 +432,8 @@ GALLERY_CLOUD_UPGRADE_DESC: Cloud gallery requires a paid plan
 GALLERY_CLOUD_UPGRADE_BUTTON: Upgrade
 GALLERY_CLOUD_FEATURES_TITLE: Why Cloud Gallery?
 GALLERY_CLOUD_FEATURE_SYNC: Access your upload history across all devices
-GALLERY_CLOUD_FEATURE_AUTO_IMPORT: Auto-import new uploads (requires opt-in)
-GALLERY_CLOUD_FEATURE_SECURE: Encrypted and securely stored
+GALLERY_CLOUD_FEATURE_AUTO_IMPORT: Auto-import new uploads info (requires opt-in)
+GALLERY_CLOUD_FEATURE_SECURE: One-click import local history to cloud
 GALLERY_CLOUD_IMPORT_GUIDE_TITLE: Import Local Records
 GALLERY_CLOUD_IMPORT_GUIDE_DESC: Import your local upload history to cloud gallery. Only records are imported, not the actual image files.
 GALLERY_CLOUD_IMPORT_GUIDE_BUTTON: Start Import
@@ -442,6 +442,9 @@ GALLERY_CLOUD_EMPTY_DESC: Your cloud gallery is empty. Upload an image to get st
 GALLERY_CLOUD_IMPORTING: Importing to cloud gallery...
 GALLERY_CLOUD_IMPORT_SUCCESS: Successfully imported ${num} items to cloud gallery
 GALLERY_CLOUD_IMPORT_FAILED: Failed to import to cloud gallery
+GALLERY_CLOUD_REFRESH: Refresh
+GALLERY_CLOUD_IMPORT_CONFIRM_TITLE: Enable Auto-Import
+GALLERY_CLOUD_IMPORT_CONFIRM_DESC: This will enable auto-import so that future uploads are automatically recorded in your cloud gallery. All existing local records will also be imported now.
 GALLERY_CLOUD_DELETE_FAILED: Failed to delete from cloud gallery
 GALLERY_INSPECTOR_DETAILS_TITLE: Details
 GALLERY_INSPECTOR_FILE_NAME: File name

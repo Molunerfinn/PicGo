@@ -287,10 +287,13 @@ const markImportedItemsInGalleryDB = async (items: Array<{ id?: string, type?: s
 
 const handleCloudAlbumEvents = () => {
   picgo.on(IBuildInEvent.CLOUD_ALBUM_UPDATED, (payload: { items?: Array<{ id?: string, type?: string }> } | undefined) => {
-    if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-      windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send(
-        IRPCActionType.UPDATE_CLOUD_ALBUM
-      )
+    // Broadcast to both settings and tray windows
+    for (const windowType of [IWindowList.SETTING_WINDOW, IWindowList.TRAY_WINDOW]) {
+      if (windowManager.has(windowType)) {
+        windowManager.get(windowType)!.webContents.send(
+          IRPCActionType.UPDATE_CLOUD_ALBUM
+        )
+      }
     }
 
     // Write back _importToPicGoCloud flag to local gallery DB for non-picgo-cloud items

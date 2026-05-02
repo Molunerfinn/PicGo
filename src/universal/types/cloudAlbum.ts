@@ -64,3 +64,8 @@ export type CloudAlbumStatsResponse = {
   total: number
   types: CloudAlbumProviderStat[]
 }
+
+export type CloudAlbumImportAllResult = {
+  userInfo: import('#/types/cloud').IPicGoCloudUserInfo | null
+  created: number
+}

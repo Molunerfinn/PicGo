@@ -10,7 +10,7 @@ import { resolveIsVideo } from '@/components/main/gallery/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useIPCOn } from '@/hooks/useIPC'
 import { cn } from '@/lib/utils'
-import { useGalleryStore } from '@/store'
+import { useAppStore, useGalleryStore } from '@/store'
 import { AlbumSource } from '#/types/cloudAlbum'
 import { IRPCActionType } from '#/types/enum'
 import type {
@@ -131,10 +131,14 @@ export function PicGoTrayPage () {
   const [clipboardFiles, setClipboardFiles] = useState<TrayWaitingItem[]>([])
   const [uploadFlag, setUploadFlag] = useState(false)
   const albumSource = useGalleryStore.use.albumSource()
-  const isCloudSource = albumSource === AlbumSource.CLOUD
+  const cloudUserInfo = useAppStore.use.picgoCloud().userInfo
+  const isPaid = (cloudUserInfo?.plan ?? 0) > 0
+  // Tray always falls back to local if user is not logged in or not on a paid plan
+  const effectiveSource = albumSource === AlbumSource.CLOUD && isPaid ? AlbumSource.CLOUD : AlbumSource.LOCAL
+  const isCloudSource = effectiveSource === AlbumSource.CLOUD
 
   const refreshUploadedItems = useMemoizedFn(async () => {
-    const items = await trayPageAdapter.getRecentUploadedItems(albumSource, 5)
+    const items = await trayPageAdapter.getRecentUploadedItems(effectiveSource, 5)
     setUploadedItems(items.map(resolveTrayUploadedItem))
   })
 
@@ -178,7 +182,7 @@ export function PicGoTrayPage () {
 
     async function loadInitialUploadedItems () {
       try {
-        const items = await trayPageAdapter.getRecentUploadedItems(albumSource, 5)
+        const items = await trayPageAdapter.getRecentUploadedItems(effectiveSource, 5)
         if (!mounted) {
           return
         }
@@ -196,7 +200,7 @@ export function PicGoTrayPage () {
       mounted = false
       removeDragBlockers()
     }
-  }, [albumSource, t])
+  }, [effectiveSource, t])
 
   const handleOpenMainWindow = () => {
     trayPageAdapter.openMainWindow()

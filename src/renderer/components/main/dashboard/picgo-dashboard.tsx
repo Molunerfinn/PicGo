@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { IPasteStyle } from '~/universal/types/enum'
 import { extractHttpUrlsFromText, isUrl, parseNewlineSeparatedUrls } from '#/utils/common'
+import { handleCloudImportAll } from '@/adapters/cloud-album'
 import { dashboardAdapter } from '@/adapters/dashboard'
 import { AppMainCard } from '@/components/common/app-main-card'
 import { FloatingPanelSheetContent } from '@/components/common/floating-panel-sheet-content'
@@ -312,7 +313,7 @@ export function PicGoDashboard () {
                 side="right"
                 className="w-[300px] border-(--app-panel-border) bg-(--app-panel-bg) text-foreground backdrop-blur-xl sm:w-[350px]"
               >
-                <HistoryPanel items={historyItems} loadThumbnails={isHistorySheetThumbnailReady} loading={historyLoading} />
+                <HistoryPanel items={historyItems} loadThumbnails={isHistorySheetThumbnailReady} loading={historyLoading} onStartImport={handleCloudImportAll} onCloudRefresh={cloudHistory.refresh} />
               </FloatingPanelSheetContent>
             </Sheet>
           </div>
@@ -453,7 +454,7 @@ export function PicGoDashboard () {
       {isDesktopHistoryVisible
         ? (
           <AppMainCard className="h-full w-80 flex-none gap-0 py-0">
-            <HistoryPanel items={historyItems} loadThumbnails loading={historyLoading} />
+            <HistoryPanel items={historyItems} loadThumbnails loading={historyLoading} onStartImport={handleCloudImportAll} onCloudRefresh={cloudHistory.refresh} />
           </AppMainCard>
         )
         : null}

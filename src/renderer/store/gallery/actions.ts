@@ -13,6 +13,8 @@ import {
 import { useGalleryStore } from './store'
 import { AlbumSource, type CloudAlbumProviderStat } from '#/types/cloudAlbum'
 import { useAppStore } from '@/store/app-store'
+import { sendRPC } from '@/utils/dataSender'
+import { IRPCActionType } from '~/universal/types/enum'
 
 function normalizeAlbumSource (value: unknown): AlbumSource {
   return value === AlbumSource.CLOUD ? AlbumSource.CLOUD : AlbumSource.LOCAL
@@ -41,8 +43,7 @@ export const galleryStoreActions = {
 
     // If user is already a paid cloud user, default to cloud source
     const userInfo = useAppStore.getState().picgoCloud.userInfo
-    const isPaidUser = userInfo !== null && userInfo !== undefined &&
-      typeof userInfo.plan === 'number' && userInfo.plan > 0
+    const isPaidUser = (userInfo?.plan ?? 0) > 0
     const resolvedSource = isPaidUser ? AlbumSource.CLOUD : normalizeAlbumSource(storedAlbumSource)
 
     useGalleryStore.setState((state) => {
@@ -81,6 +82,9 @@ export const galleryStoreActions = {
     })
 
     await rendererStorage.setItem(PICGO_GUI_GALLERY_ALBUM_SOURCE_KEY, source)
+
+    // Notify other renderer windows (tray, mini) via main-process relay
+    sendRPC(IRPCActionType.SYNC_ALBUM_SOURCE, source)
   },
   setCloudItems (items: GalleryPhoto[]) {
     useGalleryStore.setState((state) => {

@@ -1,14 +1,18 @@
+import { toast } from 'sonner'
 import type { IPicGoCloudUserInfo } from '#/types/cloud'
 import type {
   CloudAlbumBatchUpdateResult,
   CloudAlbumFiltersResponse,
+  CloudAlbumImportAllResult,
   CloudAlbumImportResult,
   CloudAlbumListQuery,
   CloudAlbumListResponse,
   CloudAlbumStatsResponse
 } from '#/types/cloudAlbum'
 import { IRPCActionType } from '#/types/enum'
+import { useAppStore } from '@/store/app-store'
 import { invokeRPC } from '@/utils/dataSender'
+import i18n from '@/i18n'
 
 export const cloudAlbumAdapter = {
   async list (query?: CloudAlbumListQuery) {
@@ -34,5 +38,33 @@ export const cloudAlbumAdapter = {
   },
   async setAutoImport (autoImport: boolean) {
     return await invokeRPC<IPicGoCloudUserInfo>(IRPCActionType.PICGO_CLOUD_SET_AUTO_IMPORT, autoImport)
+  },
+  async importAllItems () {
+    return await invokeRPC<CloudAlbumImportAllResult>(IRPCActionType.PICGO_CLOUD_ALBUM_IMPORT_ALL)
+  }
+}
+
+export async function handleCloudImportAll (onSuccess?: () => void): Promise<void> {
+  try {
+    const result = await cloudAlbumAdapter.importAllItems()
+    if (result.success) {
+      // Only merge partial fields (e.g. autoImport) — the RPC response
+      // may not include plan, so a full replace would lose it.
+      if (result.data.userInfo) {
+        useAppStore.setState((state) => {
+          state.picgoCloud.userInfo = {
+            ...state.picgoCloud.userInfo,
+            ...result.data.userInfo
+          } as IPicGoCloudUserInfo
+        })
+      }
+      if (result.data.created > 0) {
+        toast.success(i18n.t('GALLERY_CLOUD_IMPORT_SUCCESS', { num: String(result.data.created) }))
+      }
+      onSuccess?.()
+    }
+  } catch (error) {
+    console.error(error)
+    toast.error(i18n.t('OPERATION_FAILED'))
   }
 }

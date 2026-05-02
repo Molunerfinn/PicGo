@@ -1,6 +1,17 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "@tanstack/react-router"
-import { CloudIcon, CrownIcon, LogInIcon, UploadCloudIcon } from "lucide-react"
+import { CrownIcon, LoaderCircleIcon, LogInIcon, UploadCloudIcon } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { openURL } from "@/utils/dataSender"
 import type { IPicGoCloudUserInfo } from "#/types/cloud"
@@ -11,11 +22,68 @@ type CloudEmptyStateProps = {
   userInfo: IPicGoCloudUserInfo | null | undefined
   cloudTotal: number
   cloudLoading: boolean
-  onStartImport: () => void
+  onStartImport: () => Promise<void> | void
 }
 
 function isPaidUser (userInfo: IPicGoCloudUserInfo | null | undefined): boolean {
-  return userInfo !== null && userInfo !== undefined && typeof userInfo.plan === 'number' && userInfo.plan > 0
+  return (userInfo?.plan ?? 0) > 0
+}
+
+function ImportButton ({ onStartImport, needsConfirm }: { onStartImport: () => Promise<void> | void, needsConfirm: boolean }) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleImport = async () => {
+    setLoading(true)
+    try {
+      await onStartImport()
+    } finally {
+      setLoading(false)
+      setOpen(false)
+    }
+  }
+
+  if (!needsConfirm) {
+    return (
+      <Button disabled={loading} onClick={() => { handleImport().catch(() => {}) }}>
+        {loading ? <LoaderCircleIcon className="mr-1.5 size-4 animate-spin" /> : <UploadCloudIcon className="mr-2 size-4" />}
+        {t("GALLERY_CLOUD_IMPORT_GUIDE_BUTTON")}
+      </Button>
+    )
+  }
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <Button>
+          <UploadCloudIcon className="mr-2 size-4" />
+          {t("GALLERY_CLOUD_IMPORT_GUIDE_BUTTON")}
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t("GALLERY_CLOUD_IMPORT_CONFIRM_TITLE")}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t("GALLERY_CLOUD_IMPORT_CONFIRM_DESC")}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={loading}>{t("CANCEL")}</AlertDialogCancel>
+          <Button
+            disabled={loading}
+            onClick={(event) => {
+              event.preventDefault()
+              handleImport().catch(() => {})
+            }}
+          >
+            {loading ? <LoaderCircleIcon className="mr-1.5 size-4 animate-spin" /> : null}
+            {t("CONFIRM")}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
 }
 
 export function CloudEmptyState ({
@@ -71,8 +139,8 @@ export function CloudEmptyState ({
     )
   }
 
-  // Paid user, empty album, autoImport off
-  if (cloudTotal === 0 && !cloudLoading && !userInfo.autoImport) {
+  // Paid user, empty album
+  if (cloudTotal === 0 && !cloudLoading) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8">
         <div className="flex size-16 items-center justify-center rounded-full bg-muted">
@@ -82,25 +150,7 @@ export function CloudEmptyState ({
           <h3 className="text-lg font-semibold">{t("GALLERY_CLOUD_IMPORT_GUIDE_TITLE")}</h3>
           <p className="mt-1 text-sm text-muted-foreground">{t("GALLERY_CLOUD_IMPORT_GUIDE_DESC")}</p>
         </div>
-        <Button onClick={onStartImport}>
-          <UploadCloudIcon className="mr-2 size-4" />
-          {t("GALLERY_CLOUD_IMPORT_GUIDE_BUTTON")}
-        </Button>
-      </div>
-    )
-  }
-
-  // Paid user, empty album (autoImport on or loading)
-  if (cloudTotal === 0 && !cloudLoading) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8">
-        <div className="flex size-16 items-center justify-center rounded-full bg-muted">
-          <CloudIcon className="size-8 text-muted-foreground" />
-        </div>
-        <div className="text-center">
-          <h3 className="text-lg font-semibold">{t("GALLERY_CLOUD_EMPTY_TITLE")}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{t("GALLERY_CLOUD_EMPTY_DESC")}</p>
-        </div>
+        <ImportButton onStartImport={onStartImport} needsConfirm={!userInfo.autoImport} />
       </div>
     )
   }

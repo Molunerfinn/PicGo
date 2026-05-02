@@ -1,13 +1,12 @@
 import {
   DownloadIcon,
-  LoaderCircleIcon,
   RefreshCwIcon,
   Trash2Icon,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { TooltipIconButton } from "@/components/common/tooltip-icon-button"
 import { pluginStoreActions } from "@/store"
 import { Switch } from "@/components/ui/switch"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -129,47 +128,25 @@ export function PluginDetailHeader({
 
         {plugin ? (
           <div className="flex items-center gap-1">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  className="text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)"
-                  disabled={isMutating}
-                  aria-label={t("UNINSTALL_PLUGIN")}
-                  onClick={async () => {
-                    await handleUninstallPlugin()
-                  }}
-                >
-                  <Trash2Icon className="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t("UNINSTALL_PLUGIN")}</TooltipContent>
-            </Tooltip>
+            <TooltipIconButton
+              tooltip={t("UNINSTALL_PLUGIN")}
+              icon={<Trash2Icon className="size-4" />}
+              size="icon-sm"
+              disabled={isMutating}
+              onClick={async () => {
+                await handleUninstallPlugin()
+              }}
+            />
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  className="text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)"
-                  disabled={isMutating}
-                  aria-label={t("UPDATE_PLUGIN")}
-                  onClick={async () => {
-                    await handleUpdatePlugin()
-                  }}
-                >
-                  {isMutating ? (
-                    <LoaderCircleIcon className="size-4 animate-spin" />
-                  ) : (
-                    <RefreshCwIcon className="size-4" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t("UPDATE_PLUGIN")}</TooltipContent>
-            </Tooltip>
+            <TooltipIconButton
+              tooltip={t("UPDATE_PLUGIN")}
+              icon={<RefreshCwIcon className="size-4" />}
+              size="icon-sm"
+              isLoading={isMutating}
+              onClick={async () => {
+                await handleUpdatePlugin()
+              }}
+            />
 
             <Tooltip>
               <TooltipTrigger asChild>
@@ -193,28 +170,15 @@ export function PluginDetailHeader({
           </div>
         ) : selectedItem.hasInstall ? null : (
           <div className="flex items-center gap-1">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  className="text-muted-foreground hover:text-(--app-plugin-sidebar-item-active-color)"
-                  disabled={isMutating}
-                  aria-label={t("PLUGIN_INSTALL")}
-                  onClick={async () => {
-                    await handleInstallPlugin()
-                  }}
-                >
-                  {isMutating ? (
-                    <LoaderCircleIcon className="size-4 animate-spin" />
-                  ) : (
-                    <DownloadIcon className="size-4" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t("PLUGIN_INSTALL")}</TooltipContent>
-            </Tooltip>
+            <TooltipIconButton
+              tooltip={t("PLUGIN_INSTALL")}
+              icon={<DownloadIcon className="size-4" />}
+              size="icon-sm"
+              isLoading={isMutating}
+              onClick={async () => {
+                await handleInstallPlugin()
+              }}
+            />
           </div>
         )}
       </div>

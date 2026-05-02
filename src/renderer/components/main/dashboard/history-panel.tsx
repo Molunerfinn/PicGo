@@ -10,6 +10,11 @@ import { SearchInput } from '@/components/common/search-input'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AlbumSourceSwitcher } from '@/components/common/album-source-switcher'
+import { CloudEmptyState } from '@/components/common/cloud-empty-state'
+import { CloudFeatureHighlights } from '@/components/common/cloud-feature-highlights'
+import { CloudRefreshButton } from '@/components/common/cloud-refresh-button'
+import { AlbumSource } from '#/types/cloudAlbum'
+import { useAppStore, useGalleryStore } from '@/store'
 import { resolveTimestampValue } from '@/utils/common'
 import { DEFAULT_DATE_TIME_FORMAT } from '@/utils/consts'
 import type { DashboardHistoryRecord } from './hooks/use-dashboard-history'
@@ -181,14 +186,24 @@ export function HistoryPanel ({
   className,
   loadThumbnails = true,
   items,
-  loading = false
+  loading = false,
+  onStartImport,
+  onCloudRefresh
 }: {
   className?: string
   loadThumbnails?: boolean
   items: DashboardHistoryRecord[]
   loading?: boolean
+  onStartImport?: () => Promise<void> | void
+  onCloudRefresh?: () => Promise<void> | void
 }) {
   const { t } = useTranslation()
+  const albumSource = useGalleryStore.use.albumSource()
+  const cloudUserInfo = useAppStore.use.picgoCloud().userInfo
+  const isCloud = albumSource === AlbumSource.CLOUD
+  const isCloudPaidUser = (cloudUserInfo?.plan ?? 0) > 0
+  const showCloudRestriction = isCloud && !isCloudPaidUser
+  const showCloudEmpty = isCloud && isCloudPaidUser && !loading && items.length === 0
   const [searchText, setSearchText] = useState('')
   const [previewOpen, setPreviewOpen] = useState(false)
   const [activePreviewId, setActivePreviewId] = useState<number | null>(null)
@@ -253,7 +268,12 @@ export function HistoryPanel ({
       <div className={cn('flex h-full min-h-0 flex-col', className)}>
         <div className="px-4 pb-4 pt-6">
           <div className="mb-4 flex items-center gap-2">
-            <h2 className="min-w-0 flex-1 text-lg font-bold">{t('HISTORY_PANEL_TITLE')}</h2>
+            <div className="flex min-w-0 flex-1 items-center gap-1">
+              <h2 className="text-lg font-bold">{t('HISTORY_PANEL_TITLE')}</h2>
+              {isCloud && isCloudPaidUser && onCloudRefresh ? (
+                <CloudRefreshButton onRefresh={onCloudRefresh} />
+              ) : null}
+            </div>
             <AlbumSourceSwitcher className="mr-6 shrink-0 xl:mr-0" />
           </div>
           <SearchInput
@@ -266,60 +286,81 @@ export function HistoryPanel ({
         </div>
 
         <div className="min-h-0 flex-1">
-          {loading && items.length === 0
+          {showCloudRestriction
             ? (
-              <div className="space-y-1 py-2">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <HistoryItemSkeleton key={index} />
-                ))}
+              <div className="flex h-full flex-col gap-2 overflow-y-auto px-4 py-2">
+                <CloudFeatureHighlights />
+                <CloudEmptyState
+                  userInfo={cloudUserInfo}
+                  cloudTotal={0}
+                  cloudLoading={false}
+                  onStartImport={() => {}}
+                />
               </div>
             )
-            : entries.length > 0
+            : showCloudEmpty
               ? (
-                <Virtuoso
-                  key={virtuosoKey}
-                  style={{ height: '100%' }}
-                  data={entries}
-                  overscan={320}
-                  increaseViewportBy={320}
-                  computeItemKey={(index, entry) => entry?.key ?? `history-entry-${index}`}
-                  itemContent={(_, entry) => {
-                    if (!entry) {
-                      return null
-                    }
-
-                    if (entry.type === 'header') {
-                      return (
-                        <div
-                          className={cn(
-                            'px-4 pb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground',
-                            entry.isFirstGroup ? 'pt-0' : 'pt-6'
-                          )}
-                        >
-                          {entry.label}
-                        </div>
-                      )
-                    }
-
-                    return (
-                      <div className="px-4 pb-3">
-                        <HistoryItem
-                          item={entry.item}
-                          loadThumbnail={loadThumbnails}
-                          previewLabel={previewLabel}
-                          onPreview={() => {
-                            handlePreview(entry.item)
-                          }}
-                          onCopy={async () => {
-                            await handleCopy(entry.item)
-                          }}
-                        />
-                      </div>
-                    )
-                  }}
+                <CloudEmptyState
+                  userInfo={cloudUserInfo}
+                  cloudTotal={0}
+                  cloudLoading={false}
+                  onStartImport={onStartImport ?? (() => {})}
                 />
               )
-              : <div className="px-4 pb-6 text-sm text-muted-foreground" />}
+              : loading && items.length === 0
+                ? (
+                  <div className="space-y-1 py-2">
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <HistoryItemSkeleton key={index} />
+                    ))}
+                  </div>
+                )
+                : entries.length > 0
+                  ? (
+                    <Virtuoso
+                      key={virtuosoKey}
+                      style={{ height: '100%' }}
+                      data={entries}
+                      overscan={320}
+                      increaseViewportBy={320}
+                      computeItemKey={(index, entry) => entry?.key ?? `history-entry-${index}`}
+                      itemContent={(_, entry) => {
+                        if (!entry) {
+                          return null
+                        }
+
+                        if (entry.type === 'header') {
+                          return (
+                            <div
+                              className={cn(
+                                'px-4 pb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground',
+                                entry.isFirstGroup ? 'pt-0' : 'pt-6'
+                              )}
+                            >
+                              {entry.label}
+                            </div>
+                          )
+                        }
+
+                        return (
+                          <div className="px-4 pb-3">
+                            <HistoryItem
+                              item={entry.item}
+                              loadThumbnail={loadThumbnails}
+                              previewLabel={previewLabel}
+                              onPreview={() => {
+                                handlePreview(entry.item)
+                              }}
+                              onCopy={async () => {
+                                await handleCopy(entry.item)
+                              }}
+                            />
+                          </div>
+                        )
+                      }}
+                    />
+                  )
+                  : <div className="px-4 pb-6 text-sm text-muted-foreground" />}
         </div>
       </div>
 
