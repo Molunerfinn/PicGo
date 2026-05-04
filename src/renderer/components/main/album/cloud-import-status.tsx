@@ -16,7 +16,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cloudAlbumAdapter } from "@/adapters/cloud-album"
 import { albumAdapter } from "@/adapters/album"
-import { appActions, useAppStore } from "@/store"
+import { setPicGoCloudUserInfoQueryData, usePicGoCloudUserInfo } from "@/queries/picgo-cloud"
 import type { AlbumPhoto } from "./utils"
 
 const PICGO_CLOUD_TYPE = 'picgo-cloud'
@@ -27,16 +27,15 @@ type CloudImportStatusProps = {
 
 export function CloudImportStatus ({ images }: CloudImportStatusProps) {
   const { t } = useTranslation()
-  const userInfo = useAppStore.use.picgoCloud().userInfo
+  const { userInfo, isPaid } = usePicGoCloudUserInfo()
   const [importing, setImporting] = useState(false)
   const [localImportedIds, setLocalImportedIds] = useState<Set<string>>(new Set())
   const [showAutoImportDialog, setShowAutoImportDialog] = useState(false)
   const [autoImportEnabling, setAutoImportEnabling] = useState(false)
 
-  const isPaid = (userInfo?.plan ?? 0) > 0
   if (!isPaid) return null
 
-  const autoImportEnabled = userInfo?.autoImport === true
+  const autoImportEnabled = isPaid && userInfo?.autoImport === true
 
   // Analyze selection status
   const allInCloud = images.every((img) =>
@@ -48,6 +47,7 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
   )
 
   const doImport = async (itemsToImport: AlbumPhoto[]) => {
+    if (!isPaid) return
     setImporting(true)
     try {
       const rawItems = itemsToImport.map((img) => img.raw)
@@ -71,6 +71,7 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
   }
 
   const handleImportClick = (itemsToImport: AlbumPhoto[]) => {
+    if (!isPaid) return
     if (!autoImportEnabled) {
       setShowAutoImportDialog(true)
       return
@@ -80,11 +81,12 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
   }
 
   const handleAutoImportConfirm = async () => {
+    if (!isPaid) return
     setAutoImportEnabling(true)
     try {
       const result = await cloudAlbumAdapter.setAutoImport(true)
       if (result.success) {
-        appActions.setPicGoCloudUserInfo(result.data)
+        setPicGoCloudUserInfoQueryData(result.data)
       }
       // Now do the import
       await doImport(importableItems.length > 0 ? importableItems : images.filter((img) => img.type !== PICGO_CLOUD_TYPE))

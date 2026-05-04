@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   CircleAlertIcon,
+  CrownIcon,
   ExternalLinkIcon,
   HelpCircleIcon,
   LoaderCircleIcon
@@ -30,16 +31,20 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { FreePlanOnly } from '@/components/common/plan-gate'
 import { toast } from 'sonner'
 import { cloudAdapter } from '@/adapters/cloud'
 import { cloudAlbumAdapter } from '@/adapters/cloud-album'
 import {
   appActions,
   PicGoCloudLoginStatusValues,
-  PicGoCloudRequestStatusValues,
   useAppStore
 } from '@/store'
 import { cloudStoreActions, useCloudStore } from '@/store/cloud'
+import {
+  setPicGoCloudUserInfoQueryData,
+  usePicGoCloudUserInfo
+} from '@/queries/picgo-cloud'
 import { CloudConflictDialog } from './cloud-conflict-dialog'
 import { formatCloudSyncTime } from './utils'
 
@@ -67,9 +72,12 @@ function showConfigSyncToast (
 
 export function PicGoCloud () {
   const { t } = useTranslation()
-  const userInfo = useAppStore.use.picgoCloud().userInfo
-  const userInfoStatus = useAppStore.use.picgoCloud().userInfoStatus
-  const userInfoError = useAppStore.use.picgoCloud().userInfoError
+  const {
+    userInfo,
+    isPaid: isPaidUser,
+    isLoading: isUserInfoLoading,
+    error: userInfoError
+  } = usePicGoCloudUserInfo()
   const loginStatus = useAppStore.use.picgoCloud().loginStatus
   const loginError = useAppStore.use.picgoCloud().loginError
   const hasAgreedToTermsAndPrivacy = useAppStore.use.picgoCloud().hasAgreedToTermsAndPrivacy
@@ -80,13 +88,13 @@ export function PicGoCloud () {
   const isRestartPromptOpen = useCloudStore.use.isRestartPromptOpen()
   const isEncryptionMethodUpdating = useCloudStore.use.isEncryptionMethodUpdating()
 
-  const isUserInfoLoading = userInfoStatus === PicGoCloudRequestStatusValues.Loading
   const isLoginInProgress = loginStatus === PicGoCloudLoginStatusValues.InProgress
   const isConfigSyncRunning =
     configSyncState.sessionStatus === IPicGoCloudConfigSyncSessionStatus.SYNCING
   const isConfigSyncBusy =
     configSyncState.sessionStatus !== IPicGoCloudConfigSyncSessionStatus.IDLE
   const isEncryptionDisabled = isConfigSyncBusy || isConfigSyncStateLoading || isEncryptionMethodUpdating
+  const isAutoImportEnabled = isPaidUser && userInfo?.autoImport === true
   const lastSyncedAtText = formatCloudSyncTime(
     configSyncState.lastSyncedAt,
     t('PICGO_CLOUD_LAST_SYNC_TIME_NONE')
@@ -115,9 +123,7 @@ export function PicGoCloud () {
     showConfigSyncToast(runResult.toastType, runResult.message)
 
     if (runResult.authInvalidated) {
-      appActions.setPicGoCloudUserInfo(null)
-      appActions.setPicGoCloudUserInfoError(null)
-      appActions.setPicGoCloudUserInfoStatus(PicGoCloudRequestStatusValues.Idle)
+      setPicGoCloudUserInfoQueryData(null)
       return
     }
 
@@ -141,9 +147,8 @@ export function PicGoCloud () {
       return
     }
 
-    appActions.setPicGoCloudUserInfo(result.data)
-    appActions.setPicGoCloudUserInfoError(null)
-    appActions.setPicGoCloudUserInfoStatus(PicGoCloudRequestStatusValues.Idle)
+    setPicGoCloudUserInfoQueryData(result.data)
+    appActions.setPicGoCloudLoginError(null)
     await loadConfigSyncState()
   }
 
@@ -151,33 +156,15 @@ export function PicGoCloud () {
     let disposed = false
 
     async function bootstrap () {
-      if (userInfo !== undefined) {
-        if (userInfo) {
-          await loadConfigSyncState()
-        }
+      if (!userInfo) {
         return
       }
 
-      appActions.setPicGoCloudUserInfoStatus(PicGoCloudRequestStatusValues.Loading)
-      appActions.setPicGoCloudUserInfoError(null)
-
-      const result = await cloudAdapter.getUserInfo()
       if (disposed) {
         return
       }
 
-      if (!result.success) {
-        appActions.setPicGoCloudUserInfoStatus(PicGoCloudRequestStatusValues.Error)
-        appActions.setPicGoCloudUserInfoError(result.error)
-        return
-      }
-
-      appActions.setPicGoCloudUserInfo(result.data)
-      appActions.setPicGoCloudUserInfoStatus(PicGoCloudRequestStatusValues.Idle)
-
-      if (result.data) {
-        await loadConfigSyncState()
-      }
+      await loadConfigSyncState()
     }
 
     bootstrap()
@@ -203,9 +190,7 @@ export function PicGoCloud () {
       return
     }
 
-    appActions.setPicGoCloudUserInfo(null)
-    appActions.setPicGoCloudUserInfoError(null)
-    appActions.setPicGoCloudUserInfoStatus(PicGoCloudRequestStatusValues.Idle)
+    setPicGoCloudUserInfoQueryData(null)
   }
 
   async function handleStartSync () {
@@ -269,11 +254,12 @@ export function PicGoCloud () {
   }
 
   const handleAutoImportChange = async (checked: boolean) => {
+    if (!isPaidUser) return
     setIsAutoImportUpdating(true)
     try {
       const result = await cloudAlbumAdapter.setAutoImport(checked)
       if (result.success) {
-        appActions.setPicGoCloudUserInfo(result.data)
+        setPicGoCloudUserInfoQueryData(result.data)
       }
     } catch (error) {
       console.error(error)
@@ -304,7 +290,8 @@ export function PicGoCloud () {
     await persistEncryptionMethod(nextMode)
   }
 
-  const errorMessage = userInfoError ?? loginError
+  const queryErrorMessage = userInfoError instanceof Error ? userInfoError.message : null
+  const errorMessage = queryErrorMessage ?? loginError
 
   return (
     <>
@@ -435,15 +422,29 @@ export function PicGoCloud () {
 
                   <div className="flex items-center justify-between border-t border-border/60 pt-4">
                     <div className="space-y-0.5">
-                      <div className="text-sm font-medium">{t('PICGO_CLOUD_AUTO_IMPORT_LABEL')}</div>
+                      <div className="flex items-center gap-1.5 text-sm font-medium">
+                        {t('PICGO_CLOUD_AUTO_IMPORT_LABEL')}
+                        <FreePlanOnly>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex cursor-help">
+                                <CrownIcon className="size-3.5 text-amber-500" />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{t('ALBUM_CLOUD_UPGRADE_DESC')}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </FreePlanOnly>
+                      </div>
                       <div className="text-xs text-muted-foreground">
                         {t('PICGO_CLOUD_AUTO_IMPORT_DESC')}
                       </div>
                     </div>
                     <Switch
-                      checked={userInfo?.autoImport ?? false}
+                      checked={isAutoImportEnabled}
                       onCheckedChange={handleAutoImportChange}
-                      disabled={isAutoImportUpdating}
+                      disabled={isAutoImportUpdating || !isPaidUser}
                     />
                   </div>
                 </div>

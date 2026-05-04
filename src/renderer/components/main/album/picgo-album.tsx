@@ -14,6 +14,7 @@ import { useIPCOn } from "@/hooks/useIPC"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { appActions, albumStoreActions, useAppStore, useAlbumStore } from "@/store"
+import { usePicGoCloudUserInfo } from "@/queries/picgo-cloud"
 import {
   CLOUD_ALBUM_PAGE_SIZE,
   GALLERY_MASONRY_COLUMN_COUNT_DEFAULT,
@@ -80,7 +81,11 @@ export function PicGoAlbum() {
   const masonryColumnCount =
     useAlbumStore.use.masonryColumnCount() || GALLERY_MASONRY_COLUMN_COUNT_DEFAULT
   const picBeds = useAppStore.use.picBeds()
-  const cloudUserInfo = useAppStore.use.picgoCloud().userInfo
+  const {
+    userInfo: cloudUserInfo,
+    isPaid: isCloudPaidUser,
+    isLoading: isCloudUserInfoLoading
+  } = usePicGoCloudUserInfo()
   const albumSource = useAlbumStore.use.albumSource()
   const cloudItems = useAlbumStore.use.cloudItems()
   const cloudAllTotal = useAlbumStore.use.cloudAllTotal()
@@ -734,10 +739,9 @@ export function PicGoAlbum() {
     })
   }
 
-  const isCloudPaidUser = (cloudUserInfo?.plan ?? 0) > 0
   const isCloudAvailable = isCloudPaidUser
 
-  const shouldShowCloudEmptyState = isCloud && (
+  const shouldShowCloudEmptyState = isCloud && !isCloudUserInfoLoading && (
     !isCloudAvailable || (cloudTotal === 0 && !cloudLoading)
   )
 

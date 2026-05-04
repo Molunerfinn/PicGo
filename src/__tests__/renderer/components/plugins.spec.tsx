@@ -83,9 +83,6 @@ function resetStores () {
     hasHydrated: true,
     hasSettingsHydrated: true,
     picgoCloud: {
-      userInfo: undefined,
-      userInfoStatus: 'IDLE',
-      userInfoError: null,
       loginStatus: 'IDLE',
       loginError: null,
       hasAgreedToTermsAndPrivacy: false

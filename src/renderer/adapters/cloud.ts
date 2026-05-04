@@ -13,9 +13,13 @@ export const PICGO_CLOUD_TERMS_URL = 'https://picgo.github.io/PicGo-Doc/guide/cl
 export const PICGO_CLOUD_PRIVACY_URL = 'https://picgo.github.io/PicGo-Doc/guide/cloud.html#privacy-policy'
 export const PICGO_CLOUD_ENCRYPTION_DOC_URL = 'https://picgo.github.io/PicGo-Doc/guide/cloud.html#encryption'
 
+type PicGoCloudUserInfoOptions = {
+  refresh?: boolean
+}
+
 export const cloudAdapter = {
-  async getUserInfo () {
-    return await invokeRPC<IPicGoCloudUserInfo | null>(IRPCActionType.PICGO_CLOUD_GET_USER_INFO)
+  async getUserInfo (options?: PicGoCloudUserInfoOptions) {
+    return await invokeRPC<IPicGoCloudUserInfo | null>(IRPCActionType.PICGO_CLOUD_GET_USER_INFO, options)
   },
   async login () {
     return await invokeRPC<IPicGoCloudUserInfo>(IRPCActionType.PICGO_CLOUD_LOGIN)

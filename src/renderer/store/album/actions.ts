@@ -12,7 +12,6 @@ import {
 } from '@/store/utils'
 import { useAlbumStore } from './store'
 import { AlbumSource, type CloudAlbumProviderStat } from '#/types/cloudAlbum'
-import { useAppStore } from '@/store/app-store'
 import { sendRPC } from '@/utils/dataSender'
 import { IRPCActionType } from '~/universal/types/enum'
 
@@ -41,17 +40,12 @@ export const albumStoreActions = {
       )
     ])
 
-    // If user is already a paid cloud user, default to cloud source
-    const userInfo = useAppStore.getState().picgoCloud.userInfo
-    const isPaidUser = (userInfo?.plan ?? 0) > 0
-    const resolvedSource = isPaidUser ? AlbumSource.CLOUD : normalizeAlbumSource(storedAlbumSource)
-
     useAlbumStore.setState((state) => {
       state.viewMode = normalizeAlbumViewMode(storedViewMode)
       state.masonryColumnCount = normalizeAlbumMasonryColumnCount(
         storedMasonryColumnCount
       )
-      state.albumSource = resolvedSource
+      state.albumSource = normalizeAlbumSource(storedAlbumSource)
       state.hasHydrated = true
     })
   },

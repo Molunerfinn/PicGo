@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-import type { IPicGoCloudUserInfo } from '#/types/cloud'
 import pkg from 'root/package.json'
 import type { PluginInstalledItem } from '@/components/main/plugins/types'
 import type { SettingsVersionState } from '@/components/main/settings/utils'
@@ -12,27 +11,15 @@ import type {
 } from '@/components/main/providers/types'
 import { createSelectors } from './create-selectors'
 
-export const PicGoCloudRequestStatusValues = {
-  Idle: 'IDLE',
-  Loading: 'LOADING',
-  Error: 'ERROR'
-} as const
-
 export const PicGoCloudLoginStatusValues = {
   Idle: 'IDLE',
   InProgress: 'IN_PROGRESS'
 } as const
 
-export type PicGoCloudRequestStatus =
-  typeof PicGoCloudRequestStatusValues[keyof typeof PicGoCloudRequestStatusValues]
-
 export type PicGoCloudLoginStatus =
   typeof PicGoCloudLoginStatusValues[keyof typeof PicGoCloudLoginStatusValues]
 
 export interface PicGoCloudUserInfoState {
-  userInfo: IPicGoCloudUserInfo | null | undefined
-  userInfoStatus: PicGoCloudRequestStatus
-  userInfoError: string | null
   loginStatus: PicGoCloudLoginStatus
   loginError: string | null
   hasAgreedToTermsAndPrivacy: boolean
@@ -65,9 +52,6 @@ export const initialAppStoreState: AppStoreState = {
   hasHydrated: false,
   hasSettingsHydrated: false,
   picgoCloud: {
-    userInfo: undefined,
-    userInfoStatus: PicGoCloudRequestStatusValues.Idle,
-    userInfoError: null,
     loginStatus: PicGoCloudLoginStatusValues.Idle,
     loginError: null,
     hasAgreedToTermsAndPrivacy: false

@@ -21,7 +21,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sidebar } from "@/components/ui/sidebar"
 import { useSidebar } from "@/components/ui/sidebar-context"
 import { cn } from "@/lib/utils"
-import { useAppStore } from "@/store"
+import { usePicGoCloudUserInfo } from "@/queries/picgo-cloud"
 import { SidebarNavButton } from "./sidebar-nav-button"
 import { MainMoreDialog } from "./main-more-dialog"
 
@@ -47,7 +47,7 @@ export function PicGoAppSidebar({
   const navigate = useNavigate()
   const matchRoute = useMatchRoute()
   const { state, setOpen } = useSidebar()
-  const cloudUserInfo = useAppStore.use.picgoCloud().userInfo
+  const { userInfo: cloudUserInfo } = usePicGoCloudUserInfo()
   const collapsed = state === "collapsed"
   const [avatarError, setAvatarError] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)

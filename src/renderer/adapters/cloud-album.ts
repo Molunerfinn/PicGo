@@ -1,5 +1,5 @@
 import { toast } from 'sonner'
-import type { IPicGoCloudUserInfo } from '#/types/cloud'
+import { UserPlanLevel, type IPicGoCloudUserInfo } from '#/types/cloud'
 import type {
   CloudAlbumBatchUpdateResult,
   CloudAlbumFiltersResponse,
@@ -10,7 +10,11 @@ import type {
   CloudAlbumStatsResponse
 } from '#/types/cloudAlbum'
 import { IRPCActionType } from '#/types/enum'
-import { useAppStore } from '@/store/app-store'
+import {
+  mergePicGoCloudUserInfoQueryData,
+  PicGoCloudQueryKeys
+} from '@/queries/picgo-cloud'
+import { rendererQueryClient } from '@/queries/query-client'
 import { invokeRPC } from '@/utils/dataSender'
 import i18n from '@/i18n'
 
@@ -46,17 +50,19 @@ export const cloudAlbumAdapter = {
 
 export async function handleCloudImportAll (onSuccess?: () => void): Promise<void> {
   try {
+    const currentUserInfo = rendererQueryClient.getQueryData<IPicGoCloudUserInfo | null>(
+      PicGoCloudQueryKeys.userInfo
+    )
+    if ((currentUserInfo?.plan ?? UserPlanLevel.Free) <= UserPlanLevel.Free) {
+      return
+    }
+
     const result = await cloudAlbumAdapter.importAllItems()
     if (result.success) {
       // Only merge partial fields (e.g. autoImport) — the RPC response
       // may not include plan, so a full replace would lose it.
       if (result.data.userInfo) {
-        useAppStore.setState((state) => {
-          state.picgoCloud.userInfo = {
-            ...state.picgoCloud.userInfo,
-            ...result.data.userInfo
-          } as IPicGoCloudUserInfo
-        })
+        mergePicGoCloudUserInfoQueryData(result.data.userInfo)
       }
       if (result.data.created > 0) {
         toast.success(i18n.t('ALBUM_CLOUD_IMPORT_SUCCESS', { num: String(result.data.created) }))

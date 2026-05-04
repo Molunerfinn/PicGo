@@ -283,8 +283,14 @@ const buildResolvedConfig = async (resolution: IPicGoCloudConfigSyncResolution):
   return base
 }
 
-const getUserInfo = async (): Promise<IPicGoCloudUserInfo | null> => {
-  return await picgo.cloud.getUserInfo()
+type PicGoCloudGetUserInfoOptions = {
+  refresh?: boolean
+}
+
+const getUserInfo = async (options?: PicGoCloudGetUserInfoOptions): Promise<IPicGoCloudUserInfo | null> => {
+  return options?.refresh === true
+    ? await picgo.cloud.refreshUserInfo()
+    : await picgo.cloud.getUserInfo()
 }
 
 const loginWithTimeout = async (): Promise<void> => {
@@ -310,9 +316,10 @@ const loginWithTimeout = async (): Promise<void> => {
 }
 
 cloudRouter
-  .add(IRPCActionType.PICGO_CLOUD_GET_USER_INFO, async () => {
+  .add(IRPCActionType.PICGO_CLOUD_GET_USER_INFO, async (args) => {
     try {
-      const userInfo = await getUserInfo()
+      const [options] = args as [PicGoCloudGetUserInfoOptions | undefined]
+      const userInfo = await getUserInfo(options)
       return ok(userInfo)
     } catch (e) {
       return fail(e)

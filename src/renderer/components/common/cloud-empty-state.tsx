@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { openURL } from "@/utils/dataSender"
-import type { IPicGoCloudUserInfo } from "#/types/cloud"
+import { UserPlanLevel, type IPicGoCloudUserInfo } from "#/types/cloud"
 
 const PICGO_CLOUD_PRICING_URL = 'https://cloud.picgo.app/pricing'
 
@@ -26,7 +26,7 @@ type CloudEmptyStateProps = {
 }
 
 function isPaidUser (userInfo: IPicGoCloudUserInfo | null | undefined): boolean {
-  return (userInfo?.plan ?? 0) > 0
+  return (userInfo?.plan ?? UserPlanLevel.Free) > UserPlanLevel.Free
 }
 
 function ImportButton ({ onStartImport, needsConfirm }: { onStartImport: () => Promise<void> | void, needsConfirm: boolean }) {
@@ -150,7 +150,7 @@ export function CloudEmptyState ({
           <h3 className="text-lg font-semibold">{t("ALBUM_CLOUD_IMPORT_GUIDE_TITLE")}</h3>
           <p className="mt-1 text-sm text-muted-foreground">{t("ALBUM_CLOUD_IMPORT_GUIDE_DESC")}</p>
         </div>
-        <ImportButton onStartImport={onStartImport} needsConfirm={!userInfo.autoImport} />
+        <ImportButton onStartImport={onStartImport} needsConfirm={!isPaidUser(userInfo) || !userInfo.autoImport} />
       </div>
     )
   }

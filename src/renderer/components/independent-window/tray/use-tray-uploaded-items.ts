@@ -6,7 +6,8 @@ import { IRPCActionType } from '#/types/enum'
 import { trayPageAdapter, type TrayPageAlbumItem } from '@/adapters/tray-page'
 import { resolveIsVideo } from '@/components/main/album/utils'
 import { useIPCOn } from '@/hooks/useIPC'
-import { useAlbumStore, useAppStore } from '@/store'
+import { usePicGoCloudUserInfo } from '@/queries/picgo-cloud'
+import { useAlbumStore } from '@/store'
 
 function resolveTrayUploadedItem (item: TrayPageAlbumItem) {
   return {
@@ -37,8 +38,7 @@ export function useTrayUploadedItems () {
   const [uploadedItems, setUploadedItems] = useState<TrayUploadedDisplayItem[]>([])
   const [uploadFlag, setUploadFlag] = useState(false)
   const albumSource = useAlbumStore.use.albumSource()
-  const cloudUserInfo = useAppStore.use.picgoCloud().userInfo
-  const isPaid = (cloudUserInfo?.plan ?? 0) > 0
+  const { isPaid } = usePicGoCloudUserInfo()
 
   // Tray follows the shared album source, but cloud history is only available
   // for paid cloud users. Everyone else should keep seeing the local album list.

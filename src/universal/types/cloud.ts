@@ -1,7 +1,14 @@
+export enum UserPlanLevel {
+  Free = 0,
+  Starter = 1,
+  Pro = 2,
+  Max = 3,
+}
+
 export interface IPicGoCloudUserInfo {
   user: string | null
   avatar?: string | null
-  plan?: number
+  plan?: UserPlanLevel
   autoImport?: boolean
 }
 

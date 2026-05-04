@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useMemoizedFn } from 'ahooks'
 import { useIPCOn } from '@/hooks/useIPC'
 import { cloudAlbumAdapter } from '@/adapters/cloud-album'
-import { useAppStore } from '@/store'
+import { usePicGoCloudUserInfo } from '@/queries/picgo-cloud'
 import { IRPCActionType } from '~/universal/types/enum'
 import type { DashboardHistoryRecord } from './use-dashboard-history'
 
@@ -10,8 +10,7 @@ export function useDashboardCloudHistory () {
   const [historyItems, setHistoryItems] = useState<DashboardHistoryRecord[]>([])
   const [loading, setLoading] = useState(false)
   const [refreshNonce, setRefreshNonce] = useState(0)
-  const userInfo = useAppStore.use.picgoCloud().userInfo
-  const isPaid = (userInfo?.plan ?? 0) > 0
+  const { isPaid } = usePicGoCloudUserInfo()
 
   useIPCOn(IRPCActionType.UPDATE_CLOUD_ALBUM, () => {
     setRefreshNonce((value) => value + 1)

@@ -1,8 +1,4 @@
 import dayjs from 'dayjs'
-import {
-  PicGoCloudLoginStatusValues,
-  PicGoCloudRequestStatusValues
-} from '@/store'
 import { DEFAULT_DATE_TIME_FORMAT } from '@/utils/consts'
 
 export function resolveErrorMessage (error: unknown, fallback: string) {
@@ -15,18 +11,6 @@ export function resolveErrorMessage (error: unknown, fallback: string) {
   }
 
   return fallback
-}
-
-export function isRequestIdle (status: string) {
-  return status === PicGoCloudRequestStatusValues.Idle
-}
-
-export function isRequestLoading (status: string) {
-  return status === PicGoCloudRequestStatusValues.Loading
-}
-
-export function isLoginInProgress (status: string) {
-  return status === PicGoCloudLoginStatusValues.InProgress
 }
 
 export function formatCloudSyncTime (

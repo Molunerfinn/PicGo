@@ -14,7 +14,8 @@ import { CloudEmptyState } from '@/components/common/cloud-empty-state'
 import { CloudFeatureHighlights } from '@/components/common/cloud-feature-highlights'
 import { CloudRefreshButton } from '@/components/common/cloud-refresh-button'
 import { AlbumSource } from '#/types/cloudAlbum'
-import { useAppStore, useAlbumStore } from '@/store'
+import { useAlbumStore } from '@/store'
+import { usePicGoCloudUserInfo } from '@/queries/picgo-cloud'
 import { resolveTimestampValue } from '@/utils/common'
 import { DEFAULT_DATE_TIME_FORMAT } from '@/utils/consts'
 import type { DashboardHistoryRecord } from './hooks/use-dashboard-history'
@@ -199,9 +200,8 @@ export function HistoryPanel ({
 }) {
   const { t } = useTranslation()
   const albumSource = useAlbumStore.use.albumSource()
-  const cloudUserInfo = useAppStore.use.picgoCloud().userInfo
+  const { userInfo: cloudUserInfo, isPaid: isCloudPaidUser } = usePicGoCloudUserInfo()
   const isCloud = albumSource === AlbumSource.CLOUD
-  const isCloudPaidUser = (cloudUserInfo?.plan ?? 0) > 0
   const showCloudRestriction = isCloud && !isCloudPaidUser
   const showCloudEmpty = isCloud && isCloudPaidUser && !loading && items.length === 0
   const [searchText, setSearchText] = useState('')

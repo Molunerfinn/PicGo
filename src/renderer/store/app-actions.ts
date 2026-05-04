@@ -1,7 +1,3 @@
-import type { IPicGoCloudUserInfo } from '#/types/cloud'
-import { AlbumSource } from '#/types/cloudAlbum'
-import { albumStoreActions } from '@/store/album/actions'
-import { cloudAdapter } from '@/adapters/cloud'
 import { appConfigAdapter } from '@/adapters/app-config'
 import {
   buildProviderSummaries,
@@ -10,11 +6,9 @@ import {
   resolveDefaultPicBed
 } from '@/store/utils'
 import type {
-  PicGoCloudLoginStatus,
-  PicGoCloudRequestStatus
+  PicGoCloudLoginStatus
 } from './app-store'
 import {
-  PicGoCloudRequestStatusValues,
   useAppStore
 } from './app-store'
 
@@ -75,60 +69,12 @@ export const appActions = {
       state.hasSettingsHydrated = true
     })
   },
-  async hydratePicGoCloudUserInfo () {
-    if (useAppStore.getState().picgoCloud.userInfo !== undefined) {
-      return
-    }
-
-    useAppStore.setState((state) => {
-      state.picgoCloud.userInfoStatus = PicGoCloudRequestStatusValues.Loading
-      state.picgoCloud.userInfoError = null
-    })
-
-    const result = await cloudAdapter.getUserInfo()
-    if (!result.success) {
-      useAppStore.setState((state) => {
-        state.picgoCloud.userInfoStatus = PicGoCloudRequestStatusValues.Error
-        state.picgoCloud.userInfoError = result.error
-      })
-      return
-    }
-
-    useAppStore.setState((state) => {
-      state.picgoCloud.userInfo = result.data
-      state.picgoCloud.userInfoStatus = PicGoCloudRequestStatusValues.Idle
-      state.picgoCloud.userInfoError = null
-    })
-  },
   async setDefaultPicBed (type: string) {
     await appConfigAdapter.saveConfig({
       'picBed.current': type,
       'picBed.uploader': type
     })
     await appActions.hydrateAppState()
-  },
-  setPicGoCloudUserInfo (userInfo: IPicGoCloudUserInfo | null | undefined) {
-    const prev = useAppStore.getState().picgoCloud.userInfo
-    useAppStore.setState((state) => {
-      state.picgoCloud.userInfo = userInfo
-    })
-
-    // Auto-switch to cloud tab when a paid user logs in
-    const wasPaid = (prev?.plan ?? 0) > 0
-    const isPaid = (userInfo?.plan ?? 0) > 0
-    if (!wasPaid && isPaid) {
-      albumStoreActions.setAlbumSource(AlbumSource.CLOUD)
-    }
-  },
-  setPicGoCloudUserInfoStatus (status: PicGoCloudRequestStatus) {
-    useAppStore.setState((state) => {
-      state.picgoCloud.userInfoStatus = status
-    })
-  },
-  setPicGoCloudUserInfoError (error: string | null) {
-    useAppStore.setState((state) => {
-      state.picgoCloud.userInfoError = error
-    })
   },
   setPicGoCloudLoginStatus (status: PicGoCloudLoginStatus) {
     useAppStore.setState((state) => {
