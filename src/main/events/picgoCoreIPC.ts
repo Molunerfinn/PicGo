@@ -33,7 +33,7 @@ import {
   GET_PICBED_CONFIG
 } from '#/events/constants'
 
-import { GalleryDB } from 'apis/core/datastore'
+import { AlbumDB } from 'apis/core/datastore'
 import { IObject, IFilter } from '@picgo/store/dist/types'
 import pasteTemplate from '../utils/pasteTemplate'
 import { i18nManager, T } from '~/main/i18n'
@@ -178,39 +178,39 @@ const handlePicGoGetConfig = () => {
   })
 }
 
-const handlePicGoGalleryDB = () => {
+const handlePicGoAlbumDB = () => {
   ipcMain.on(PICGO_GET_DB, async (event: IpcMainEvent, filter: IFilter, callbackId: string) => {
-    const dbStore = GalleryDB.getInstance()
+    const dbStore = AlbumDB.getInstance()
     const res = await dbStore.get(filter)
     event.sender.send(PICGO_GET_DB, res, callbackId)
   })
 
   ipcMain.on(PICGO_INSERT_DB, async (event: IpcMainEvent, value: IObject, callbackId: string) => {
-    const dbStore = GalleryDB.getInstance()
+    const dbStore = AlbumDB.getInstance()
     const res = await dbStore.insert(value)
     event.sender.send(PICGO_INSERT_DB, res, callbackId)
   })
 
   ipcMain.on(PICGO_INSERT_MANY_DB, async (event: IpcMainEvent, value: IObject[], callbackId: string) => {
-    const dbStore = GalleryDB.getInstance()
+    const dbStore = AlbumDB.getInstance()
     const res = await dbStore.insertMany(value)
     event.sender.send(PICGO_INSERT_MANY_DB, res, callbackId)
   })
 
   ipcMain.on(PICGO_UPDATE_BY_ID_DB, async (event: IpcMainEvent, id: string, value: IObject[], callbackId: string) => {
-    const dbStore = GalleryDB.getInstance()
+    const dbStore = AlbumDB.getInstance()
     const res = await dbStore.updateById(id, value)
     event.sender.send(PICGO_UPDATE_BY_ID_DB, res, callbackId)
   })
 
   ipcMain.on(PICGO_GET_BY_ID_DB, async (event: IpcMainEvent, id: string, callbackId: string) => {
-    const dbStore = GalleryDB.getInstance()
+    const dbStore = AlbumDB.getInstance()
     const res = await dbStore.getById(id)
     event.sender.send(PICGO_GET_BY_ID_DB, res, callbackId)
   })
 
   ipcMain.on(PICGO_REMOVE_BY_ID_DB, async (event: IpcMainEvent, id: string, callbackId: string) => {
-    const dbStore = GalleryDB.getInstance()
+    const dbStore = AlbumDB.getInstance()
     const res = await dbStore.removeById(id)
     event.sender.send(PICGO_REMOVE_BY_ID_DB, res, callbackId)
   })
@@ -270,8 +270,8 @@ const handleI18n = () => {
 
 const PICGO_CLOUD_TYPE = 'picgo-cloud'
 
-const markImportedItemsInGalleryDB = async (items: Array<{ id?: string, type?: string }>): Promise<void> => {
-  const dbStore = GalleryDB.getInstance()
+const markImportedItemsInAlbumDB = async (items: Array<{ id?: string, type?: string }>): Promise<void> => {
+  const dbStore = AlbumDB.getInstance()
   const itemsToMark = items.filter(
     (item) => typeof item.id === 'string' && item.id.trim() !== '' && item.type !== PICGO_CLOUD_TYPE
   )
@@ -299,8 +299,8 @@ const handleCloudAlbumEvents = () => {
     // Write back _importToPicGoCloud flag to local gallery DB for non-picgo-cloud items
     const items = payload?.items
     if (Array.isArray(items) && items.length > 0) {
-      markImportedItemsInGalleryDB(items).catch((error) => {
-        logger.error('[PicGo Cloud][album] failed to mark imported items in gallery DB', error)
+      markImportedItemsInAlbumDB(items).catch((error) => {
+        logger.error('[PicGo Cloud][album] failed to mark imported items in album DB', error)
       })
     }
   })
@@ -326,7 +326,7 @@ export default {
     handleRemoveFiles()
     handlePicGoSaveConfig()
     handlePicGoGetConfig()
-    handlePicGoGalleryDB()
+    handlePicGoAlbumDB()
     handleOpenFile()
     handleOpenWindow()
     handleI18n()

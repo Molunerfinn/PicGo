@@ -3,7 +3,7 @@ import { APP_CONFIG_UPDATED } from '#/events/constants'
 import { IRPCActionType } from '~/universal/types/enum'
 import { AlbumSource } from '#/types/cloudAlbum'
 import { appActions } from '@/store'
-import { useGalleryStore } from '@/store/gallery/store'
+import { useAlbumStore } from '@/store/album/store'
 import { ipc } from '@/utils/bridge'
 
 export function RendererRuntimeBridge () {
@@ -34,7 +34,7 @@ export function RendererRuntimeBridge () {
   // Sync album source changes from other renderer windows (relayed via main process RPC).
   useEffect(() => {
     return ipc.on(IRPCActionType.SYNC_ALBUM_SOURCE, (source: AlbumSource) => {
-      useGalleryStore.setState((state) => {
+      useAlbumStore.setState((state) => {
         state.albumSource = source
       })
     })

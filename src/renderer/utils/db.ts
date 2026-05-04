@@ -6,11 +6,11 @@ import {
   PICGO_REMOVE_BY_ID_DB,
   PICGO_UPDATE_BY_ID_DB
 } from '#/events/constants'
-import { IGalleryDB } from '#/types/extra-vue'
+import { IAlbumDB } from '#/types/extra-vue'
 import { IFilter, IGetResult, IObject, IResult } from '@picgo/store/dist/types'
 import { v4 as uuid } from 'uuid'
 import { ipc } from './bridge'
-export class GalleryDB implements IGalleryDB {
+export class AlbumDB implements IAlbumDB {
   async get<T> (filter?: IFilter): Promise<IGetResult<T>> {
     const res = await this.msgHandler<IGetResult<T>>(PICGO_GET_DB, filter)
     return res
@@ -57,4 +57,4 @@ export class GalleryDB implements IGalleryDB {
   }
 }
 
-export default new GalleryDB()
+export default new AlbumDB()

@@ -1,4 +1,4 @@
-import { GalleryViewMode, type GalleryViewMode as GalleryViewModeType, type GalleryPhoto } from '@/components/main/gallery/utils'
+import { AlbumViewMode, type AlbumViewMode as AlbumViewModeType, type AlbumPhoto } from '@/components/main/album/utils'
 import {
   GALLERY_MASONRY_COLUMN_COUNT_DEFAULT,
   PICGO_GUI_GALLERY_MASONRY_COLUMN_COUNT_KEY,
@@ -7,10 +7,10 @@ import {
 } from '@/utils/consts'
 import { rendererStorage } from '@/utils/storage'
 import {
-  normalizeGalleryMasonryColumnCount,
-  normalizeGalleryViewMode
+  normalizeAlbumMasonryColumnCount,
+  normalizeAlbumViewMode
 } from '@/store/utils'
-import { useGalleryStore } from './store'
+import { useAlbumStore } from './store'
 import { AlbumSource, type CloudAlbumProviderStat } from '#/types/cloudAlbum'
 import { useAppStore } from '@/store/app-store'
 import { sendRPC } from '@/utils/dataSender'
@@ -20,16 +20,16 @@ function normalizeAlbumSource (value: unknown): AlbumSource {
   return value === AlbumSource.CLOUD ? AlbumSource.CLOUD : AlbumSource.LOCAL
 }
 
-export const galleryStoreActions = {
+export const albumStoreActions = {
   async ensureHydrated () {
-    if (useGalleryStore.getState().hasHydrated) {
+    if (useAlbumStore.getState().hasHydrated) {
       return
     }
 
     const [storedViewMode, storedMasonryColumnCount, storedAlbumSource] = await Promise.all([
       rendererStorage.getItem<string>(
         PICGO_GUI_GALLERY_VIEW_MODE_KEY,
-        GalleryViewMode.Masonry
+        AlbumViewMode.Masonry
       ),
       rendererStorage.getItem<number>(
         PICGO_GUI_GALLERY_MASONRY_COLUMN_COUNT_KEY,
@@ -46,28 +46,28 @@ export const galleryStoreActions = {
     const isPaidUser = (userInfo?.plan ?? 0) > 0
     const resolvedSource = isPaidUser ? AlbumSource.CLOUD : normalizeAlbumSource(storedAlbumSource)
 
-    useGalleryStore.setState((state) => {
-      state.viewMode = normalizeGalleryViewMode(storedViewMode)
-      state.masonryColumnCount = normalizeGalleryMasonryColumnCount(
+    useAlbumStore.setState((state) => {
+      state.viewMode = normalizeAlbumViewMode(storedViewMode)
+      state.masonryColumnCount = normalizeAlbumMasonryColumnCount(
         storedMasonryColumnCount
       )
       state.albumSource = resolvedSource
       state.hasHydrated = true
     })
   },
-  async setViewMode (mode: GalleryViewModeType) {
-    const normalizedMode = normalizeGalleryViewMode(mode)
+  async setViewMode (mode: AlbumViewModeType) {
+    const normalizedMode = normalizeAlbumViewMode(mode)
 
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.viewMode = normalizedMode
     })
 
     await rendererStorage.setItem(PICGO_GUI_GALLERY_VIEW_MODE_KEY, normalizedMode)
   },
   async setMasonryColumnCount (count: number) {
-    const normalizedCount = normalizeGalleryMasonryColumnCount(count)
+    const normalizedCount = normalizeAlbumMasonryColumnCount(count)
 
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.masonryColumnCount = normalizedCount
     })
 
@@ -77,7 +77,7 @@ export const galleryStoreActions = {
     )
   },
   async setAlbumSource (source: AlbumSource) {
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.albumSource = source
     })
 
@@ -86,18 +86,18 @@ export const galleryStoreActions = {
     // Notify other renderer windows (tray, mini) via main-process relay
     sendRPC(IRPCActionType.SYNC_ALBUM_SOURCE, source)
   },
-  setCloudItems (items: GalleryPhoto[]) {
-    useGalleryStore.setState((state) => {
+  setCloudItems (items: AlbumPhoto[]) {
+    useAlbumStore.setState((state) => {
       state.cloudItems = items
     })
   },
   setCloudAllTotal (total: number) {
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.cloudAllTotal = total
     })
   },
-  appendCloudItems (items: GalleryPhoto[]) {
-    useGalleryStore.setState((state) => {
+  appendCloudItems (items: AlbumPhoto[]) {
+    useAlbumStore.setState((state) => {
       const offset = state.cloudItems.length
       const reindexed = items.map((item, index) => ({
         ...item,
@@ -107,42 +107,42 @@ export const galleryStoreActions = {
     })
   },
   setCloudTotal (total: number) {
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.cloudTotal = total
     })
   },
   setCloudOffset (offset: number) {
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.cloudOffset = offset
     })
   },
   setCloudLoading (loading: boolean) {
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.cloudLoading = loading
     })
   },
   setCloudHasMore (hasMore: boolean) {
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.cloudHasMore = hasMore
     })
   },
   setCloudSearch (search: string) {
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.cloudSearch = search
     })
   },
   setCloudTypeFilter (typeFilter: string) {
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.cloudTypeFilter = typeFilter
     })
   },
   setCloudProviderStats (stats: CloudAlbumProviderStat[]) {
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.cloudProviderStats = stats
     })
   },
   resetCloudPagination () {
-    useGalleryStore.setState((state) => {
+    useAlbumStore.setState((state) => {
       state.cloudItems = []
       state.cloudTotal = 0
       state.cloudOffset = 0

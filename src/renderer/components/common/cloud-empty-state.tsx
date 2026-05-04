@@ -48,7 +48,7 @@ function ImportButton ({ onStartImport, needsConfirm }: { onStartImport: () => P
     return (
       <Button disabled={loading} onClick={() => { handleImport().catch(() => {}) }}>
         {loading ? <LoaderCircleIcon className="mr-1.5 size-4 animate-spin" /> : <UploadCloudIcon className="mr-2 size-4" />}
-        {t("GALLERY_CLOUD_IMPORT_GUIDE_BUTTON")}
+        {t("ALBUM_CLOUD_IMPORT_GUIDE_BUTTON")}
       </Button>
     )
   }
@@ -58,14 +58,14 @@ function ImportButton ({ onStartImport, needsConfirm }: { onStartImport: () => P
       <AlertDialogTrigger asChild>
         <Button>
           <UploadCloudIcon className="mr-2 size-4" />
-          {t("GALLERY_CLOUD_IMPORT_GUIDE_BUTTON")}
+          {t("ALBUM_CLOUD_IMPORT_GUIDE_BUTTON")}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("GALLERY_CLOUD_IMPORT_CONFIRM_TITLE")}</AlertDialogTitle>
+          <AlertDialogTitle>{t("ALBUM_CLOUD_IMPORT_CONFIRM_TITLE")}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t("GALLERY_CLOUD_IMPORT_CONFIRM_DESC")}
+            {t("ALBUM_CLOUD_IMPORT_CONFIRM_DESC")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -107,12 +107,12 @@ export function CloudEmptyState ({
           <LogInIcon className="size-8 text-muted-foreground" />
         </div>
         <div className="text-center">
-          <h3 className="text-lg font-semibold">{t("GALLERY_CLOUD_LOGIN_REQUIRED_TITLE")}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{t("GALLERY_CLOUD_LOGIN_REQUIRED_DESC")}</p>
+          <h3 className="text-lg font-semibold">{t("ALBUM_CLOUD_LOGIN_REQUIRED_TITLE")}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">{t("ALBUM_CLOUD_LOGIN_REQUIRED_DESC")}</p>
         </div>
         <Button onClick={goToCloudTab}>
           <LogInIcon className="mr-2 size-4" />
-          {t("GALLERY_CLOUD_LOGIN_BUTTON")}
+          {t("ALBUM_CLOUD_LOGIN_BUTTON")}
         </Button>
       </div>
     )
@@ -126,14 +126,14 @@ export function CloudEmptyState ({
           <CrownIcon className="size-8 text-amber-500" />
         </div>
         <div className="text-center">
-          <h3 className="text-lg font-semibold">{t("GALLERY_CLOUD_UPGRADE_TITLE")}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{t("GALLERY_CLOUD_UPGRADE_DESC")}</p>
+          <h3 className="text-lg font-semibold">{t("ALBUM_CLOUD_UPGRADE_TITLE")}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">{t("ALBUM_CLOUD_UPGRADE_DESC")}</p>
         </div>
         <Button
           className="bg-amber-500 text-white hover:bg-amber-600"
           onClick={() => openURL(PICGO_CLOUD_PRICING_URL)}
         >
-          {t("GALLERY_CLOUD_UPGRADE_BUTTON")}
+          {t("ALBUM_CLOUD_UPGRADE_BUTTON")}
         </Button>
       </div>
     )
@@ -147,8 +147,8 @@ export function CloudEmptyState ({
           <UploadCloudIcon className="size-8 text-muted-foreground" />
         </div>
         <div className="text-center">
-          <h3 className="text-lg font-semibold">{t("GALLERY_CLOUD_IMPORT_GUIDE_TITLE")}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{t("GALLERY_CLOUD_IMPORT_GUIDE_DESC")}</p>
+          <h3 className="text-lg font-semibold">{t("ALBUM_CLOUD_IMPORT_GUIDE_TITLE")}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">{t("ALBUM_CLOUD_IMPORT_GUIDE_DESC")}</p>
         </div>
         <ImportButton onStartImport={onStartImport} needsConfirm={!userInfo.autoImport} />
       </div>

@@ -308,7 +308,7 @@ export function ProviderConfigPanel({
           leading={
             <>
               <span className="font-medium">
-                {uploader?.name ?? t("GALLERY_PROVIDERS")}
+                {uploader?.name ?? t("ALBUM_PROVIDERS")}
               </span>
               {uploader?.isDefaultUploader ? (
                 <ProviderActiveUploaderBadge uploaderName={uploader.name} />

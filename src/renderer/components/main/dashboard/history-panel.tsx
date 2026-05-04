@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { Virtuoso } from 'react-virtuoso'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { galleryAdapter } from '@/adapters/gallery'
-import { GalleryPreview } from '@/components/main/gallery/gallery-preview'
-import { type GalleryPhoto, resolveIsVideo } from '@/components/main/gallery/utils'
+import { albumAdapter } from '@/adapters/album'
+import { AlbumPreview } from '@/components/main/album/album-preview'
+import { type AlbumPhoto, resolveIsVideo } from '@/components/main/album/utils'
 import { SearchInput } from '@/components/common/search-input'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -14,7 +14,7 @@ import { CloudEmptyState } from '@/components/common/cloud-empty-state'
 import { CloudFeatureHighlights } from '@/components/common/cloud-feature-highlights'
 import { CloudRefreshButton } from '@/components/common/cloud-refresh-button'
 import { AlbumSource } from '#/types/cloudAlbum'
-import { useAppStore, useGalleryStore } from '@/store'
+import { useAppStore, useAlbumStore } from '@/store'
 import { resolveTimestampValue } from '@/utils/common'
 import { DEFAULT_DATE_TIME_FORMAT } from '@/utils/consts'
 import type { DashboardHistoryRecord } from './hooks/use-dashboard-history'
@@ -51,7 +51,7 @@ type DashboardHistoryEntry =
     item: DashboardHistoryItem
   }
 
-function resolveGalleryTimestamp (item: DashboardHistoryRecord) {
+function resolveAlbumTimestamp (item: DashboardHistoryRecord) {
   return resolveTimestampValue(item.createdAt) || resolveTimestampValue(item.updatedAt)
 }
 
@@ -71,10 +71,10 @@ function formatHistoryTimestamp (timestamp: number) {
 
 function buildHistoryItems (items: DashboardHistoryRecord[]): DashboardHistoryItem[] {
   return [...items]
-    .sort((left, right) => resolveGalleryTimestamp(right) - resolveGalleryTimestamp(left))
+    .sort((left, right) => resolveAlbumTimestamp(right) - resolveAlbumTimestamp(left))
     .map((item, index) => {
       const name = item.fileName || item.imgUrl || item.originImgUrl || item.id || `${index + 1}`
-      const timestamp = resolveGalleryTimestamp(item)
+      const timestamp = resolveAlbumTimestamp(item)
       const keywords = [name, item.imgUrl, item.originImgUrl, item.fileName]
         .filter((value): value is string => typeof value === 'string' && value.length > 0)
 
@@ -198,7 +198,7 @@ export function HistoryPanel ({
   onCloudRefresh?: () => Promise<void> | void
 }) {
   const { t } = useTranslation()
-  const albumSource = useGalleryStore.use.albumSource()
+  const albumSource = useAlbumStore.use.albumSource()
   const cloudUserInfo = useAppStore.use.picgoCloud().userInfo
   const isCloud = albumSource === AlbumSource.CLOUD
   const isCloudPaidUser = (cloudUserInfo?.plan ?? 0) > 0
@@ -216,7 +216,7 @@ export function HistoryPanel ({
 
   const todayLabel = t('HISTORY_PANEL_TODAY')
   const yesterdayLabel = t('HISTORY_PANEL_YESTERDAY')
-  const previewLabel = t('GALLERY_PREVIEW')
+  const previewLabel = t('ALBUM_PREVIEW')
   const groups = buildHistoryGroups(filteredItems, (key) => {
     if (key === 'HISTORY_PANEL_TODAY') {
       return todayLabel
@@ -226,7 +226,7 @@ export function HistoryPanel ({
   })
   const entries = buildHistoryEntries(groups)
   const virtuosoKey = buildVirtuosoResetKey(groups, keyword)
-  const previewItems: GalleryPhoto[] = filteredItems
+  const previewItems: AlbumPhoto[] = filteredItems
     .filter((item) => Boolean(item.imgUrl))
     .map((item) => ({
       id: item.previewId,
@@ -246,7 +246,7 @@ export function HistoryPanel ({
 
   const handleCopy = async (item: DashboardHistoryItem) => {
     try {
-      await galleryAdapter.copyImageLink(item.raw)
+      await albumAdapter.copyImageLink(item.raw)
       toast.success(t('COPY_LINK_SUCCEED'))
     } catch (error) {
       console.error(error)
@@ -281,7 +281,7 @@ export function HistoryPanel ({
             onValueChange={setSearchText}
             placeholder={t('HISTORY_PANEL_FILTER_PLACEHOLDER')}
             ariaLabel={t('HISTORY_PANEL_FILTER_PLACEHOLDER')}
-            clearLabel={t('GALLERY_CLEAR_SELECTION')}
+            clearLabel={t('ALBUM_CLEAR_SELECTION')}
           />
         </div>
 
@@ -364,7 +364,7 @@ export function HistoryPanel ({
         </div>
       </div>
 
-      <GalleryPreview
+      <AlbumPreview
         isOpen={previewOpen}
         images={previewItems}
         activeId={activePreviewId}

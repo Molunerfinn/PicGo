@@ -38,6 +38,11 @@ Static assets are served from `public/`. In the main process use `getStaticPath`
 - Follow strict IPC boundaries for Zustand actions:
   - Pure IPC/service calls without Zustand state changes should call the adapter/service directly from the component or helper, not through a Zustand action.
   - Flows that combine IPC/service work with Zustand state updates must live in actions files.
+- Keep server state and client state separated:
+  - TanStack Query should own server state: remote API data, loading/error/stale status, refetching, cache, and request dedupe.
+  - Zustand should own client/UI state: selected source, selected ids, filters, view mode, panel open state, and other local user intent.
+  - Connect the two with ids, query params, and local UI state (for example `albumSource`, `typeFilter`, or `searchValue`), but do not mirror query response data back into Zustand.
+  - If server state invalidates a local UI choice (for example a user becomes non-paid while `albumSource` is cloud), use a small effect/action to correct the local UI state instead of storing the whole server response in Zustand.
 - When updating nested Zustand state (especially config-like objects), use `zustand/middleware/immer`; do not reintroduce deep `...state` spread chains for nested updates.
 - Components must consume Zustand state through auto-generated selectors (for example `useAppStore.use.appConfig()`), not by destructuring the whole store or writing ad-hoc hook selectors in components.
 - Renderer-side shared constants (for example responsive breakpoints, UI timing values, fixed dimensions, thresholds, and repeated literal values used across components) should be centralized in `src/renderer/utils/consts.ts` instead of being hardcoded inline in components. When a new renderer constant may be reused or affects shared behavior, add it there first.

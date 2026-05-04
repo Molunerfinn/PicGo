@@ -31,7 +31,7 @@ import { Sheet, SheetTrigger } from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
 import { useIPCOn } from '@/hooks/useIPC'
 import { cn } from '@/lib/utils'
-import { appActions, settingsStoreActions, useAppStore , useGalleryStore } from '@/store'
+import { appActions, settingsStoreActions, useAppStore , useAlbumStore } from '@/store'
 import { DESKTOP_HISTORY_PANEL_BREAKPOINT } from '@/utils/consts'
 import { UploaderSwitcher } from './uploader-switcher'
 import { buildVisibleProviderOptions, resolveCurrentSwitcherValue } from './utils'
@@ -104,7 +104,7 @@ export function PicGoDashboard () {
   const [urlInput, setUrlInput] = useState('')
   const localHistoryItems = useDashboardHistory()
   const cloudHistory = useDashboardCloudHistory()
-  const albumSource = useGalleryStore.use.albumSource()
+  const albumSource = useAlbumStore.use.albumSource()
   const isCloudSource = albumSource === AlbumSource.CLOUD
   const historyItems = isCloudSource ? cloudHistory.items : localHistoryItems
   const historyLoading = isCloudSource ? cloudHistory.loading : false

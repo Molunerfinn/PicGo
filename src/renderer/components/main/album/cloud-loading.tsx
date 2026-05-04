@@ -1,7 +1,7 @@
 import { LoaderCircleIcon } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export function CloudGalleryLoading () {
+export function CloudAlbumLoading () {
   return (
     <div className="flex flex-1 items-center justify-center">
       <LoaderCircleIcon className="size-8 animate-spin text-muted-foreground" />

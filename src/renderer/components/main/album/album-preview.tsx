@@ -8,23 +8,23 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useTranslation } from "react-i18next"
 
-import type { GalleryPhoto } from "./utils"
+import type { AlbumPhoto } from "./utils"
 
-type GalleryPreviewProps = {
+type AlbumPreviewProps = {
   isOpen: boolean
-  images: GalleryPhoto[]
+  images: AlbumPhoto[]
   activeId: number | null
   onClose: () => void
   onActiveIdChange: (id: number) => void
 }
 
-export function GalleryPreview({
+export function AlbumPreview({
   isOpen,
   images,
   activeId,
   onClose,
   onActiveIdChange,
-}: GalleryPreviewProps) {
+}: AlbumPreviewProps) {
   const { t } = useTranslation()
   const [direction, setDirection] = useState(0)
   const [isSlideMode, setIsSlideMode] = useState(false)
@@ -37,7 +37,7 @@ export function GalleryPreview({
   const isActive = isOpen && Boolean(activeImage)
   const portalRoot = typeof document === "undefined" ? null : document.body
   const activeImageName = activeImage?.name ?? ""
-  const countLabel = t("GALLERY_PREVIEW_COUNT", {
+  const countLabel = t("ALBUM_PREVIEW_COUNT", {
     current: resolvedIndex + 1,
     total: images.length,
   })
@@ -171,7 +171,7 @@ export function GalleryPreview({
           style={{ WebkitAppRegion: "no-drag" } as CSSProperties}
           role="dialog"
           aria-modal="true"
-          aria-label={t("GALLERY_PREVIEW")}
+          aria-label={t("ALBUM_PREVIEW")}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -288,7 +288,7 @@ export function GalleryPreview({
                   event.stopPropagation()
                   handlePrev()
                 }}
-                aria-label={t("GALLERY_PREVIEW_PREV")}
+                aria-label={t("ALBUM_PREVIEW_PREV")}
                 className="bg-gallery-preview-control border-gallery-preview-control-border pointer-events-auto shadow-sm"
               >
                 <ChevronLeft className="size-5" />
@@ -300,7 +300,7 @@ export function GalleryPreview({
                   event.stopPropagation()
                   handleNext()
                 }}
-                aria-label={t("GALLERY_PREVIEW_NEXT")}
+                aria-label={t("ALBUM_PREVIEW_NEXT")}
                 className="bg-gallery-preview-control border-gallery-preview-control-border pointer-events-auto shadow-sm"
               >
                 <ChevronRight className="size-5" />
@@ -331,7 +331,7 @@ export function GalleryPreview({
                 event.stopPropagation()
                 handleClose()
               }}
-              aria-label={t("GALLERY_PREVIEW_CLOSE")}
+              aria-label={t("ALBUM_PREVIEW_CLOSE")}
               className="bg-gallery-preview-control border-gallery-preview-control-border shadow-sm"
             >
               <X className="size-4" />

@@ -59,7 +59,7 @@ export async function handleCloudImportAll (onSuccess?: () => void): Promise<voi
         })
       }
       if (result.data.created > 0) {
-        toast.success(i18n.t('GALLERY_CLOUD_IMPORT_SUCCESS', { num: String(result.data.created) }))
+        toast.success(i18n.t('ALBUM_CLOUD_IMPORT_SUCCESS', { num: String(result.data.created) }))
       }
       onSuccess?.()
     }

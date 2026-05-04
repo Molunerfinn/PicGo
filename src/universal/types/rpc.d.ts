@@ -16,7 +16,7 @@ type ICopyTextArgs = [text: string]
 type IShowDockIconArgs = [visible: boolean]
 type IShowMenubarIconArgs = [visible: boolean]
 type IShowNotificationArgs = [title: string, body: string, id?: string]
-type IGetGalleryMenuListArgs = [selectedList: IGalleryItem[]]
+type IGetAlbumMenuListArgs = [selectedList: IAlbumItem[]]
 
 interface IRPCServer {
   start: () => void

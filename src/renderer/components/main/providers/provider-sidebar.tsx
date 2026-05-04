@@ -170,7 +170,7 @@ export function ProviderSidebar({
   return (
     <aside className="bg-sidebar text-sidebar-foreground border-sidebar-border flex w-(--app-provider-sidebar-width) shrink-0 flex-col overflow-hidden rounded-xl border backdrop-blur-xl">
       <div className="border-sidebar-border/60 flex flex-col gap-3 border-b px-4 py-4">
-        <h1 className="text-base font-semibold">{t("GALLERY_PROVIDERS")}</h1>
+        <h1 className="text-base font-semibold">{t("ALBUM_PROVIDERS")}</h1>
         <ProviderSidebarSearch />
       </div>
 

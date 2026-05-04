@@ -56,7 +56,7 @@ export function PicGoAppSidebar({
     !!matchRoute({ to, fuzzy: true, pending: false })
 
   const isDashboardActive = matchActive("/main/dashboard")
-  const isGalleryActive = matchActive("/main/gallery")
+  const isAlbumActive = matchActive("/main/album")
   const isProviderActive = matchActive("/main/providers")
   const isCloudActive = matchActive("/main/cloud")
   const isPluginsActive = matchActive("/main/plugins")
@@ -127,14 +127,14 @@ export function PicGoAppSidebar({
               />
               <SidebarNavButton
                 icon={<ImageIcon className={SIDEBAR_ICON_CLASSNAME} />}
-                label={t("GALLERY")}
-                active={isGalleryActive}
-                onClick={() => navigate({ to: "/main/gallery" })}
+                label={t("ALBUM")}
+                active={isAlbumActive}
+                onClick={() => navigate({ to: "/main/album" })}
                 collapsed={collapsed}
               />
               <SidebarNavButton
                 icon={<DatabaseIcon className={SIDEBAR_ICON_CLASSNAME} />}
-                label={t("GALLERY_PROVIDERS")}
+                label={t("ALBUM_PROVIDERS")}
                 active={isProviderActive}
                 onClick={() => navigate({ to: "/main/providers" })}
                 collapsed={collapsed}

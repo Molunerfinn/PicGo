@@ -89,7 +89,7 @@ interface ImgInfo {
   [propName: string]: any
 }
 
-interface IGalleryItem extends ImgInfo {
+interface IAlbumItem extends ImgInfo {
   src: string
   key: string
   intro: string
@@ -278,6 +278,8 @@ interface IGuiApi {
   showNotification: (options?: IShowNotificationOption) => void
   showMessageBox: (options?: IShowMessageBoxOption) => Promise<IShowMessageBoxResult>
   showConfigDialog: <T extends IStringKeyMap>(options: IPicGoPluginShowConfigDialogOption) => Promise<T | false>
+  albumDB: import('@picgo/store').DBStore
+  /** @deprecated Use `albumDB` instead. */
   galleryDB: import('@picgo/store').DBStore
 }
 interface IShowInputBoxOption {

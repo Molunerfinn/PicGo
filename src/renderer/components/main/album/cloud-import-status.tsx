@@ -15,14 +15,14 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cloudAlbumAdapter } from "@/adapters/cloud-album"
-import { galleryAdapter } from "@/adapters/gallery"
+import { albumAdapter } from "@/adapters/album"
 import { appActions, useAppStore } from "@/store"
-import type { GalleryPhoto } from "./utils"
+import type { AlbumPhoto } from "./utils"
 
 const PICGO_CLOUD_TYPE = 'picgo-cloud'
 
 type CloudImportStatusProps = {
-  images: GalleryPhoto[]
+  images: AlbumPhoto[]
 }
 
 export function CloudImportStatus ({ images }: CloudImportStatusProps) {
@@ -47,7 +47,7 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
     img.type !== PICGO_CLOUD_TYPE && img.raw._importToPicGoCloud !== true && !localImportedIds.has(img.dbId)
   )
 
-  const doImport = async (itemsToImport: GalleryPhoto[]) => {
+  const doImport = async (itemsToImport: AlbumPhoto[]) => {
     setImporting(true)
     try {
       const rawItems = itemsToImport.map((img) => img.raw)
@@ -56,21 +56,21 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
       const importedIds = new Set(localImportedIds)
       for (const img of itemsToImport) {
         if (img.dbId) {
-          await galleryAdapter.updateImportFlag(img.dbId, true)
+          await albumAdapter.updateImportFlag(img.dbId, true)
           importedIds.add(img.dbId)
         }
       }
       setLocalImportedIds(importedIds)
-      toast.success(t("GALLERY_CLOUD_IMPORT_SINGLE_SUCCESS"))
+      toast.success(t("ALBUM_CLOUD_IMPORT_SINGLE_SUCCESS"))
     } catch (error) {
       console.error(error)
-      toast.error(t("GALLERY_CLOUD_IMPORT_FAILED"))
+      toast.error(t("ALBUM_CLOUD_IMPORT_FAILED"))
     } finally {
       setImporting(false)
     }
   }
 
-  const handleImportClick = (itemsToImport: GalleryPhoto[]) => {
+  const handleImportClick = (itemsToImport: AlbumPhoto[]) => {
     if (!autoImportEnabled) {
       setShowAutoImportDialog(true)
       return
@@ -90,7 +90,7 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
       await doImport(importableItems.length > 0 ? importableItems : images.filter((img) => img.type !== PICGO_CLOUD_TYPE))
     } catch (error) {
       console.error(error)
-      toast.error(t("GALLERY_CLOUD_IMPORT_FAILED"))
+      toast.error(t("ALBUM_CLOUD_IMPORT_FAILED"))
     } finally {
       setAutoImportEnabling(false)
       setShowAutoImportDialog(false)
@@ -102,11 +102,11 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
     return (
       <div className="space-y-2">
         <div className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">
-          {t("GALLERY_CLOUD_IMPORT_STATUS_TITLE")}
+          {t("ALBUM_CLOUD_IMPORT_STATUS_TITLE")}
         </div>
         <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
           <CheckCircle2Icon className="size-3.5" />
-          <span>{t("GALLERY_CLOUD_NATIVE")}</span>
+          <span>{t("ALBUM_CLOUD_NATIVE")}</span>
         </div>
       </div>
     )
@@ -115,7 +115,7 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
   return (
     <div className="space-y-2">
       <div className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">
-        {t("GALLERY_CLOUD_IMPORT_STATUS_TITLE")}
+        {t("ALBUM_CLOUD_IMPORT_STATUS_TITLE")}
       </div>
 
       {allInCloud || noneNeedImport ? (
@@ -124,11 +124,11 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
             <TooltipTrigger asChild>
               <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2Icon className="size-3.5" />
-                <span>{t("GALLERY_CLOUD_ALL_IMPORTED")}</span>
+                <span>{t("ALBUM_CLOUD_ALL_IMPORTED")}</span>
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p className="max-w-48 text-xs">{t("GALLERY_CLOUD_IMPORTED_TOOLTIP")}</p>
+              <p className="max-w-48 text-xs">{t("ALBUM_CLOUD_IMPORTED_TOOLTIP")}</p>
             </TooltipContent>
           </Tooltip>
           <Button
@@ -138,7 +138,7 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
             disabled={importing}
             onClick={() => handleImportClick(images.filter((img) => img.type !== PICGO_CLOUD_TYPE))}
           >
-            {t("GALLERY_CLOUD_REIMPORT")}
+            {t("ALBUM_CLOUD_REIMPORT")}
           </Button>
         </div>
       ) : (
@@ -153,17 +153,17 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
             ? <LoaderCircleIcon className="mr-1.5 size-3.5 animate-spin" />
             : <UploadCloudIcon className="mr-1.5 size-3.5" />}
           {importing
-            ? t("GALLERY_CLOUD_IMPORTING")
-            : t("GALLERY_CLOUD_IMPORT_BUTTON_COUNT", { num: String(importableItems.length) })}
+            ? t("ALBUM_CLOUD_IMPORTING")
+            : t("ALBUM_CLOUD_IMPORT_BUTTON_COUNT", { num: String(importableItems.length) })}
         </Button>
       )}
 
       <AlertDialog open={showAutoImportDialog} onOpenChange={setShowAutoImportDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("GALLERY_CLOUD_AUTO_IMPORT_REQUIRED_TITLE")}</AlertDialogTitle>
+            <AlertDialogTitle>{t("ALBUM_CLOUD_AUTO_IMPORT_REQUIRED_TITLE")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t("GALLERY_CLOUD_AUTO_IMPORT_REQUIRED_DESC")}
+              {t("ALBUM_CLOUD_AUTO_IMPORT_REQUIRED_DESC")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -172,7 +172,7 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
             </AlertDialogCancel>
             <AlertDialogAction disabled={autoImportEnabling} onClick={handleAutoImportConfirm}>
               {autoImportEnabling ? <LoaderCircleIcon className="mr-1.5 size-4 animate-spin" /> : null}
-              {t("GALLERY_CLOUD_AUTO_IMPORT_ENABLE_AND_IMPORT")}
+              {t("ALBUM_CLOUD_AUTO_IMPORT_ENABLE_AND_IMPORT")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

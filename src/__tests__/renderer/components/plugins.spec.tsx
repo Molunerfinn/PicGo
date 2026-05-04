@@ -183,7 +183,7 @@ describe('renderer/plugins components', () => {
 
     expect(screen.getByRole('textbox', { name: 'SEARCH' })).toHaveValue('cloudflare')
 
-    const clearButton = screen.getByRole('button', { name: 'GALLERY_CLEAR_SELECTION' })
+    const clearButton = screen.getByRole('button', { name: 'ALBUM_CLEAR_SELECTION' })
     fireEvent.click(clearButton)
     expect(usePluginStore.getState().searchValue).toBe('')
 

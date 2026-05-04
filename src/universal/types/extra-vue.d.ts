@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { IObject, IResult, IGetResult, IFilter } from '@picgo/store/dist/types'
 
-interface IGalleryDB {
+interface IAlbumDB {
   get<T>(filter?: IFilter): Promise<IGetResult<T>>
   insert<T> (value: T): Promise<IResult<T>>
   insertMany<T> (value: T[]): Promise<IResult<T>[]>
@@ -19,7 +19,7 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     $http: typeof axios
     $builtInPicBed: string[]
-    $$db: IGalleryDB
+    $$db: IAlbumDB
     $T: typeof import('~/renderer/i18n/index').T
     $i18n: import('~/renderer/i18n/index').I18nManager
     saveConfig(data: IObj | string, value?: any): void

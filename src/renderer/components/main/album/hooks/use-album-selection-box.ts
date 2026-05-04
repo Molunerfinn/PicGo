@@ -7,7 +7,7 @@ import {
   type RefObject,
 } from "react"
 
-import { GalleryViewMode } from "../utils"
+import { AlbumViewMode } from "../utils"
 
 export type SelectionBox = {
   startX: number
@@ -17,8 +17,8 @@ export type SelectionBox = {
   isVisible: boolean
 }
 
-type UseGallerySelectionBoxOptions = {
-  viewMode: GalleryViewMode
+type UseAlbumSelectionBoxOptions = {
+  viewMode: AlbumViewMode
   scrollViewportRef: RefObject<HTMLDivElement | null>
   itemRefs: MutableRefObject<Map<number, HTMLDivElement>>
   selectedIdsRef: MutableRefObject<number[]>
@@ -28,7 +28,7 @@ type UseGallerySelectionBoxOptions = {
   setInspectorOpen: (open: boolean) => void
 }
 
-type UseGallerySelectionBoxResult = {
+type UseAlbumSelectionBoxResult = {
   selectionBox: SelectionBox
   handleMouseDown: (event: ReactMouseEvent<HTMLDivElement>) => void
   consumeSuppressCardClick: () => boolean
@@ -48,7 +48,7 @@ const emptySelectionBox: SelectionBox = {
  * - Suppresses card click when a drag actually happens.
  * - Keeps inspector closed during drag and opens it after mouseup if needed.
  */
-export function useGallerySelectionBox({
+export function useAlbumSelectionBox({
   viewMode,
   scrollViewportRef,
   itemRefs,
@@ -57,7 +57,7 @@ export function useGallerySelectionBox({
   isSelectingRef,
   setSelection,
   setInspectorOpen,
-}: UseGallerySelectionBoxOptions): UseGallerySelectionBoxResult {
+}: UseAlbumSelectionBoxOptions): UseAlbumSelectionBoxResult {
   const [selectionBox, setSelectionBox] = useState<SelectionBox>(emptySelectionBox)
   const [isSelecting, setIsSelecting] = useState(false)
   const setSelectionRef = useRef(setSelection)
@@ -82,10 +82,10 @@ export function useGallerySelectionBox({
   }
 
   const handleMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
-    if (viewMode !== GalleryViewMode.Masonry) return
+    if (viewMode !== AlbumViewMode.Masonry) return
     if (event.button !== 0) return
     const target = event.target as HTMLElement
-    if (target.closest("[data-gallery-interactive='true']")) return
+    if (target.closest("[data-album-interactive='true']")) return
     const viewport = scrollViewportRef.current
     if (!viewport) return
 

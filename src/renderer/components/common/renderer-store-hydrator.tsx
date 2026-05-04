@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { appActions, galleryStoreActions } from '@/store'
+import { appActions, albumStoreActions } from '@/store'
 
 export function RendererStoreHydrator () {
   useEffect(() => {
@@ -7,7 +7,7 @@ export function RendererStoreHydrator () {
       try {
         await Promise.all([
           appActions.ensureHydrated(),
-          galleryStoreActions.ensureHydrated()
+          albumStoreActions.ensureHydrated()
         ])
       } catch (error) {
         console.error(error)

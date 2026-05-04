@@ -1,13 +1,13 @@
 import fs from 'fs-extra'
 import { IToolboxItemCheckStatus, IToolboxItemType } from '~/universal/types/enum'
 import { sendToolboxResWithType } from './utils'
-import { dbPathChecker, getGalleryDBPath } from '~/main/apis/core/datastore/dbChecker'
-import { GalleryDB } from '~/main/apis/core/datastore'
+import { dbPathChecker, getAlbumDBPath } from '~/main/apis/core/datastore/dbChecker'
+import { AlbumDB } from '~/main/apis/core/datastore'
 import path from 'path'
 import { T } from '~/main/i18n'
 
 export const checkFileMap: IToolboxCheckerMap<
-IToolboxItemType.IS_CONFIG_FILE_BROKEN | IToolboxItemType.IS_GALLERY_FILE_BROKEN
+IToolboxItemType.IS_CONFIG_FILE_BROKEN | IToolboxItemType.IS_ALBUM_FILE_BROKEN
 > = {
   [IToolboxItemType.IS_CONFIG_FILE_BROKEN]: async (event) => {
     const sendToolboxRes = sendToolboxResWithType(IToolboxItemType.IS_CONFIG_FILE_BROKEN)
@@ -34,17 +34,17 @@ IToolboxItemType.IS_CONFIG_FILE_BROKEN | IToolboxItemType.IS_GALLERY_FILE_BROKEN
       })
     }
   },
-  [IToolboxItemType.IS_GALLERY_FILE_BROKEN]: async (event) => {
-    const sendToolboxRes = sendToolboxResWithType(IToolboxItemType.IS_GALLERY_FILE_BROKEN)
+  [IToolboxItemType.IS_ALBUM_FILE_BROKEN]: async (event) => {
+    const sendToolboxRes = sendToolboxResWithType(IToolboxItemType.IS_ALBUM_FILE_BROKEN)
     sendToolboxRes(event, {
       status: IToolboxItemCheckStatus.LOADING
     })
-    const { dbPath } = getGalleryDBPath()
-    const galleryDB = GalleryDB.getInstance()
-    if (galleryDB.errorList.length === 0) {
+    const { dbPath } = getAlbumDBPath()
+    const albumDB = AlbumDB.getInstance()
+    if (albumDB.errorList.length === 0) {
       sendToolboxRes(event, {
         status: IToolboxItemCheckStatus.SUCCESS,
-        msg: T('TOOLBOX_CHECK_GALLERY_FILE_PATH_TIPS', {
+        msg: T('TOOLBOX_CHECK_ALBUM_FILE_PATH_TIPS', {
           path: dbPath
         }),
         value: path.dirname(dbPath)
@@ -52,7 +52,7 @@ IToolboxItemType.IS_CONFIG_FILE_BROKEN | IToolboxItemType.IS_GALLERY_FILE_BROKEN
     } else {
       sendToolboxRes(event, {
         status: IToolboxItemCheckStatus.ERROR,
-        msg: T('TOOLBOX_CHECK_GALLERY_FILE_BROKEN_TIPS'),
+        msg: T('TOOLBOX_CHECK_ALBUM_FILE_BROKEN_TIPS'),
         value: path.dirname(dbPath)
       })
     }
@@ -60,7 +60,7 @@ IToolboxItemType.IS_CONFIG_FILE_BROKEN | IToolboxItemType.IS_GALLERY_FILE_BROKEN
 }
 
 export const fixFileMap: IToolboxFixMap<
-IToolboxItemType.IS_CONFIG_FILE_BROKEN | IToolboxItemType.IS_GALLERY_FILE_BROKEN
+IToolboxItemType.IS_CONFIG_FILE_BROKEN | IToolboxItemType.IS_ALBUM_FILE_BROKEN
 > = {
   [IToolboxItemType.IS_CONFIG_FILE_BROKEN]: async () => {
     try {
@@ -73,14 +73,14 @@ IToolboxItemType.IS_CONFIG_FILE_BROKEN | IToolboxItemType.IS_GALLERY_FILE_BROKEN
       status: IToolboxItemCheckStatus.SUCCESS
     }
   },
-  [IToolboxItemType.IS_GALLERY_FILE_BROKEN]: async () => {
+  [IToolboxItemType.IS_ALBUM_FILE_BROKEN]: async () => {
     try {
-      fs.unlinkSync(getGalleryDBPath().dbPath)
+      fs.unlinkSync(getAlbumDBPath().dbPath)
     } catch (e) {
       // do nothing
     }
     return {
-      type: IToolboxItemType.IS_GALLERY_FILE_BROKEN,
+      type: IToolboxItemType.IS_ALBUM_FILE_BROKEN,
       status: IToolboxItemCheckStatus.SUCCESS
     }
   }

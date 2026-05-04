@@ -32,8 +32,8 @@ export function ProviderSidebarSearch() {
             variant="ghost"
             className="text-muted-foreground transition-all duration-300 hover:bg-(--app-provider-sidebar-item-hover-bg) hover:text-(--app-provider-sidebar-item-active-color)"
             onClick={() => providerStoreActions.setSearchValue("")}
-            title={t("GALLERY_CLEAR_SELECTION")}
-            aria-label={t("GALLERY_CLEAR_SELECTION")}
+            title={t("ALBUM_CLEAR_SELECTION")}
+            aria-label={t("ALBUM_CLEAR_SELECTION")}
           >
             <XIcon className="size-3.5" />
           </InputGroupButton>

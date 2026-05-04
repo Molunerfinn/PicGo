@@ -2,9 +2,9 @@ import { useTranslation } from "react-i18next"
 import { CloudIcon, RefreshCwIcon, UploadCloudIcon } from "lucide-react"
 
 const FEATURES = [
-  { icon: CloudIcon, key: 'GALLERY_CLOUD_FEATURE_SYNC' },
-  { icon: RefreshCwIcon, key: 'GALLERY_CLOUD_FEATURE_AUTO_IMPORT' },
-  { icon: UploadCloudIcon, key: 'GALLERY_CLOUD_FEATURE_SECURE' },
+  { icon: CloudIcon, key: 'ALBUM_CLOUD_FEATURE_SYNC' },
+  { icon: RefreshCwIcon, key: 'ALBUM_CLOUD_FEATURE_AUTO_IMPORT' },
+  { icon: UploadCloudIcon, key: 'ALBUM_CLOUD_FEATURE_SECURE' },
 ] as const
 
 export function CloudFeatureHighlights () {
@@ -13,7 +13,7 @@ export function CloudFeatureHighlights () {
   return (
     <div className="mx-1 rounded-lg border border-border/60 bg-muted/30 p-3">
       <div className="mb-3 text-[11px] font-medium text-muted-foreground/70">
-        {t("GALLERY_CLOUD_FEATURES_TITLE")}
+        {t("ALBUM_CLOUD_FEATURES_TITLE")}
       </div>
       <div className="space-y-2.5">
         {FEATURES.map(({ icon: Icon, key }) => (

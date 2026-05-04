@@ -22,7 +22,7 @@ function AppShellMock () {
   return (
     <div>
       <button aria-current={isActive('/main/dashboard') ? 'page' : undefined}>SIDEBAR_DASHBOARD</button>
-      <button aria-current={isActive('/main/providers') ? 'page' : undefined}>GALLERY_PROVIDERS</button>
+      <button aria-current={isActive('/main/providers') ? 'page' : undefined}>ALBUM_PROVIDERS</button>
       <button aria-current={isActive('/main/plugins') ? 'page' : undefined}>SIDEBAR_PLUGINS</button>
       <button aria-current={isActive('/main/settings/settings') ? 'page' : undefined}>SETTINGS</button>
       <button>MORE</button>
@@ -111,7 +111,7 @@ describe('renderer app shell routing', () => {
   test('drives active sidebar state from the current URL', async () => {
     renderRoute('/main/providers')
 
-    expect(await screen.findByRole('button', { name: 'GALLERY_PROVIDERS' })).toHaveAttribute('aria-current', 'page')
+    expect(await screen.findByRole('button', { name: 'ALBUM_PROVIDERS' })).toHaveAttribute('aria-current', 'page')
     expect(screen.getByRole('button', { name: 'SIDEBAR_DASHBOARD' })).not.toHaveAttribute('aria-current')
   })
 

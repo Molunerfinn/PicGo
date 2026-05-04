@@ -24,7 +24,7 @@ function dbChecker () {
   if (process.type !== 'renderer') {
     // db save bak
     try {
-      const { dbPath, dbBackupPath } = getGalleryDBPath()
+      const { dbPath, dbBackupPath } = getAlbumDBPath()
       if (fs.existsSync(dbPath)) {
         fs.copyFileSync(dbPath, dbBackupPath)
       }
@@ -118,7 +118,7 @@ function dbPathDir () {
   return path.dirname(dbPathChecker())
 }
 
-function getGalleryDBPath (): {
+function getAlbumDBPath (): {
   dbPath: string
   dbBackupPath: string
 } {
@@ -144,6 +144,6 @@ export {
   dbChecker,
   dbPathChecker,
   dbPathDir,
-  getGalleryDBPath,
+  getAlbumDBPath,
   getFormImageFolderPath
 }

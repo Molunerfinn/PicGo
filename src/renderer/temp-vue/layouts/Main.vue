@@ -54,7 +54,7 @@
             <el-icon>
               <PictureFilled />
             </el-icon>
-            <span>{{ $T('GALLERY') }}</span>
+            <span>{{ $T('ALBUM') }}</span>
           </el-menu-item>
           <el-sub-menu
             index="sub-menu"

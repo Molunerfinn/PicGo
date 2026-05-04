@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useIPCOn } from '@/hooks/useIPC'
-import { galleryAdapter } from '@/adapters/gallery'
+import { albumAdapter } from '@/adapters/album'
 import { IRPCActionType } from '~/universal/types/enum'
 
 export interface DashboardHistoryRecord extends ImgInfo {
@@ -12,7 +12,7 @@ export function useDashboardHistory () {
   const [historyItems, setHistoryItems] = useState<DashboardHistoryRecord[]>([])
   const [refreshNonce, setRefreshNonce] = useState(0)
 
-  useIPCOn(IRPCActionType.UPDATE_GALLERY, () => {
+  useIPCOn(IRPCActionType.UPDATE_ALBUM, () => {
     setRefreshNonce((value) => value + 1)
   })
 
@@ -22,7 +22,7 @@ export function useDashboardHistory () {
 
     async function refreshHistory () {
       try {
-        const items = await galleryAdapter.getRecentUploads(100)
+        const items = await albumAdapter.getRecentUploads(100)
         if (!disposed) {
           setHistoryItems(items)
         }

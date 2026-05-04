@@ -10,8 +10,8 @@ import { CloudRefreshButton } from "@/components/common/cloud-refresh-button"
 import { CloudSidebarSkeleton } from "./cloud-loading"
 import {
   NavType,
-  type GalleryProviderFilter,
-  type GalleryPhoto,
+  type AlbumProviderFilter,
+  type AlbumPhoto,
   type NavContext,
 } from "./utils"
 
@@ -24,21 +24,21 @@ export const allPhotosKey = "all"
 //   onClick: () => void
 // }
 
-type GalleryNavButtonProps = {
+type AlbumNavButtonProps = {
   label: string
   count?: number
   active: boolean
   onClick: () => void
 }
 
-type GallerySidebarProps = {
-  images: GalleryPhoto[]
-  providers: GalleryProviderFilter[]
+type AlbumSidebarProps = {
+  images: AlbumPhoto[]
+  providers: AlbumProviderFilter[]
   navContext: NavContext
   albumSource: AlbumSource
   isCloudAvailable: boolean
   cloudLoading?: boolean
-  cloudProviders?: GalleryProviderFilter[]
+  cloudProviders?: AlbumProviderFilter[]
   cloudAllTotal?: number
   // TODO(v3-post-launch): Restore tag suggestions input when Tags feature returns.
   // tagSuggestions: string[]
@@ -68,12 +68,12 @@ type GallerySidebarProps = {
 //   )
 // }
 
-function GalleryNavButton({
+function AlbumNavButton({
   label,
   count,
   active,
   onClick,
-}: GalleryNavButtonProps) {
+}: AlbumNavButtonProps) {
   return (
     <Button
       variant="ghost"
@@ -112,7 +112,7 @@ function GalleryNavButton({
   )
 }
 
-export function GallerySidebar({
+export function AlbumSidebar({
   images,
   providers,
   navContext,
@@ -125,7 +125,7 @@ export function GallerySidebar({
   // tagSuggestions,
   onFilterChange,
   onCloudRefresh,
-}: GallerySidebarProps) {
+}: AlbumSidebarProps) {
   const { t } = useTranslation()
   const isCloud = albumSource === AlbumSource.CLOUD
   const showCloudNav = isCloud && isCloudAvailable
@@ -153,7 +153,7 @@ export function GallerySidebar({
       <div className="border-sidebar-border/60 flex flex-col gap-3 border-b px-4 py-4">
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1">
-            <h1 className="text-base font-semibold">{t("GALLERY")}</h1>
+            <h1 className="text-base font-semibold">{t("ALBUM")}</h1>
             {showCloudNav && onCloudRefresh ? (
               <CloudRefreshButton onRefresh={onCloudRefresh} />
             ) : null}
@@ -168,8 +168,8 @@ export function GallerySidebar({
             <CloudSidebarSkeleton />
           ) : showNavList ? (
             <div className="space-y-1">
-              <GalleryNavButton
-                label={t("GALLERY_ALL_PHOTOS")}
+              <AlbumNavButton
+                label={t("ALBUM_ALL_PHOTOS")}
                 count={allPhotosCount}
                 active={navContext.type === NavType.All}
                 onClick={() =>
@@ -177,7 +177,7 @@ export function GallerySidebar({
                 }
               />
               {displayProviders.map((provider) => (
-                <GalleryNavButton
+                <AlbumNavButton
                   key={provider.type}
                   label={provider.name}
                   count={provider.count}
@@ -199,7 +199,7 @@ export function GallerySidebar({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">
-                {t("GALLERY_COLLECTIONS")}
+                {t("ALBUM_COLLECTIONS")}
               </div>
               <Button variant="ghost" size="icon-xs">
                 <Plus className="size-3" />
@@ -207,7 +207,7 @@ export function GallerySidebar({
             </div>
             <div className="space-y-1">
               {collections.map((collection) => (
-                <GalleryNavButton
+                <AlbumNavButton
                   key={collection}
                   label={collection}
                   count={collectionCounts[collection] ?? 0}
@@ -230,7 +230,7 @@ export function GallerySidebar({
           {/* TODO(v3-post-launch): Restore Tags sidebar section for v3+ feature reactivation.
           <div className="space-y-3">
             <div className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">
-              {t("GALLERY_TAGS")}
+              {t("ALBUM_TAGS")}
             </div>
             <div className="flex flex-wrap gap-2">
               {sidebarTags.map((tag) => (

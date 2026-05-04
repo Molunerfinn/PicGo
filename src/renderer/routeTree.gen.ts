@@ -18,9 +18,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as MainIndexRouteImport } from './routes/main/index'
 import { Route as MainProvidersRouteImport } from './routes/main/providers'
 import { Route as MainPluginsRouteImport } from './routes/main/plugins'
-import { Route as MainGalleryRouteImport } from './routes/main/gallery'
 import { Route as MainDashboardRouteImport } from './routes/main/dashboard'
 import { Route as MainCloudRouteImport } from './routes/main/cloud'
+import { Route as MainAlbumRouteImport } from './routes/main/album'
 import { Route as MainSettingsIndexRouteImport } from './routes/main/settings/index'
 import { Route as MainSettingsUrlRewriteRouteImport } from './routes/main/settings/url-rewrite'
 import { Route as MainSettingsShortcutsRouteImport } from './routes/main/settings/shortcuts'
@@ -72,11 +72,6 @@ const MainPluginsRoute = MainPluginsRouteImport.update({
   path: '/plugins',
   getParentRoute: () => MainRoute,
 } as any)
-const MainGalleryRoute = MainGalleryRouteImport.update({
-  id: '/gallery',
-  path: '/gallery',
-  getParentRoute: () => MainRoute,
-} as any)
 const MainDashboardRoute = MainDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -85,6 +80,11 @@ const MainDashboardRoute = MainDashboardRouteImport.update({
 const MainCloudRoute = MainCloudRouteImport.update({
   id: '/cloud',
   path: '/cloud',
+  getParentRoute: () => MainRoute,
+} as any)
+const MainAlbumRoute = MainAlbumRouteImport.update({
+  id: '/album',
+  path: '/album',
   getParentRoute: () => MainRoute,
 } as any)
 const MainSettingsIndexRoute = MainSettingsIndexRouteImport.update({
@@ -121,9 +121,9 @@ export interface FileRoutesByFullPath {
   '/rename': typeof RenameRoute
   '/toolbox': typeof ToolboxRoute
   '/tray': typeof TrayRoute
+  '/main/album': typeof MainAlbumRoute
   '/main/cloud': typeof MainCloudRoute
   '/main/dashboard': typeof MainDashboardRoute
-  '/main/gallery': typeof MainGalleryRoute
   '/main/plugins': typeof MainPluginsRoute
   '/main/providers': typeof MainProvidersRoute
   '/main/': typeof MainIndexRoute
@@ -139,9 +139,9 @@ export interface FileRoutesByTo {
   '/rename': typeof RenameRoute
   '/toolbox': typeof ToolboxRoute
   '/tray': typeof TrayRoute
+  '/main/album': typeof MainAlbumRoute
   '/main/cloud': typeof MainCloudRoute
   '/main/dashboard': typeof MainDashboardRoute
-  '/main/gallery': typeof MainGalleryRoute
   '/main/plugins': typeof MainPluginsRoute
   '/main/providers': typeof MainProvidersRoute
   '/main': typeof MainIndexRoute
@@ -159,9 +159,9 @@ export interface FileRoutesById {
   '/rename': typeof RenameRoute
   '/toolbox': typeof ToolboxRoute
   '/tray': typeof TrayRoute
+  '/main/album': typeof MainAlbumRoute
   '/main/cloud': typeof MainCloudRoute
   '/main/dashboard': typeof MainDashboardRoute
-  '/main/gallery': typeof MainGalleryRoute
   '/main/plugins': typeof MainPluginsRoute
   '/main/providers': typeof MainProvidersRoute
   '/main/': typeof MainIndexRoute
@@ -180,9 +180,9 @@ export interface FileRouteTypes {
     | '/rename'
     | '/toolbox'
     | '/tray'
+    | '/main/album'
     | '/main/cloud'
     | '/main/dashboard'
-    | '/main/gallery'
     | '/main/plugins'
     | '/main/providers'
     | '/main/'
@@ -198,9 +198,9 @@ export interface FileRouteTypes {
     | '/rename'
     | '/toolbox'
     | '/tray'
+    | '/main/album'
     | '/main/cloud'
     | '/main/dashboard'
-    | '/main/gallery'
     | '/main/plugins'
     | '/main/providers'
     | '/main'
@@ -217,9 +217,9 @@ export interface FileRouteTypes {
     | '/rename'
     | '/toolbox'
     | '/tray'
+    | '/main/album'
     | '/main/cloud'
     | '/main/dashboard'
-    | '/main/gallery'
     | '/main/plugins'
     | '/main/providers'
     | '/main/'
@@ -304,13 +304,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainPluginsRouteImport
       parentRoute: typeof MainRoute
     }
-    '/main/gallery': {
-      id: '/main/gallery'
-      path: '/gallery'
-      fullPath: '/main/gallery'
-      preLoaderRoute: typeof MainGalleryRouteImport
-      parentRoute: typeof MainRoute
-    }
     '/main/dashboard': {
       id: '/main/dashboard'
       path: '/dashboard'
@@ -323,6 +316,13 @@ declare module '@tanstack/react-router' {
       path: '/cloud'
       fullPath: '/main/cloud'
       preLoaderRoute: typeof MainCloudRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/main/album': {
+      id: '/main/album'
+      path: '/album'
+      fullPath: '/main/album'
+      preLoaderRoute: typeof MainAlbumRouteImport
       parentRoute: typeof MainRoute
     }
     '/main/settings/': {
@@ -364,9 +364,9 @@ declare module '@tanstack/react-router' {
 }
 
 interface MainRouteChildren {
+  MainAlbumRoute: typeof MainAlbumRoute
   MainCloudRoute: typeof MainCloudRoute
   MainDashboardRoute: typeof MainDashboardRoute
-  MainGalleryRoute: typeof MainGalleryRoute
   MainPluginsRoute: typeof MainPluginsRoute
   MainProvidersRoute: typeof MainProvidersRoute
   MainIndexRoute: typeof MainIndexRoute
@@ -378,9 +378,9 @@ interface MainRouteChildren {
 }
 
 const MainRouteChildren: MainRouteChildren = {
+  MainAlbumRoute: MainAlbumRoute,
   MainCloudRoute: MainCloudRoute,
   MainDashboardRoute: MainDashboardRoute,
-  MainGalleryRoute: MainGalleryRoute,
   MainPluginsRoute: MainPluginsRoute,
   MainProvidersRoute: MainProvidersRoute,
   MainIndexRoute: MainIndexRoute,

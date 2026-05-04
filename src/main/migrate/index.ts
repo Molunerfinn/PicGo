@@ -39,8 +39,8 @@ const updateShortKeyFromVersion212 = (picgo: PicGoCore) => {
   return false
 }
 
-const migrateGalleryFromVersion230 = async (galleryDB: DBStore, picgo: PicGoCore) => {
-  const originGallery = picgo.getConfig<ImgInfo[] | undefined>('uploaded')
+const migrateAlbumFromVersion230 = async (albumDB: DBStore, picgo: PicGoCore) => {
+  const originAlbum = picgo.getConfig<ImgInfo[] | undefined>('uploaded')
   // if hasMigrate, we don't need to migrate
   const hasMigrate = picgo.getConfig<boolean | undefined>('__migrateUploaded') === true
   if (hasMigrate) {
@@ -49,11 +49,11 @@ const migrateGalleryFromVersion230 = async (galleryDB: DBStore, picgo: PicGoCore
   const configPath = picgo.configPath
   const configBakPath = path.join(path.dirname(configPath), 'config.bak.json')
   // migrate gallery from config to gallery db
-  if (originGallery && Array.isArray(originGallery) && originGallery?.length > 0) {
+  if (originAlbum && Array.isArray(originAlbum) && originAlbum?.length > 0) {
     if (fse.existsSync(configBakPath)) {
       fse.copyFileSync(configPath, configBakPath)
     }
-    await galleryDB.insertMany(originGallery)
+    await albumDB.insertMany(originAlbum)
     picgo.saveConfig({
       uploaded: [],
       __migrateUploaded: true
@@ -63,5 +63,5 @@ const migrateGalleryFromVersion230 = async (galleryDB: DBStore, picgo: PicGoCore
 
 export {
   updateShortKeyFromVersion212,
-  migrateGalleryFromVersion230
+  migrateAlbumFromVersion230
 }

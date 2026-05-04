@@ -12,7 +12,7 @@ export function CloudRefreshButton ({ onRefresh, className }: CloudRefreshButton
 
   return (
     <TooltipIconButton
-      tooltip={t("GALLERY_CLOUD_REFRESH")}
+      tooltip={t("ALBUM_CLOUD_REFRESH")}
       icon={<RefreshCwIcon className="size-4" />}
       onClick={async () => { await onRefresh() }}
       className={className}

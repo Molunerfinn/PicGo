@@ -3,8 +3,8 @@ import { Copy, Trash2, X } from "lucide-react"
 import type { ValueOf } from "@/types/utils"
 import { AlbumSource } from "#/types/cloudAlbum"
 import { CloudImportStatus } from "./cloud-import-status"
-import { GalleryDeleteDialog } from "./gallery-delete-dialog"
-import { GalleryInspectorDetails } from "./gallery-inspector-details"
+import { AlbumDeleteDialog } from "./album-delete-dialog"
+import { AlbumInspectorDetails } from "./album-inspector-details"
 
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -14,14 +14,14 @@ import { cn } from "@/lib/utils"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { galleryAdapter } from "@/adapters/gallery"
+import { albumAdapter } from "@/adapters/album"
 import {
-  GalleryUrlRewriteDialog,
-  type GalleryUrlRewriteChange,
-} from "./gallery-url-rewrite-dialog"
-import { GallerySingleUrlInput } from "./gallery-single-url-input"
-import type { GalleryPhoto } from "./utils"
-import { getGalleryImageUrl } from "./utils"
+  AlbumUrlRewriteDialog,
+  type AlbumUrlRewriteChange,
+} from "./album-url-rewrite-dialog"
+import { AlbumSingleUrlInput } from "./album-single-url-input"
+import type { AlbumPhoto } from "./utils"
+import { getAlbumImageUrl } from "./utils"
 
 const INSPECTOR_ACTION_BUTTON_VARIANT = {
   DEFAULT: "default",
@@ -31,11 +31,11 @@ const INSPECTOR_ACTION_BUTTON_VARIANT = {
 type InspectorActionButtonVariant =
   ValueOf<typeof INSPECTOR_ACTION_BUTTON_VARIANT>
 
-type GalleryInspectorProps = {
+type AlbumInspectorProps = {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   selectedIds: number[]
-  selectedImages: GalleryPhoto[]
+  selectedImages: AlbumPhoto[]
   // TODO(v3-post-launch): Restore tag + collection props when Gallery Tags/Collections UI returns.
   // selectedTags: string[]
   // collections: string[]
@@ -48,7 +48,7 @@ type GalleryInspectorProps = {
   // onCollectionChange: (value: string) => void
   onDelete: () => Promise<void>
   onPreviewOpen: (imageId: number) => void
-  onUrlRewrite: (changes: GalleryUrlRewriteChange[]) => void
+  onUrlRewrite: (changes: AlbumUrlRewriteChange[]) => void
   albumSource?: AlbumSource
 }
 
@@ -83,7 +83,7 @@ function InspectorActionButton({
   )
 }
 
-export function GalleryInspector({
+export function AlbumInspector({
   isOpen,
   onOpenChange,
   selectedIds,
@@ -102,7 +102,7 @@ export function GalleryInspector({
   onPreviewOpen,
   onUrlRewrite,
   albumSource: _albumSource,
-}: GalleryInspectorProps) {
+}: AlbumInspectorProps) {
   const { t } = useTranslation()
   const canAct = selectedImages.length > 0
 
@@ -111,11 +111,11 @@ export function GalleryInspector({
     try {
       const copiedLinks = await Promise.all(
         selectedImages.map(async (image) => {
-          return galleryAdapter.copyImageLink(image.raw)
+          return albumAdapter.copyImageLink(image.raw)
         })
       )
 
-      galleryAdapter.copyBatchLinks(copiedLinks)
+      albumAdapter.copyBatchLinks(copiedLinks)
       toast.success(
         selectedImages.length > 1
           ? t("BATCH_COPY_LINK_SUCCEED")
@@ -130,7 +130,7 @@ export function GalleryInspector({
   // const handleDownload = () => {
   //   if (!canAct) return
   //   selectedImages.forEach((image, index) => {
-  //     const downloadUrl = getGalleryImageUrl(image)
+  //     const downloadUrl = getAlbumImageUrl(image)
   //     const link = document.createElement("a")
   //     link.href = downloadUrl
   //     link.download = image.name || `image-${index + 1}`
@@ -154,7 +154,7 @@ export function GalleryInspector({
         side="right"
         showOverlay={false}
         showCloseButton={false}
-        data-gallery-inspector="true"
+        data-album-inspector="true"
         style={{
           backgroundImage: "var(--app-gallery-inspector-bg-image)",
           backdropFilter: "blur(var(--app-gallery-inspector-backdrop-blur))",
@@ -162,14 +162,14 @@ export function GalleryInspector({
         className="bg-gallery-inspector text-sidebar-foreground border-sidebar-border w-(--app-gallery-inspector-width) bg-cover bg-center bg-no-repeat sm:max-w-none"
       >
         <SheetTitle className="sr-only">
-          {t("GALLERY_INSPECTOR_TITLE")}
+          {t("ALBUM_INSPECTOR_TITLE")}
         </SheetTitle>
         <SheetDescription className="sr-only">
-          {t("GALLERY_INSPECTOR_DESCRIPTION")}
+          {t("ALBUM_INSPECTOR_DESCRIPTION")}
         </SheetDescription>
         <div className="border-border/60 flex items-center justify-between border-b px-4 py-3">
           <div className="font-semibold">
-            {t("GALLERY_SELECTED_COUNT", {
+            {t("ALBUM_SELECTED_COUNT", {
               count: selectedIds.length,
             })}
           </div>
@@ -185,11 +185,11 @@ export function GalleryInspector({
               {/* TODO(v3-post-launch): Restore inspector download action when feature scope is re-enabled.
               <InspectorActionButton
                 icon={<Download />}
-                label={t("GALLERY_EXPORT")}
+                label={t("ALBUM_EXPORT")}
                 onClick={handleDownload}
               />
               */}
-              <GalleryDeleteDialog
+              <AlbumDeleteDialog
                 selectedCount={selectedIds.length}
                 onConfirm={onDelete}
                 trigger={
@@ -216,8 +216,8 @@ export function GalleryInspector({
                           key={image.id}
                           type="button"
                           onClick={() => onPreviewOpen(image.id)}
-                          title={t("GALLERY_PREVIEW")}
-                          aria-label={t("GALLERY_PREVIEW")}
+                          title={t("ALBUM_PREVIEW")}
+                          aria-label={t("ALBUM_PREVIEW")}
                           className="relative h-full w-full overflow-hidden rounded-lg cursor-zoom-in"
                         >
                           {image.isVideo ? (
@@ -259,8 +259,8 @@ export function GalleryInspector({
                   <button
                     type="button"
                     onClick={() => onPreviewOpen(selectedImages[0].id)}
-                    title={t("GALLERY_PREVIEW")}
-                    aria-label={t("GALLERY_PREVIEW")}
+                    title={t("ALBUM_PREVIEW")}
+                    aria-label={t("ALBUM_PREVIEW")}
                     className="relative h-full w-full cursor-zoom-in overflow-hidden"
                   >
                     {selectedImages[0].isVideo ? (
@@ -290,25 +290,25 @@ export function GalleryInspector({
                   </button>
                 ) : (
                   <div className="text-muted-foreground flex h-full items-center justify-center text-sm">
-                    {t("GALLERY_SELECTED_COUNT", { count: 0 })}
+                    {t("ALBUM_SELECTED_COUNT", { count: 0 })}
                   </div>
                 )}
               </div>
 
               <div className="space-y-2">
                 <div className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">
-                  {t("GALLERY_URL")}
+                  {t("ALBUM_URL")}
                 </div>
                 {selectedIds.length === 1 ? (
                   selectedImages[0] ? (
-                    <GallerySingleUrlInput
-                      key={`${selectedImages[0].id}-${getGalleryImageUrl(selectedImages[0])}`}
+                    <AlbumSingleUrlInput
+                      key={`${selectedImages[0].id}-${getAlbumImageUrl(selectedImages[0])}`}
                       image={selectedImages[0]}
                       onApply={onUrlRewrite}
                     />
                   ) : null
                 ) : (
-                  <GalleryUrlRewriteDialog
+                  <AlbumUrlRewriteDialog
                     selectedImages={selectedImages}
                     onApply={onUrlRewrite}
                   />
@@ -318,14 +318,14 @@ export function GalleryInspector({
               {/* TODO(v3-post-launch): Restore collection editor in inspector when Collections feature returns.
               <div className="space-y-2">
                 <div className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">
-                  {t("GALLERY_COLLECTION")}
+                  {t("ALBUM_COLLECTION")}
                 </div>
                 <Select
                   value={selectedImages[0]?.collection ?? ""}
                   onValueChange={onCollectionChange}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("GALLERY_COLLECTION")} />
+                    <SelectValue placeholder={t("ALBUM_COLLECTION")} />
                   </SelectTrigger>
                   <SelectContent>
                     {collections.map((collection) => (
@@ -343,18 +343,18 @@ export function GalleryInspector({
               ) : null}
 
               {selectedImages.length === 1 && selectedImages[0] ? (
-                <GalleryInspectorDetails image={selectedImages[0]} />
+                <AlbumInspectorDetails image={selectedImages[0]} />
               ) : null}
 
               {/* TODO(v3-post-launch): Restore tags editor in inspector when Tags feature returns.
               <div className="space-y-3">
                 <div className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">
-                  {t("GALLERY_TAGS")}
+                  {t("ALBUM_TAGS")}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {selectedTags.length === 0 ? (
                     <div className="text-muted-foreground text-xs">
-                      {t("GALLERY_TAG_SUGGESTIONS")}
+                      {t("ALBUM_TAG_SUGGESTIONS")}
                     </div>
                   ) : (
                     selectedTags.map((tag) => (
@@ -399,10 +399,10 @@ export function GalleryInspector({
                         onTagSubmit()
                       }
                     }}
-                    placeholder={t("GALLERY_ADD_TAG")}
+                    placeholder={t("ALBUM_ADD_TAG")}
                   />
                   <Button variant="outline" size="sm" onClick={onTagSubmit}>
-                    {t("GALLERY_ADD")}
+                    {t("ALBUM_ADD")}
                   </Button>
                 </div>
               </div>

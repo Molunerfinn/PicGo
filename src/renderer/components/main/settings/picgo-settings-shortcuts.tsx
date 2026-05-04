@@ -235,7 +235,7 @@ export function PicGoSettingsShortcuts() {
                     className="mt-4"
                     onClick={() => settingsStoreActions.setSearchValue("")}
                   >
-                    {t("GALLERY_CLEAR_SELECTION")}
+                    {t("ALBUM_CLEAR_SELECTION")}
                   </Button>
                 </div>
               ) : (

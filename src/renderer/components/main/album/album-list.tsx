@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { TableCell, TableHead, TableRow } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 
-export type GalleryListItem = {
+export type AlbumListItem = {
   id: number
   imgUrl: string
   originImgUrl?: string
@@ -21,15 +21,15 @@ export type GalleryListItem = {
   isVideo?: boolean
 }
 
-export type GalleryListLabels = {
+export type AlbumListLabels = {
   name: string
   type: string
   size: string
   date: string
 }
 
-type GalleryListProps = {
-  items: GalleryListItem[]
+type AlbumListProps = {
+  items: AlbumListItem[]
   selectedIds: Set<number>
   onSelect: (
     id: number,
@@ -44,7 +44,7 @@ type GalleryListProps = {
   onToggleAll: () => void
   formatSize: (sizeMb: number) => string
   scrollParent: HTMLElement | null
-  labels: GalleryListLabels
+  labels: AlbumListLabels
   selectAllLabel: string
   clearSelectionLabel: string
   previewLabel: string
@@ -52,7 +52,7 @@ type GalleryListProps = {
   isLoadingMore?: boolean
 }
 
-type GalleryListContext = {
+type AlbumListContext = {
   selectedIds: Set<number>
   onSelect: (
     id: number,
@@ -68,7 +68,7 @@ type GalleryListContext = {
   previewLabel: string
 }
 
-const GalleryTable = forwardRef<HTMLTableElement, HTMLAttributes<HTMLTableElement>>(
+const AlbumTable = forwardRef<HTMLTableElement, HTMLAttributes<HTMLTableElement>>(
   ({ className, children, ...props }, ref) => (
     <table
       ref={ref}
@@ -85,17 +85,17 @@ const GalleryTable = forwardRef<HTMLTableElement, HTMLAttributes<HTMLTableElemen
     </table>
   )
 )
-GalleryTable.displayName = "GalleryTable"
+AlbumTable.displayName = "AlbumTable"
 
-const GalleryTableHead = forwardRef<
+const AlbumTableHead = forwardRef<
   HTMLTableSectionElement,
   HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
   <thead ref={ref} {...props} className={cn("[&_tr]:border-b", className)} />
 ))
-GalleryTableHead.displayName = "GalleryTableHead"
+AlbumTableHead.displayName = "AlbumTableHead"
 
-const GalleryTableBody = forwardRef<
+const AlbumTableBody = forwardRef<
   HTMLTableSectionElement,
   HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
@@ -105,18 +105,18 @@ const GalleryTableBody = forwardRef<
     className={cn("[&_tr:last-child]:border-0", className)}
   />
 ))
-GalleryTableBody.displayName = "GalleryTableBody"
+AlbumTableBody.displayName = "AlbumTableBody"
 
-const galleryTableComponents: TableComponents<GalleryListItem, GalleryListContext> = {
-  Table: GalleryTable,
-  TableHead: GalleryTableHead,
-  TableBody: GalleryTableBody,
+const albumTableComponents: TableComponents<AlbumListItem, AlbumListContext> = {
+  Table: AlbumTable,
+  TableHead: AlbumTableHead,
+  TableBody: AlbumTableBody,
   TableRow: ({ item, context, ...props }) => {
     const isSelected = context.selectedIds.has(item.id)
     return (
       <TableRow
         {...props}
-        data-gallery-item="true"
+        data-album-item="true"
         data-state={isSelected ? "selected" : undefined}
         onClick={(event) => {
           context.onSelect(item.id, {
@@ -131,7 +131,7 @@ const galleryTableComponents: TableComponents<GalleryListItem, GalleryListContex
   },
 }
 
-function GalleryListThumbnail({
+function AlbumListThumbnail({
   imgUrl,
   alt,
   isVideo,
@@ -149,7 +149,7 @@ function GalleryListThumbnail({
   return (
     <button
       type="button"
-      data-gallery-interactive="true"
+      data-album-interactive="true"
       title={label}
       aria-label={label}
       className="border-border/60 bg-muted/40 size-10 overflow-hidden rounded-lg border cursor-zoom-in"
@@ -190,7 +190,7 @@ function GalleryListThumbnail({
   )
 }
 
-export function GalleryList({
+export function AlbumList({
   items,
   selectedIds,
   onSelect,
@@ -205,7 +205,7 @@ export function GalleryList({
   previewLabel,
   onEndReached,
   isLoadingMore = false,
-}: GalleryListProps) {
+}: AlbumListProps) {
   const selectedCount = items.reduce(
     (count, item) => count + Number(selectedIds.has(item.id)),
     0
@@ -215,7 +215,7 @@ export function GalleryList({
   const headerChecked = isAllSelected ? true : isIndeterminate ? "indeterminate" : false
   const headerLabel = isAllSelected ? clearSelectionLabel : selectAllLabel
 
-  const tableContext: GalleryListContext = {
+  const tableContext: AlbumListContext = {
     selectedIds,
     onSelect,
     onToggleSelection,
@@ -231,7 +231,7 @@ export function GalleryList({
           data={items}
           context={tableContext}
           customScrollParent={scrollParent ?? undefined}
-          components={galleryTableComponents}
+          components={albumTableComponents}
           computeItemKey={(_, item) => item.id}
           endReached={onEndReached}
           fixedHeaderContent={() => (
@@ -263,7 +263,7 @@ export function GalleryList({
               <TableCell className="min-w-0">
                 <div className="flex items-center gap-3">
                   <div
-                    data-gallery-interactive="true"
+                    data-album-interactive="true"
                     onClick={(event) => event.stopPropagation()}
                     className="shrink-0"
                   >
@@ -275,7 +275,7 @@ export function GalleryList({
                     />
                   </div>
                   <div className="shrink-0">
-                    <GalleryListThumbnail
+                    <AlbumListThumbnail
                       imgUrl={item.imgUrl}
                       alt={item.alt ?? ""}
                       isVideo={item.isVideo}

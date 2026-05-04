@@ -27,7 +27,7 @@ import {
 type ToolboxHandlerTextKey = "SETTINGS_OPEN_CONFIG_FILE" | "OPEN_FILE_PATH"
 type ToolboxTitleKey =
   | "TOOLBOX_CHECK_CONFIG_FILE_BROKEN"
-  | "TOOLBOX_CHECK_GALLERY_FILE_BROKEN"
+  | "TOOLBOX_CHECK_ALBUM_FILE_BROKEN"
   | "TOOLBOX_CHECK_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD"
   | "TOOLBOX_CHECK_PROBLEM_WITH_PROXY"
 
@@ -92,8 +92,8 @@ export function PicGoToolboxPage() {
       handlerTextKey: "SETTINGS_OPEN_CONFIG_FILE",
     },
     {
-      type: IToolboxItemType.IS_GALLERY_FILE_BROKEN,
-      titleKey: "TOOLBOX_CHECK_GALLERY_FILE_BROKEN",
+      type: IToolboxItemType.IS_ALBUM_FILE_BROKEN,
+      titleKey: "TOOLBOX_CHECK_ALBUM_FILE_BROKEN",
       status: IToolboxItemCheckStatus.INIT,
       messageKey: "",
       value: "",

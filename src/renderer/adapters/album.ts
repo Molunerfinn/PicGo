@@ -5,19 +5,19 @@ import { clipboard, ipc } from '@/utils/bridge'
 
 import { resolveTimestampValue } from '@/utils/common'
 
-function resolveGalleryItemTimestamp (item: ImgInfo) {
+function resolveAlbumItemTimestamp (item: ImgInfo) {
   return resolveTimestampValue(item.createdAt) || resolveTimestampValue(item.updatedAt)
 }
 
-export const galleryAdapter = {
-  async getGalleryItems () {
+export const albumAdapter = {
+  async getAlbumItems () {
     const result = await db.get<ImgInfo>({ orderBy: 'desc' })
     return result.data
   },
   async getRecentUploads (limit = 100) {
     const result = await db.get<ImgInfo>({ orderBy: 'desc' })
     return [...result.data]
-      .sort((left, right) => resolveGalleryItemTimestamp(right) - resolveGalleryItemTimestamp(left))
+      .sort((left, right) => resolveAlbumItemTimestamp(right) - resolveAlbumItemTimestamp(left))
       .slice(0, limit)
   },
   async updateImageUrl (id: string, imgUrl: string) {

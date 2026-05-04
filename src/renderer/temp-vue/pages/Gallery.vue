@@ -1,7 +1,7 @@
 <template>
   <div id="gallery-view">
     <div class="view-title">
-      {{ $T('GALLERY') }} - {{ filterList.length }}
+      {{ $T('ALBUM') }} - {{ filterList.length }}
       <el-icon
         style="margin-left: 4px"
         class="cursor-pointer"

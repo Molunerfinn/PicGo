@@ -111,8 +111,8 @@ export function PluginSidebar({
                 variant="ghost"
                 className="text-muted-foreground transition-all duration-300 hover:bg-(--app-plugin-sidebar-item-hover-bg) hover:text-(--app-plugin-sidebar-item-active-color)"
                 onClick={() => pluginStoreActions.setSearchValue("")}
-                title={t("GALLERY_CLEAR_SELECTION")}
-                aria-label={t("GALLERY_CLEAR_SELECTION")}
+                title={t("ALBUM_CLEAR_SELECTION")}
+                aria-label={t("ALBUM_CLEAR_SELECTION")}
               >
                 <XIcon className="size-3.5" />
               </InputGroupButton>

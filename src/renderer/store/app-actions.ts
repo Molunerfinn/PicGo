@@ -1,6 +1,6 @@
 import type { IPicGoCloudUserInfo } from '#/types/cloud'
 import { AlbumSource } from '#/types/cloudAlbum'
-import { galleryStoreActions } from '@/store/gallery/actions'
+import { albumStoreActions } from '@/store/album/actions'
 import { cloudAdapter } from '@/adapters/cloud'
 import { appConfigAdapter } from '@/adapters/app-config'
 import {
@@ -117,7 +117,7 @@ export const appActions = {
     const wasPaid = (prev?.plan ?? 0) > 0
     const isPaid = (userInfo?.plan ?? 0) > 0
     if (!wasPaid && isPaid) {
-      galleryStoreActions.setAlbumSource(AlbumSource.CLOUD)
+      albumStoreActions.setAlbumSource(AlbumSource.CLOUD)
     }
   },
   setPicGoCloudUserInfoStatus (status: PicGoCloudRequestStatus) {

@@ -32,8 +32,8 @@ OPEN_TOOLBOX: Open Toolbox
 CHOOSE_YOUR_DEFAULT_PICBED: "Choose ${d} as your default picbed:"
 SIDEBAR_DASHBOARD: Dashboard
 UPLOAD_AREA: Upload Area
-GALLERY: Gallery
-GALLERY_PROVIDERS: Providers
+ALBUM: Album
+ALBUM_PROVIDERS: Providers
 PICBEDS_SETTINGS: Picbeds Settings
 PICGO_SETTINGS: PicGo Settings
 PLUGIN_SETTINGS: Plugins Settings
@@ -263,21 +263,21 @@ SHORTCUT_DISABLE: Disable
 SHORTCUT_EDIT: Edit
 SHORTCUT_CHANGE_UPLOAD: Change Upload Shortcut
 
-# gallery-page
-GALLERY_URL_REWRITE_TITLE: Rewrite Selected Image URLs
-GALLERY_URL_REWRITE_RESULT_TITLE: Rewrite Image URL Result
-GALLERY_URL_REWRITE_WARN_NO_SELECTION: You must select at least one picture first
+# album-page
+ALBUM_URL_REWRITE_TITLE: Rewrite Selected Image URLs
+ALBUM_URL_REWRITE_RESULT_TITLE: Rewrite Image URL Result
+ALBUM_URL_REWRITE_WARN_NO_SELECTION: You must select at least one picture first
 
-GALLERY_URL_REWRITE_APPLY_GLOBAL_RULES: Apply global URL rewrite rules
-GALLERY_URL_REWRITE_GLOBAL_RULES_COUNT: Global rules
-GALLERY_URL_REWRITE_TEMP_RULE_TIPS: Optional. Leave empty to skip the temporary rule. Temporary rule has higher priority than global rules.
-GALLERY_URL_REWRITE_TEMP_RULE_REQUIRED: Match and Replace are required for the temporary rule
-GALLERY_URL_REWRITE_NO_RULES_TO_APPLY: No global rules enabled and no temporary rule provided
-GALLERY_URL_REWRITE_SAVE_TEMP_RULE_PROMPT: Save the temporary rule to global URL rewrite rules?
-GALLERY_URL_REWRITE_APPLY_AND_SAVE: Apply and Save
-GALLERY_URL_REWRITE_APPLY_ONLY: Apply Only
-GALLERY_URL_REWRITE_NO_CHANGES: No URLs were changed
-GALLERY_URL_REWRITE_EMPTY_RESULT_WARN: The rewrite result is empty; skipped
+ALBUM_URL_REWRITE_APPLY_GLOBAL_RULES: Apply global URL rewrite rules
+ALBUM_URL_REWRITE_GLOBAL_RULES_COUNT: Global rules
+ALBUM_URL_REWRITE_TEMP_RULE_TIPS: Optional. Leave empty to skip the temporary rule. Temporary rule has higher priority than global rules.
+ALBUM_URL_REWRITE_TEMP_RULE_REQUIRED: Match and Replace are required for the temporary rule
+ALBUM_URL_REWRITE_NO_RULES_TO_APPLY: No global rules enabled and no temporary rule provided
+ALBUM_URL_REWRITE_SAVE_TEMP_RULE_PROMPT: Save the temporary rule to global URL rewrite rules?
+ALBUM_URL_REWRITE_APPLY_AND_SAVE: Apply and Save
+ALBUM_URL_REWRITE_APPLY_ONLY: Apply Only
+ALBUM_URL_REWRITE_NO_CHANGES: No URLs were changed
+ALBUM_URL_REWRITE_EMPTY_RESULT_WARN: The rewrite result is empty; skipped
 
 # tray-page
 
@@ -342,7 +342,7 @@ TOOLBOX: Toolbox
 TOOLBOX_TITLE: Troubleshoot PicGo runtime issues
 TOOLBOX_SUB_TITLE: Scan the following items immediately to fix usage issues
 TOOLBOX_CHECK_CONFIG_FILE_BROKEN: Check if the configuration file is damaged
-TOOLBOX_CHECK_GALLERY_FILE_BROKEN: Check if the album file is damaged
+TOOLBOX_CHECK_ALBUM_FILE_BROKEN: Check if the album file is damaged
 TOOLBOX_CHECK_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD: Check if there is a problem with clipboard picture upload
 TOOLBOX_CHECK_PROBLEM_WITH_PROXY: Check if the proxy settings are normal
 TOOLBOX_FIX_DONE_NEED_RELOAD: Repair completed, need to restart to take effect, restart or not
@@ -353,8 +353,8 @@ TOOLBOX_START_FIX: Start fixing
 TOOLBOX_SUCCESS_TIPS: Congratulations, no problems were found
 TOOLBOX_CHECK_CONFIG_FILE_PATH_TIPS: "The configuration file path is: ${path}"
 TOOLBOX_CHECK_CONFIG_FILE_BROKEN_TIPS: The configuration file is damaged
-TOOLBOX_CHECK_GALLERY_FILE_PATH_TIPS: "The album file path is: ${path}"
-TOOLBOX_CHECK_GALLERY_FILE_BROKEN_TIPS: The album file is damaged
+TOOLBOX_CHECK_ALBUM_FILE_PATH_TIPS: "The album file path is: ${path}"
+TOOLBOX_CHECK_ALBUM_FILE_BROKEN_TIPS: The album file is damaged
 TOOLBOX_CHECK_PROXY_SUCCESS_TIPS: Proxy settings normal
 TOOLBOX_CHECK_PROXY_NO_PROXY_TIPS: No proxy settings
 TOOLBOX_CHECK_PROXY_PROXY_IS_NOT_CORRECT: Proxy settings incorrect
@@ -371,8 +371,8 @@ TIPS_SKIPPED_INVALID_URLS: Skipped ${n} invalid URL(s), see logs for details
 TIPS_TOO_MANY_URLS_CONFIRM: You are about to upload ${n} URLs at once. This may cause lag. It's recommended to upload in batches. Continue?
 TIPS_NO_VALID_URLS: No valid URL found
 TIPS_INSTALL_NODE_AND_RELOAD_PICGO: Please install Node.js and restart PicGo to continue
-TIPS_PLUGIN_REMOVE_GALLERY_ITEM: Plugin is trying to remove some images from the album gallery, continue?
-TIPS_PLUGIN_OVERWRITE_GALLERY: Plugin is trying to overwrite the album gallery, continue?
+TIPS_PLUGIN_REMOVE_ALBUM_ITEM: Plugin is trying to remove some images from your album, continue?
+TIPS_PLUGIN_OVERWRITE_ALBUM: Plugin is trying to overwrite your album, continue?
 TIPS_UPLOAD_NOT_PICTURES: The latest clipboard item is not a picture
 TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_DEFAULT: PicGo config file broken, has been restored to default
 TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_BACKUP: PicGo config file broken, has been restored to backup
@@ -392,81 +392,81 @@ TIPS_UPLOADER_CONFIG_CANNOT_DELETE_LAST: Cannot delete the last config
 PRIVACY: "Please read and agree to the Privacy Policy ${privacyUrl} and Terms of Service ${termsUrl} before using."
 PRIVACY_TIPS: Please agree the privacy policy to upload
 QUIT: Quit
-GALLERY_ALL_PHOTOS: All Photos
-GALLERY_COLLECTIONS: Collections
-GALLERY_TAGS: Tags
-GALLERY_MENU: Menu
-GALLERY_OPEN_INSPECTOR: Open Inspector
-GALLERY_INSPECTOR_TITLE: Gallery Inspector
-GALLERY_INSPECTOR_DESCRIPTION: Inspect and edit selected images.
-GALLERY_CLEAR_SELECTION: Clear Selection
-GALLERY_SELECTED_COUNT: ${count} selected
-GALLERY_GRID_VIEW: Grid View
-GALLERY_LIST_VIEW: List View
-GALLERY_PREVIEW: Preview
-GALLERY_PREVIEW_EMPTY: No images to preview
-GALLERY_PREVIEW_PREV: Previous
-GALLERY_PREVIEW_NEXT: Next
-GALLERY_PREVIEW_CLOSE: Close preview
-GALLERY_PREVIEW_COUNT: ${current} / ${total}
-GALLERY_QUICK_ACTIONS: Quick Actions
-GALLERY_EXPORT: Download
-GALLERY_URL: URL
-GALLERY_BATCH_REWRITE: Batch Rewrite
-GALLERY_COLLECTION: Collection
-GALLERY_ADD_TAG: Add tag
-GALLERY_TAG_SUGGESTIONS: Suggestions
-GALLERY_COLUMN_NAME: Name
-GALLERY_COLUMN_PROVIDER: Provider
-GALLERY_COLUMN_SIZE: Size
-GALLERY_COLUMN_DATE: Date
-GALLERY_ADD: Add
-GALLERY_SOURCE_LOCAL: Local
-GALLERY_SOURCE_CLOUD: Cloud
-GALLERY_CLOUD_LOAD_FAILED: Failed to load cloud gallery
-GALLERY_CLOUD_LOGIN_REQUIRED_TITLE: Login Required
-GALLERY_CLOUD_LOGIN_REQUIRED_DESC: Sign in to a paid PicGo Cloud account to use cloud gallery
-GALLERY_CLOUD_LOGIN_BUTTON: Log In
-GALLERY_CLOUD_UPGRADE_TITLE: Upgrade Required
-GALLERY_CLOUD_UPGRADE_DESC: Cloud gallery requires a paid plan
-GALLERY_CLOUD_UPGRADE_BUTTON: Upgrade
-GALLERY_CLOUD_FEATURES_TITLE: Why Cloud Gallery?
-GALLERY_CLOUD_FEATURE_SYNC: Access your upload history across all devices
-GALLERY_CLOUD_FEATURE_AUTO_IMPORT: Auto-import new uploads info (requires opt-in)
-GALLERY_CLOUD_FEATURE_SECURE: One-click import local history to cloud
-GALLERY_CLOUD_IMPORT_GUIDE_TITLE: Import Local Records
-GALLERY_CLOUD_IMPORT_GUIDE_DESC: Import your local upload history to cloud gallery. Only records are imported, not the actual image files.
-GALLERY_CLOUD_IMPORT_GUIDE_BUTTON: Start Import
-GALLERY_CLOUD_EMPTY_TITLE: No Items
-GALLERY_CLOUD_EMPTY_DESC: Your cloud gallery is empty. Upload an image to get started.
-GALLERY_CLOUD_IMPORTING: Importing to cloud gallery...
-GALLERY_CLOUD_IMPORT_SUCCESS: Successfully imported ${num} items to cloud gallery
-GALLERY_CLOUD_IMPORT_FAILED: Failed to import to cloud gallery
-GALLERY_CLOUD_REFRESH: Refresh
-GALLERY_CLOUD_IMPORT_CONFIRM_TITLE: Enable Auto-Import
-GALLERY_CLOUD_IMPORT_CONFIRM_DESC: This will enable auto-import so that future uploads are automatically recorded in your cloud gallery. All existing local records will also be imported now.
-GALLERY_CLOUD_DELETE_FAILED: Failed to delete from cloud gallery
-GALLERY_INSPECTOR_DETAILS_TITLE: Details
-GALLERY_INSPECTOR_FILE_NAME: File name
-GALLERY_INSPECTOR_UPLOADER: Uploader
-GALLERY_INSPECTOR_CONTENT_TYPE: Content type
-GALLERY_INSPECTOR_CREATED_AT: Created
-GALLERY_INSPECTOR_UPDATED_AT: Updated
-GALLERY_INSPECTOR_FILE_SIZE: Size
-GALLERY_CLOUD_IMPORT_STATUS_TITLE: Cloud Gallery
-GALLERY_CLOUD_IMPORTED: Imported to cloud
-GALLERY_CLOUD_IMPORTED_TOOLTIP: This is a local marker. If the record was deleted from cloud, this status won't update. You can re-import if needed.
-GALLERY_CLOUD_REIMPORT: Re-import
-GALLERY_CLOUD_NATIVE: Uploaded via PicGo Cloud
-GALLERY_CLOUD_IMPORT_BUTTON: Import to Cloud Gallery
-GALLERY_CLOUD_IMPORT_BUTTON_COUNT: Import ${num} item(s) to Cloud Gallery
-GALLERY_CLOUD_ALL_IMPORTED: All in cloud gallery
-GALLERY_CLOUD_AUTO_IMPORT_REQUIRED_TITLE: Enable Auto Import
-GALLERY_CLOUD_AUTO_IMPORT_REQUIRED_DESC: Auto import needs to be enabled before importing items to cloud gallery. Enable it now and continue?
-GALLERY_CLOUD_AUTO_IMPORT_ENABLE_AND_IMPORT: Enable & Import
-GALLERY_CLOUD_IMPORT_SINGLE_SUCCESS: Successfully imported to cloud gallery
-PICGO_CLOUD_AUTO_IMPORT_LABEL: Auto Import
-PICGO_CLOUD_AUTO_IMPORT_DESC: Automatically import upload records to cloud gallery
+ALBUM_ALL_PHOTOS: All Photos
+ALBUM_COLLECTIONS: Collections
+ALBUM_TAGS: Tags
+ALBUM_MENU: Menu
+ALBUM_OPEN_INSPECTOR: Open Inspector
+ALBUM_INSPECTOR_TITLE: Album Inspector
+ALBUM_INSPECTOR_DESCRIPTION: Inspect and edit selected images.
+ALBUM_CLEAR_SELECTION: Clear Selection
+ALBUM_SELECTED_COUNT: ${count} selected
+ALBUM_GRID_VIEW: Grid View
+ALBUM_LIST_VIEW: List View
+ALBUM_PREVIEW: Fullscreen Preview
+ALBUM_PREVIEW_EMPTY: No images to preview
+ALBUM_PREVIEW_PREV: Previous
+ALBUM_PREVIEW_NEXT: Next
+ALBUM_PREVIEW_CLOSE: Close preview
+ALBUM_PREVIEW_COUNT: ${current} / ${total}
+ALBUM_QUICK_ACTIONS: Quick Actions
+ALBUM_EXPORT: Download
+ALBUM_URL: URL
+ALBUM_BATCH_REWRITE: Batch Rewrite
+ALBUM_COLLECTION: Collection
+ALBUM_ADD_TAG: Add tag
+ALBUM_TAG_SUGGESTIONS: Suggestions
+ALBUM_COLUMN_NAME: Name
+ALBUM_COLUMN_PROVIDER: Provider
+ALBUM_COLUMN_SIZE: Size
+ALBUM_COLUMN_DATE: Date
+ALBUM_ADD: Add
+ALBUM_SOURCE_LOCAL: Local
+ALBUM_SOURCE_CLOUD: Cloud
+ALBUM_CLOUD_LOAD_FAILED: Failed to load cloud album
+ALBUM_CLOUD_LOGIN_REQUIRED_TITLE: Login Required
+ALBUM_CLOUD_LOGIN_REQUIRED_DESC: Sign in to a paid PicGo Cloud account to use cloud album
+ALBUM_CLOUD_LOGIN_BUTTON: Log In
+ALBUM_CLOUD_UPGRADE_TITLE: Upgrade Required
+ALBUM_CLOUD_UPGRADE_DESC: Cloud album requires a paid plan
+ALBUM_CLOUD_UPGRADE_BUTTON: Upgrade
+ALBUM_CLOUD_FEATURES_TITLE: Why Cloud Album?
+ALBUM_CLOUD_FEATURE_SYNC: Access your upload history across all devices
+ALBUM_CLOUD_FEATURE_AUTO_IMPORT: Auto-import new uploads info (requires opt-in)
+ALBUM_CLOUD_FEATURE_SECURE: One-click import local history to cloud
+ALBUM_CLOUD_IMPORT_GUIDE_TITLE: Import Local Records
+ALBUM_CLOUD_IMPORT_GUIDE_DESC: Import your local upload history to cloud album. Only records are imported, not the actual image files.
+ALBUM_CLOUD_IMPORT_GUIDE_BUTTON: Start Import
+ALBUM_CLOUD_EMPTY_TITLE: No Items
+ALBUM_CLOUD_EMPTY_DESC: Your cloud album is empty. Upload an image to get started.
+ALBUM_CLOUD_IMPORTING: Importing to cloud album...
+ALBUM_CLOUD_IMPORT_SUCCESS: Successfully imported ${num} items to cloud album
+ALBUM_CLOUD_IMPORT_FAILED: Failed to import to cloud album
+ALBUM_CLOUD_REFRESH: Refresh
+ALBUM_CLOUD_IMPORT_CONFIRM_TITLE: Enable Auto-Import
+ALBUM_CLOUD_IMPORT_CONFIRM_DESC: This will enable auto-import so that future uploads are automatically recorded in your cloud album. All existing local records will also be imported now.
+ALBUM_CLOUD_DELETE_FAILED: Failed to delete from cloud album
+ALBUM_INSPECTOR_DETAILS_TITLE: Details
+ALBUM_INSPECTOR_FILE_NAME: File name
+ALBUM_INSPECTOR_UPLOADER: Uploader
+ALBUM_INSPECTOR_CONTENT_TYPE: Content type
+ALBUM_INSPECTOR_CREATED_AT: Created
+ALBUM_INSPECTOR_UPDATED_AT: Updated
+ALBUM_INSPECTOR_FILE_SIZE: Size
+ALBUM_CLOUD_IMPORT_STATUS_TITLE: Cloud Album
+ALBUM_CLOUD_IMPORTED: Imported to cloud
+ALBUM_CLOUD_IMPORTED_TOOLTIP: This is a local marker. If the record was deleted from cloud, this status won't update. You can re-import if needed.
+ALBUM_CLOUD_REIMPORT: Re-import
+ALBUM_CLOUD_NATIVE: Uploaded via PicGo Cloud
+ALBUM_CLOUD_IMPORT_BUTTON: Import to Cloud Album
+ALBUM_CLOUD_IMPORT_BUTTON_COUNT: Import ${num} item(s) to Cloud Album
+ALBUM_CLOUD_ALL_IMPORTED: All in cloud album
+ALBUM_CLOUD_AUTO_IMPORT_REQUIRED_TITLE: Enable Auto Import
+ALBUM_CLOUD_AUTO_IMPORT_REQUIRED_DESC: Auto import needs to be enabled before importing items to cloud album. Enable it now and continue?
+ALBUM_CLOUD_AUTO_IMPORT_ENABLE_AND_IMPORT: Enable & Import
+ALBUM_CLOUD_IMPORT_SINGLE_SUCCESS: Successfully imported to cloud album
+PICGO_CLOUD_AUTO_IMPORT_LABEL: Auto-import to Cloud Album
+PICGO_CLOUD_AUTO_IMPORT_DESC: Auto-import records from other uploaders to cloud album (PicGo Cloud is saved by default)
 SIDEBAR_PLUGINS: Plugins
 SIDEBAR_SYSTEM: System
 SIDEBAR_NOTIFICATIONS: Notifications
@@ -529,9 +529,9 @@ PROVIDER_DELETE_CONFIG_HINT: Permanently remove this configuration.
 UPLOADER_SWITCHER_SELECT_PROVIDER: Select provider
 UPLOADER_SWITCHER_CONFIG: Config
 UPLOADER_SWITCHER_NO_CONFIG: No config
-GALLERY_URL_REWRITE_DESCRIPTION: Batch rewrite the URLs for selected images.
-GALLERY_URL_REWRITE_CHANGED: Changed
-GALLERY_URL_REWRITE_UNCHANGED: Unchanged
+ALBUM_URL_REWRITE_DESCRIPTION: Batch rewrite the URLs for selected images.
+ALBUM_URL_REWRITE_CHANGED: Changed
+ALBUM_URL_REWRITE_UNCHANGED: Unchanged
 TRAY_ALREADY_UPLOAD_EMPTY: No uploaded images yet
 PLUGIN_EMPTY: No plugins found.
 PLUGIN_EMPTY_DESCRIPTION: Search npm and install plugins to get started.

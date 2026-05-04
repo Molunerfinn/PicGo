@@ -1,22 +1,19 @@
 import { type CSSProperties, useEffect, useState } from 'react'
-import { useMemoizedFn } from 'ahooks'
 import { useTranslation } from 'react-i18next'
 import { LoaderCircleIcon } from 'lucide-react'
 
-import { trayPageAdapter, type TrayPageGalleryItem } from '@/adapters/tray-page'
+import { trayPageAdapter } from '@/adapters/tray-page'
 import { AppMainCard } from '@/components/common/app-main-card'
 import { MediaThumbnail } from '@/components/common/media-thumbnail'
-import { resolveIsVideo } from '@/components/main/gallery/utils'
+import { resolveIsVideo } from '@/components/main/album/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useIPCOn } from '@/hooks/useIPC'
 import { cn } from '@/lib/utils'
-import { useAppStore, useGalleryStore } from '@/store'
-import { AlbumSource } from '#/types/cloudAlbum'
-import { IRPCActionType } from '#/types/enum'
 import type {
   TrayWaitingItem
 } from '@/components/independent-window/tray/types'
 import { UtilityWindowLayout } from '@/components/independent-window/utility-window-layout'
+import { useTrayUploadedItems } from './use-tray-uploaded-items'
 
 function TraySectionTitle ({ title }: { title: string }) {
   return (
@@ -101,128 +98,27 @@ function resolveTrayWaitingItem (item: ImgInfo, index: number): TrayWaitingItem 
   }
 }
 
-function resolveTrayUploadedItem (item: TrayPageGalleryItem) {
-  return {
-    id: item.id || item.imgUrl || item.fileName || `${Date.now()}`,
-    fileName: item.fileName || item.imgUrl || 'unknown',
-    imgUrl: item.imgUrl || item.originImgUrl || '',
-    link: item.imgUrl || item.originImgUrl || '',
-    isVideo: resolveIsVideo(item),
-    raw: item
-  }
-}
-
-function resolveRuntimeUploadedItem (item: ImgInfo): TrayUploadedDisplayItem {
-  return {
-    id: item.id || item.imgUrl || item.fileName || `${Date.now()}`,
-    fileName: item.fileName || item.imgUrl || 'unknown',
-    imgUrl: item.imgUrl || item.originImgUrl || '',
-    link: item.imgUrl || item.originImgUrl || '',
-    isVideo: resolveIsVideo(item),
-    raw: item as TrayPageGalleryItem
-  }
-}
-
-type TrayUploadedDisplayItem = ReturnType<typeof resolveTrayUploadedItem>
-
 export function PicGoTrayPage () {
   const { t } = useTranslation()
-  const [uploadedItems, setUploadedItems] = useState<TrayUploadedDisplayItem[]>([])
   const [clipboardFiles, setClipboardFiles] = useState<TrayWaitingItem[]>([])
-  const [uploadFlag, setUploadFlag] = useState(false)
-  const albumSource = useGalleryStore.use.albumSource()
-  const cloudUserInfo = useAppStore.use.picgoCloud().userInfo
-  const isPaid = (cloudUserInfo?.plan ?? 0) > 0
-  // Tray always falls back to local if user is not logged in or not on a paid plan
-  const effectiveSource = albumSource === AlbumSource.CLOUD && isPaid ? AlbumSource.CLOUD : AlbumSource.LOCAL
-  const isCloudSource = effectiveSource === AlbumSource.CLOUD
+  const {
+    uploadedItems,
+    uploadFlag,
+    handleUploadClipboardFiles,
+    handleCopyUploadedLink
+  } = useTrayUploadedItems()
 
-  const refreshUploadedItems = useMemoizedFn(async () => {
-    const items = await trayPageAdapter.getRecentUploadedItems(effectiveSource, 5)
-    setUploadedItems(items.map(resolveTrayUploadedItem))
-  })
+  useEffect(() => {
+    const removeDragBlockers = trayPageAdapter.disableDragFile()
+    return removeDragBlockers
+  }, [])
 
   useIPCOn('clipboardFiles', (files: ImgInfo[]) => {
     setClipboardFiles(files.map(resolveTrayWaitingItem))
   })
 
-  useIPCOn('dragFiles', async (items: ImgInfo[] = []) => {
-    if (!isCloudSource && items.length > 0) {
-      setUploadedItems(items.map(resolveRuntimeUploadedItem))
-      return
-    }
-
-    await refreshUploadedItems()
-  })
-
-  useIPCOn('uploadFiles', async (items: ImgInfo[] = []) => {
-    if (!isCloudSource && items.length > 0) {
-      setUploadedItems(items.map(resolveRuntimeUploadedItem))
-      setUploadFlag(false)
-      return
-    }
-
-    await refreshUploadedItems()
-    setUploadFlag(false)
-  })
-
-  useIPCOn('updateFiles', async () => {
-    await refreshUploadedItems()
-  })
-
-  useIPCOn(IRPCActionType.UPDATE_CLOUD_ALBUM, async () => {
-    if (!isCloudSource) return
-    await refreshUploadedItems()
-  })
-
-  useEffect(() => {
-    let mounted = true
-
-    const removeDragBlockers = trayPageAdapter.disableDragFile()
-
-    async function loadInitialUploadedItems () {
-      try {
-        const items = await trayPageAdapter.getRecentUploadedItems(effectiveSource, 5)
-        if (!mounted) {
-          return
-        }
-        setUploadedItems(items.map(resolveTrayUploadedItem))
-      } catch (error) {
-        console.error(
-          `[tray-page] load state failed: ${error instanceof Error ? error.message : t('FAILED')}`
-        )
-      }
-    }
-
-    loadInitialUploadedItems()
-
-    return () => {
-      mounted = false
-      removeDragBlockers()
-    }
-  }, [effectiveSource, t])
-
   const handleOpenMainWindow = () => {
     trayPageAdapter.openMainWindow()
-  }
-
-  const handleUploadClipboardFiles = () => {
-    if (uploadFlag) {
-      return
-    }
-
-    setUploadFlag(true)
-    trayPageAdapter.uploadClipboardFiles()
-  }
-
-  const handleCopyUploadedLink = async (item: TrayUploadedDisplayItem) => {
-    try {
-      await trayPageAdapter.copyUploadedLink(item.raw)
-    } catch (error) {
-      console.error(
-        `[tray-page] copy link failed: ${error instanceof Error ? error.message : t('FAILED')}`
-      )
-    }
   }
 
   return (

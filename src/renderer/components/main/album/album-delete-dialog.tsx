@@ -14,13 +14,13 @@ import {
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 
-type GalleryDeleteDialogProps = {
+type AlbumDeleteDialogProps = {
   trigger: React.ReactNode
   selectedCount: number
   onConfirm: () => Promise<void>
 }
 
-export function GalleryDeleteDialog ({ trigger, selectedCount, onConfirm }: GalleryDeleteDialogProps) {
+export function AlbumDeleteDialog ({ trigger, selectedCount, onConfirm }: AlbumDeleteDialogProps) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)

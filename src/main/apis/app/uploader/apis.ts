@@ -5,7 +5,7 @@ import windowManager from 'apis/app/window/windowManager'
 import { IPasteStyle, IRPCActionType, IWindowList } from '#/types/enum'
 import uploader from '.'
 import pasteTemplate from '~/main/utils/pasteTemplate'
-import { GalleryDB } from '~/main/apis/core/datastore'
+import { AlbumDB } from '~/main/apis/core/datastore'
 import { handleCopyUrl, handleUrlEncodeWithSetting, showNotification } from '~/main/utils/common'
 import { T } from '~/main/i18n/index'
 import logger from '@core/picgo/logger'
@@ -36,12 +36,12 @@ export const uploadClipboardFiles = async (): Promise<string> => {
           // icon: img[0].imgUrl
         })
       }, 100)
-      await GalleryDB.getInstance().insert(img[0])
+      await AlbumDB.getInstance().insert(img[0])
       // trayWindow just be created in mac/windows, not in linux
       trayWindow?.webContents?.send('clipboardFiles', [])
       trayWindow?.webContents?.send('uploadFiles', img)
       if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-        windowManager.get(IWindowList.SETTING_WINDOW)!.webContents?.send(IRPCActionType.UPDATE_GALLERY)
+        windowManager.get(IWindowList.SETTING_WINDOW)!.webContents?.send(IRPCActionType.UPDATE_ALBUM)
       }
       return handleUrlEncodeWithSetting(img[0].imgUrl as string)
     } else {
@@ -72,14 +72,14 @@ export const uploadSelectedFiles = async (webContents: WebContents, files: IFile
           // icon: files[i].path
         })
       }, i * 100)
-      await GalleryDB.getInstance().insert(imgs[i])
+      await AlbumDB.getInstance().insert(imgs[i])
       result.push(handleUrlEncodeWithSetting(imgs[i].imgUrl!))
     }
     handleCopyUrl(pasteText.join('\n'))
     // trayWindow just be created in mac/windows, not in linux
     windowManager.get(IWindowList.TRAY_WINDOW)?.webContents?.send('uploadFiles', imgs)
     if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-      windowManager.get(IWindowList.SETTING_WINDOW)!.webContents?.send(IRPCActionType.UPDATE_GALLERY)
+      windowManager.get(IWindowList.SETTING_WINDOW)!.webContents?.send(IRPCActionType.UPDATE_ALBUM)
     }
     return result
   } else {

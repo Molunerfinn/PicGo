@@ -38,7 +38,7 @@ function buildFlags (rule: Pick<IUrlRewriteRule, 'global' | 'ignoreCase'>): stri
 
 function validateRuleOrThrow (rule: IUrlRewriteRule) {
   if (!rule.match.trim() || !rule.replace.trim()) {
-    throw new Error(T('GALLERY_URL_REWRITE_TEMP_RULE_REQUIRED'))
+    throw new Error(T('ALBUM_URL_REWRITE_TEMP_RULE_REQUIRED'))
   }
   try {
     new RegExp(rule.match, buildFlags(rule))
@@ -57,23 +57,23 @@ function applyFirstMatchRewrite (ctx: IPicGo, imgItem: ImgInfo, rules: IUrlRewri
   PicGoUtils.applyUrlRewriteToImgInfo(imgInfo, rules, {
     log: {
       error: (...args: Parameters<IPicGo['log']['error']>) => ctx.log.error(...args),
-      warn: () => ctx.log.warn(T('GALLERY_URL_REWRITE_EMPTY_RESULT_WARN'))
+      warn: () => ctx.log.warn(T('ALBUM_URL_REWRITE_EMPTY_RESULT_WARN'))
     }
   })
   if (imgInfo.imgUrl === '') return imgItem
   return imgInfo
 }
 
-export const galleryMenu = () => {
+export const albumMenu = () => {
   return [{
-    label: T('GALLERY_URL_REWRITE_TITLE'),
+    label: T('ALBUM_URL_REWRITE_TITLE'),
     async handle (ctx: IPicGo, guiApi: IGuiApi, selectedList: ImgInfo[] = []) {
       if (!selectedList.length) {
         guiApi.showNotification({
-          title: T('GALLERY_URL_REWRITE_TITLE'),
-          body: T('GALLERY_URL_REWRITE_WARN_NO_SELECTION')
+          title: T('ALBUM_URL_REWRITE_TITLE'),
+          body: T('ALBUM_URL_REWRITE_WARN_NO_SELECTION')
         })
-        logger.warn(T('GALLERY_URL_REWRITE_WARN_NO_SELECTION'))
+        logger.warn(T('ALBUM_URL_REWRITE_WARN_NO_SELECTION'))
         return
       }
 
@@ -81,14 +81,14 @@ export const galleryMenu = () => {
 
       const config: IPicGoPluginConfig[] = [
         {
-          alias: T('GALLERY_URL_REWRITE_APPLY_GLOBAL_RULES'),
+          alias: T('ALBUM_URL_REWRITE_APPLY_GLOBAL_RULES'),
           name: 'applyGlobalRules',
           type: 'confirm',
           default: globalRules.length > 0,
           required: false,
           confirmText: T('SETTINGS_OPEN'),
           cancelText: T('SETTINGS_CLOSE'),
-          tips: `${T('GALLERY_URL_REWRITE_GLOBAL_RULES_COUNT')}: ${globalRules.length}`
+          tips: `${T('ALBUM_URL_REWRITE_GLOBAL_RULES_COUNT')}: ${globalRules.length}`
         },
         {
           alias: T('URL_REWRITE_MATCH'),
@@ -97,7 +97,7 @@ export const galleryMenu = () => {
           message: T('URL_REWRITE_MATCH_PLACEHOLDER'),
           default: '',
           required: false,
-          tips: `${T('GALLERY_URL_REWRITE_TEMP_RULE_TIPS')}\n\n${T('URL_REWRITE_MATCH_TIPS')}`
+          tips: `${T('ALBUM_URL_REWRITE_TEMP_RULE_TIPS')}\n\n${T('URL_REWRITE_MATCH_TIPS')}`
         },
         {
           alias: T('URL_REWRITE_REPLACE'),
@@ -130,7 +130,7 @@ export const galleryMenu = () => {
         }
       ]
       const options: IPicGoPluginShowConfigDialogOption = {
-        title: T('GALLERY_URL_REWRITE_TITLE'),
+        title: T('ALBUM_URL_REWRITE_TITLE'),
         config
       }
       const res = await guiApi.showConfigDialog<IUrlRewriteDialogResult>(options)
@@ -157,7 +157,7 @@ export const galleryMenu = () => {
           validateRuleOrThrow(tempRule)
         } catch (e: any) {
           guiApi.showNotification({
-            title: T('GALLERY_URL_REWRITE_TITLE'),
+            title: T('ALBUM_URL_REWRITE_TITLE'),
             body: e.message
           })
           return
@@ -166,8 +166,8 @@ export const galleryMenu = () => {
 
       if (!applyGlobalRules && !tempRule) {
         guiApi.showNotification({
-          title: T('GALLERY_URL_REWRITE_TITLE'),
-          body: T('GALLERY_URL_REWRITE_NO_RULES_TO_APPLY')
+          title: T('ALBUM_URL_REWRITE_TITLE'),
+          body: T('ALBUM_URL_REWRITE_NO_RULES_TO_APPLY')
         })
         return
       }
@@ -175,12 +175,12 @@ export const galleryMenu = () => {
       let shouldSaveTempRule = false
       if (tempRule) {
         const saveRes = await guiApi.showMessageBox({
-          title: T('GALLERY_URL_REWRITE_TITLE'),
-          message: T('GALLERY_URL_REWRITE_SAVE_TEMP_RULE_PROMPT'),
+          title: T('ALBUM_URL_REWRITE_TITLE'),
+          message: T('ALBUM_URL_REWRITE_SAVE_TEMP_RULE_PROMPT'),
           type: 'info',
           buttons: [
-            T('GALLERY_URL_REWRITE_APPLY_AND_SAVE'),
-            T('GALLERY_URL_REWRITE_APPLY_ONLY'),
+            T('ALBUM_URL_REWRITE_APPLY_AND_SAVE'),
+            T('ALBUM_URL_REWRITE_APPLY_ONLY'),
             T('CANCEL')
           ]
         })
@@ -207,8 +207,8 @@ export const galleryMenu = () => {
 
       if (changedList.length === 0) {
         guiApi.showNotification({
-          title: T('GALLERY_URL_REWRITE_RESULT_TITLE'),
-          body: T('GALLERY_URL_REWRITE_NO_CHANGES')
+          title: T('ALBUM_URL_REWRITE_RESULT_TITLE'),
+          body: T('ALBUM_URL_REWRITE_NO_CHANGES')
         })
         return
       }
@@ -220,9 +220,9 @@ export const galleryMenu = () => {
         })
       }
 
-      const updateRes = await guiApi.galleryDB.updateMany(changedList)
+      const updateRes = await guiApi.albumDB.updateMany(changedList)
       guiApi.showNotification({
-        title: T('GALLERY_URL_REWRITE_RESULT_TITLE'),
+        title: T('ALBUM_URL_REWRITE_RESULT_TITLE'),
         body: `${T('SUCCESS')}: ${updateRes.success} ${T('FAILED')}: ${updateRes.total - updateRes.success}`
       })
     }

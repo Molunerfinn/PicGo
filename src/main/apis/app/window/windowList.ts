@@ -16,6 +16,7 @@ import { isLinux, isWindows } from '~/universal/utils/common'
 import { getStaticPath } from '#/utils/staticPath'
 import picgo from '@core/picgo'
 import { getMainWindowState, saveMainWindowState } from './windowState'
+import { isDev } from '~/main/utils/env'
 // import { URLSearchParams } from 'url'
 
 const windowList = new Map<IWindowList, IWindowListItem>()
@@ -114,7 +115,9 @@ windowList.set(IWindowList.SETTING_WINDOW, {
   },
   callback (window, windowManager) {
     window.loadURL(handleWindowParams(SETTING_WINDOW_URL))
-    window.webContents.openDevTools({ mode: 'detach' })
+    if (isDev) {
+      window.webContents.openDevTools({ mode: 'detach' })
+    }
     window.on('maximize', () => {
       window.webContents.send(WINDOW_STATE_CHANGED, {
         isMaximized: true

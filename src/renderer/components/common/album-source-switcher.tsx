@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { galleryStoreActions, useGalleryStore } from '@/store'
+import { albumStoreActions, useAlbumStore } from '@/store'
 import { AlbumSource } from '#/types/cloudAlbum'
 
 export function AlbumSourceSwitcher ({ className }: { className?: string }) {
   const { t } = useTranslation()
-  const albumSource = useGalleryStore.use.albumSource()
+  const albumSource = useAlbumStore.use.albumSource()
   const isCloud = albumSource === AlbumSource.CLOUD
 
   return (
@@ -18,9 +18,9 @@ export function AlbumSourceSwitcher ({ className }: { className?: string }) {
             ? 'bg-background text-foreground shadow-sm'
             : 'text-muted-foreground hover:text-foreground'
         )}
-        onClick={() => galleryStoreActions.setAlbumSource(AlbumSource.CLOUD)}
+        onClick={() => albumStoreActions.setAlbumSource(AlbumSource.CLOUD)}
       >
-        {t('GALLERY_SOURCE_CLOUD')}
+        {t('ALBUM_SOURCE_CLOUD')}
       </button>
       <button
         type="button"
@@ -30,9 +30,9 @@ export function AlbumSourceSwitcher ({ className }: { className?: string }) {
             ? 'bg-background text-foreground shadow-sm'
             : 'text-muted-foreground hover:text-foreground'
         )}
-        onClick={() => galleryStoreActions.setAlbumSource(AlbumSource.LOCAL)}
+        onClick={() => albumStoreActions.setAlbumSource(AlbumSource.LOCAL)}
       >
-        {t('GALLERY_SOURCE_LOCAL')}
+        {t('ALBUM_SOURCE_LOCAL')}
       </button>
     </div>
   )

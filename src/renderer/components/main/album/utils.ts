@@ -5,7 +5,7 @@ import { resolveTimestampValue } from '@/utils/common'
 import { DEFAULT_DATE_TIME_FORMAT } from '@/utils/consts'
 import type { ValueOf } from '@/types/utils'
 
-export type GalleryPhoto = {
+export type AlbumPhoto = {
   id: number
   dbId: string
   imgUrl: string
@@ -48,19 +48,19 @@ export function resolveIsVideo (item: ImgInfo): boolean {
   return typeof mimeType === 'string' && mimeType.startsWith('video/')
 }
 
-export type GalleryProviderFilter = {
+export type AlbumProviderFilter = {
   type: string
   name: string
   count: number
 }
 
-export const GalleryViewMode = {
+export const AlbumViewMode = {
   Masonry: 'masonry',
   List: 'list'
 } as const
 
-export type GalleryViewMode =
-  ValueOf<typeof GalleryViewMode>
+export type AlbumViewMode =
+  ValueOf<typeof AlbumViewMode>
 
 export const NavType = {
   All: 'all',
@@ -76,8 +76,8 @@ export type NavContext = {
   value: string
 }
 
-export function filterGalleryImages (
-  images: GalleryPhoto[],
+export function filterAlbumImages (
+  images: AlbumPhoto[],
   navContext: NavContext,
   searchValue: string
 ) {
@@ -103,7 +103,7 @@ export function filterGalleryImages (
   return data
 }
 
-export function buildSidebarTags (images: GalleryPhoto[], baseSuggestions: string[]) {
+export function buildSidebarTags (images: AlbumPhoto[], baseSuggestions: string[]) {
   const tagSet = new Set(baseSuggestions)
   images.forEach((image) => {
     image.tags.forEach((tag) => tagSet.add(tag))
@@ -111,7 +111,7 @@ export function buildSidebarTags (images: GalleryPhoto[], baseSuggestions: strin
   return Array.from(tagSet)
 }
 
-export function getSelectedTags (selectedImages: GalleryPhoto[]) {
+export function getSelectedTags (selectedImages: AlbumPhoto[]) {
   const tagSet = new Set<string>()
   selectedImages.forEach((image) => {
     image.tags.forEach((tag) => tagSet.add(tag))
@@ -119,11 +119,11 @@ export function getSelectedTags (selectedImages: GalleryPhoto[]) {
   return Array.from(tagSet)
 }
 
-export function getGalleryImageUrl (image: GalleryPhoto) {
+export function getAlbumImageUrl (image: AlbumPhoto) {
   return image.imgUrl ?? image.originImgUrl ?? ''
 }
 
-function formatGalleryDate (timestamp?: number) {
+function formatAlbumDate (timestamp?: number) {
   if (!timestamp) {
     return ''
   }
@@ -131,7 +131,7 @@ function formatGalleryDate (timestamp?: number) {
   return dayjs(timestamp).format(DEFAULT_DATE_TIME_FORMAT)
 }
 
-function formatGallerySize (size?: number) {
+function formatAlbumSize (size?: number) {
   if (typeof size !== 'number' || !Number.isFinite(size) || size <= 0) {
     return 0
   }
@@ -139,7 +139,7 @@ function formatGallerySize (size?: number) {
   return size / 1024 / 1024
 }
 
-export function buildGalleryPhotos (
+export function buildAlbumPhotos (
   items: ImgInfo[],
   picBeds: IPicBedType[]
 ) {
@@ -160,14 +160,14 @@ export function buildGalleryPhotos (
       height: item.height,
       alt: item.fileName || item.imgUrl || '',
       name: item.fileName || item.imgUrl || 'Untitled',
-      sizeMb: formatGallerySize(size),
-      date: formatGalleryDate(timestamp),
+      sizeMb: formatAlbumSize(size),
+      date: formatAlbumDate(timestamp),
       type: itemType,
       typeName: picBedMap.get(itemType) || itemType,
       raw: item,
       collection: '',
       tags: [],
       isVideo: resolveIsVideo(item)
-    } satisfies GalleryPhoto
+    } satisfies AlbumPhoto
   })
 }

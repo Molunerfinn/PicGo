@@ -2,15 +2,15 @@ import { IRPCActionType, IWindowList } from '~/universal/types/enum'
 import { AlbumSource } from '#/types/cloudAlbum'
 import { RPCRouter } from '../../router'
 import windowManager from '~/main/apis/app/window/windowManager'
-import { galleryMenuListManager } from './menuListManager'
+import { albumMenuListManager } from './menuListManager'
 import logger from 'apis/core/picgo/logger'
 
-const galleryToolboxRouter = new RPCRouter()
+const albumToolboxRouter = new RPCRouter()
 
-galleryToolboxRouter.add(IRPCActionType.GET_GALLERY_MENU_LIST, async (args) => {
-  const [selectedList] = args as IGetGalleryMenuListArgs
+albumToolboxRouter.add(IRPCActionType.GET_ALBUM_MENU_LIST, async (args) => {
+  const [selectedList] = args as IGetAlbumMenuListArgs
   const win = windowManager.get(IWindowList.SETTING_WINDOW)!
-  const menu = galleryMenuListManager.getMenu(selectedList)
+  const menu = albumMenuListManager.getMenu(selectedList)
 
   menu.popup({
     window: win
@@ -24,9 +24,9 @@ const SYNC_TARGET_WINDOWS: IWindowList[] = [
   IWindowList.MINI_WINDOW
 ]
 
-galleryToolboxRouter.add(IRPCActionType.SYNC_ALBUM_SOURCE, async (args, event) => {
+albumToolboxRouter.add(IRPCActionType.SYNC_ALBUM_SOURCE, async (args, event) => {
   const [source] = args as [AlbumSource]
-  logger.debug('[Gallery][syncAlbumSource]', `source=${source}`)
+  logger.debug('[Album][syncAlbumSource]', `source=${source}`)
   const senderWebContents = event.sender
   for (const windowType of SYNC_TARGET_WINDOWS) {
     if (!windowManager.has(windowType)) continue
@@ -38,5 +38,5 @@ galleryToolboxRouter.add(IRPCActionType.SYNC_ALBUM_SOURCE, async (args, event) =
 })
 
 export {
-  galleryToolboxRouter
+  albumToolboxRouter
 }

@@ -19,17 +19,17 @@ import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
-import { getGalleryImageUrl, type GalleryPhoto } from "./utils"
+import { getAlbumImageUrl, type AlbumPhoto } from "./utils"
 
-type GalleryUrlRewriteChange = {
+type AlbumUrlRewriteChange = {
   id: number
   nextSrc: string
   originImgUrl?: string
 }
 
-type GalleryUrlRewriteDialogProps = {
-  selectedImages: GalleryPhoto[]
-  onApply: (changes: GalleryUrlRewriteChange[]) => void
+type AlbumUrlRewriteDialogProps = {
+  selectedImages: AlbumPhoto[]
+  onApply: (changes: AlbumUrlRewriteChange[]) => void
 }
 
 type UrlRewriteRule = {
@@ -47,10 +47,10 @@ function compileRegex(rule: UrlRewriteRule) {
   return new RegExp(rule.match, buildFlags(rule))
 }
 
-export function GalleryUrlRewriteDialog({
+export function AlbumUrlRewriteDialog({
   selectedImages,
   onApply,
-}: GalleryUrlRewriteDialogProps) {
+}: AlbumUrlRewriteDialogProps) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [matchValue, setMatchValue] = useState("")
@@ -81,7 +81,7 @@ export function GalleryUrlRewriteDialog({
     const replace = replaceValue.trim()
 
     if (!match || !replace) {
-      toast.error(t("GALLERY_URL_REWRITE_TEMP_RULE_REQUIRED"))
+      toast.error(t("ALBUM_URL_REWRITE_TEMP_RULE_REQUIRED"))
       return
     }
 
@@ -100,11 +100,11 @@ export function GalleryUrlRewriteDialog({
       return
     }
 
-    const changes: GalleryUrlRewriteChange[] = []
+    const changes: AlbumUrlRewriteChange[] = []
     let hasEmptyResult = false
 
     selectedImages.forEach((image) => {
-      const currentUrl = getGalleryImageUrl(image)
+      const currentUrl = getAlbumImageUrl(image)
       if (!currentUrl) return
 
       const scopedRegex = new RegExp(regex.source, regex.flags)
@@ -123,20 +123,20 @@ export function GalleryUrlRewriteDialog({
     })
 
     if (hasEmptyResult) {
-      toast(t("GALLERY_URL_REWRITE_EMPTY_RESULT_WARN"))
+      toast(t("ALBUM_URL_REWRITE_EMPTY_RESULT_WARN"))
     }
 
     if (changes.length === 0) {
-      toast(t("GALLERY_URL_REWRITE_NO_CHANGES"))
+      toast(t("ALBUM_URL_REWRITE_NO_CHANGES"))
       return
     }
 
     onApply(changes)
 
     const unchanged = selectedImages.length - changes.length
-    toast.success(t("GALLERY_URL_REWRITE_RESULT_TITLE"), {
-      description: `${t("GALLERY_URL_REWRITE_CHANGED")}: ${changes.length} ${t(
-        "GALLERY_URL_REWRITE_UNCHANGED"
+    toast.success(t("ALBUM_URL_REWRITE_RESULT_TITLE"), {
+      description: `${t("ALBUM_URL_REWRITE_CHANGED")}: ${changes.length} ${t(
+        "ALBUM_URL_REWRITE_UNCHANGED"
       )}: ${unchanged}`,
     })
 
@@ -148,34 +148,34 @@ export function GalleryUrlRewriteDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full">
-          {t("GALLERY_BATCH_REWRITE")}
+          {t("ALBUM_BATCH_REWRITE")}
         </Button>
       </DialogTrigger>
       <DialogContent className="flex h-[min(620px,80vh)] flex-col gap-0 overflow-hidden p-0">
         <DialogHeader className="border-border border-b px-6 py-4">
-          <DialogTitle>{t("GALLERY_URL_REWRITE_TITLE")}</DialogTitle>
-          <DialogDescription>{t("GALLERY_URL_REWRITE_DESCRIPTION")}</DialogDescription>
+          <DialogTitle>{t("ALBUM_URL_REWRITE_TITLE")}</DialogTitle>
+          <DialogDescription>{t("ALBUM_URL_REWRITE_DESCRIPTION")}</DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="min-h-0 flex-1">
           <div className="space-y-4 px-6 py-4">
             <Label
-              htmlFor="gallery-url-rewrite-apply-global"
+              htmlFor="album-url-rewrite-apply-global"
               className="gap-3 rounded-lg border border-border/70 p-3"
             >
               <Checkbox
-                id="gallery-url-rewrite-apply-global"
+                id="album-url-rewrite-apply-global"
                 checked={applyGlobalRules}
                 onCheckedChange={(checked) => setApplyGlobalRules(checked === true)}
               />
               <span className="text-sm font-medium">
-                {t("GALLERY_URL_REWRITE_APPLY_GLOBAL_RULES")}
+                {t("ALBUM_URL_REWRITE_APPLY_GLOBAL_RULES")}
               </span>
             </Label>
 
             <div className="space-y-2">
               <Label
-                htmlFor="gallery-url-rewrite-match"
+                htmlFor="album-url-rewrite-match"
                 className="flex items-center gap-2"
               >
                 {t("URL_REWRITE_MATCH")}
@@ -184,18 +184,18 @@ export function GalleryUrlRewriteDialog({
                     <button
                       type="button"
                       className="text-muted-foreground hover:text-foreground inline-flex"
-                      aria-label={t("GALLERY_URL_REWRITE_TEMP_RULE_TIPS")}
+                      aria-label={t("ALBUM_URL_REWRITE_TEMP_RULE_TIPS")}
                     >
                       <HelpCircle className="size-4" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="top" align="start">
-                    {t("GALLERY_URL_REWRITE_TEMP_RULE_TIPS")}
+                    {t("ALBUM_URL_REWRITE_TEMP_RULE_TIPS")}
                   </TooltipContent>
                 </Tooltip>
               </Label>
               <Input
-                id="gallery-url-rewrite-match"
+                id="album-url-rewrite-match"
                 value={matchValue}
                 onChange={(event) => setMatchValue(event.target.value)}
                 placeholder={t("URL_REWRITE_MATCH_PLACEHOLDER")}
@@ -206,11 +206,11 @@ export function GalleryUrlRewriteDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="gallery-url-rewrite-replace">
+              <Label htmlFor="album-url-rewrite-replace">
                 {t("URL_REWRITE_REPLACE")}
               </Label>
               <Input
-                id="gallery-url-rewrite-replace"
+                id="album-url-rewrite-replace"
                 value={replaceValue}
                 onChange={(event) => setReplaceValue(event.target.value)}
                 placeholder={t("URL_REWRITE_REPLACE_PLACEHOLDER")}
@@ -226,11 +226,11 @@ export function GalleryUrlRewriteDialog({
               </div>
               <div className="grid gap-3">
                 <Label
-                  htmlFor="gallery-url-rewrite-global"
+                  htmlFor="album-url-rewrite-global"
                   className="gap-3 rounded-lg border border-border/70 p-3"
                 >
                   <Checkbox
-                    id="gallery-url-rewrite-global"
+                    id="album-url-rewrite-global"
                     checked={isGlobal}
                     onCheckedChange={(checked) => setIsGlobal(checked === true)}
                   />
@@ -244,11 +244,11 @@ export function GalleryUrlRewriteDialog({
                   </span>
                 </Label>
                 <Label
-                  htmlFor="gallery-url-rewrite-ignore-case"
+                  htmlFor="album-url-rewrite-ignore-case"
                   className="gap-3 rounded-lg border border-border/70 p-3"
                 >
                   <Checkbox
-                    id="gallery-url-rewrite-ignore-case"
+                    id="album-url-rewrite-ignore-case"
                     checked={isIgnoreCase}
                     onCheckedChange={(checked) => setIsIgnoreCase(checked === true)}
                   />
@@ -272,7 +272,7 @@ export function GalleryUrlRewriteDialog({
             {t("CANCEL")}
           </Button>
           <Button type="button" onClick={handleApply}>
-            {t("GALLERY_URL_REWRITE_APPLY_ONLY")}
+            {t("ALBUM_URL_REWRITE_APPLY_ONLY")}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -280,4 +280,4 @@ export function GalleryUrlRewriteDialog({
   )
 }
 
-export type { GalleryUrlRewriteChange }
+export type { AlbumUrlRewriteChange }

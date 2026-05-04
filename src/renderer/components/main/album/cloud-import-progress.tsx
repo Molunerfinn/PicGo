@@ -33,7 +33,7 @@ export function CloudImportProgressBanner ({ onComplete }: CloudImportProgressBa
     <div className="mx-5 mt-2 flex items-center gap-3 rounded-lg border bg-muted/50 px-4 py-2">
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
-          <span>{t("GALLERY_CLOUD_IMPORTING")}</span>
+          <span>{t("ALBUM_CLOUD_IMPORTING")}</span>
           <span>{progress.current}/{progress.total}</span>
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">

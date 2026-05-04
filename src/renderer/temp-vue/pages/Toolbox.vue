@@ -118,7 +118,7 @@ const fixList = reactive<IToolboxMap>({
     }
   },
   [IToolboxItemType.IS_GALLERY_FILE_BROKEN]: {
-    title: $T('TOOLBOX_CHECK_GALLERY_FILE_BROKEN'),
+    title: $T('TOOLBOX_CHECK_ALBUM_FILE_BROKEN'),
     status: IToolboxItemCheckStatus.INIT
   },
   [IToolboxItemType.HAS_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD]: {

@@ -11,7 +11,7 @@ import uploader from 'apis/app/uploader'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import picgo from '@core/picgo'
 import logger from '@core/picgo/logger'
-import { GalleryDB } from '~/main/apis/core/datastore'
+import { AlbumDB } from '~/main/apis/core/datastore'
 import server from '~/main/server'
 import getPicBeds from '~/main/utils/getPicBeds'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
@@ -63,10 +63,10 @@ export default {
           // icon: file[0]
           // icon: img[0].imgUrl
         })
-        await GalleryDB.getInstance().insert(img[0])
+        await AlbumDB.getInstance().insert(img[0])
         trayWindow.webContents.send('clipboardFiles', [])
         if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-          windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send(IRPCActionType.UPDATE_GALLERY)
+          windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send(IRPCActionType.UPDATE_ALBUM)
         }
       }
       trayWindow.webContents.send('uploadFiles')

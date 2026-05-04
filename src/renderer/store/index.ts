@@ -5,10 +5,10 @@ export {
   PicGoCloudRequestStatusValues
 } from './app-store'
 export {
-  useGalleryStore,
-  useGalleryStoreBase
-} from './gallery/store'
-export { galleryStoreActions } from './gallery/actions'
+  useAlbumStore,
+  useAlbumStoreBase
+} from './album/store'
+export { albumStoreActions } from './album/actions'
 export {
   useSettingsStore,
   useSettingsStoreBase

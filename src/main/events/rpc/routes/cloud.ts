@@ -1,7 +1,7 @@
 import { IRPCActionType } from '~/universal/types/enum'
 import { RPCRouter } from '../router'
 import picgo from '@core/picgo'
-import { GalleryDB } from '~/main/apis/core/datastore'
+import { AlbumDB } from '~/main/apis/core/datastore'
 import type { IPicGoCloudUserInfo } from '#/types/cloud'
 import type {
   CloudAlbumImportAllResult,
@@ -657,8 +657,8 @@ cloudRouter
       const userInfo = await picgo.cloud.setAutoImport(true)
       logger.debug('[PicGo Cloud][album][importAll] user info', JSON.stringify(userInfo, null, 2))
       // 2. Read all local gallery items
-      const galleryResult = await GalleryDB.getInstance().get({ orderBy: 'desc' })
-      const localItems = galleryResult.data as ImgInfo[]
+      const albumResult = await AlbumDB.getInstance().get({ orderBy: 'desc' })
+      const localItems = albumResult.data as ImgInfo[]
       logger.debug('[PicGo Cloud][album][importAll]', `localItems=${localItems.length}`)
       let created = 0
       if (localItems.length > 0) {

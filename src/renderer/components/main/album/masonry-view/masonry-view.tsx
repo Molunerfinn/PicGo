@@ -19,8 +19,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { GALLERY_CLOUD_LOAD_MORE_THRESHOLD } from "@/utils/consts"
-import type { GalleryPhoto } from "../utils"
-import type { SelectionBox } from "../hooks/use-gallery-selection-box"
+import type { AlbumPhoto } from "../utils"
+import type { SelectionBox } from "../hooks/use-album-selection-box"
 
 const masonryContainStyle: CSSProperties = {
   contentVisibility: "auto",
@@ -47,8 +47,8 @@ type MasonryContext = {
   ) => void
   onToggleSelection: (id: number, checked?: boolean) => void
   onPreview: (id: number) => void
-  onImageLoad: (image: GalleryPhoto) => (event: SyntheticEvent<HTMLImageElement>) => void
-  onVideoLoad: (image: GalleryPhoto) => (event: SyntheticEvent<HTMLVideoElement>) => void
+  onImageLoad: (image: AlbumPhoto) => (event: SyntheticEvent<HTMLImageElement>) => void
+  onVideoLoad: (image: AlbumPhoto) => (event: SyntheticEvent<HTMLVideoElement>) => void
   onItemRefChange: (id: number, node: HTMLDivElement | null) => void
 }
 
@@ -62,7 +62,7 @@ function getMasonryGap(width: number) {
 }
 
 function resolveImageSizing(
-  image: GalleryPhoto,
+  image: AlbumPhoto,
   overrides: Record<number, ImageSize>
 ) {
   const override = overrides[image.id]
@@ -160,7 +160,7 @@ function LazyImage({
   )
 }
 
-const MasonryItem: ItemContent<GalleryPhoto, MasonryContext> = ({
+const MasonryItem: ItemContent<AlbumPhoto, MasonryContext> = ({
   data: photo,
   context,
 }) => {
@@ -178,7 +178,7 @@ const MasonryItem: ItemContent<GalleryPhoto, MasonryContext> = ({
     <div style={{ paddingBottom: context.masonryGap }}>
       <div
         style={masonryContainStyle}
-        data-gallery-item="true"
+        data-album-item="true"
         ref={(node) => context.onItemRefChange(photo.id, node)}
         className={cn(
           "group relative overflow-hidden rounded-lg border transition-shadow",
@@ -207,7 +207,7 @@ const MasonryItem: ItemContent<GalleryPhoto, MasonryContext> = ({
           onVideoLoad={context.onVideoLoad(photo)}
         />
         <div
-          data-gallery-interactive="true"
+          data-album-interactive="true"
           className={cn(
             "absolute left-3 top-3 z-10",
             isSelected
@@ -227,7 +227,7 @@ const MasonryItem: ItemContent<GalleryPhoto, MasonryContext> = ({
           />
         </div>
         <div
-          data-gallery-interactive="true"
+          data-album-interactive="true"
           className="absolute right-3 top-3 z-10 opacity-0 transition-opacity group-hover:opacity-100"
           onClick={(event) => {
             event.stopPropagation()
@@ -258,14 +258,14 @@ const MasonryItem: ItemContent<GalleryPhoto, MasonryContext> = ({
 }
 
 export type MasonryViewProps = {
-  images: GalleryPhoto[]
+  images: AlbumPhoto[]
   layoutScopeKey: string
   columnCount: number
   selectedSet: Set<number>
-  galleryWidth: number
+  albumWidth: number
   scrollRoot: HTMLElement | null
   scrollViewportRef: RefObject<HTMLDivElement | null>
-  galleryContentRef: RefObject<HTMLDivElement | null>
+  albumContentRef: RefObject<HTMLDivElement | null>
   frozenWidth: number | null
   onScrollRootChange: (root: HTMLElement | null) => void
   onMouseDown: (event: MouseEvent<HTMLDivElement>) => void
@@ -292,10 +292,10 @@ export function MasonryView({
   layoutScopeKey,
   columnCount,
   selectedSet,
-  galleryWidth,
+  albumWidth,
   scrollRoot,
   scrollViewportRef,
-  galleryContentRef,
+  albumContentRef,
   frozenWidth,
   onScrollRootChange,
   onMouseDown,
@@ -314,7 +314,7 @@ export function MasonryView({
   >({})
   const masonryRootRef = useRef<HTMLDivElement | null>(null)
   const lastSyncedScrollerRef = useRef<HTMLDivElement | null>(null)
-  const masonryGap = getMasonryGap(galleryWidth)
+  const masonryGap = getMasonryGap(albumWidth)
   const masonryColumnCount = columnCount
 
   // Virtuoso creates its own scrolling element, so we grab that inner scroller
@@ -401,7 +401,7 @@ export function MasonryView({
   }
 
   const handleMasonryImageLoad =
-    (image: GalleryPhoto) => (event: SyntheticEvent<HTMLImageElement>) => {
+    (image: AlbumPhoto) => (event: SyntheticEvent<HTMLImageElement>) => {
       if (image.height) return
       const { naturalWidth, naturalHeight } = event.currentTarget
       if (!naturalWidth || !naturalHeight) return
@@ -421,7 +421,7 @@ export function MasonryView({
     }
 
   const handleMasonryVideoLoad =
-    (image: GalleryPhoto) => (event: SyntheticEvent<HTMLVideoElement>) => {
+    (image: AlbumPhoto) => (event: SyntheticEvent<HTMLVideoElement>) => {
       if (image.height) return
       const { videoWidth, videoHeight } = event.currentTarget
       if (!videoWidth || !videoHeight) return
@@ -470,7 +470,7 @@ export function MasonryView({
       onMouseDown={onMouseDown}
     >
       <div
-        ref={galleryContentRef}
+        ref={albumContentRef}
         className="relative min-h-0 min-w-0 flex-1"
         style={frozenWidth ? { width: frozenWidth } : undefined}
       >

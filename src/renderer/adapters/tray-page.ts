@@ -8,7 +8,7 @@ import { showNotification } from '@/utils/notification'
 import { sendToMain } from '@/utils/dataSender'
 import { ipc } from '@/utils/bridge'
 
-type TrayPageGalleryItem = ImgInfo
+type TrayPageAlbumItem = ImgInfo
 
 export const trayPageAdapter = {
   openMainWindow () {
@@ -47,4 +47,4 @@ export const trayPageAdapter = {
   }
 }
 
-export type { TrayPageGalleryItem }
+export type { TrayPageAlbumItem }

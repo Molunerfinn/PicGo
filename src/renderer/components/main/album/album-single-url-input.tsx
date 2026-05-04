@@ -6,20 +6,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
-import type { GalleryUrlRewriteChange } from "./gallery-url-rewrite-dialog"
-import { getGalleryImageUrl, type GalleryPhoto } from "./utils"
+import type { AlbumUrlRewriteChange } from "./album-url-rewrite-dialog"
+import { getAlbumImageUrl, type AlbumPhoto } from "./utils"
 
-type GallerySingleUrlInputProps = {
-  image: GalleryPhoto
-  onApply: (changes: GalleryUrlRewriteChange[]) => void
+type AlbumSingleUrlInputProps = {
+  image: AlbumPhoto
+  onApply: (changes: AlbumUrlRewriteChange[]) => void
 }
 
-export function GallerySingleUrlInput({
+export function AlbumSingleUrlInput({
   image,
   onApply,
-}: GallerySingleUrlInputProps) {
+}: AlbumSingleUrlInputProps) {
   const { t } = useTranslation()
-  const currentUrl = getGalleryImageUrl(image)
+  const currentUrl = getAlbumImageUrl(image)
   const [draftUrl, setDraftUrl] = useState(() => currentUrl)
   const [isEditing, setIsEditing] = useState(false)
 
@@ -53,7 +53,7 @@ export function GallerySingleUrlInput({
         originImgUrl: image.originImgUrl ?? currentUrl,
       },
     ])
-    toast.success(t("GALLERY_URL_REWRITE_RESULT_TITLE"))
+    toast.success(t("ALBUM_URL_REWRITE_RESULT_TITLE"))
     setIsEditing(false)
   }
 
@@ -70,7 +70,7 @@ export function GallerySingleUrlInput({
           event.preventDefault()
           handleConfirm()
         }}
-        aria-label={t("GALLERY_URL")}
+        aria-label={t("ALBUM_URL")}
         className={cn("min-w-0 flex-1 bg-background/70 transition-[width] duration-200")}
       />
       <div

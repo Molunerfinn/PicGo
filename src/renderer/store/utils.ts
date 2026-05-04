@@ -19,7 +19,7 @@ import {
   GALLERY_MASONRY_COLUMN_COUNT_MAX,
   GALLERY_MASONRY_COLUMN_COUNT_MIN
 } from '@/utils/consts'
-import { GalleryViewMode, type GalleryViewMode as GalleryViewModeType } from '@/components/main/gallery/utils'
+import { AlbumViewMode, type AlbumViewMode as AlbumViewModeType } from '@/components/main/album/utils'
 import { IPasteStyle, IStartupMode } from '~/universal/types/enum'
 
 function isRecord (value: unknown): value is Record<string, unknown> {
@@ -167,19 +167,19 @@ function normalizeSettingsUrlRewrite (
   }
 }
 
-export function normalizeGalleryMasonryColumnCount (count: number) {
+export function normalizeAlbumMasonryColumnCount (count: number) {
   return Math.min(
     GALLERY_MASONRY_COLUMN_COUNT_MAX,
     Math.max(GALLERY_MASONRY_COLUMN_COUNT_MIN, count)
   )
 }
 
-export function normalizeGalleryViewMode (value: string | undefined): GalleryViewModeType {
-  if (value === GalleryViewMode.List) {
-    return GalleryViewMode.List
+export function normalizeAlbumViewMode (value: string | undefined): AlbumViewModeType {
+  if (value === AlbumViewMode.List) {
+    return AlbumViewMode.List
   }
 
-  return GalleryViewMode.Masonry
+  return AlbumViewMode.Masonry
 }
 
 export function resolveDefaultPicBed (config: IConfig | null) {
