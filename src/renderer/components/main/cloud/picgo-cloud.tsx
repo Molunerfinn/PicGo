@@ -9,7 +9,8 @@ import {
   IPicGoCloudEncryptionMethod,
   IPicGoCloudConfigSyncToastType,
   type IPicGoCloudConfigSyncResolution,
-  type IPicGoCloudConfigSyncRunResult
+  type IPicGoCloudConfigSyncRunResult,
+  type IPicGoCloudConfigSyncState
 } from '#/types/cloudConfigSync'
 import { AppMainCard } from '@/components/common/app-main-card'
 import { MainCardHeader } from '@/components/common/main-card-header'
@@ -36,6 +37,12 @@ import {
   setPicGoCloudUserInfoQueryData,
   usePicGoCloudUserInfo
 } from '@/queries/picgo-cloud'
+import {
+  setCloudConfigSyncStateQueryData,
+  updateCloudConfigSyncStateQueryData,
+  useCloudConfigSyncStateQuery
+} from '@/queries/picgo-cloud-config-sync'
+import { invalidatePicGoCloudUsageQuery } from '@/queries/picgo-cloud-usage'
 import { CloudConflictDialog } from './cloud-conflict-dialog'
 import { CloudAccountSummary } from './cloud-account-summary'
 import { CloudAutoImportCard } from './cloud-auto-import-card'
@@ -44,7 +51,6 @@ import { CloudFreePlanBanner } from './cloud-free-plan-banner'
 import { CloudLoginFeaturesCard } from './cloud-login-features-card'
 import { CloudLoginHeroCard } from './cloud-login-hero-card'
 import { CloudPlanUsageCard } from './cloud-plan-usage-card'
-import { formatCloudSyncTime } from './utils'
 import { cn } from '@/lib/utils'
 
 function showConfigSyncToast (
@@ -69,6 +75,10 @@ function showConfigSyncToast (
   toast(message)
 }
 
+const IDLE_STATE: IPicGoCloudConfigSyncState = {
+  sessionStatus: IPicGoCloudConfigSyncSessionStatus.IDLE
+}
+
 export function PicGoCloud () {
   const { t } = useTranslation()
   const {
@@ -81,36 +91,25 @@ export function PicGoCloud () {
   const loginError = useAppStore.use.picgoCloud().loginError
   const hasAgreedToTermsAndPrivacy = useAppStore.use.picgoCloud().hasAgreedToTermsAndPrivacy
   const [isAutoImportUpdating, setIsAutoImportUpdating] = useState(false)
-  const configSyncState = useCloudStore.use.configSyncState()
-  const isConfigSyncStateLoading = useCloudStore.use.isConfigSyncStateLoading()
   const isEnableE2EConfirmOpen = useCloudStore.use.isEnableE2EConfirmOpen()
   const isRestartPromptOpen = useCloudStore.use.isRestartPromptOpen()
   const isEncryptionMethodUpdating = useCloudStore.use.isEncryptionMethodUpdating()
 
+  const { data: syncStateData } = useCloudConfigSyncStateQuery()
+  const configSyncState = syncStateData ?? IDLE_STATE
+
   const isLoginInProgress = loginStatus === PicGoCloudLoginStatusValues.InProgress
-  const isConfigSyncRunning =
-    configSyncState.sessionStatus === IPicGoCloudConfigSyncSessionStatus.SYNCING
   const isConfigSyncBusy =
     configSyncState.sessionStatus !== IPicGoCloudConfigSyncSessionStatus.IDLE
-  const isEncryptionDisabled = isConfigSyncBusy || isConfigSyncStateLoading || isEncryptionMethodUpdating
   const isAutoImportEnabled = isPaidUser && userInfo?.autoImport === true
-  const lastSyncedAtText = formatCloudSyncTime(
-    configSyncState.lastSyncedAt,
-    t('PICGO_CLOUD_LAST_SYNC_TIME_NONE')
-  )
 
-  async function loadConfigSyncState () {
-    cloudStoreActions.setIsConfigSyncStateLoading(true)
-    const result = await cloudAdapter.getConfigSyncState()
-    cloudStoreActions.setIsConfigSyncStateLoading(false)
-
-    if (!result.success) {
-      toast.error(result.error)
-      return
-    }
-
-    cloudStoreActions.applyConfigSyncState(result.data)
-  }
+  // sessionStatus 切到 CONFLICT 时自动开冲突 dialog；切走时关掉。
+  // 把原来 cloudStoreActions.applyConfigSyncState 里的联动迁移过来。
+  useEffect(() => {
+    cloudStoreActions.setIsConflictDialogOpen(
+      configSyncState.sessionStatus === IPicGoCloudConfigSyncSessionStatus.CONFLICT
+    )
+  }, [configSyncState.sessionStatus])
 
   async function refreshAppStateAfterSync () {
     await appActions.refreshAppConfig()
@@ -118,13 +117,18 @@ export function PicGoCloud () {
   }
 
   async function handleConfigSyncResult (runResult: IPicGoCloudConfigSyncRunResult) {
-    cloudStoreActions.applyConfigSyncState(runResult.state)
+    setCloudConfigSyncStateQueryData(runResult.state)
     showConfigSyncToast(runResult.toastType, runResult.message)
 
     if (runResult.authInvalidated) {
       setPicGoCloudUserInfoQueryData(null)
       return
     }
+
+    // 同步成功后 server 端可能修剪了 history，主动刷新 usage（不阻塞 toast / 后续）
+    invalidatePicGoCloudUsageQuery().catch((error) => {
+      console.warn('Failed to invalidate usage query after sync', error)
+    })
 
     if (runResult.shouldShowRestartPrompt) {
       await refreshAppStateAfterSync()
@@ -148,30 +152,7 @@ export function PicGoCloud () {
 
     setPicGoCloudUserInfoQueryData(result.data)
     appActions.setPicGoCloudLoginError(null)
-    await loadConfigSyncState()
   }
-
-  useEffect(() => {
-    let disposed = false
-
-    async function bootstrap () {
-      if (!userInfo) {
-        return
-      }
-
-      if (disposed) {
-        return
-      }
-
-      await loadConfigSyncState()
-    }
-
-    bootstrap()
-
-    return () => {
-      disposed = true
-    }
-  }, [userInfo])
 
   async function handleDisposeLoginFlow () {
     const result = await cloudAdapter.disposeLoginFlow()
@@ -195,13 +176,22 @@ export function PicGoCloud () {
   async function handleStartSync () {
     if (isConfigSyncBusy) return
 
-    cloudStoreActions.setOptimisticSyncing()
+    updateCloudConfigSyncStateQueryData((prev) => ({
+      ...(prev ?? IDLE_STATE),
+      sessionStatus: IPicGoCloudConfigSyncSessionStatus.SYNCING,
+      conflicts: undefined
+    }))
     toast(t('PICGO_CLOUD_CONFIG_SYNC_STARTING'))
 
     const result = await cloudAdapter.startConfigSync()
     if (!result.success) {
       toast.error(result.error)
-      await loadConfigSyncState()
+      // 失败时把 sessionStatus 复位到 IDLE，让用户能再次点击同步
+      updateCloudConfigSyncStateQueryData((prev) => ({
+        ...(prev ?? IDLE_STATE),
+        sessionStatus: IPicGoCloudConfigSyncSessionStatus.IDLE,
+        conflicts: undefined
+      }))
       return
     }
 
@@ -215,7 +205,7 @@ export function PicGoCloud () {
       return
     }
 
-    cloudStoreActions.applyConfigSyncState(result.data)
+    setCloudConfigSyncStateQueryData(result.data)
     cloudStoreActions.setIsConflictDialogOpen(false)
     toast.warning(t('PICGO_CLOUD_CONFIG_SYNC_ABORTED'))
   }
@@ -246,10 +236,10 @@ export function PicGoCloud () {
       return
     }
 
-    cloudStoreActions.applyConfigSyncState({
-      ...useCloudStore.getState().configSyncState,
+    updateCloudConfigSyncStateQueryData((prev) => ({
+      ...(prev ?? IDLE_STATE),
       encryptionMethod: result.data
-    })
+    }))
   }
 
   const handleAutoImportChange = async (checked: boolean) => {
@@ -277,7 +267,7 @@ export function PicGoCloud () {
     const currentMode =
       configSyncState.encryptionMethod ?? IPicGoCloudEncryptionMethod.AUTO
 
-    if (nextMode === currentMode || isEncryptionDisabled) {
+    if (nextMode === currentMode || isConfigSyncBusy || isEncryptionMethodUpdating) {
       return
     }
 
@@ -344,11 +334,6 @@ export function PicGoCloud () {
 
                   <div className="xl:col-span-8">
                     <CloudConfigSyncCard
-                      encryptionMethod={configSyncState.encryptionMethod ?? IPicGoCloudEncryptionMethod.AUTO}
-                      isConfigSyncRunning={isConfigSyncRunning}
-                      isConfigSyncBusy={isConfigSyncBusy}
-                      isEncryptionDisabled={isEncryptionDisabled}
-                      lastSyncedAtText={lastSyncedAtText}
                       onStartSync={handleStartSync}
                       onEncryptionChange={handleEncryptionChange}
                       onOpenEncryptionDocs={() => cloudAdapter.openEncryptionDocs()}

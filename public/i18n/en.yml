@@ -114,6 +114,7 @@ PICGO_CLOUD_FILES_LABEL: Files
 PICGO_CLOUD_USAGE_PROGRESS: "${used} of ${total}"
 PICGO_CLOUD_USAGE_UNLIMITED: Unlimited
 PICGO_CLOUD_USAGE_LOAD_FAILED: Failed to load usage data.
+PICGO_CLOUD_CONFIG_SYNC_LOAD_FAILED: Failed to load sync state.
 PICGO_CLOUD_FREE_PLAN_BANNER: You're on a free plan. Upgrade to unlock more quota and advanced cloud features.
 PICGO_CLOUD_VIEW_PLANS: View Plans
 PICGO_CLOUD_CONFIG_SYNC_TITLE: Configuration Sync
@@ -121,7 +122,7 @@ PICGO_CLOUD_CONFIG_SYNC_CARD_DESC: Sync your settings across devices securely.
 PICGO_CLOUD_CONFIG_SYNC_STATUS_UP_TO_DATE: Up to date
 PICGO_CLOUD_SYNC_NOW: Sync Now
 PICGO_CLOUD_SYNC_QUOTA_LABEL: Sync quota
-PICGO_CLOUD_SYNC_QUOTA_TIP: Free plan currently includes up to 3 configuration history snapshots.
+PICGO_CLOUD_SYNC_QUOTA_TIP: "Your plan retains the most recent ${limit} configuration snapshots. Even at ${limit} of ${limit}, syncing remains available — older snapshots beyond the limit are pruned automatically after each sync."
 PICGO_CLOUD_LOGIN_PANEL_TITLE: Sign in to PicGo Cloud
 PICGO_CLOUD_LOGIN_PANEL_DESC: Sign in to use PicGo Cloud as PicGo's official image host and enable cloud features.
 PICGO_CLOUD_LOGIN_FEATURES_TITLE: Cloud features

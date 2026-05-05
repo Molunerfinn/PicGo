@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import type { IPicGoCloudUsage } from '#/types/cloud'
 import { cloudAdapter } from '@/adapters/cloud'
+import { rendererQueryClient } from './query-client'
 
 export const PicGoCloudUsageQueryKeys = {
   usage: ['picgo-cloud', 'usage'] as const
@@ -19,5 +20,11 @@ export function usePicGoCloudUsageQuery () {
     queryKey: PicGoCloudUsageQueryKeys.usage,
     queryFn: fetchPicGoCloudUsage,
     refetchOnWindowFocus: true
+  })
+}
+
+export async function invalidatePicGoCloudUsageQuery () {
+  await rendererQueryClient.invalidateQueries({
+    queryKey: PicGoCloudUsageQueryKeys.usage
   })
 }

@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
+import { useCloudConfigSyncStateQuery } from '@/queries/picgo-cloud-config-sync'
 import { cloudStoreActions, useCloudStore } from '@/store/cloud'
 
 function stringifyValue (value: unknown) {
@@ -45,9 +46,8 @@ export function CloudConflictDialog ({
 }) {
   const { t } = useTranslation()
   const open = useCloudStore.use.isConflictDialogOpen()
-  const configSyncState = useCloudStore.use.configSyncState()
-  const rawConflicts = configSyncState.conflicts
-  const conflicts = rawConflicts ?? []
+  const { data: syncState } = useCloudConfigSyncStateQuery()
+  const conflicts = syncState?.conflicts ?? []
   const confirmLoading = useCloudStore.use.isApplyResolutionLoading()
   const [selections, setSelections] = useState<IPicGoCloudConfigSyncResolution>({})
 
