@@ -681,6 +681,14 @@ cloudRouter
       return fail(e)
     }
   })
+  .add(IRPCActionType.PICGO_CLOUD_GET_USAGE, async () => {
+    try {
+      const usage = await picgo.cloud.getUsage()
+      return ok(usage)
+    } catch (e) {
+      return fail(e)
+    }
+  })
 
 export {
   cloudRouter

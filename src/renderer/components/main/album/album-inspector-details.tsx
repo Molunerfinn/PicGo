@@ -2,14 +2,12 @@ import dayjs from "dayjs"
 import { useTranslation } from "react-i18next"
 import { resolveTimestampValue } from "@/utils/common"
 import { DEFAULT_DATE_TIME_FORMAT } from "@/utils/consts"
+import { formatBytes } from "@/utils/format"
 import type { AlbumPhoto } from "./utils"
 
 function formatFileSize (sizeBytes: number | undefined): string {
   if (typeof sizeBytes !== 'number' || sizeBytes <= 0) return '-'
-  const mb = sizeBytes / (1024 * 1024)
-  if (mb >= 1) return `${mb.toFixed(2)} MB`
-  const kb = sizeBytes / 1024
-  return `${kb.toFixed(1)} KB`
+  return formatBytes(sizeBytes)
 }
 
 function formatTimestamp (value: number | string | Date | undefined): string {

@@ -2,9 +2,6 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   CircleAlertIcon,
-  CrownIcon,
-  ExternalLinkIcon,
-  HelpCircleIcon,
   LoaderCircleIcon
 } from 'lucide-react'
 import {
@@ -16,8 +13,6 @@ import {
 } from '#/types/cloudConfigSync'
 import { AppMainCard } from '@/components/common/app-main-card'
 import { MainCardHeader } from '@/components/common/main-card-header'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,11 +23,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { FreePlanOnly } from '@/components/common/plan-gate'
-import { PlanBadge } from '@/components/common/plan-badge'
 import { toast } from 'sonner'
 import { cloudAdapter } from '@/adapters/cloud'
 import { cloudAlbumAdapter } from '@/adapters/cloud-album'
@@ -47,7 +37,15 @@ import {
   usePicGoCloudUserInfo
 } from '@/queries/picgo-cloud'
 import { CloudConflictDialog } from './cloud-conflict-dialog'
+import { CloudAccountSummary } from './cloud-account-summary'
+import { CloudAutoImportCard } from './cloud-auto-import-card'
+import { CloudConfigSyncCard } from './cloud-config-sync-card'
+import { CloudFreePlanBanner } from './cloud-free-plan-banner'
+import { CloudLoginFeaturesCard } from './cloud-login-features-card'
+import { CloudLoginHeroCard } from './cloud-login-hero-card'
+import { CloudPlanUsageCard } from './cloud-plan-usage-card'
 import { formatCloudSyncTime } from './utils'
+import { cn } from '@/lib/utils'
 
 function showConfigSyncToast (
   toastType: IPicGoCloudConfigSyncToastType,
@@ -294,6 +292,10 @@ export function PicGoCloud () {
   const queryErrorMessage = userInfoError instanceof Error ? userInfoError.message : null
   const errorMessage = queryErrorMessage ?? loginError
 
+  async function handleViewPlans () {
+    cloudAdapter.openPricing()
+  }
+
   return (
     <>
       <AppMainCard>
@@ -308,203 +310,91 @@ export function PicGoCloud () {
           }
         />
 
-        <div className="flex min-h-0 flex-1 justify-center overflow-auto p-6">
-          <div className="flex w-full max-w-4xl flex-col gap-6">
-            <section className="rounded-xl border border-border/60 bg-card p-6">
-              {isUserInfoLoading ? (
-                <div className="text-muted-foreground flex items-center gap-2 text-sm">
-                  <LoaderCircleIcon className="size-4 animate-spin" />
-                  {t('PICGO_CLOUD_LOADING')}
+        <div className="flex min-h-0 flex-1 items-start justify-center overflow-auto px-6 pt-6 pb-8">
+          <div className={cn(
+            'flex w-full max-w-5xl shrink-0 flex-col gap-4'
+          )}>
+            {errorMessage ? (
+              <div className="border-destructive/30 bg-destructive/5 text-destructive flex items-start gap-3 rounded-lg border px-4 py-3 text-sm">
+                <CircleAlertIcon className="mt-0.5 size-4 shrink-0" />
+                <div>
+                  <div className="font-medium">{t('PICGO_CLOUD_ERROR_TITLE')}</div>
+                  <div>{errorMessage}</div>
                 </div>
-              ) : null}
+              </div>
+            ) : null}
 
-              {errorMessage ? (
-                <div className="border-destructive/30 bg-destructive/5 text-destructive mb-4 flex items-start gap-3 rounded-lg border px-4 py-3 text-sm">
-                  <CircleAlertIcon className="mt-0.5 size-4 shrink-0" />
-                  <div>
-                    <div className="font-medium">{t('PICGO_CLOUD_ERROR_TITLE')}</div>
-                    <div>{errorMessage}</div>
-                  </div>
-                </div>
-              ) : null}
+            {userInfo ? (
+              <>
+                <CloudAccountSummary
+                  userInfo={userInfo}
+                  isPaidUser={isPaidUser}
+                  onOpenCloud={() => cloudAdapter.openCloud()}
+                  onLogout={handleLogout}
+                />
 
-              {isLoginInProgress ? (
-                <div className="text-muted-foreground mb-4 text-sm">
-                  {t('PICGO_CLOUD_LOGIN_IN_PROGRESS')}
-                </div>
-              ) : null}
+                {!isPaidUser ? (
+                  <CloudFreePlanBanner onViewPlans={handleViewPlans} />
+                ) : null}
 
-              {userInfo ? (
-                <div className="space-y-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2 text-lg font-semibold">
-                        <span>{t('PICGO_CLOUD_LOGGED_IN_AS', { user: userInfo.user })}</span>
-                        <PlanBadge />
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Button variant="outline" onClick={() => cloudAdapter.openCloud()}>
-                        <ExternalLinkIcon className="mr-2 size-4" />
-                        {t('PICGO_CLOUD_OPEN')}
-                      </Button>
-                      <Button variant="destructive" onClick={handleLogout}>
-                        {t('PICGO_CLOUD_LOGOUT')}
-                      </Button>
-                    </div>
+                <div className="grid gap-4 xl:grid-cols-12">
+                  <div className="xl:col-span-4">
+                    <CloudPlanUsageCard />
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-3">
-                    <Button
-                      disabled={isConfigSyncBusy}
-                      onClick={handleStartSync}
-                      className="min-w-28"
-                    >
-                      {isConfigSyncRunning ? (
-                        <LoaderCircleIcon className="mr-2 size-4 animate-spin" />
-                      ) : null}
-                      {t('PICGO_CLOUD_CONFIG_SYNC')}
-                    </Button>
-
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-muted-foreground text-sm">
-                        {t('PICGO_CLOUD_ENCRYPTION_MODE_LABEL')}
-                      </span>
-                      <Select
-                        value={configSyncState.encryptionMethod ?? IPicGoCloudEncryptionMethod.AUTO}
-                        onValueChange={handleEncryptionChange}
-                        disabled={isEncryptionDisabled}
-                      >
-                        <SelectTrigger className="w-52">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={IPicGoCloudEncryptionMethod.AUTO}>
-                            {t('PICGO_CLOUD_ENCRYPTION_MODE_AUTO')}
-                          </SelectItem>
-                          <SelectItem value={IPicGoCloudEncryptionMethod.SSE}>
-                            {t('PICGO_CLOUD_ENCRYPTION_MODE_SERVER')}
-                          </SelectItem>
-                          <SelectItem value={IPicGoCloudEncryptionMethod.E2EE}>
-                            {t('PICGO_CLOUD_ENCRYPTION_MODE_E2E')}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            type="button"
-                            className="text-muted-foreground hover:text-foreground inline-flex size-8 items-center justify-center rounded-md transition-colors"
-                          >
-                            <HelpCircleIcon className="size-4" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-80 space-y-2">
-                          <p>{t('PICGO_CLOUD_ENCRYPTION_MODE_TIP_AUTO')}</p>
-                          <p>{t('PICGO_CLOUD_ENCRYPTION_MODE_TIP_SERVER')}</p>
-                          <p>{t('PICGO_CLOUD_ENCRYPTION_MODE_TIP_E2E')}</p>
-                          <button
-                            type="button"
-                            onClick={() => cloudAdapter.openEncryptionDocs()}
-                            className="text-primary text-sm"
-                          >
-                            {t('PICGO_CLOUD_ENCRYPTION_MODE_TIP_DOC')}
-                          </button>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </div>
-
-                  <div className="text-muted-foreground text-sm">
-                    {t('PICGO_CLOUD_LAST_SYNC_TIME', {
-                      time: lastSyncedAtText
-                    })}
-                  </div>
-
-                  <div className="flex items-center justify-between border-t border-border/60 pt-4">
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-1.5 text-sm font-medium">
-                        {t('PICGO_CLOUD_AUTO_IMPORT_LABEL')}
-                        <FreePlanOnly>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="inline-flex cursor-help">
-                                <CrownIcon className="size-3.5 text-amber-500" />
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{t('ALBUM_CLOUD_UPGRADE_DESC')}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </FreePlanOnly>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {t('PICGO_CLOUD_AUTO_IMPORT_DESC')}
-                      </div>
-                    </div>
-                    <Switch
-                      checked={isAutoImportEnabled}
-                      onCheckedChange={handleAutoImportChange}
-                      disabled={isAutoImportUpdating || !isPaidUser}
+                  <div className="xl:col-span-8">
+                    <CloudConfigSyncCard
+                      encryptionMethod={configSyncState.encryptionMethod ?? IPicGoCloudEncryptionMethod.AUTO}
+                      isConfigSyncRunning={isConfigSyncRunning}
+                      isConfigSyncBusy={isConfigSyncBusy}
+                      isEncryptionDisabled={isEncryptionDisabled}
+                      lastSyncedAtText={lastSyncedAtText}
+                      onStartSync={handleStartSync}
+                      onEncryptionChange={handleEncryptionChange}
+                      onOpenEncryptionDocs={() => cloudAdapter.openEncryptionDocs()}
                     />
                   </div>
                 </div>
-              ) : (
-                <div className="space-y-4">
+
+                <CloudAutoImportCard
+                  checked={isAutoImportEnabled}
+                  disabled={isAutoImportUpdating || !isPaidUser}
+                  isPaidUser={isPaidUser}
+                  onCheckedChange={handleAutoImportChange}
+                />
+              </>
+            ) : (
+              <>
+                {isUserInfoLoading ? (
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                    <LoaderCircleIcon className="size-4 animate-spin" />
+                    {t('PICGO_CLOUD_LOADING')}
+                  </div>
+                ) : null}
+
+                {isLoginInProgress ? (
                   <div className="text-muted-foreground text-sm">
-                    {t('PICGO_CLOUD_NOT_LOGGED_IN')}
+                    {t('PICGO_CLOUD_LOGIN_IN_PROGRESS')}
                   </div>
+                ) : null}
 
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button
-                      disabled={isLoginInProgress || !hasAgreedToTermsAndPrivacy}
-                      onClick={handleLogin}
-                    >
-                      {isLoginInProgress ? (
-                        <LoaderCircleIcon className="mr-2 size-4 animate-spin" />
-                      ) : null}
-                      {t('PICGO_CLOUD_LOGIN')}
-                    </Button>
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <CloudLoginHeroCard
+                    isLoginInProgress={isLoginInProgress}
+                    hasAgreedToTermsAndPrivacy={hasAgreedToTermsAndPrivacy}
+                    onLogin={handleLogin}
+                    onCancelLogin={handleDisposeLoginFlow}
+                    onAgreementChange={(checked) => {
+                      appActions.setPicGoCloudHasAgreedToTermsAndPrivacy(checked)
+                    }}
+                    onOpenTerms={() => cloudAdapter.openTerms()}
+                    onOpenPrivacy={() => cloudAdapter.openPrivacy()}
+                  />
 
-                    {isLoginInProgress ? (
-                      <Button variant="outline" onClick={handleDisposeLoginFlow}>
-                        {t('PICGO_CLOUD_CANCEL_LOGIN')}
-                      </Button>
-                    ) : null}
-                  </div>
-
-                  <label className="flex items-start gap-3">
-                    <Checkbox
-                      checked={hasAgreedToTermsAndPrivacy}
-                      onCheckedChange={(checked) => {
-                        appActions.setPicGoCloudHasAgreedToTermsAndPrivacy(Boolean(checked))
-                      }}
-                      disabled={isLoginInProgress}
-                      className="mt-0.5"
-                    />
-                    <span className="text-muted-foreground text-sm leading-6">
-                      {t('PICGO_CLOUD_AGREE_PREFIX')}{' '}
-                      <button
-                        type="button"
-                        className="text-primary"
-                        onClick={() => cloudAdapter.openTerms()}
-                      >
-                        {t('PICGO_CLOUD_TERMS_OF_SERVICE')}
-                      </button>{' '}
-                      {t('PICGO_CLOUD_AGREE_AND')}{' '}
-                      <button
-                        type="button"
-                        className="text-primary"
-                        onClick={() => cloudAdapter.openPrivacy()}
-                      >
-                        {t('PICGO_CLOUD_PRIVACY_POLICY')}
-                      </button>
-                    </span>
-                  </label>
+                  <CloudLoginFeaturesCard />
                 </div>
-              )}
-            </section>
+              </>
+            )}
           </div>
         </div>
       </AppMainCard>

@@ -1,4 +1,4 @@
-import type { IPicGoCloudUserInfo } from '#/types/cloud'
+import type { IPicGoCloudUsage, IPicGoCloudUserInfo } from '#/types/cloud'
 import type {
   IPicGoCloudConfigSyncResolution,
   IPicGoCloudConfigSyncRunResult,
@@ -9,9 +9,10 @@ import { IRPCActionType } from '#/types/enum'
 import { invokeRPC, openURL } from '@/utils/dataSender'
 
 export const PICGO_CLOUD_URL = 'https://cloud.picgo.app'
-export const PICGO_CLOUD_TERMS_URL = 'https://picgo.github.io/PicGo-Doc/guide/cloud.html#terms-of-service'
-export const PICGO_CLOUD_PRIVACY_URL = 'https://picgo.github.io/PicGo-Doc/guide/cloud.html#privacy-policy'
-export const PICGO_CLOUD_ENCRYPTION_DOC_URL = 'https://picgo.github.io/PicGo-Doc/guide/cloud.html#encryption'
+export const PICGO_CLOUD_PRICING_URL = 'https://cloud.picgo.app/pricing'
+export const PICGO_CLOUD_TERMS_URL = 'https://picgo.app/terms/'
+export const PICGO_CLOUD_PRIVACY_URL = 'https://picgo.app/privacy/'
+export const PICGO_CLOUD_ENCRYPTION_DOC_URL = 'https://docs.picgo.app/gui/guide/picgo-cloud#encryption-mode'
 
 type PicGoCloudUserInfoOptions = {
   refresh?: boolean
@@ -20,6 +21,9 @@ type PicGoCloudUserInfoOptions = {
 export const cloudAdapter = {
   async getUserInfo (options?: PicGoCloudUserInfoOptions) {
     return await invokeRPC<IPicGoCloudUserInfo | null>(IRPCActionType.PICGO_CLOUD_GET_USER_INFO, options)
+  },
+  async getUsage () {
+    return await invokeRPC<IPicGoCloudUsage | null>(IRPCActionType.PICGO_CLOUD_GET_USAGE)
   },
   async login () {
     return await invokeRPC<IPicGoCloudUserInfo>(IRPCActionType.PICGO_CLOUD_LOGIN)
@@ -56,6 +60,9 @@ export const cloudAdapter = {
   },
   openCloud () {
     openURL(PICGO_CLOUD_URL)
+  },
+  openPricing () {
+    openURL(PICGO_CLOUD_PRICING_URL)
   },
   openTerms () {
     openURL(PICGO_CLOUD_TERMS_URL)

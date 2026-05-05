@@ -105,6 +105,29 @@ PICGO_CLOUD_CONFIG_SYNC_VALUE_UNDEFINED: (empty)
 PICGO_CLOUD_CONFIG_SYNC_CONFLICT_RESOLVED: Conflicts resolved.
 PICGO_CLOUD_LAST_SYNC_TIME: "Last local sync time: ${time}"
 PICGO_CLOUD_LAST_SYNC_TIME_NONE: None
+PICGO_CLOUD_LAST_SYNC_LABEL: Last sync
+PICGO_CLOUD_PLAN_USAGE_TITLE: Plan & Usage
+PICGO_CLOUD_PLAN_USAGE_DESC: View your current plan and usage overview.
+PICGO_CLOUD_PLAN_PERIOD_LABEL: Plan Period
+PICGO_CLOUD_STORAGE_LABEL: Storage
+PICGO_CLOUD_FILES_LABEL: Files
+PICGO_CLOUD_USAGE_PROGRESS: "${used} of ${total}"
+PICGO_CLOUD_USAGE_UNLIMITED: Unlimited
+PICGO_CLOUD_USAGE_LOAD_FAILED: Failed to load usage data.
+PICGO_CLOUD_FREE_PLAN_BANNER: You're on a free plan. Upgrade to unlock more quota and advanced cloud features.
+PICGO_CLOUD_VIEW_PLANS: View Plans
+PICGO_CLOUD_CONFIG_SYNC_TITLE: Configuration Sync
+PICGO_CLOUD_CONFIG_SYNC_CARD_DESC: Sync your settings across devices securely.
+PICGO_CLOUD_CONFIG_SYNC_STATUS_UP_TO_DATE: Up to date
+PICGO_CLOUD_SYNC_NOW: Sync Now
+PICGO_CLOUD_SYNC_QUOTA_LABEL: Sync quota
+PICGO_CLOUD_SYNC_QUOTA_TIP: Free plan currently includes up to 3 configuration history snapshots.
+PICGO_CLOUD_LOGIN_PANEL_TITLE: Sign in to PicGo Cloud
+PICGO_CLOUD_LOGIN_PANEL_DESC: Sign in to use PicGo Cloud as PicGo's official image host and enable cloud features.
+PICGO_CLOUD_LOGIN_FEATURES_TITLE: Cloud features
+PICGO_CLOUD_OFFICIAL_IMAGE_HOST_TITLE: Official Image Host
+PICGO_CLOUD_OFFICIAL_IMAGE_HOST_DESC: PicGo's official image host with built-in album cloud sync.
+PICGO_CLOUD_PAID_PLAN_BADGE: Paid plan
 PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_TITLE: Restart Required?
 PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_MESSAGE: Some settings may require a restart to take effect. Restart now?
 PICGO_CLOUD_CONFIG_SYNC_RESTART_NOW: Restart Now
