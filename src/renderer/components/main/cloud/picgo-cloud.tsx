@@ -32,6 +32,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { FreePlanOnly } from '@/components/common/plan-gate'
+import { PlanBadge } from '@/components/common/plan-badge'
 import { toast } from 'sonner'
 import { cloudAdapter } from '@/adapters/cloud'
 import { cloudAlbumAdapter } from '@/adapters/cloud-album'
@@ -337,8 +338,9 @@ export function PicGoCloud () {
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <div className="text-lg font-semibold">
-                        {t('PICGO_CLOUD_LOGGED_IN_AS', { user: userInfo.user })}
+                      <div className="flex flex-wrap items-center gap-2 text-lg font-semibold">
+                        <span>{t('PICGO_CLOUD_LOGGED_IN_AS', { user: userInfo.user })}</span>
+                        <PlanBadge />
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">

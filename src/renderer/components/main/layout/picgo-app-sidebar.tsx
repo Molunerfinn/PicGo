@@ -22,19 +22,11 @@ import { Sidebar } from "@/components/ui/sidebar"
 import { useSidebar } from "@/components/ui/sidebar-context"
 import { cn } from "@/lib/utils"
 import { usePicGoCloudUserInfo } from "@/queries/picgo-cloud"
+import { resolvePlanLabel } from "@/utils/plan"
 import { SidebarNavButton } from "./sidebar-nav-button"
 import { MainMoreDialog } from "./main-more-dialog"
 
 const SIDEBAR_ICON_CLASSNAME = "size-[18px]"
-
-function resolvePlanLabel (plan?: number): string {
-  switch (plan) {
-    case 1: return 'Starter Plan'
-    case 2: return 'Pro Plan'
-    case 3: return 'Max Plan'
-    default: return 'Free Plan'
-  }
-}
 
 export function PicGoAppSidebar({
   isDark,
