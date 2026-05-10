@@ -68,6 +68,3 @@ Add locales by creating `public/i18n/<locale>.yml`, exposing its `LANG_DISPLAY_L
   - Renderer: use `$T('KEY')` from `src/renderer/i18n/index.ts`.
   - Main process: use `T('KEY')` from `src/main/i18n/index.ts`.
   - Add new keys to all locales under `public/i18n/` (at least `en.yml`, `zh-CN.yml`, `zh-TW.yml`). The Vite i18n types plugin will regenerate the shared declarations automatically.
-
-## Serena MCP & Context7 Tools
-When starting work or if you hit issues, try checking MCP for Serena or Context7 tooling. If available, use those tools to navigate, edit, or fetch docs efficiently.

@@ -1,10 +1,16 @@
 import picgo from '@core/picgo'
 import logger from '@core/picgo/logger'
-import { uploadHandler } from './handler'
+import windowManager from 'apis/app/window/windowManager'
+import {
+  uploadClipboardFilesWithInfo,
+  uploadSelectedFilesWithInfo
+} from 'apis/app/uploader/apis'
+import { getFormImageFolderPath } from 'apis/core/datastore/dbChecker'
+import type { IInternalServerManager } from 'picgo/dist/types/internal'
 
 class Server {
   private config: IServerConfig
-  private hasRegisteredUploadOverride = false
+  private hasInstalledUploadAdapter = false
   constructor () {
     this.config = this.ensureConfig()
   }
@@ -34,17 +40,24 @@ class Server {
     return config
   }
 
-  private ensureUploadOverrideRegistered () {
-    if (this.hasRegisteredUploadOverride) return
-    // @ts-expect-error override internal handler
-    picgo.server.registerPost('/upload', uploadHandler, true)
-    this.hasRegisteredUploadOverride = true
+  private ensureUploadAdapterInstalled () {
+    if (this.hasInstalledUploadAdapter) return
+    const server = picgo.server as IInternalServerManager
+    server.setUploadAdapter({
+      uploadClipboard: async () => await uploadClipboardFilesWithInfo(),
+      uploadPaths: async (paths: string[]) => {
+        const win = windowManager.getAvailableWindow()
+        return await uploadSelectedFilesWithInfo(win.webContents, paths.map(item => ({ path: item })))
+      },
+      getTempDir: getFormImageFolderPath
+    })
+    this.hasInstalledUploadAdapter = true
   }
 
   startup () {
     this.config = this.ensureConfig()
     if (this.config.enable) {
-      this.ensureUploadOverrideRegistered()
+      this.ensureUploadAdapterInstalled()
       // let core resolve config defaults when possible, but preserve GUI config semantics.
       const port = typeof this.config.port === 'string' ? parseInt(this.config.port, 10) : this.config.port
       picgo.server.listen(port, this.config.host)
