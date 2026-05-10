@@ -7,6 +7,8 @@ import { AlbumSource } from "#/types/cloudAlbum"
 import { AlbumSourceSwitcher } from "@/components/common/album-source-switcher"
 import { CloudFeatureHighlights } from "@/components/common/cloud-feature-highlights"
 import { CloudRefreshButton } from "@/components/common/cloud-refresh-button"
+import { useCloudAlbumStatsQuery } from "@/queries/picgo-cloud-album-stats"
+import { useAppStore } from "@/store"
 import { CloudSidebarSkeleton } from "./cloud-loading"
 import {
   NavType,
@@ -26,7 +28,7 @@ export const allPhotosKey = "all"
 
 type AlbumNavButtonProps = {
   label: string
-  count?: number
+  count?: number | string
   active: boolean
   onClick: () => void
 }
@@ -37,9 +39,6 @@ type AlbumSidebarProps = {
   navContext: NavContext
   albumSource: AlbumSource
   isCloudAvailable: boolean
-  cloudLoading?: boolean
-  cloudProviders?: AlbumProviderFilter[]
-  cloudAllTotal?: number
   // TODO(v3-post-launch): Restore tag suggestions input when Tags feature returns.
   // tagSuggestions: string[]
   onFilterChange: (next: NavContext) => void
@@ -118,9 +117,6 @@ export function AlbumSidebar({
   navContext,
   albumSource,
   isCloudAvailable,
-  cloudLoading,
-  cloudProviders,
-  cloudAllTotal,
   // TODO(v3-post-launch): Restore tagSuggestions usage when Tags sidebar filter is re-enabled.
   // tagSuggestions,
   onFilterChange,
@@ -129,10 +125,31 @@ export function AlbumSidebar({
   const { t } = useTranslation()
   const isCloud = albumSource === AlbumSource.CLOUD
   const showCloudNav = isCloud && isCloudAvailable
-  const displayProviders = showCloudNav ? (cloudProviders ?? []) : isCloud ? [] : providers
-  const allPhotosCount = showCloudNav ? (cloudAllTotal ?? 0) : isCloud ? 0 : images.length
-  const hasCloudData = (cloudProviders ?? []).length > 0 || (cloudAllTotal ?? 0) > 0
-  const isCloudLoading = isCloud && isCloudAvailable && (cloudLoading ?? false) && !hasCloudData
+  const picBeds = useAppStore.use.picBeds()
+  const cloudStatsQuery = useCloudAlbumStatsQuery({ enabled: showCloudNav })
+
+  const cloudStats = cloudStatsQuery.data
+  const cloudStatsError = showCloudNav && cloudStatsQuery.isError
+  const cloudProviderFilters: AlbumProviderFilter[] = (cloudStats?.types ?? []).map((stat) => {
+    const bed = picBeds.find((b) => b.type === stat.type)
+    return {
+      type: stat.type,
+      name: bed?.name ?? stat.type,
+      count: stat.count,
+    }
+  })
+
+  const displayProviders = showCloudNav
+    ? cloudProviderFilters
+    : isCloud
+      ? []
+      : providers
+  const allPhotosCount: number | string = showCloudNav
+    ? (cloudStatsError ? "—" : (cloudStats?.total ?? 0))
+    : isCloud
+      ? 0
+      : images.length
+  const isCloudLoading = showCloudNav && cloudStatsQuery.isPending && !cloudStats
   const showNavList = !isCloud || showCloudNav
 
   // TODO(v3-post-launch): Restore collection count aggregation when Collections sidebar section is re-enabled.

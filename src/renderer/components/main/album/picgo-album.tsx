@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { appActions, albumStoreActions, useAppStore, useAlbumStore } from "@/store"
 import { usePicGoCloudUserInfo } from "@/queries/picgo-cloud"
+import { invalidateCloudAlbumStatsQuery } from "@/queries/picgo-cloud-album-stats"
 import {
   CLOUD_ALBUM_PAGE_SIZE,
   GALLERY_MASONRY_COLUMN_COUNT_DEFAULT,
@@ -88,13 +89,11 @@ export function PicGoAlbum() {
   } = usePicGoCloudUserInfo()
   const albumSource = useAlbumStore.use.albumSource()
   const cloudItems = useAlbumStore.use.cloudItems()
-  const cloudAllTotal = useAlbumStore.use.cloudAllTotal()
   const cloudTotal = useAlbumStore.use.cloudTotal()
   const cloudLoading = useAlbumStore.use.cloudLoading()
   const cloudHasMore = useAlbumStore.use.cloudHasMore()
   const cloudSearch = useAlbumStore.use.cloudSearch()
   const cloudTypeFilter = useAlbumStore.use.cloudTypeFilter()
-  const cloudProviderStats = useAlbumStore.use.cloudProviderStats()
   const isCloud = albumSource === AlbumSource.CLOUD
   const [debouncedCloudSearch, setDebouncedCloudSearch] = useState("")
 
@@ -129,28 +128,6 @@ export function PicGoAlbum() {
       name: item.name,
       count: images.filter((image) => image.type === item.type).length,
     }))
-  const cloudProviderFilters: AlbumProviderFilter[] = cloudProviderStats.length > 0
-    ? cloudProviderStats.map((stat) => {
-      const bed = picBeds.find((b) => b.type === stat.type)
-      return {
-        type: stat.type,
-        name: bed?.name ?? stat.type,
-        count: stat.count,
-      }
-    })
-    : (() => {
-      // Fallback: derive providers from loaded cloud items when stats API is unavailable
-      const countMap = new Map<string, number>()
-      for (const item of cloudItems) {
-        if (item.type) {
-          countMap.set(item.type, (countMap.get(item.type) ?? 0) + 1)
-        }
-      }
-      return Array.from(countMap.entries()).map(([type, count]) => {
-        const bed = picBeds.find((b) => b.type === type)
-        return { type, name: bed?.name ?? type, count }
-      })
-    })()
 
   // TODO(v3-post-launch): Restore selected tag derivation when Tags inspector actions return.
   // const selectedTags = getSelectedTags(selectedImages)
@@ -173,14 +150,6 @@ export function PicGoAlbum() {
     albumStoreActions.setCloudLoading(true)
     albumStoreActions.resetCloudPagination()
     try {
-      // Load stats first so sidebar can render immediately
-      const statsPromise = cloudAlbumAdapter.getStats().then((statsResult) => {
-        if (statsResult.success && cloudFirstPageRequestIdRef.current === requestId) {
-          albumStoreActions.setCloudProviderStats(statsResult.data.types)
-          albumStoreActions.setCloudAllTotal(statsResult.data.total)
-        }
-      }).catch(() => {})
-
       const query = {
         limit: CLOUD_ALBUM_PAGE_SIZE,
         offset: 0,
@@ -196,8 +165,6 @@ export function PicGoAlbum() {
         albumStoreActions.setCloudOffset(result.data.items.length)
         albumStoreActions.setCloudHasMore(result.data.items.length < result.data.total)
       }
-
-      await statsPromise
     } catch (error) {
       if (cloudFirstPageRequestIdRef.current === requestId) {
         console.error(error)
@@ -211,6 +178,7 @@ export function PicGoAlbum() {
   })
 
   const handleCloudAlbumUpdated = useMemoizedFn(() => {
+    invalidateCloudAlbumStatsQuery().catch(console.warn)
     if (isCloud) {
       const refreshPromise = loadCloudFirstPage()
       refreshPromise.catch((error) => {
@@ -304,10 +272,16 @@ export function PicGoAlbum() {
   }, [isCloud, cloudSearch, cloudTypeFilter, loadCloudFirstPage])
 
   const handleCloudFirstPageRefresh = useMemoizedFn(() => {
+    invalidateCloudAlbumStatsQuery().catch(console.warn)
     const refreshPromise = loadCloudFirstPage()
     refreshPromise.catch((error) => {
       console.error(error)
     })
+  })
+
+  const handleSidebarCloudRefresh = useMemoizedFn(async () => {
+    await invalidateCloudAlbumStatsQuery()
+    await loadCloudFirstPage()
   })
 
   const handleCloudLoadMore = useMemoizedFn(() => {
@@ -708,8 +682,8 @@ export function PicGoAlbum() {
         )
         albumStoreActions.setCloudTotal(cloudTotal - dbIds.length)
         setSelection([])
+        invalidateCloudAlbumStatsQuery().catch(console.warn)
       }
-      console.log('success')
     } catch (error) {
       console.error(error)
       toast.error(t("ALBUM_CLOUD_DELETE_FAILED"))
@@ -745,11 +719,12 @@ export function PicGoAlbum() {
     !isCloudAvailable || (cloudTotal === 0 && !cloudLoading)
   )
 
-  const activeProviders = isCloud ? cloudProviderFilters : visibleProviders
   const activeBreadcrumb = navContext.type === NavType.All
     ? t("ALBUM_ALL_PHOTOS")
     : navContext.type === NavType.Provider
-      ? activeProviders.find((provider) => provider.type === navContext.value)?.name ?? navContext.value
+      ? (isCloud
+        ? picBeds.find((bed) => bed.type === navContext.value)?.name ?? navContext.value
+        : visibleProviders.find((provider) => provider.type === navContext.value)?.name ?? navContext.value)
       : navContext.value
 
   return (
@@ -760,11 +735,8 @@ export function PicGoAlbum() {
         navContext={navContext}
         albumSource={albumSource}
         isCloudAvailable={isCloudAvailable}
-        cloudLoading={cloudLoading}
-        cloudProviders={cloudProviderFilters}
-        cloudAllTotal={cloudAllTotal}
         onFilterChange={handleFilterChange}
-        onCloudRefresh={loadCloudFirstPage}
+        onCloudRefresh={handleSidebarCloudRefresh}
       />
 
       <AppMainCard asChild>

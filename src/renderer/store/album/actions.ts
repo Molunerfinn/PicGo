@@ -11,7 +11,7 @@ import {
   normalizeAlbumViewMode
 } from '@/store/utils'
 import { useAlbumStore } from './store'
-import { AlbumSource, type CloudAlbumProviderStat } from '#/types/cloudAlbum'
+import { AlbumSource } from '#/types/cloudAlbum'
 import { sendRPC } from '@/utils/dataSender'
 import { IRPCActionType } from '~/universal/types/enum'
 
@@ -85,11 +85,6 @@ export const albumStoreActions = {
       state.cloudItems = items
     })
   },
-  setCloudAllTotal (total: number) {
-    useAlbumStore.setState((state) => {
-      state.cloudAllTotal = total
-    })
-  },
   appendCloudItems (items: AlbumPhoto[]) {
     useAlbumStore.setState((state) => {
       const offset = state.cloudItems.length
@@ -128,11 +123,6 @@ export const albumStoreActions = {
   setCloudTypeFilter (typeFilter: string) {
     useAlbumStore.setState((state) => {
       state.cloudTypeFilter = typeFilter
-    })
-  },
-  setCloudProviderStats (stats: CloudAlbumProviderStat[]) {
-    useAlbumStore.setState((state) => {
-      state.cloudProviderStats = stats
     })
   },
   resetCloudPagination () {
