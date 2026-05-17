@@ -1,4 +1,4 @@
-import type { IPicGoCloudUsage, IPicGoCloudUserInfo } from '#/types/cloud'
+import type { IPicGoCloudBillingOverview, IPicGoCloudUsage, IPicGoCloudUserInfo } from '#/types/cloud'
 import type {
   IPicGoCloudConfigSyncResolution,
   IPicGoCloudConfigSyncRunResult,
@@ -24,6 +24,9 @@ export const cloudAdapter = {
   },
   async getUsage () {
     return await invokeRPC<IPicGoCloudUsage | null>(IRPCActionType.PICGO_CLOUD_GET_USAGE)
+  },
+  async getBillingOverview () {
+    return await invokeRPC<IPicGoCloudBillingOverview | null>(IRPCActionType.PICGO_CLOUD_GET_BILLING_OVERVIEW)
   },
   async login () {
     return await invokeRPC<IPicGoCloudUserInfo>(IRPCActionType.PICGO_CLOUD_LOGIN)

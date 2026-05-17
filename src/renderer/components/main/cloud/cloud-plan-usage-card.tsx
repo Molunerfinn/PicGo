@@ -1,44 +1,58 @@
 import { BarChart3Icon, LoaderCircleIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import type { IPicGoCloudUsage, IPicGoCloudUsageDimension } from '#/types/cloud'
+import type {
+  IPicGoCloudBillingOverview,
+  IPicGoCloudUsage,
+  IPicGoCloudUsageDimension
+} from '#/types/cloud'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
+import { usePicGoCloudBillingQuery } from '@/queries/picgo-cloud-billing'
 import { usePicGoCloudUsageQuery } from '@/queries/picgo-cloud-usage'
-import { formatBytes } from '@/utils/format'
+import { formatBytes, formatDateRange } from '@/utils/format'
 import { CloudCardShell } from './cloud-card-shell'
 
 const PLAN_PERIOD_PLACEHOLDER = '-'
 
+function formatPlanPeriodType (billingPeriod: string | null | undefined): string | null {
+  if (!billingPeriod) return null
+  return billingPeriod.charAt(0).toUpperCase() + billingPeriod.slice(1)
+}
+
 function formatStorageDimension (
-  dimension: IPicGoCloudUsageDimension,
+  dimension: IPicGoCloudUsageDimension | undefined,
   unlimitedLabel: string,
   template: (used: string, total: string) => string
 ): string {
-  const used = formatBytes(dimension.used)
-  const total = dimension.limit === null
+  const used = formatBytes(dimension?.used)
+  const limit = dimension?.limit
+  const total = limit === null || limit === undefined
     ? unlimitedLabel
-    : formatBytes(dimension.limit)
+    : formatBytes(limit)
   return template(used, total)
 }
 
 function formatCountDimension (
-  dimension: IPicGoCloudUsageDimension,
+  dimension: IPicGoCloudUsageDimension | undefined,
   unlimitedLabel: string,
   template: (used: string, total: string) => string
 ): string {
-  const used = dimension.used.toLocaleString()
-  const total = dimension.limit === null
+  const used = (dimension?.used ?? 0).toLocaleString()
+  const limit = dimension?.limit
+  const total = limit === null || limit === undefined
     ? unlimitedLabel
-    : dimension.limit.toLocaleString()
+    : limit.toLocaleString()
   return template(used, total)
 }
 
-function computePercent (dimension: IPicGoCloudUsageDimension): number {
-  if (dimension.limit === null || dimension.limit <= 0) {
+function computePercent (dimension: IPicGoCloudUsageDimension | undefined): number {
+  const used = dimension?.used
+  const limit = dimension?.limit
+  if (typeof used !== 'number' || typeof limit !== 'number' || limit <= 0) {
     return 0
   }
-  return Math.min((dimension.used / dimension.limit) * 100, 100)
+  return Math.min((used / limit) * 100, 100)
 }
 
 function UsageProgressRow ({
@@ -81,6 +95,7 @@ function UsageProgressSkeleton ({ label }: { label: string }) {
 export function CloudPlanUsageCard () {
   const { t } = useTranslation()
   const { data, isLoading, isError, refetch, isFetching } = usePicGoCloudUsageQuery()
+  const { data: billingData, isLoading: isBillingLoading } = usePicGoCloudBillingQuery()
 
   const renderProgressTemplate = (used: string, total: string) =>
     t('PICGO_CLOUD_USAGE_PROGRESS', { used, total })
@@ -102,14 +117,12 @@ export function CloudPlanUsageCard () {
       </div>
 
       <div className="grid gap-4">
-        <div className="flex items-center justify-between gap-4 text-sm">
-          <span className="font-medium text-foreground">
-            {t('PICGO_CLOUD_PLAN_PERIOD_LABEL')}
-          </span>
-          <span className="text-muted-foreground">
-            {PLAN_PERIOD_PLACEHOLDER}
-          </span>
-        </div>
+        <PlanPeriodRow
+          label={t('PICGO_CLOUD_PLAN_PERIOD_LABEL')}
+          billing={billingData ?? null}
+          usage={data ?? null}
+          isLoading={isBillingLoading}
+        />
 
         <Separator />
 
@@ -123,6 +136,44 @@ export function CloudPlanUsageCard () {
         />
       </div>
     </CloudCardShell>
+  )
+}
+
+function PlanPeriodRow ({
+  label,
+  billing,
+  usage,
+  isLoading
+}: {
+  label: string
+  billing: IPicGoCloudBillingOverview | null
+  usage: IPicGoCloudUsage | null
+  isLoading: boolean
+}) {
+  const planTypeLabel = formatPlanPeriodType(billing?.plan?.billingPeriod)
+  const dateRange = planTypeLabel
+    ? formatDateRange(usage?.monthlyServes?.periodStart, usage?.monthlyServes?.periodEnd)
+    : null
+
+  return (
+    <div className="flex items-start justify-between gap-4 text-sm">
+      <span className="font-medium text-foreground">{label}</span>
+      <div className="flex flex-col items-end gap-0.5 text-right">
+        {isLoading
+          ? <Skeleton className="h-4 w-24" />
+          : planTypeLabel
+            ? (
+              <>
+                <span className="text-muted-foreground">{planTypeLabel}</span>
+                {dateRange
+                  ? <span className="text-muted-foreground/70 text-xs">{dateRange}</span>
+                  : null}
+              </>
+            )
+            : <span className="text-muted-foreground">{PLAN_PERIOD_PLACEHOLDER}</span>
+        }
+      </div>
+    </div>
   )
 }
 
@@ -181,13 +232,13 @@ function UsageBody ({
     <div className="space-y-4">
       <UsageProgressRow
         label={storageLabel}
-        value={formatStorageDimension(data.storage, unlimitedLabel, renderProgressTemplate)}
-        percent={computePercent(data.storage)}
+        value={formatStorageDimension(data?.storage, unlimitedLabel, renderProgressTemplate)}
+        percent={computePercent(data?.storage)}
       />
       <UsageProgressRow
         label={filesLabel}
-        value={formatCountDimension(data.mediaCount, unlimitedLabel, renderProgressTemplate)}
-        percent={computePercent(data.mediaCount)}
+        value={formatCountDimension(data?.mediaCount, unlimitedLabel, renderProgressTemplate)}
+        percent={computePercent(data?.mediaCount)}
       />
     </div>
   )

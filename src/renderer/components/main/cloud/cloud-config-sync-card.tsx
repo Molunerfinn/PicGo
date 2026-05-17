@@ -219,7 +219,7 @@ export function CloudConfigSyncCard ({
           <ConfigDetailRow
             label={t('PICGO_CLOUD_SYNC_QUOTA_LABEL')}
             labelHelp={
-              usageData
+              usageData?.configHistory?.limit !== undefined
                 ? t('PICGO_CLOUD_SYNC_QUOTA_TIP', {
                   limit: usageData.configHistory.limit
                 })
@@ -230,8 +230,8 @@ export function CloudConfigSyncCard ({
                 isLoading={isUsageLoading}
                 isError={isUsageError}
                 isFetching={isUsageFetching}
-                used={usageData?.configHistory.used}
-                limit={usageData?.configHistory.limit}
+                used={usageData?.configHistory?.used}
+                limit={usageData?.configHistory?.limit}
                 onRetry={() => { refetchUsage().catch(() => {}) }}
               />
             }

@@ -689,6 +689,14 @@ cloudRouter
       return fail(e)
     }
   })
+  .add(IRPCActionType.PICGO_CLOUD_GET_BILLING_OVERVIEW, async () => {
+    try {
+      const overview = await picgo.cloud.getBillingOverview()
+      return ok(overview)
+    } catch (e) {
+      return fail(e)
+    }
+  })
 
 export {
   cloudRouter

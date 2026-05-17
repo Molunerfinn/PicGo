@@ -119,7 +119,6 @@ PICGO_CLOUD_FREE_PLAN_BANNER: You're on a free plan. Upgrade to unlock more quot
 PICGO_CLOUD_VIEW_PLANS: View Plans
 PICGO_CLOUD_CONFIG_SYNC_TITLE: Configuration Sync
 PICGO_CLOUD_CONFIG_SYNC_CARD_DESC: Sync your settings across devices securely.
-PICGO_CLOUD_CONFIG_SYNC_STATUS_UP_TO_DATE: Up to date
 PICGO_CLOUD_SYNC_NOW: Sync Now
 PICGO_CLOUD_SYNC_QUOTA_LABEL: Sync quota
 PICGO_CLOUD_SYNC_QUOTA_TIP: "Your plan retains the most recent ${limit} configuration snapshots. Even at ${limit} of ${limit}, syncing remains available — older snapshots beyond the limit are pruned automatically after each sync."
