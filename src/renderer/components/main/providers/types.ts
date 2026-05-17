@@ -32,6 +32,12 @@ export interface ProviderPluginConfig {
   confirmText?: string
   cancelText?: string
   choices?: ProviderPluginChoice[]
+  /**
+   * Names of other fields whose value changes should re-evaluate this
+   * field's `choices` / `default`. Populated by PicGo-Core plugins;
+   * consumed by the GUI refresh hook.
+   */
+  dependsOn?: string[]
 }
 
 export interface ProviderUploaderConfigItem {

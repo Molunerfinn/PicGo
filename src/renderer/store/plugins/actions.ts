@@ -350,7 +350,7 @@ export const pluginStoreActions = {
       })
     }
   },
-  async fetchPluginReadme (fullName: string) {
+  async fetchPluginReadme (fullName: string, options?: { installed?: boolean }) {
     const currentState = usePluginStore.getState().readmeByPlugin[fullName]
 
     if (currentState?.status === pluginReadmeStatus.Loading) {
@@ -364,7 +364,7 @@ export const pluginStoreActions = {
     })
 
     try {
-      const content = await pluginsAdapter.fetchPluginReadme(fullName)
+      const content = await pluginsAdapter.fetchPluginReadme(fullName, options)
 
       pluginStoreActions.setReadmeState(fullName, {
         status: content.trim() ? pluginReadmeStatus.Ready : pluginReadmeStatus.Empty,

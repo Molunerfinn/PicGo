@@ -1,16 +1,13 @@
-import { useEffect, useState } from "react"
+import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { AppMainCard } from "@/components/common/app-main-card"
-import {
-  type SchemaFieldErrorMap,
-  type SchemaFormValues,
-} from "@/components/common/schema-form-fields"
+import { filterValuesBySchema } from "@/components/common/merge-plugin-schema"
 import { pluginStoreActions } from "@/store"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { buildFormValues, validateRequiredFields } from "@/components/main/providers/utils"
+import { validateRequiredFields } from "@/components/main/providers/utils"
 import type { AppConfig, ProviderPluginConfig } from "@/components/main/providers/types"
 import { PluginDetailConfigTabContent } from "./plugin-detail-config-tab-content"
 import { PluginDetailHeader } from "./plugin-detail-header"
@@ -25,6 +22,7 @@ import {
   type PluginReadmeState,
 } from "./types"
 import { resolveConfigValues } from "./utils"
+import { usePluginConfigSection } from "./use-plugin-config-section"
 
 interface PluginDetailPanelProps {
   appConfig: AppConfig | null
@@ -38,24 +36,12 @@ interface PluginDetailPanelProps {
 }
 
 function resolveFieldLabel(schema: ProviderPluginConfig[], fieldName: string) {
-  const targetField = schema.find((field) => field.name === fieldName)
-  return targetField?.alias || targetField?.name || fieldName
+  const field = schema.find((f) => f.name === fieldName)
+  return field?.alias || field?.name || fieldName
 }
 
-function mergeSchemaValues(
-  schema: ProviderPluginConfig[],
-  appValues: Record<string, unknown>
-) {
-  const nextValues = buildFormValues(schema)
-
-  schema.forEach((field) => {
-    if (appValues[field.name] !== undefined) {
-      nextValues[field.name] = appValues[field.name]
-    }
-  })
-
-  return nextValues
-}
+const EMPTY_SCHEMA: ProviderPluginConfig[] = []
+const EMPTY_VALUES: Record<string, unknown> = {}
 
 export function PluginDetailPanel({
   appConfig,
@@ -68,105 +54,105 @@ export function PluginDetailPanel({
   onTabChange,
 }: PluginDetailPanelProps) {
   const { t } = useTranslation()
-  const [configValues, setConfigValues] = useState<SchemaFormValues>({})
-  const [transformerValues, setTransformerValues] = useState<SchemaFormValues>({})
-  const [configErrors, setConfigErrors] = useState<SchemaFieldErrorMap>({})
-  const [transformerErrors, setTransformerErrors] = useState<SchemaFieldErrorMap>({})
   const [isSaving, setIsSaving] = useState(false)
 
-  // Rebuild form values whenever app config or selected plugin changes.
-  useEffect(() => {
-    if (!plugin) {
-      setConfigValues({})
-      setTransformerValues({})
-      setConfigErrors({})
-      setTransformerErrors({})
-      return
-    }
+  const pluginFullName = plugin?.fullName ?? null
+  const initialConfigSchema = plugin?.config.plugin.config ?? EMPTY_SCHEMA
+  const initialTransformerSchema = plugin?.config.transformer.config ?? EMPTY_SCHEMA
 
-    const pluginValues = resolveConfigValues(appConfig, plugin, pluginDetailTab.Config)
-    const transformerValuesFromState = resolveConfigValues(
-      appConfig,
-      plugin,
-      pluginDetailTab.Transformer
-    )
-
-    setConfigValues(mergeSchemaValues(plugin.config.plugin.config, pluginValues))
-    setTransformerValues(
-      mergeSchemaValues(plugin.config.transformer.config, transformerValuesFromState)
-    )
-    setConfigErrors({})
-    setTransformerErrors({})
+  // Stable reference for stored values — the hook keys hydration on identity,
+  // so we want the same `{}` reference render-to-render when nothing is set.
+  const storedConfigValues = useMemo(() => {
+    if (!plugin) return EMPTY_VALUES
+    return resolveConfigValues(appConfig, plugin, pluginDetailTab.Config) as Record<
+      string,
+      unknown
+    >
   }, [appConfig, plugin])
+
+  const storedTransformerValues = useMemo(() => {
+    if (!plugin) return EMPTY_VALUES
+    return resolveConfigValues(appConfig, plugin, pluginDetailTab.Transformer) as Record<
+      string,
+      unknown
+    >
+  }, [appConfig, plugin])
+
+  const configSection = usePluginConfigSection({
+    enabled: Boolean(plugin && activeTab === pluginDetailTab.Config),
+    pluginFullName,
+    target: { target: "plugin", pluginFullName: pluginFullName ?? "" },
+    initialSchema: initialConfigSchema,
+    storedValues: storedConfigValues,
+  })
+
+  const transformerSection = usePluginConfigSection({
+    enabled: Boolean(plugin && activeTab === pluginDetailTab.Transformer),
+    pluginFullName,
+    target: { target: "transformer", pluginFullName: pluginFullName ?? "" },
+    initialSchema: initialTransformerSchema,
+    storedValues: storedTransformerValues,
+  })
 
   const handleTabChange = (value: string) => {
     const nextTab = value as PluginDetailTab
-
-    if (!availableTabs.includes(nextTab)) {
-      return
-    }
-
+    if (!availableTabs.includes(nextTab)) return
     onTabChange(nextTab)
   }
 
   const handleSaveConfigTab = async () => {
-    if (!plugin) {
-      return
-    }
+    if (!plugin) return
 
-    const missingRequiredFields = validateRequiredFields(
-      plugin.config.plugin.config,
-      configValues
-    )
-
-    if (missingRequiredFields.length > 0) {
-      const nextErrors: SchemaFieldErrorMap = {}
-      missingRequiredFields.forEach((fieldName) => {
-        nextErrors[fieldName] = t("FIELD_IS_REQUIRED", {
-          field: resolveFieldLabel(plugin.config.plugin.config, fieldName),
+    const missing = validateRequiredFields(configSection.schema, configSection.values)
+    if (missing.length > 0) {
+      const errors: Record<string, string> = {}
+      missing.forEach((name) => {
+        errors[name] = t("FIELD_IS_REQUIRED", {
+          field: resolveFieldLabel(configSection.schema, name),
         })
       })
-      setConfigErrors(nextErrors)
+      configSection.setFieldErrors(errors)
       return
     }
 
-    setConfigErrors({})
+    configSection.setFieldErrors({})
     setIsSaving(true)
     try {
-      await pluginStoreActions.savePluginConfig(plugin.fullName, "config", configValues)
+      await pluginStoreActions.savePluginConfig(
+        plugin.fullName,
+        "config",
+        filterValuesBySchema(configSection.schema, configSection.values)
+      )
     } finally {
       setIsSaving(false)
     }
   }
 
   const handleSaveTransformerTab = async () => {
-    if (!plugin) {
-      return
-    }
+    if (!plugin) return
 
-    const missingRequiredFields = validateRequiredFields(
-      plugin.config.transformer.config,
-      transformerValues
+    const missing = validateRequiredFields(
+      transformerSection.schema,
+      transformerSection.values
     )
-
-    if (missingRequiredFields.length > 0) {
-      const nextErrors: SchemaFieldErrorMap = {}
-      missingRequiredFields.forEach((fieldName) => {
-        nextErrors[fieldName] = t("FIELD_IS_REQUIRED", {
-          field: resolveFieldLabel(plugin.config.transformer.config, fieldName),
+    if (missing.length > 0) {
+      const errors: Record<string, string> = {}
+      missing.forEach((name) => {
+        errors[name] = t("FIELD_IS_REQUIRED", {
+          field: resolveFieldLabel(transformerSection.schema, name),
         })
       })
-      setTransformerErrors(nextErrors)
+      transformerSection.setFieldErrors(errors)
       return
     }
 
-    setTransformerErrors({})
+    transformerSection.setFieldErrors({})
     setIsSaving(true)
     try {
       await pluginStoreActions.savePluginConfig(
         plugin.fullName,
         "transformer",
-        transformerValues
+        filterValuesBySchema(transformerSection.schema, transformerSection.values)
       )
     } finally {
       setIsSaving(false)
@@ -189,7 +175,6 @@ export function PluginDetailPanel({
               plugin={plugin}
               isMutating={isMutating}
             />
-
             <ScrollArea className="min-h-0 flex-1">
               <div className="mx-auto w-full max-w-(--app-plugin-content-max-width) px-6 py-6">
                 <div className="space-y-6">
@@ -202,7 +187,6 @@ export function PluginDetailPanel({
                     </div>
                     <Skeleton className="h-8 w-8 rounded-md" />
                   </div>
-
                   <div className="space-y-3">
                     <Skeleton className="h-6 w-16" />
                     <Skeleton className="h-10 w-full" />
@@ -227,7 +211,6 @@ export function PluginDetailPanel({
             plugin={plugin}
             isMutating={isMutating}
           />
-
           <ScrollArea className="min-h-0 flex-1">
             <div className="mx-auto flex w-full max-w-(--app-plugin-content-max-width) px-6 py-6">
               <div className="w-full rounded-lg border border-dashed border-border px-6 py-12 text-center">
@@ -285,38 +268,26 @@ export function PluginDetailPanel({
               <TabsContent value={pluginDetailTab.Config} className="mt-0">
                 <PluginDetailConfigTabContent
                   plugin={plugin}
-                  values={configValues}
-                  fieldErrors={configErrors}
+                  schema={configSection.schema}
+                  values={configSection.values}
+                  fieldErrors={configSection.fieldErrors}
                   isSaving={isSaving}
                   isMutating={isMutating}
-                  onValueChange={(fieldName, value) => {
-                    setConfigValues((prev) => ({
-                      ...prev,
-                      [fieldName]: value,
-                    }))
-                  }}
-                  onSave={async () => {
-                    await handleSaveConfigTab()
-                  }}
+                  onValueChange={configSection.handleValueChange}
+                  onSave={handleSaveConfigTab}
                 />
               </TabsContent>
 
               <TabsContent value={pluginDetailTab.Transformer} className="mt-0">
                 <PluginDetailTransformerTabContent
                   plugin={plugin}
-                  values={transformerValues}
-                  fieldErrors={transformerErrors}
+                  schema={transformerSection.schema}
+                  values={transformerSection.values}
+                  fieldErrors={transformerSection.fieldErrors}
                   isSaving={isSaving}
                   isMutating={isMutating}
-                  onValueChange={(fieldName, value) => {
-                    setTransformerValues((prev) => ({
-                      ...prev,
-                      [fieldName]: value,
-                    }))
-                  }}
-                  onSave={async () => {
-                    await handleSaveTransformerTab()
-                  }}
+                  onValueChange={transformerSection.handleValueChange}
+                  onSave={handleSaveTransformerTab}
                 />
               </TabsContent>
             </div>

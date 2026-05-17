@@ -1,37 +1,30 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react"
-import { useNavigate, useSearch } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import { LoaderCircleIcon, PlusIcon, SaveIcon, Trash2Icon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { AppMainCard } from "@/components/common/app-main-card"
 import { MainCardHeader } from "@/components/common/main-card-header"
+import { filterValuesBySchema } from "@/components/common/merge-plugin-schema"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
-import { providerStoreActions, useAppStore, useProviderStore } from "@/store"
+import { providerStoreActions } from "@/store"
 import {
   ProviderActiveUploaderBadge,
   ProviderDefaultConfigBadge,
 } from "./provider-status-badges"
-import { ProviderFormFields, type ProviderFieldErrorMap } from "./provider-form-fields"
-import type {
-  ProviderDraftConfigItem,
-  ProviderPluginConfig,
-  ProviderUploaderConfigItem,
-} from "./types"
+import { ProviderFormFields } from "./provider-form-fields"
+import type { ProviderDraftConfigItem } from "./types"
 import {
-  buildFormValues,
-  emptyProviderConfigMap,
-  emptyProviderSchema,
   formatConfigUpdatedAt,
-  isRequiredFieldValueMissing,
   resolveErrorMessage,
-  resolveProviderSelectionState,
   validateRequiredFields,
-  type ProviderFormValues,
 } from "./utils"
+import { useProviderSelection } from "./use-provider-selection"
+import { useProviderConfigForm } from "./use-provider-config-form"
 
 interface ProviderConfigPanelProps {
   draftConfigMap: Record<string, ProviderDraftConfigItem | undefined>
@@ -50,91 +43,65 @@ export function ProviderConfigPanel({
 }: ProviderConfigPanelProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const search = useSearch({ from: "/main/providers" })
 
-  const appConfig = useAppStore.use.appConfig()
-  const providers = useAppStore.use.providers()
-  const providerSchemas = useAppStore.use.providerSchemas()
-  const loadingMap = useProviderStore.use.isLoadingByProvider()
+  const {
+    uploader,
+    selectedUploaderId,
+    selectedConfigId,
+    storedSchema,
+    selectedPersistedConfig,
+    selectedConfig,
+    isDraftSelected,
+    isDefaultConfig,
+    isLoading,
+    canDelete,
+  } = useProviderSelection({ draftConfigMap })
 
-  const [formValues, setFormValues] = useState<ProviderFormValues>({})
-  const [fieldErrors, setFieldErrors] = useState<ProviderFieldErrorMap>({})
+  const {
+    schema,
+    values: formValues,
+    fieldErrors,
+    setFieldErrors,
+    handleValueChange,
+  } = useProviderConfigForm({
+    selectedUploaderId,
+    selectedConfigId,
+    isDraftSelected,
+    selectedConfig,
+    storedSchema,
+    onDraftFieldChange: (uploaderId, name, value) => {
+      setDraftConfigMap((prev) => {
+        const draftConfig = prev[uploaderId]
+        if (!draftConfig || draftConfig._id !== selectedConfigId) return prev
+        return {
+          ...prev,
+          [uploaderId]: {
+            ...draftConfig,
+            _updatedAt: Date.now(),
+            [name]: value,
+          },
+        }
+      })
+    },
+  })
+
   const [isSaving, setIsSaving] = useState(false)
 
-  const queriedUploaderId = search.uploader ?? null
-  const queriedConfigId = search.configId ?? null
-  const configMap = appConfig?.uploader ?? emptyProviderConfigMap
-  const visibleProviders = providers.filter((provider) => provider.visible !== false)
-  const { selectedUploaderId, selectedConfigId } = resolveProviderSelectionState({
-    queriedUploaderId,
-    queriedConfigId,
-    appConfigUploaderId: appConfig?.picBed.uploader,
-    visibleProviders,
-    configMap,
-    draftConfigMap,
-  })
-  const uploader =
-    visibleProviders.find((provider) => provider.id === selectedUploaderId) ?? null
-  const activeConfigState = selectedUploaderId ? configMap[selectedUploaderId] : undefined
-  const schema: ProviderPluginConfig[] = selectedUploaderId
-    ? providerSchemas[selectedUploaderId]?.config ?? emptyProviderSchema
-    : emptyProviderSchema
-  const activeDraftConfig = selectedUploaderId
-    ? draftConfigMap[selectedUploaderId] ?? null
-    : null
-  const selectedPersistedConfig: ProviderUploaderConfigItem | null =
-    activeConfigState?.configList.find((item) => item._id === selectedConfigId) ?? null
-  const selectedConfig =
-    selectedPersistedConfig ??
-    (activeDraftConfig && selectedConfigId === activeDraftConfig._id
-      ? activeDraftConfig
-      : null)
-  const isDraftSelected =
-    Boolean(activeDraftConfig) && selectedConfigId === activeDraftConfig?._id
-  const isLoading =
-    selectedUploaderId !== null && Boolean(loadingMap[selectedUploaderId])
-  const canDelete = isDraftSelected
-    ? true
-    : (activeConfigState?.configList.length ?? 0) > 1
-  const isDefaultConfig =
-    Boolean(selectedPersistedConfig) &&
-    activeConfigState?.defaultId === selectedPersistedConfig?._id
-
   useEffect(() => {
+    if (!selectedUploaderId) return
     let isDisposed = false
 
-    async function ensureSchemaReady() {
-      if (!selectedUploaderId || providerSchemas[selectedUploaderId]) {
-        return
-      }
-
-      try {
-        await providerStoreActions.ensureSchema(selectedUploaderId)
-      } catch (error) {
-        if (!isDisposed) {
-          toast.error(resolveErrorMessage(error, t("FAILED")))
-        }
-      }
-    }
-
-    ensureSchemaReady()
+    providerStoreActions
+      .ensureSchema(selectedUploaderId)
+      .catch((error) => {
+        if (isDisposed) return
+        toast.error(resolveErrorMessage(error, t("FAILED")))
+      })
 
     return () => {
       isDisposed = true
     }
-  }, [providerSchemas, selectedUploaderId, t])
-
-  // Rebuild editable form values whenever URL-selected uploader/config changes.
-  useEffect(() => {
-    if (!selectedUploaderId) {
-      setFormValues({})
-      setFieldErrors({})
-      return
-    }
-
-    setFormValues(buildFormValues(schema, selectedConfig))
-    setFieldErrors({})
-  }, [schema, selectedConfig, selectedUploaderId])
+  }, [selectedUploaderId, t])
 
   const navigateToSelection = (
     uploaderId: string | undefined,
@@ -151,16 +118,13 @@ export function ProviderConfigPanel({
   }
 
   const handleSetDefaultConfig = async () => {
-    if (!selectedUploaderId || !selectedPersistedConfig) {
-      return
-    }
+    if (!selectedUploaderId || !selectedPersistedConfig) return
 
     try {
       const selectedId = await providerStoreActions.setDefaultConfig(
         selectedUploaderId,
         selectedPersistedConfig._id
       )
-
       navigateToSelection(selectedUploaderId, selectedId ?? undefined)
       toast.success(t("SUCCESS"))
     } catch (error) {
@@ -168,136 +132,62 @@ export function ProviderConfigPanel({
     }
   }
 
-  const resolveFieldLabel = (fieldName: string) => {
-    const targetField = schema.find((field) => field.name === fieldName)
-    return targetField?.alias || targetField?.name || fieldName
-  }
-
   const handleSave = async () => {
-    if (!selectedUploaderId || !selectedConfig) {
-      return
-    }
+    if (!selectedUploaderId || !selectedConfig) return
 
     const missingRequiredFields = validateRequiredFields(schema, formValues)
 
     if (missingRequiredFields.length > 0) {
-      const nextFieldErrors: ProviderFieldErrorMap = {}
-
+      const nextFieldErrors: Record<string, string> = {}
       missingRequiredFields.forEach((fieldName) => {
+        const field = schema.find((f) => f.name === fieldName)
         nextFieldErrors[fieldName] = t("FIELD_IS_REQUIRED", {
-          field: resolveFieldLabel(fieldName),
+          field: field?.alias || field?.name || fieldName,
         })
       })
-
       setFieldErrors(nextFieldErrors)
       toast.error(t("FAILED"))
       return
     }
 
     setFieldErrors({})
+    setIsSaving(true)
 
     try {
-      setIsSaving(true)
+      const filteredValues = filterValuesBySchema(schema, formValues)
 
       if (isDraftSelected) {
         const createdConfigId = await providerStoreActions.createConfig(
           selectedUploaderId,
           selectedConfig._configName
         )
-
         if (createdConfigId) {
           await providerStoreActions.saveConfig(
             selectedUploaderId,
             createdConfigId,
-            formValues
+            filteredValues
           )
         }
-
         setDraftConfigMap((prev) => ({
           ...prev,
           [selectedUploaderId]: undefined,
         }))
-
         navigateToSelection(selectedUploaderId, createdConfigId ?? undefined)
-        toast.success(t("SUCCESS"))
-        return
+      } else {
+        const selectedId = await providerStoreActions.saveConfig(
+          selectedUploaderId,
+          selectedConfig._id,
+          filteredValues
+        )
+        navigateToSelection(selectedUploaderId, selectedId ?? undefined)
       }
 
-      const selectedId = await providerStoreActions.saveConfig(
-        selectedUploaderId,
-        selectedConfig._id,
-        formValues
-      )
-
-      navigateToSelection(selectedUploaderId, selectedId ?? undefined)
       toast.success(t("SUCCESS"))
     } catch (error) {
       toast.error(resolveErrorMessage(error, t("FAILED")))
     } finally {
       setIsSaving(false)
     }
-  }
-
-  const handleValueChange = (name: string, value: unknown) => {
-    setFormValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-
-    setFieldErrors((prev) => {
-      const currentError = prev[name]
-
-      if (!currentError) {
-        return prev
-      }
-
-      const targetField = schema.find((field) => field.name === name)
-
-      if (targetField?.required && isRequiredFieldValueMissing(value)) {
-        return prev
-      }
-
-      const next = { ...prev }
-      delete next[name]
-      return next
-    })
-
-    if (!selectedUploaderId || !isDraftSelected) {
-      return
-    }
-
-    setDraftConfigMap((prev) => {
-      const draftConfig = prev[selectedUploaderId]
-
-      if (!draftConfig || draftConfig._id !== selectedConfigId) {
-        return prev
-      }
-
-      return {
-        ...prev,
-        [selectedUploaderId]: {
-          ...draftConfig,
-          _updatedAt: Date.now(),
-          [name]: value,
-        },
-      }
-    })
-  }
-
-  const handleCreateConfig = () => {
-    if (!selectedUploaderId) {
-      return
-    }
-
-    onCreateConfigIntent(selectedUploaderId)
-  }
-
-  const handleDeleteIntent = () => {
-    if (!selectedUploaderId || !selectedConfig) {
-      return
-    }
-
-    onDeleteConfigIntent(selectedUploaderId, selectedConfig._id)
   }
 
   return (
@@ -310,25 +200,25 @@ export function ProviderConfigPanel({
               <span className="font-medium">
                 {uploader?.name ?? t("ALBUM_PROVIDERS")}
               </span>
-              {uploader?.isDefaultUploader ? (
+              {uploader?.isDefaultUploader && (
                 <ProviderActiveUploaderBadge uploaderName={uploader.name} />
-              ) : null}
-              {selectedConfig ? (
+              )}
+              {selectedConfig && (
                 <>
                   <span className="text-muted-foreground">/</span>
                   <span className="text-muted-foreground truncate">
                     {selectedConfig._configName}
                   </span>
-                  {isDefaultConfig ? (
+                  {isDefaultConfig && (
                     <ProviderDefaultConfigBadge uploaderName={uploader?.name} />
-                  ) : null}
-                  {isDraftSelected ? (
+                  )}
+                  {isDraftSelected && (
                     <Badge variant="outline" className="border-dashed">
                       {t("PROVIDER_DRAFT_CONFIG")}
                     </Badge>
-                  ) : null}
+                  )}
                 </>
-              ) : null}
+              )}
             </>
           }
           trailingClassName="gap-2"
@@ -388,7 +278,11 @@ export function ProviderConfigPanel({
                     uploaderName: uploader.name,
                   })}
                 </p>
-                <Button type="button" className="mt-6" onClick={handleCreateConfig}>
+                <Button
+                  type="button"
+                  className="mt-6"
+                  onClick={() => onCreateConfigIntent(selectedUploaderId!)}
+                >
                   <PlusIcon className="size-4" />
                   <span>{t("PROVIDER_CREATE_CONFIG")}</span>
                 </Button>
@@ -400,9 +294,8 @@ export function ProviderConfigPanel({
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold">{t("PROVIDER_CONFIGURATION")}</h2>
                   <span className="text-muted-foreground text-xs">
-                    {t("PROVIDER_UPDATED_AT_LABEL")}: {
-                      formatConfigUpdatedAt(selectedConfig._updatedAt)
-                    }
+                    {t("PROVIDER_UPDATED_AT_LABEL")}:{" "}
+                    {formatConfigUpdatedAt(selectedConfig._updatedAt)}
                   </span>
                 </div>
 
@@ -424,7 +317,9 @@ export function ProviderConfigPanel({
                     <Button
                       type="button"
                       variant="destructive"
-                      onClick={handleDeleteIntent}
+                      onClick={() =>
+                        onDeleteConfigIntent(selectedUploaderId!, selectedConfig._id)
+                      }
                       disabled={!canDelete}
                     >
                       <Trash2Icon className="size-4" />
@@ -440,3 +335,4 @@ export function ProviderConfigPanel({
     </AppMainCard>
   )
 }
+

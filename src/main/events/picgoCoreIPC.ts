@@ -10,7 +10,7 @@ import fs from 'fs-extra'
 import { IPasteStyle, IPicGoHelperType, IRPCActionType, IWindowList } from '#/types/enum'
 import picgo from '@core/picgo'
 import { handleStreamlinePluginName, simpleClone } from '~/universal/utils/common'
-import { IBuildInEvent, IGuiMenuItem, PicGo as PicGoCore } from 'picgo'
+import { IBuildInEvent, IGuiMenuItem, PicGo as PicGoCore, evaluatePluginConfig } from 'picgo'
 import windowManager from 'apis/app/window/windowManager'
 import { showNotification } from '~/main/utils/common'
 import { dbPathChecker } from 'apis/core/datastore/dbChecker'
@@ -59,15 +59,12 @@ const getConfig = (name: string, type: IPicGoHelperType, ctx: PicGoCore) => {
 }
 
 const handleConfigWithFunction = (config: any[]) => {
-  for (const i in config) {
-    if (typeof config[i].default === 'function') {
-      config[i].default = config[i].default()
+  return evaluatePluginConfig(config, {}, {
+    onError: (fieldName, kind, error) => {
+      const message = error instanceof Error ? error.message : String(error)
+      picgo.log.warn(`[plugin-config] ${fieldName}.${kind} threw: ${message}`)
     }
-    if (typeof config[i].choices === 'function') {
-      config[i].choices = config[i].choices()
-    }
-  }
-  return config
+  })
 }
 
 const getPluginList = (): IPicGoPlugin[] => {

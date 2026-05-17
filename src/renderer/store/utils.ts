@@ -298,6 +298,37 @@ export function normalizeSettingsConfig (
   }
 }
 
+function extractPluginConfigs (
+  config: IConfig
+): Record<string, Record<string, unknown>> {
+  // picgo-core (and the CLI) save per-plugin configs at the root of the
+  // config object — `config[fullName] = values` — not under a nested
+  // `plugins.<fullName>` path. The renderer's `appConfig.plugins[fullName]`
+  // shape is a convenience for consumers; this assembles it from the
+  // authoritative `picgoPlugins` install map.
+  const installed = config.picgoPlugins ?? {}
+  const result: Record<string, Record<string, unknown>> = {}
+
+  for (const fullName of Object.keys(installed)) {
+    const candidate = (config as Record<string, unknown>)[fullName]
+    if (candidate && typeof candidate === 'object' && !Array.isArray(candidate)) {
+      result[fullName] = candidate as Record<string, unknown>
+    }
+  }
+
+  // Preserve any pre-existing nested plugins map for forward compat with
+  // a GUI session that previously wrote there. Root entries take precedence.
+  if (config.plugins) {
+    for (const fullName of Object.keys(config.plugins)) {
+      if (!result[fullName]) {
+        result[fullName] = config.plugins[fullName] as Record<string, unknown>
+      }
+    }
+  }
+
+  return result
+}
+
 export function normalizeAppConfig (
   config: IConfig | null | undefined,
   picBeds: IPicBedType[]
@@ -317,7 +348,7 @@ export function normalizeAppConfig (
     uploader: config.uploader ?? {},
     settings: normalizeSettingsConfig(config),
     picgoPlugins: config.picgoPlugins ?? {},
-    plugins: config.plugins ?? {},
+    plugins: extractPluginConfigs(config),
     transformer: config.transformer ?? {},
     needReload: Boolean(config.needReload)
   }

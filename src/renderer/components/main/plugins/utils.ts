@@ -1,4 +1,5 @@
 import type { AppConfig } from "@/components/main/providers/types"
+import { normalizePluginConfigSchema } from "@/components/common/normalize-plugin-schema"
 import {
   pluginDetailTab,
   pluginGearActionKind,
@@ -61,7 +62,7 @@ export function mapInstalledPluginItem(item: IPicGoPlugin): PluginInstalledItem 
           typeof pluginSection.fullName === "string"
             ? pluginSection.fullName
             : undefined,
-        config: Array.isArray(pluginSection.config) ? pluginSection.config : [],
+        config: normalizePluginConfigSchema(pluginSection.config),
       },
       transformer: {
         name:
@@ -72,9 +73,7 @@ export function mapInstalledPluginItem(item: IPicGoPlugin): PluginInstalledItem 
           typeof transformerSection.fullName === "string"
             ? transformerSection.fullName
             : undefined,
-        config: Array.isArray(transformerSection.config)
-          ? transformerSection.config
-          : [],
+        config: normalizePluginConfigSchema(transformerSection.config),
       },
     },
     uploader:
@@ -82,9 +81,7 @@ export function mapInstalledPluginItem(item: IPicGoPlugin): PluginInstalledItem 
         ? {
           id: uploaderSection.name,
           name: uploaderSection.name,
-          schema: Array.isArray(uploaderSection.config)
-            ? uploaderSection.config
-            : [],
+          schema: normalizePluginConfigSchema(uploaderSection.config),
           configState: {
             defaultId: "",
             configList: [],

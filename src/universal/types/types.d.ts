@@ -207,6 +207,8 @@ interface IPicGoPluginConfig {
   }[]
   /** support markdown */
   tips?: string
+  /** Names of fields this field's choices/default depend on. */
+  dependsOn?: string[]
   [propName: string]: any
 }
 
@@ -222,19 +224,20 @@ interface IPicGoPluginShowConfigDialogOption {
   width?: number
 }
 
+type IPicGoPluginOriginChoice = string | {
+  name?: string
+  value?: any
+  checked?: boolean
+}
+
 interface IPicGoPluginOriginConfig {
   name: string
   type: string
   required: boolean
-  default?: any
+  default?: any | ((answers: Record<string, unknown>) => any)
   alias?: string
-  choices?: {
-    name?: string
-    value?: any
-  }[] | (() => {
-    name?: string
-    value?: any
-  }[])
+  choices?: IPicGoPluginOriginChoice[] | ((answers: Record<string, unknown>) => IPicGoPluginOriginChoice[])
+  dependsOn?: string[]
   [propName: string]: any
 }
 

@@ -239,8 +239,10 @@ export function PicGoPlugins() {
       return
     }
 
-    pluginStoreActions.fetchPluginReadme(fullName)
-  }, [activeListItem?.fullName, readmeByPlugin])
+    pluginStoreActions.fetchPluginReadme(fullName, {
+      installed: Boolean(activeListItem?.hasInstall)
+    })
+  }, [activeListItem?.fullName, activeListItem?.hasInstall, readmeByPlugin])
 
   // Fetch deprecation status for the active plugin's specific version (only once per fullName@version).
   useEffect(() => {

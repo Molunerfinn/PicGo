@@ -175,7 +175,7 @@ const buildPluginPageMenu = (plugin: IPicGoPlugin) => {
     const currentTransformer = picgo.getConfig<string>('picBed.transformer') || 'path'
     const pluginTransformer = plugin.config.transformer.name
     const obj = {
-      label: `${currentTransformer === pluginTransformer ? T('DISABLE') : T('ENABLE')}transformer - ${plugin.config.transformer.name}`,
+      label: `${currentTransformer === pluginTransformer ? T('DISABLE') : T('ENABLE')} transformer - ${plugin.config.transformer.name}`,
       click () {
         const transformer = plugin.config.transformer.name
         const currentTransformer = picgo.getConfig<string>('picBed.transformer') || 'path'

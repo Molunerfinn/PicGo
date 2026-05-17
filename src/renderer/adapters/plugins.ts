@@ -3,6 +3,13 @@ import { OPEN_URL, SHOW_PLUGIN_PAGE_MENU } from '#/events/constants'
 import { IRPCActionType } from '~/universal/types/enum'
 import { getConfig, invokeRPC, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
 import { ipc } from '@/utils/bridge'
+import type { ProviderPluginConfig } from '@/components/main/providers/types'
+import { normalizePluginConfigSchema } from '@/components/common/normalize-plugin-schema'
+
+export type IRefreshConfigSchemaArgs =
+  | { target: 'plugin', pluginFullName: string, draftValues: Record<string, unknown> }
+  | { target: 'transformer', pluginFullName: string, draftValues: Record<string, unknown> }
+  | { target: 'uploader', uploaderName: string, draftValues: Record<string, unknown> }
 
 interface PluginInstallResult {
   success: boolean
@@ -70,12 +77,36 @@ export const pluginsAdapter = {
       fullName
     )
   },
+  async refreshConfigSchema (payload: IRefreshConfigSchemaArgs): Promise<ProviderPluginConfig[]> {
+    const result = await invokeRPC<unknown[]>(IRPCActionType.REFRESH_CONFIG_SCHEMA, payload)
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to refresh plugin config schema')
+    }
+    return normalizePluginConfigSchema(result.data)
+  },
   async saveTransformer (transformer: string) {
     await saveConfig({
       'picBed.transformer': transformer
     })
   },
-  async fetchPluginReadme (fullName: string) {
+  async fetchPluginReadme (fullName: string, options?: { installed?: boolean }) {
+    // For installed plugins (including locally imported ones not on npm),
+    // read README from disk via the main process — jsdelivr 404s on
+    // unpublished plugins. Non-installed plugins (e.g. search results) fall
+    // back to the CDN.
+    if (options?.installed) {
+      const result = await invokeRPC<string>(
+        IRPCActionType.GET_INSTALLED_PLUGIN_README,
+        fullName
+      )
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to read local plugin readme')
+      }
+
+      return result.data ?? ''
+    }
+
     let lastError: unknown = null
 
     for (const readmeFileName of README_FILE_CANDIDATES) {

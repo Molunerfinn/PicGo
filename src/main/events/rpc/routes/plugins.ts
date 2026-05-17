@@ -1,4 +1,7 @@
+import path from 'path'
+import fs from 'fs-extra'
 import picgo from '@core/picgo'
+import { evaluatePluginConfig } from 'picgo'
 import { RPCRouter } from '../router'
 import { fail, ok } from '../utils'
 import { IRPCActionType } from '~/universal/types/enum'
@@ -9,6 +12,8 @@ import { notifyAppConfigUpdated } from '~/main/utils/appConfigNotifier'
 import { dialog } from 'electron'
 import windowManager from '~/main/apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
+
+const README_FILE_CANDIDATES = ['README.md', 'readme.md', 'Readme.md'] as const
 
 function handleRestoreState (fullName: string) {
   const plugin = picgo.pluginLoader.getPlugin(fullName)
@@ -161,6 +166,76 @@ pluginsRouter
       return fail(e)
     }
   })
+  .add(IRPCActionType.GET_INSTALLED_PLUGIN_README, async (args) => {
+    try {
+      const [fullName] = args as [string]
+      if (typeof fullName !== 'string' || fullName.length === 0) {
+        return ok('')
+      }
+
+      const pluginDir = path.join(picgo.baseDir, 'node_modules', fullName)
+
+      for (const candidate of README_FILE_CANDIDATES) {
+        const readmePath = path.join(pluginDir, candidate)
+        if (await fs.pathExists(readmePath)) {
+          const content = await fs.readFile(readmePath, 'utf-8')
+          return ok(content)
+        }
+      }
+
+      return ok('')
+    } catch (e) {
+      return fail(e)
+    }
+  })
+  .add(IRPCActionType.REFRESH_CONFIG_SCHEMA, async (args) => {
+    try {
+      const [payload] = args as [IRefreshConfigSchemaArgs]
+      const draftValues = payload.draftValues ?? {}
+      let rawSchema: unknown[] | null = null
+
+      if (payload.target === 'plugin') {
+        const plugin = picgo.pluginLoader.getPlugin(payload.pluginFullName)
+        if (plugin?.config) {
+          rawSchema = plugin.config(picgo)
+        }
+      } else if (payload.target === 'transformer') {
+        const transformerName = picgo.pluginLoader.getPlugin(payload.pluginFullName)?.transformer
+        if (transformerName) {
+          const handler = picgo.helper.transformer.get(transformerName)
+          if (handler?.config) {
+            rawSchema = handler.config(picgo)
+          }
+        }
+      } else if (payload.target === 'uploader') {
+        const handler = picgo.helper.uploader.get(payload.uploaderName)
+        if (handler?.config) {
+          rawSchema = handler.config(picgo)
+        }
+      }
+
+      if (!rawSchema) {
+        picgo.log.warn(`[plugin-config] refresh target not found: ${JSON.stringify(payload)}`)
+        return ok([])
+      }
+
+      const resolved = evaluatePluginConfig(rawSchema as Parameters<typeof evaluatePluginConfig>[0], draftValues, {
+        onError: (fieldName, kind, error) => {
+          const message = error instanceof Error ? error.message : String(error)
+          picgo.log.warn(`[plugin-config] ${fieldName}.${kind} threw during refresh: ${message}`)
+        }
+      })
+
+      return ok(resolved)
+    } catch (e) {
+      return fail(e)
+    }
+  })
+
+type IRefreshConfigSchemaArgs =
+  | { target: 'plugin', pluginFullName: string, draftValues?: Record<string, unknown> }
+  | { target: 'transformer', pluginFullName: string, draftValues?: Record<string, unknown> }
+  | { target: 'uploader', uploaderName: string, draftValues?: Record<string, unknown> }
 
 export {
   pluginsRouter

@@ -7,10 +7,12 @@ import {
   type SchemaFormValues,
 } from "@/components/common/schema-form-fields"
 import { Button } from "@/components/ui/button"
+import type { ProviderPluginConfig } from "@/components/main/providers/types"
 import type { PluginInstalledItem } from "./types"
 
 interface PluginDetailConfigTabContentProps {
   plugin: PluginInstalledItem | null
+  schema: ProviderPluginConfig[]
   values: SchemaFormValues
   fieldErrors: SchemaFieldErrorMap
   isSaving: boolean
@@ -21,6 +23,7 @@ interface PluginDetailConfigTabContentProps {
 
 export function PluginDetailConfigTabContent({
   plugin,
+  schema,
   values,
   fieldErrors,
   isSaving,
@@ -34,7 +37,7 @@ export function PluginDetailConfigTabContent({
     return null
   }
 
-  if (plugin.config.plugin.config.length === 0) {
+  if (schema.length === 0) {
     return (
       <div className="text-muted-foreground rounded-lg border border-dashed border-border px-6 py-12 text-center text-sm">
         {t("PLUGIN_NO_CONFIG_SCHEMA")}
@@ -45,7 +48,7 @@ export function PluginDetailConfigTabContent({
   return (
     <div>
       <SchemaFormFields
-        schema={plugin.config.plugin.config}
+        schema={schema}
         values={values}
         fieldErrors={fieldErrors}
         onValueChange={onValueChange}

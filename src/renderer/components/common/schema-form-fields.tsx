@@ -172,6 +172,23 @@ export function SchemaFormFields({
         const fieldError = fieldErrors[field.name]
         const isInvalid = Boolean(fieldError)
 
+        // For list fields: pre-compute the string-form value and whether it
+        // matches any choice, so the Select renders the placeholder when the
+        // current value is stale (e.g. after a cascade refresh removed the
+        // option). The `choicesKey` is appended to the Select's React key so
+        // the component remounts when the available choices change, dropping
+        // any internal "active item" state that points at a now-removed
+        // SelectItem (which is what blocks the dropdown from opening).
+        const listStringValue =
+          value === null || value === undefined ? "" : String(value)
+        const listValueMatchesChoice = choices.some(
+          (choice) => String(choice.value) === listStringValue
+        )
+        const listSelectValue = listValueMatchesChoice ? listStringValue : ""
+        const choicesKey = choices
+          .map((choice) => String(choice.value))
+          .join("|")
+
         return (
           <Field key={field.name} data-invalid={isInvalid}>
             <FieldLabel className="flex items-center gap-2">
@@ -244,8 +261,13 @@ export function SchemaFormFields({
 
             {field.type === "list" && (
               <Select
-                value={String(value ?? "")}
+                key={`${field.name}::${choicesKey}`}
+                value={listSelectValue}
                 onValueChange={(nextValue) => {
+                  if (nextValue === null || nextValue === undefined || nextValue === "") {
+                    onValueChange(field.name, undefined)
+                    return
+                  }
                   const resolvedValue = String(nextValue)
                   onValueChange(
                     field.name,

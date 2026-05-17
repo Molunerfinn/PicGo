@@ -4,29 +4,14 @@ import {
   type ProviderSchemaResult
 } from '@/adapters/providers'
 import type {
-  ProviderPluginConfig,
   ProviderUploaderConfigItem,
   ProviderUploaderSchema
 } from '@/components/main/providers/types'
+import { normalizePluginConfigSchema } from '@/components/common/normalize-plugin-schema'
 import { appActions } from '@/store/app-actions'
 import { useAppStore } from '@/store/app-store'
 import { useProviderStore } from './store'
 import type { ProviderFormValues } from '@/components/main/providers/utils'
-
-function resolveProviderFieldType (
-  value: string | undefined
-): ProviderPluginConfig['type'] {
-  if (
-    value === 'password' ||
-    value === 'list' ||
-    value === 'checkbox' ||
-    value === 'confirm'
-  ) {
-    return value
-  }
-
-  return 'input'
-}
 
 function normalizeProviderSchema (
   providerId: string,
@@ -35,36 +20,7 @@ function normalizeProviderSchema (
   return {
     id: providerId,
     name: schemaResult.name,
-    config: schemaResult.config.map((field) => ({
-      name: field.name,
-      type: resolveProviderFieldType(field.type),
-      required: field.required === true,
-      default: field.default,
-      alias: typeof field.alias === 'string' ? field.alias : undefined,
-      message: typeof field.message === 'string' ? field.message : undefined,
-      prefix: typeof field.prefix === 'string' ? field.prefix : undefined,
-      tips: typeof field.tips === 'string' ? field.tips : undefined,
-      confirmText:
-        typeof field.confirmText === 'string' ? field.confirmText : undefined,
-      cancelText:
-        typeof field.cancelText === 'string' ? field.cancelText : undefined,
-      choices: Array.isArray(field.choices)
-        ? field.choices.map((choice) => {
-          if (typeof choice === 'string') {
-            return choice
-          }
-
-          return {
-            name: choice.name,
-            value: choice.value,
-            checked:
-              typeof (choice as { checked?: unknown }).checked === 'boolean'
-                ? (choice as { checked?: boolean }).checked
-                : undefined
-          }
-        })
-        : undefined
-    }))
+    config: normalizePluginConfigSchema(schemaResult.config)
   }
 }
 
