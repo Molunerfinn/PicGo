@@ -24,6 +24,7 @@ scripts/*.yml
 #Electron-builder output
 /dist_electron
 .serena/
+.claude/
 dist/*
 test.js
 specs/

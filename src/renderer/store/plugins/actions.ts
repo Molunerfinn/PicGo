@@ -3,11 +3,12 @@ import type {
   PluginInstalledItem,
   PluginConfigSectionType,
   PluginImportResult,
-  PluginReadmeState
+  PluginReadmeState,
+  PluginDeprecationState
 } from '@/components/main/plugins/types'
-import { pluginReadmeStatus } from '@/components/main/plugins/types'
+import { pluginDeprecationStatus, pluginReadmeStatus } from '@/components/main/plugins/types'
 import { pluginsAdapter } from '@/adapters/plugins'
-import { mapInstalledPluginItem, mapPluginSearchResult } from '@/components/main/plugins/utils'
+import { buildPluginDeprecationKey, mapInstalledPluginItem, mapPluginSearchResult } from '@/components/main/plugins/utils'
 import { appActions } from '@/store/app-actions'
 import { useAppStore } from '@/store/app-store'
 import i18n from '@/i18n'
@@ -110,6 +111,11 @@ export const pluginStoreActions = {
   setReadmeState (fullName: string, nextState: PluginReadmeState) {
     usePluginStore.setState((state) => {
       state.readmeByPlugin[fullName] = nextState
+    })
+  },
+  setDeprecationState (key: string, nextState: PluginDeprecationState) {
+    usePluginStore.setState((state) => {
+      state.deprecationByPlugin[key] = nextState
     })
   },
   async searchPlugins (query: string) {
@@ -312,6 +318,36 @@ export const pluginStoreActions = {
       fullName,
       label,
       message: ''
+    }
+  },
+  async fetchPluginDeprecation (fullName: string, version: string) {
+    const cacheKey = buildPluginDeprecationKey(fullName, version)
+    const currentState = usePluginStore.getState().deprecationByPlugin[cacheKey]
+
+    if (currentState?.status === pluginDeprecationStatus.Loading) {
+      return
+    }
+
+    pluginStoreActions.setDeprecationState(cacheKey, {
+      status: pluginDeprecationStatus.Loading,
+      isDeprecated: false,
+      message: ''
+    })
+
+    try {
+      const result = await pluginsAdapter.fetchPluginDeprecation(fullName, version)
+
+      pluginStoreActions.setDeprecationState(cacheKey, {
+        status: pluginDeprecationStatus.Ready,
+        isDeprecated: result.isDeprecated,
+        message: result.message
+      })
+    } catch {
+      pluginStoreActions.setDeprecationState(cacheKey, {
+        status: pluginDeprecationStatus.Error,
+        isDeprecated: false,
+        message: ''
+      })
     }
   },
   async fetchPluginReadme (fullName: string) {

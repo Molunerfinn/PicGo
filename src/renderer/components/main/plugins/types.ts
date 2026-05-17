@@ -94,6 +94,21 @@ export interface PluginReadmeState {
   errorMessage: string | null
 }
 
+export const pluginDeprecationStatus = {
+  Idle: "idle",
+  Loading: "loading",
+  Ready: "ready",
+  Error: "error",
+} as const
+
+export type PluginDeprecationStatus = ValueOf<typeof pluginDeprecationStatus>
+
+export interface PluginDeprecationState {
+  status: PluginDeprecationStatus
+  isDeprecated: boolean
+  message: string
+}
+
 export const pluginGearActionKind = {
   Enable: "enable",
   Disable: "disable",

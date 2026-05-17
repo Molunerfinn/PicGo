@@ -97,6 +97,28 @@ export const pluginsAdapter = {
       ? lastError
       : new Error('Failed to fetch plugin readme')
   },
+  async fetchPluginDeprecation (
+    fullName: string,
+    version: string
+  ): Promise<{ isDeprecated: boolean, message: string }> {
+    const encodedName = fullName.replace('/', '%2F')
+    const encodedVersion = encodeURIComponent(version)
+    const response = await axios.get<{ deprecated?: string | boolean }>(
+      `https://registry.npmjs.com/${encodedName}/${encodedVersion}`
+    )
+
+    const rawDeprecated = response.data?.deprecated
+
+    if (typeof rawDeprecated === 'string') {
+      return { isDeprecated: true, message: rawDeprecated }
+    }
+
+    if (rawDeprecated === true) {
+      return { isDeprecated: true, message: '' }
+    }
+
+    return { isDeprecated: false, message: '' }
+  },
   openPluginMenu (plugin: IPicGoPlugin) {
     sendToMain(SHOW_PLUGIN_PAGE_MENU, plugin)
   },

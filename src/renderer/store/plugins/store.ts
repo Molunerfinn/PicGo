@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import type {
+  PluginDeprecationState,
   PluginReadmeState,
   PluginSearchResultItem
 } from '@/components/main/plugins/types'
@@ -15,6 +16,7 @@ export interface PluginStoreState {
   isImportingLocal: boolean
   isMutatingByPlugin: Record<string, boolean>
   readmeByPlugin: Record<string, PluginReadmeState>
+  deprecationByPlugin: Record<string, PluginDeprecationState>
 }
 
 const initialPluginStoreState: PluginStoreState = {
@@ -25,7 +27,8 @@ const initialPluginStoreState: PluginStoreState = {
   isSearching: false,
   isImportingLocal: false,
   isMutatingByPlugin: {},
-  readmeByPlugin: {}
+  readmeByPlugin: {},
+  deprecationByPlugin: {}
 }
 
 export const usePluginStoreBase = create<PluginStoreState>()(

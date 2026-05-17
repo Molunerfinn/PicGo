@@ -327,6 +327,8 @@ PLUGIN_SEARCH_EXACT_MATCH: Exact plugin name match
 PLUGIN_INSTALL: Install
 PLUGIN_INSTALLING: Installing...
 PLUGIN_INSTALLED: Installed
+PLUGIN_DEPRECATED_BADGE: Deprecated
+PLUGIN_DEPRECATED_TITLE: This plugin has been deprecated by the author
 PLUGIN_DOING_SOMETHING: Doing...
 PLUGIN_LIST: Plugin List
 PLUGIN_IMPORT_LOCAL: Import Local Plugins

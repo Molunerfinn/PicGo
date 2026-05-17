@@ -7,12 +7,17 @@ import { useTranslation } from "react-i18next"
 
 import { Badge } from "@/components/ui/badge"
 import { TooltipIconButton } from "@/components/common/tooltip-icon-button"
-import { pluginStoreActions } from "@/store"
+import { pluginStoreActions, usePluginStore } from "@/store"
 import { Switch } from "@/components/ui/switch"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { openURL } from "@/utils/dataSender"
-import type { PluginDetailSelectedItem, PluginInstalledItem } from "./types"
 import {
+  pluginDeprecationStatus,
+  type PluginDetailSelectedItem,
+  type PluginInstalledItem,
+} from "./types"
+import {
+  buildPluginDeprecationKey,
   normalizePluginDisplayName,
   pluginDefaultLogoUrl,
   resolvePluginHomepageUrl,
@@ -30,6 +35,7 @@ export function PluginDetailHeader({
   isMutating,
 }: PluginDetailHeaderProps) {
   const { t } = useTranslation()
+  const deprecationByPlugin = usePluginStore.use.deprecationByPlugin()
 
   if (!selectedItem) {
     return (
@@ -47,6 +53,13 @@ export function PluginDetailHeader({
     plugin?.homepage,
     selectedItem.homepage,
   ])
+  const deprecationState = deprecationByPlugin[
+    buildPluginDeprecationKey(selectedItem.fullName, selectedItem.version)
+  ]
+  const isDeprecated = Boolean(
+    deprecationState?.status === pluginDeprecationStatus.Ready &&
+    deprecationState.isDeprecated
+  )
 
   const handleOpenPluginHomepage = async () => {
     openURL(pluginHomepageUrl)
@@ -110,6 +123,11 @@ export function PluginDetailHeader({
               {selectedItem.hasInstall ? (
                 <Badge variant="outline" className="text-[10px]">
                   {t("PLUGIN_INSTALLED")}
+                </Badge>
+              ) : null}
+              {isDeprecated ? (
+                <Badge variant="destructive" className="text-[10px]">
+                  {t("PLUGIN_DEPRECATED_BADGE")}
                 </Badge>
               ) : null}
             </div>

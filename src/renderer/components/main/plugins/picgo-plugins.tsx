@@ -23,6 +23,7 @@ import {
   type PluginInstalledItem,
 } from "./types"
 import {
+  buildPluginDeprecationKey,
   mapInstalledPluginItem,
   resolveActivePlugin,
   resolvePluginTabJump,
@@ -44,6 +45,7 @@ export function PicGoPlugins() {
   const isSearching = usePluginStore.use.isSearching()
   const isMutatingByPlugin = usePluginStore.use.isMutatingByPlugin()
   const readmeByPlugin = usePluginStore.use.readmeByPlugin()
+  const deprecationByPlugin = usePluginStore.use.deprecationByPlugin()
 
   const [selectedPluginFullName, setSelectedPluginFullName] = useState<string | null>(
     null
@@ -239,6 +241,24 @@ export function PicGoPlugins() {
 
     pluginStoreActions.fetchPluginReadme(fullName)
   }, [activeListItem?.fullName, readmeByPlugin])
+
+  // Fetch deprecation status for the active plugin's specific version (only once per fullName@version).
+  useEffect(() => {
+    const fullName = activeListItem?.fullName
+    const version = activeListItem?.version
+
+    if (!fullName || !version) {
+      return
+    }
+
+    const cacheKey = buildPluginDeprecationKey(fullName, version)
+
+    if (deprecationByPlugin[cacheKey]) {
+      return
+    }
+
+    pluginStoreActions.fetchPluginDeprecation(fullName, version)
+  }, [activeListItem?.fullName, activeListItem?.version, deprecationByPlugin])
 
   const resolvedSelectedPluginFullName = activeListItem?.fullName ?? null
   const resolvedActiveTab = resolveSupportedPluginTab(activeTab, availableTabs)

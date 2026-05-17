@@ -290,6 +290,10 @@ export function resolveReadmeState(
   return readmeMap[fullName] ?? null
 }
 
+export function buildPluginDeprecationKey(fullName: string, version: string) {
+  return `${fullName}@${version}`
+}
+
 export function resolveConfigValues(
   appConfig: AppConfig | null,
   plugin: PluginInstalledItem | null,

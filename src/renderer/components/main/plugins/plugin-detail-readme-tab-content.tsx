@@ -1,5 +1,6 @@
 import { useEffect, useRef, type MouseEvent } from "react"
 import DOMPurify from "dompurify"
+import { TriangleAlertIcon } from "lucide-react"
 import { marked } from "marked"
 import Prism from "prismjs"
 import "prismjs/components/prism-bash"
@@ -16,11 +17,14 @@ import { useTranslation } from "react-i18next"
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { openURL } from "@/utils/dataSender"
+import { usePluginStore } from "@/store"
 import {
+  pluginDeprecationStatus,
   pluginReadmeStatus,
   type PluginDetailSelectedItem,
   type PluginReadmeState,
 } from "./types"
+import { buildPluginDeprecationKey } from "./utils"
 
 interface PluginDetailReadmeTabContentProps {
   selectedItem: PluginDetailSelectedItem | null
@@ -74,6 +78,15 @@ export function PluginDetailReadmeTabContent({
 }: PluginDetailReadmeTabContentProps) {
   const { t } = useTranslation()
   const articleRef = useRef<HTMLElement | null>(null)
+  const deprecationByPlugin = usePluginStore.use.deprecationByPlugin()
+  const deprecationState = selectedItem
+    ? deprecationByPlugin[buildPluginDeprecationKey(selectedItem.fullName, selectedItem.version)]
+    : undefined
+  const showDeprecationBanner = Boolean(
+    deprecationState?.status === pluginDeprecationStatus.Ready &&
+    deprecationState.isDeprecated
+  )
+  const deprecationMessage = deprecationState?.message.trim() ?? ""
 
   // Post-process rendered markdown (spacing, grouped links, syntax highlighting) when README is ready.
   useEffect(() => {
@@ -134,6 +147,22 @@ export function PluginDetailReadmeTabContent({
 
   return (
     <div className="space-y-4">
+      {showDeprecationBanner ? (
+        <div className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm">
+          <TriangleAlertIcon className="text-destructive mt-0.5 size-4 shrink-0" />
+          <div className="min-w-0 flex-1">
+            <div className="text-destructive font-medium">
+              {t("PLUGIN_DEPRECATED_TITLE")}
+            </div>
+            {deprecationMessage ? (
+              <p className="text-muted-foreground mt-1 whitespace-pre-wrap break-words">
+                {deprecationMessage}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
       {readmeState?.status === pluginReadmeStatus.Loading ? (
         <div className="space-y-2">
           <Skeleton className="h-5 w-2/3" />
