@@ -7,6 +7,7 @@ export const providerFieldType = {
   List: "list",
   Checkbox: "checkbox",
   Confirm: "confirm",
+  Editor: "editor",
 } as const
 
 export type ProviderFieldType =

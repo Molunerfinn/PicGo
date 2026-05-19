@@ -282,3 +282,84 @@ describe('ProviderConfigPanel — page-refresh saved config rendering', () => {
 // its portal dropdown, and the panel here is a thin wrapper around the
 // same hook. Adding a panel-level cascade test would duplicate coverage
 // without adding signal.
+
+describe('ProviderConfigPanel — editor field rendering', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockMainSideEvaluator()
+  })
+
+  it('renders a textarea for a type: editor field and binds its saved value', async () => {
+    // Re-setup the store with a schema that includes a type: editor field.
+    // We bypass the cascade fixture here because editor type is orthogonal
+    // to the region/endpoint/bucket cascade and we just want to verify the
+    // SchemaFormFields editor branch surfaces through the panel render path.
+    useAppStore.setState({
+      defaultPicBed: 'picgo-plugin-test',
+      appConfig: {
+        ...baseAppConfig,
+        uploader: {
+          'picgo-plugin-test': {
+            defaultId: 'config-1',
+            configList: [
+              {
+                _id: 'config-1',
+                _configName: 'New Config',
+                _createdAt: 1700000000000,
+                _updatedAt: 1700000000000,
+                script: 'line-one\nline-two\nline-three'
+              }
+            ]
+          }
+        }
+      } as never,
+      picBeds: [],
+      providers: [
+        {
+          id: 'picgo-plugin-test',
+          name: 'PicGo Test',
+          visible: true,
+          isDefaultUploader: true
+        }
+      ],
+      providerSchemas: {
+        'picgo-plugin-test': {
+          id: 'picgo-plugin-test',
+          name: 'PicGo Test',
+          config: normalizePluginConfigSchema([
+            {
+              name: 'script',
+              type: 'editor',
+              alias: 'Compression script',
+              required: true,
+              message: 'Enter your compression script'
+            }
+          ])
+        }
+      },
+      pluginsInstalled: [],
+      settingsVersion: { currentVersion: '2.5.3', latestVersion: null },
+      hasHydrated: true,
+      hasSettingsHydrated: true,
+      picgoCloud: {
+        loginStatus: 'IDLE',
+        loginError: null,
+        hasAgreedToTermsAndPrivacy: false
+      }
+    } as never)
+    useProviderStore.setState({
+      isHydrating: false,
+      isLoadingByProvider: {},
+      expandedProviderIds: [],
+      searchValue: ''
+    })
+
+    renderPanel()
+
+    await waitFor(() => {
+      const textarea = screen.getByRole('textbox') as HTMLTextAreaElement
+      expect(textarea.tagName).toBe('TEXTAREA')
+      expect(textarea.value).toBe('line-one\nline-two\nline-three')
+    })
+  })
+})

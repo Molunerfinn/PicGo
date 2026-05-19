@@ -22,7 +22,8 @@ function resolveProviderFieldType(value: unknown): ProviderFieldType {
     value === "password" ||
     value === "list" ||
     value === "checkbox" ||
-    value === "confirm"
+    value === "confirm" ||
+    value === "editor"
   ) {
     return value
   }

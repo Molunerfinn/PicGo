@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { normalizePluginChoices } from "@/components/main/providers/utils"
 import type { ProviderPluginConfig } from "@/components/main/providers/types"
@@ -311,6 +312,16 @@ export function SchemaFormFields({
                   onCheckedChange={(checked) => onValueChange(field.name, checked)}
                 />
               </div>
+            )}
+
+            {field.type === "editor" && (
+              <Textarea
+                className="resize-y"
+                value={String(value ?? "")}
+                placeholder={field.message || field.name}
+                aria-invalid={isInvalid}
+                onChange={(event) => onValueChange(field.name, event.target.value)}
+              />
             )}
 
             {fieldError ? <FieldError>{fieldError}</FieldError> : null}
