@@ -99,9 +99,6 @@ const createDefaultBridgeApi = (): BridgeApi => {
         bridgeListeners.delete(channel)
       }
     },
-    clipboard: {
-      writeText: () => {}
-    },
     webUtils: {
       getPathForFile: () => '/tmp/mock-file.png'
     },

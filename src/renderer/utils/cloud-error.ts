@@ -1,5 +1,6 @@
 import type { TFunction } from 'i18next'
 import type { IPicGoCloudLifecyclePhase } from '#/types/cloud'
+import { isAbnormalLifecyclePhase } from './plan'
 
 /**
  * picgo-hub 返回的与 lifecycle / 配额 / 套餐相关的错误码。值跟 picgo-hub
@@ -37,11 +38,10 @@ export function resolveCloudErrorMessage (
     case CLOUD_ERROR_CODES.PlanRequired:
       return t('PICGO_CLOUD_ERROR_PLAN_REQUIRED')
     case CLOUD_ERROR_CODES.QuotaExceeded:
-      // QUOTA_EXCEEDED 在不同 phase 下指向不同行动：active 升级，grace 续费
-      if (phase === 'grace' || phase === 'frozen' || phase === 'pending_cleanup') {
-        return t('PICGO_CLOUD_ERROR_QUOTA_EXCEEDED_GRACE')
-      }
-      return t('PICGO_CLOUD_ERROR_QUOTA_EXCEEDED_ACTIVE')
+      // QUOTA_EXCEEDED 在不同 phase 下指向不同行动：active 升级，grace/frozen 续费
+      return isAbnormalLifecyclePhase(phase)
+        ? t('PICGO_CLOUD_ERROR_QUOTA_EXCEEDED_GRACE')
+        : t('PICGO_CLOUD_ERROR_QUOTA_EXCEEDED_ACTIVE')
     default:
       return fallback
   }

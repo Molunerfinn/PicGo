@@ -39,7 +39,7 @@ PICGO_SETTINGS: PicGo Settings
 PLUGIN_SETTINGS: Plugins Settings
 DASHBOARD_HISTORY_PANEL_TITLE: History Panel
 PICGO_CLOUD_TITLE: PicGo Cloud
-PICGO_CLOUD_DESCRIPTION: A cloud service built for PicGo, connecting all your devices.
+PICGO_CLOUD_DESCRIPTION: A cloud service built by PicGo, connecting all your devices.
 PICGO_CLOUD_BRAND_NAME: PicGo Cloud
 PICGO_CLOUD_ERROR_TITLE: PicGo Cloud Error
 PICGO_CLOUD_LOADING: Loading PicGo Cloud status...
@@ -517,7 +517,7 @@ ALBUM_CLOUD_AUTO_IMPORT_REQUIRED_DESC: Auto import needs to be enabled before im
 ALBUM_CLOUD_AUTO_IMPORT_ENABLE_AND_IMPORT: Enable & Import
 ALBUM_CLOUD_IMPORT_SINGLE_SUCCESS: Successfully imported to cloud album
 PICGO_CLOUD_AUTO_IMPORT_LABEL: Auto-import to Cloud Album
-PICGO_CLOUD_AUTO_IMPORT_DESC: Auto-import records from other uploaders to cloud album (PicGo Cloud is saved by default)
+PICGO_CLOUD_AUTO_IMPORT_DESC: Auto-import upload records from other uploaders to cloud album (PicGo Cloud is saved by default)
 SIDEBAR_PLUGINS: Plugins
 SIDEBAR_SYSTEM: System
 SIDEBAR_NOTIFICATIONS: Notifications

@@ -22,7 +22,9 @@ export function PicGoCloudUserInfoSync () {
       return
     }
 
-    if (!isPaid && albumSource === AlbumSource.CLOUD) {
+    // 仅在「付费 → 免费」状态切换的瞬间把 CLOUD 切回 LOCAL（订阅过期/退订兜底）。
+    // 不能写成 `!isPaid && source === CLOUD`，否则免费用户手动点 Cloud 看升级页时会被立即拦回。
+    if (previousIsPaid === true && !isPaid && albumSource === AlbumSource.CLOUD) {
       const switchPromise = albumStoreActions.setAlbumSource(AlbumSource.LOCAL)
       switchPromise.catch((error) => {
         console.error(error)

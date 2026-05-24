@@ -261,15 +261,14 @@ export function PicGoAlbum() {
     refreshAlbumPage()
   }, [picBeds, refreshNonce, isCloud])
 
-  // Cloud gallery data fetch
-   
+  // Cloud gallery data fetch — 免费用户切到 Cloud tab 时只看升级提示，不发列表请求
   useEffect(() => {
-    if (!isCloud) return
+    if (!isCloud || !isCloudPaidUser) return
     const refreshPromise = loadCloudFirstPage()
     refreshPromise.catch((error) => {
       console.error(error)
     })
-  }, [isCloud, cloudSearch, cloudTypeFilter, loadCloudFirstPage])
+  }, [isCloud, isCloudPaidUser, cloudSearch, cloudTypeFilter, loadCloudFirstPage])
 
   const handleCloudFirstPageRefresh = useMemoizedFn(() => {
     invalidateCloudAlbumStatsQuery().catch(console.warn)

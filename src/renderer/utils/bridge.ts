@@ -1,3 +1,6 @@
+import { RPC_ACTIONS } from '#/events/constants'
+import { IRPCActionType } from '#/types/enum'
+
 let bridgeApi: BridgeApi | null = null
 
 const resolveBridgeApi = (): BridgeApi => {
@@ -26,8 +29,12 @@ export const ipc = {
   removeAllListeners: (channel: string) => resolveBridgeApi().ipc.removeAllListeners(channel)
 }
 
+// 走 RPC COPY_TEXT 而非 preload 暴露的 electron.clipboard：sandboxed preload
+// （Electron 22+ 默认）下 `require('electron').clipboard` 为 undefined，必须从主进程操作系统剪贴板。
 export const clipboard = {
-  writeText: (text: string) => resolveBridgeApi().clipboard.writeText(text)
+  writeText: async (text: string): Promise<void> => {
+    await ipc.invoke(RPC_ACTIONS, IRPCActionType.COPY_TEXT, [text])
+  }
 }
 
 export const webUtils = {

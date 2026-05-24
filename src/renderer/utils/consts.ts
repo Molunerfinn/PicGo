@@ -10,5 +10,7 @@ export const PICGO_GUI_GALLERY_ALBUM_SOURCE_KEY = 'PICGO_GUI_GALLERY_ALBUM_SOURC
 export const CLOUD_ALBUM_PAGE_SIZE = 50
 export const GALLERY_CLOUD_LOAD_MORE_THRESHOLD = 200
 export const PICGO_GUI_LIFECYCLE_BANNER_DISMISSED_PHASE_KEY = 'PICGO_GUI_LIFECYCLE_BANNER_DISMISSED_PHASE'
-/** 渲染端静态资源：PicGo Cloud 图片在 frozen/pending_cleanup/加载失败时使用的占位 SVG 文件名 */
-export const PICGO_CLOUD_IMAGE_UNAVAILABLE_SVG_FILENAME = 'cloud-image-unavailable.svg'
+/** 渲染端静态资源：PicGo Cloud 图片在 frozen/pending_cleanup 时使用的占位 SVG 文件名 */
+export const PICGO_CLOUD_IMAGE_UNAVAILABLE_SVG_FILENAME = 'cloud-image-account-frozen-backend.svg'
+/** 渲染端静态资源：图片加载失败时（非 PicGo Cloud lifecycle 原因）使用的占位 SVG 文件名 */
+export const PREVIEW_UNAVAILABLE_SVG_FILENAME = 'cloud-image-unavailable.svg'

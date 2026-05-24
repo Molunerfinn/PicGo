@@ -12,5 +12,5 @@
 
   <text x="100" y="78" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="36" font-weight="700" fill="#94a3b8" text-anchor="middle" dominant-baseline="central">?</text>
 
-  <text x="100" y="128" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" font-weight="500" fill="#94a3b8" text-anchor="middle" letter-spacing="0.4">Image unavailable</text>
+  <text x="100" y="128" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" font-weight="500" fill="#94a3b8" text-anchor="middle" letter-spacing="0.4">Preview unavailable</text>
 </svg>

@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { useCloudImageSrc } from "@/components/common/cloud-image"
+import { useCloudImageSrc } from "@/hooks/use-cloud-image-src"
 import { cn } from "@/lib/utils"
 import { useTranslation } from "react-i18next"
 

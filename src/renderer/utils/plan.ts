@@ -1,4 +1,4 @@
-import { UserPlanLevel } from '#/types/cloud'
+import { UserPlanLevel, type IPicGoCloudLifecyclePhase } from '#/types/cloud'
 
 export function resolvePlanLabel (plan: UserPlanLevel | undefined): string {
   switch (plan) {
@@ -51,4 +51,17 @@ export function getDisplayPlan (
 export function capitalizePlanCode (planCode: string | null | undefined): string {
   if (!planCode) return ''
   return planCode.charAt(0).toUpperCase() + planCode.slice(1).toLowerCase()
+}
+
+const ABNORMAL_LIFECYCLE_PHASES: ReadonlySet<IPicGoCloudLifecyclePhase> = new Set([
+  'grace',
+  'frozen',
+  'pending_cleanup'
+])
+
+/** lifecycle 处于宽限期 / 冻结期 / 待清理任一阶段。常见用途：banner 显隐、UI 文案分支。 */
+export function isAbnormalLifecyclePhase (
+  phase: IPicGoCloudLifecyclePhase | null | undefined
+): boolean {
+  return phase !== null && phase !== undefined && ABNORMAL_LIFECYCLE_PHASES.has(phase)
 }

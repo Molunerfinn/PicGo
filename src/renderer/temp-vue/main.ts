@@ -44,7 +44,7 @@ app.mixin(mainMixin)
 app.mixin(dragMixin)
 
 app.use(VueLazyLoad, {
-  error: getRendererStaticFileUrl('unknown-file-type.svg')
+  error: getRendererStaticFileUrl('cloud-image-unavailable.svg')
 })
 app.use(ElementUI)
 app.use(router)

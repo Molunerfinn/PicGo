@@ -10,17 +10,12 @@ import { cn } from '@/lib/utils'
 import { cloudAdapter } from '@/adapters/cloud'
 import { usePicGoCloudBillingQuery } from '@/queries/picgo-cloud-billing'
 import { PICGO_GUI_LIFECYCLE_BANNER_DISMISSED_PHASE_KEY } from '@/utils/consts'
+import { isAbnormalLifecyclePhase } from '@/utils/plan'
 
 type LifecycleBannerVariant = 'inline' | 'floating'
 
 interface LifecycleBannerProps {
   variant: LifecycleBannerVariant
-}
-
-const VISIBLE_PHASES: ReadonlyArray<IPicGoCloudLifecyclePhase> = ['grace', 'frozen', 'pending_cleanup']
-
-function isVisiblePhase (phase: IPicGoCloudLifecyclePhase | undefined): phase is IPicGoCloudLifecyclePhase {
-  return phase !== undefined && (VISIBLE_PHASES as ReadonlyArray<string>).includes(phase)
 }
 
 function resolveBannerCopy (phase: IPicGoCloudLifecyclePhase): {
@@ -97,7 +92,7 @@ export function LifecycleBanner ({ variant }: LifecycleBannerProps) {
     }
   })
 
-  if (!isVisiblePhase(phase)) return null
+  if (!phase || !isAbnormalLifecyclePhase(phase)) return null
   if (variant === 'floating' && dismissedPhase === phase) return null
 
   const { titleKey, descKey } = resolveBannerCopy(phase)

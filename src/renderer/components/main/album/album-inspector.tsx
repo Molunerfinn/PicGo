@@ -122,7 +122,8 @@ export function AlbumInspector({
           ? t("BATCH_COPY_LINK_SUCCEED")
           : t("COPY_LINK_SUCCEED")
       )
-    } catch {
+    } catch (error) {
+      console.error("[Inspector] copy failed:", error)
       toast.error(t("OPERATION_FAILED"))
     }
   }
