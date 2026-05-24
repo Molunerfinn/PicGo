@@ -8,6 +8,7 @@ import { AlbumInspectorDetails } from "./album-inspector-details"
 
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { CloudImage } from "@/components/common/cloud-image"
 import { FloatingPanelSheetContent } from "@/components/common/floating-panel-sheet-content"
 import { Sheet, SheetDescription, SheetTitle } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
@@ -230,13 +231,14 @@ export function AlbumInspector({
                               playsInline
                             />
                           ) : (
-                            <img
+                            <CloudImage
                               src={image.imgUrl}
                               alt={image.alt}
                               className="h-full w-full object-cover"
                               loading="lazy"
                               decoding="async"
                               draggable={false}
+                              type={image.type}
                             />
                           )}
                           {!isOverflow ? (
@@ -273,13 +275,14 @@ export function AlbumInspector({
                         playsInline
                       />
                     ) : (
-                      <img
+                      <CloudImage
                         src={selectedImages[0].imgUrl}
                         alt={selectedImages[0].alt}
                         className="h-full w-full object-cover"
                         loading="lazy"
                         decoding="async"
                         draggable={false}
+                        type={selectedImages[0].type}
                       />
                     )}
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 overflow-hidden bg-background/60 text-foreground shadow-sm backdrop-blur-sm dark:bg-background/45">

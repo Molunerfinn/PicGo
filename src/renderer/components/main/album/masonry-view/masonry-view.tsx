@@ -14,6 +14,7 @@ import { createPortal } from "react-dom"
 import { LoaderCircleIcon, Maximize2 } from "lucide-react"
 import { VirtuosoMasonry, type ItemContent } from "@virtuoso.dev/masonry"
 
+import { CloudImage } from "@/components/common/cloud-image"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -82,9 +83,10 @@ function getSelectionBoxRect(box: SelectionBox) {
   }
 }
 
-type LazyMediaProps = ComponentPropsWithoutRef<"img"> & {
+type LazyMediaProps = Omit<ComponentPropsWithoutRef<"img">, "type"> & {
   isVideo?: boolean
   onVideoLoad?: (event: SyntheticEvent<HTMLVideoElement>) => void
+  type?: string
 }
 
 function LazyImage({
@@ -92,6 +94,7 @@ function LazyImage({
   style,
   isVideo,
   onVideoLoad,
+  type,
   ...imgProps
 }: LazyMediaProps) {
   const {
@@ -139,7 +142,7 @@ function LazyImage({
           onLoadedData={handleVideoLoad}
         />
       ) : (
-        <img
+        <CloudImage
           src={src}
           alt={alt ?? ""}
           srcSet={srcSet}
@@ -154,6 +157,7 @@ function LazyImage({
           loading="lazy"
           decoding="async"
           onLoad={handleImageLoad}
+          type={type}
         />
       )}
     </div>
@@ -205,6 +209,7 @@ const MasonryItem: ItemContent<AlbumPhoto, MasonryContext> = ({
           isVideo={photo.isVideo}
           onLoad={context.onImageLoad(photo)}
           onVideoLoad={context.onVideoLoad(photo)}
+          type={photo.type}
         />
         <div
           data-album-interactive="true"

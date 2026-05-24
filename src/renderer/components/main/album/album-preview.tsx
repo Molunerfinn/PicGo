@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { useCloudImageSrc } from "@/components/common/cloud-image"
 import { cn } from "@/lib/utils"
 import { useTranslation } from "react-i18next"
 
@@ -42,6 +43,10 @@ export function AlbumPreview({
     total: images.length,
   })
   const activeImageUrl = activeImage ? activeImage.imgUrl ?? activeImage.originImgUrl ?? "" : ""
+  const { src: resolvedImageSrc, onError: handleCloudImageError } = useCloudImageSrc(
+    activeImage?.type,
+    activeImageUrl
+  )
 
   const handleClose = () => {
     setDirection(0)
@@ -195,7 +200,7 @@ export function AlbumPreview({
             ) : (
               <motion.img
                 key={activeImage.id}
-                src={activeImageUrl}
+                src={resolvedImageSrc}
                 alt={activeImage.alt ?? ""}
                 className={cn(
                   "max-h-full max-w-full rounded-(--radius-gallery-preview) object-contain shadow-(--app-gallery-preview-shadow)",
@@ -206,6 +211,7 @@ export function AlbumPreview({
                 loading="lazy"
                 decoding="async"
                 draggable={false}
+                onError={handleCloudImageError}
                 onClick={(event) => {
                   event.stopPropagation()
                   handleClose()
@@ -263,12 +269,13 @@ export function AlbumPreview({
                     animate="center"
                     exit="exit"
                     transition={{ duration: 0.26, ease: "easeOut" }}
-                    src={activeImageUrl}
+                    src={resolvedImageSrc}
                     alt={activeImage.alt ?? ""}
                     className="absolute inset-0 m-auto max-h-full max-w-full rounded-(--radius-gallery-preview) object-contain shadow-(--app-gallery-preview-shadow)"
                     loading="lazy"
                     decoding="async"
                     draggable={false}
+                    onError={handleCloudImageError}
                     onClick={(event) => {
                       event.stopPropagation()
                       handleClose()

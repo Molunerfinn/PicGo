@@ -2,6 +2,7 @@ import { useState } from "react"
 import {
   CircleUserRoundIcon,
   CloudIcon,
+  CrownIcon,
   DatabaseIcon,
   EllipsisIcon,
   ImageIcon,
@@ -22,6 +23,7 @@ import { Sidebar } from "@/components/ui/sidebar"
 import { useSidebar } from "@/components/ui/sidebar-context"
 import { cn } from "@/lib/utils"
 import { usePicGoCloudUserInfo } from "@/queries/picgo-cloud"
+import { usePicGoCloudBillingQuery } from "@/queries/picgo-cloud-billing"
 import { resolvePlanLabel } from "@/utils/plan"
 import { SidebarNavButton } from "./sidebar-nav-button"
 import { MainMoreDialog } from "./main-more-dialog"
@@ -39,7 +41,15 @@ export function PicGoAppSidebar({
   const navigate = useNavigate()
   const matchRoute = useMatchRoute()
   const { state, setOpen } = useSidebar()
-  const { userInfo: cloudUserInfo } = usePicGoCloudUserInfo()
+  const { userInfo: cloudUserInfo, isPaid: cloudIsPaid } = usePicGoCloudUserInfo()
+  const { data: cloudBilling } = usePicGoCloudBillingQuery()
+  const cloudPhase = cloudBilling?.lifecycle?.phase
+  const cloudNeedsRenew =
+    cloudPhase === "grace" ||
+    cloudPhase === "frozen" ||
+    cloudPhase === "pending_cleanup"
+  // 已登录但 free，或付费用户进入 grace/frozen/pending_cleanup 时显示皇冠提示升级 / 续费
+  const showCloudCrown = !!cloudUserInfo && (!cloudIsPaid || cloudNeedsRenew)
   const collapsed = state === "collapsed"
   const [avatarError, setAvatarError] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
@@ -137,6 +147,11 @@ export function PicGoAppSidebar({
                 active={isCloudActive}
                 onClick={() => navigate({ to: "/main/cloud" })}
                 collapsed={collapsed}
+                trailing={
+                  showCloudCrown
+                    ? <CrownIcon className="size-4 text-amber-500" />
+                    : undefined
+                }
               />
               <SidebarNavButton
                 icon={<PuzzleIcon className={SIDEBAR_ICON_CLASSNAME} />}

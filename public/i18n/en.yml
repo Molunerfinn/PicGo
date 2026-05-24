@@ -113,6 +113,32 @@ PICGO_CLOUD_STORAGE_LABEL: Storage
 PICGO_CLOUD_FILES_LABEL: Files
 PICGO_CLOUD_USAGE_PROGRESS: "${used} of ${total}"
 PICGO_CLOUD_USAGE_UNLIMITED: Unlimited
+PICGO_CLOUD_PLAN_PERIOD_RENEWS: "Renews on ${date}"
+PICGO_CLOUD_PLAN_PERIOD_CANCELS: "Cancels on ${date}"
+PICGO_CLOUD_PLAN_PERIOD_UNTIL: "Valid until ${date}"
+PICGO_CLOUD_PLAN_PERIOD_LIFETIME: Lifetime
+PICGO_CLOUD_PLAN_PERIOD_GRACE_LABEL: Grace Until
+PICGO_CLOUD_PLAN_PERIOD_GRACE_TOOLTIP: "Your paid plan has expired and is now in the grace period. PicGo Cloud images remain accessible until this date, but quota is temporarily downgraded to free. Most paid features are temporarily unavailable. After this date, the account enters the frozen state."
+PICGO_CLOUD_PLAN_PERIOD_FROZEN_LABEL: Frozen Until
+PICGO_CLOUD_PLAN_PERIOD_FROZEN_TOOLTIP: "Your account is frozen. PicGo Cloud images return errors. After this date, data may be cleaned up. Renew to restore access."
+PICGO_CLOUD_QUOTA_DOWNGRADED: "Quota temporarily downgraded to ${plan} during grace period. Renew to restore."
+PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_TITLE: Plan in grace period
+PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_DESC: "Your paid plan has expired and entered a ${days}-day grace period. Quota is temporarily downgraded to free, and most paid features are temporarily unavailable. Renew to restore full access."
+PICGO_CLOUD_LIFECYCLE_BANNER_FROZEN_TITLE: Account frozen
+PICGO_CLOUD_LIFECYCLE_BANNER_FROZEN_DESC: "Your account is frozen — cloud images are temporarily inaccessible and data will be cleaned up in ${days} days. Renew now to restore access."
+PICGO_CLOUD_LIFECYCLE_BANNER_PENDING_CLEANUP_TITLE: Data cleanup pending
+PICGO_CLOUD_LIFECYCLE_BANNER_PENDING_CLEANUP_DESC: Your account is pending cleanup and cloud data will be permanently deleted soon. Renew immediately if you want to keep your data.
+PICGO_CLOUD_LIFECYCLE_BANNER_CTA: Renew Now
+PICGO_CLOUD_LIFECYCLE_BANNER_DISMISS: Dismiss
+PICGO_CLOUD_AUTO_IMPORT_DISABLED_BY_LIFECYCLE: Auto-import is paused while your plan is in grace or frozen period. It will resume after renewal.
+PICGO_CLOUD_IMAGE_UNAVAILABLE: Image unavailable
+PICGO_CLOUD_ERROR_GRACE_RESTRICTED: This action is unavailable during the grace period. Please renew your plan and try again.
+PICGO_CLOUD_ERROR_ACCOUNT_FROZEN: Your account is frozen. Please renew your plan to restore access.
+PICGO_CLOUD_ERROR_IMPORT_DISABLED: Auto-import is disabled. Enable it in PicGo Cloud settings first.
+PICGO_CLOUD_ERROR_PLAN_INELIGIBLE: Your current plan does not support this feature. Please upgrade and try again.
+PICGO_CLOUD_ERROR_QUOTA_EXCEEDED_ACTIVE: You have reached your plan quota. Upgrade to a higher plan to get more.
+PICGO_CLOUD_ERROR_QUOTA_EXCEEDED_GRACE: Quota is downgraded to free tier during grace period. Renew to restore.
+PICGO_CLOUD_ERROR_PLAN_REQUIRED: This feature requires a paid plan.
 PICGO_CLOUD_USAGE_LOAD_FAILED: Failed to load usage data.
 PICGO_CLOUD_CONFIG_SYNC_LOAD_FAILED: Failed to load sync state.
 PICGO_CLOUD_FREE_PLAN_BANNER: You're on a free plan. Upgrade to unlock more quota and advanced cloud features.

@@ -2,6 +2,7 @@ import { forwardRef, useState, type HTMLAttributes } from "react"
 import { TableVirtuoso, type TableComponents } from "react-virtuoso"
 import { LoaderCircleIcon } from "lucide-react"
 
+import { CloudImage } from "@/components/common/cloud-image"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
 import { TableCell, TableHead, TableRow } from "@/components/ui/table"
@@ -137,12 +138,14 @@ function AlbumListThumbnail({
   isVideo,
   onClick,
   label,
+  type,
 }: {
   imgUrl: string
   alt: string
   isVideo?: boolean
   onClick: () => void
   label: string
+  type?: string
 }) {
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -173,7 +176,7 @@ function AlbumListThumbnail({
           onLoadedData={() => setIsLoaded(true)}
         />
       ) : (
-        <img
+        <CloudImage
           src={imgUrl}
           alt={alt}
           className={cn(
@@ -184,6 +187,7 @@ function AlbumListThumbnail({
           decoding="async"
           draggable={false}
           onLoad={() => setIsLoaded(true)}
+          type={type}
         />
       )}
     </button>
@@ -281,6 +285,7 @@ export function AlbumList({
                       isVideo={item.isVideo}
                       onClick={() => context.onPreviewOpen(item.id)}
                       label={context.previewLabel}
+                      type={item.type}
                     />
                   </div>
                   <div className="min-w-0">

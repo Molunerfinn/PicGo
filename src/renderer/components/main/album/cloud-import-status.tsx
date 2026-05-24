@@ -16,10 +16,9 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cloudAlbumAdapter } from "@/adapters/cloud-album"
 import { albumAdapter } from "@/adapters/album"
+import { PICGO_CLOUD_UPLOADER_TYPE } from "#/utils/static"
 import { setPicGoCloudUserInfoQueryData, usePicGoCloudUserInfo } from "@/queries/picgo-cloud"
 import type { AlbumPhoto } from "./utils"
-
-const PICGO_CLOUD_TYPE = 'picgo-cloud'
 
 type CloudImportStatusProps = {
   images: AlbumPhoto[]
@@ -39,11 +38,11 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
 
   // Analyze selection status
   const allInCloud = images.every((img) =>
-    img.type === PICGO_CLOUD_TYPE || img.raw._importToPicGoCloud === true || localImportedIds.has(img.dbId)
+    img.type === PICGO_CLOUD_UPLOADER_TYPE || img.raw._importToPicGoCloud === true || localImportedIds.has(img.dbId)
   )
-  const noneNeedImport = images.every((img) => img.type === PICGO_CLOUD_TYPE)
+  const noneNeedImport = images.every((img) => img.type === PICGO_CLOUD_UPLOADER_TYPE)
   const importableItems = images.filter((img) =>
-    img.type !== PICGO_CLOUD_TYPE && img.raw._importToPicGoCloud !== true && !localImportedIds.has(img.dbId)
+    img.type !== PICGO_CLOUD_UPLOADER_TYPE && img.raw._importToPicGoCloud !== true && !localImportedIds.has(img.dbId)
   )
 
   const doImport = async (itemsToImport: AlbumPhoto[]) => {
@@ -89,7 +88,7 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
         setPicGoCloudUserInfoQueryData(result.data)
       }
       // Now do the import
-      await doImport(importableItems.length > 0 ? importableItems : images.filter((img) => img.type !== PICGO_CLOUD_TYPE))
+      await doImport(importableItems.length > 0 ? importableItems : images.filter((img) => img.type !== PICGO_CLOUD_UPLOADER_TYPE))
     } catch (error) {
       console.error(error)
       toast.error(t("ALBUM_CLOUD_IMPORT_FAILED"))
@@ -138,7 +137,7 @@ export function CloudImportStatus ({ images }: CloudImportStatusProps) {
             size="xs"
             className="text-xs"
             disabled={importing}
-            onClick={() => handleImportClick(images.filter((img) => img.type !== PICGO_CLOUD_TYPE))}
+            onClick={() => handleImportClick(images.filter((img) => img.type !== PICGO_CLOUD_UPLOADER_TYPE))}
           >
             {t("ALBUM_CLOUD_REIMPORT")}
           </Button>

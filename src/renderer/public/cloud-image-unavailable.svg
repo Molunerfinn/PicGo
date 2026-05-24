@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2f6"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="200" height="200" fill="url(#bg)"/>
+
+  <circle cx="100" cy="78" r="26" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <text x="100" y="78" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="36" font-weight="700" fill="#94a3b8" text-anchor="middle" dominant-baseline="central">?</text>
+
+  <text x="100" y="128" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="11" font-weight="500" fill="#94a3b8" text-anchor="middle" letter-spacing="0.4">Image unavailable</text>
+</svg>

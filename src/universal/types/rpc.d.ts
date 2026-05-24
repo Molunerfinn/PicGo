@@ -1,7 +1,7 @@
 
 type IRPCResult<T> =
   | { success: true, data: T }
-  | { success: false, error: string }
+  | { success: false, error: string, code?: string }
 
 type IGetUploaderConfigListArgs = [type: string]
 type IDeleteUploaderConfigArgs = [type: string, configName: string]

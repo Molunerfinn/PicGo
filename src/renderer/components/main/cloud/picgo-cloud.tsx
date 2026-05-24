@@ -42,11 +42,14 @@ import {
   updateCloudConfigSyncStateQueryData,
   useCloudConfigSyncStateQuery
 } from '@/queries/picgo-cloud-config-sync'
+import { usePicGoCloudBillingQuery } from '@/queries/picgo-cloud-billing'
 import { invalidatePicGoCloudUsageQuery } from '@/queries/picgo-cloud-usage'
+import { resolveCloudErrorMessage } from '@/utils/cloud-error'
 import { CloudConflictDialog } from './cloud-conflict-dialog'
 import { CloudAccountSummary } from './cloud-account-summary'
 import { CloudAutoImportCard } from './cloud-auto-import-card'
 import { CloudConfigSyncCard } from './cloud-config-sync-card'
+import { LifecycleBanner } from './lifecycle-banner'
 import { CloudFreePlanBanner } from './cloud-free-plan-banner'
 import { CloudLoginFeaturesCard } from './cloud-login-features-card'
 import { CloudLoginHeroCard } from './cloud-login-hero-card'
@@ -87,6 +90,8 @@ export function PicGoCloud () {
     isLoading: isUserInfoLoading,
     error: userInfoError
   } = usePicGoCloudUserInfo()
+  const { data: billing } = usePicGoCloudBillingQuery()
+  const billingPhase = billing?.lifecycle?.phase
   const loginStatus = useAppStore.use.picgoCloud().loginStatus
   const loginError = useAppStore.use.picgoCloud().loginError
   const hasAgreedToTermsAndPrivacy = useAppStore.use.picgoCloud().hasAgreedToTermsAndPrivacy
@@ -249,6 +254,8 @@ export function PicGoCloud () {
       const result = await cloudAlbumAdapter.setAutoImport(checked)
       if (result.success) {
         setPicGoCloudUserInfoQueryData(result.data)
+      } else {
+        toast.error(resolveCloudErrorMessage(t, result.code, billingPhase, result.error))
       }
     } catch (error) {
       console.error(error)
@@ -326,6 +333,8 @@ export function PicGoCloud () {
                 {!isPaidUser ? (
                   <CloudFreePlanBanner onViewPlans={handleViewPlans} />
                 ) : null}
+
+                <LifecycleBanner variant="inline" />
 
                 <div className="grid gap-4 xl:grid-cols-12">
                   <div className="xl:col-span-5">

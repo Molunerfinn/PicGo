@@ -1,7 +1,8 @@
-import { CrownIcon, HardDriveUploadIcon } from 'lucide-react'
+import { AlertTriangleIcon, CrownIcon, HardDriveUploadIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { usePicGoCloudBillingQuery } from '@/queries/picgo-cloud-billing'
 import { CloudCardShell } from './cloud-card-shell'
 
 interface CloudAutoImportCardProps {
@@ -18,6 +19,9 @@ export function CloudAutoImportCard ({
   onCheckedChange
 }: CloudAutoImportCardProps) {
   const { t } = useTranslation()
+  const { data: billing } = usePicGoCloudBillingQuery()
+  const disabledByLifecycle = billing?.lifecycle?.flags?.autoImportDisabledByLifecycle ?? false
+  const switchDisabled = disabled || disabledByLifecycle
 
   return (
     <CloudCardShell className="flex items-center justify-between gap-4 p-5">
@@ -42,7 +46,20 @@ export function CloudAutoImportCard ({
                   </TooltipContent>
                 </Tooltip>
               )
-              : null}
+              : disabledByLifecycle
+                ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="inline-flex cursor-help">
+                        <AlertTriangleIcon className="size-4 text-yellow-600 dark:text-yellow-500" />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-72">
+                      <p>{t('PICGO_CLOUD_AUTO_IMPORT_DISABLED_BY_LIFECYCLE')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )
+                : null}
           </div>
 
           <p className="text-sm text-muted-foreground">
@@ -52,11 +69,11 @@ export function CloudAutoImportCard ({
       </div>
 
       <Switch
-        checked={checked}
+        checked={checked && !disabledByLifecycle}
         onCheckedChange={async (nextChecked) => {
           await onCheckedChange(nextChecked)
         }}
-        disabled={disabled}
+        disabled={switchDisabled}
       />
     </CloudCardShell>
   )

@@ -13,6 +13,7 @@ export function SidebarNavButton({
   label,
   active,
   badge,
+  trailing,
   onClick,
   collapsed,
 }: {
@@ -20,6 +21,8 @@ export function SidebarNavButton({
   label: string
   active?: boolean
   badge?: string
+  /** 右侧附加元素（如皇冠图标），collapsed 时不渲染。badge 优先级高于 trailing。 */
+  trailing?: React.ReactNode
   onClick?: () => void
   collapsed?: boolean
 }) {
@@ -70,6 +73,9 @@ export function SidebarNavButton({
         >
           {badge}
         </Badge>
+      ) : null}
+      {!collapsed && !badge && trailing ? (
+        <span className="ml-auto inline-flex shrink-0 items-center">{trailing}</span>
       ) : null}
     </Button>
   )

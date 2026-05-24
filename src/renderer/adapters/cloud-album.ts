@@ -1,5 +1,5 @@
 import { toast } from 'sonner'
-import { UserPlanLevel, type IPicGoCloudUserInfo } from '#/types/cloud'
+import { UserPlanLevel, type IPicGoCloudBillingOverview, type IPicGoCloudUserInfo } from '#/types/cloud'
 import type {
   CloudAlbumBatchUpdateResult,
   CloudAlbumFiltersResponse,
@@ -10,6 +10,8 @@ import type {
   CloudAlbumStatsResponse
 } from '#/types/cloudAlbum'
 import { IRPCActionType } from '#/types/enum'
+import { PicGoCloudBillingQueryKeys } from '@/queries/picgo-cloud-billing'
+import { resolveCloudErrorMessage } from '@/utils/cloud-error'
 import {
   mergePicGoCloudUserInfoQueryData,
   PicGoCloudQueryKeys
@@ -68,6 +70,11 @@ export async function handleCloudImportAll (onSuccess?: () => void): Promise<voi
         toast.success(i18n.t('ALBUM_CLOUD_IMPORT_SUCCESS', { num: String(result.data.created) }))
       }
       onSuccess?.()
+    } else {
+      const billing = rendererQueryClient.getQueryData<IPicGoCloudBillingOverview | null>(
+        PicGoCloudBillingQueryKeys.overview
+      )
+      toast.error(resolveCloudErrorMessage(i18n.t, result.code, billing?.lifecycle?.phase, result.error))
     }
   } catch (error) {
     console.error(error)
