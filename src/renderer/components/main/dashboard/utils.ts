@@ -1,3 +1,6 @@
+import { IPasteStyle } from "~/universal/types/enum"
+import { extractHttpUrlsFromText } from "#/utils/common"
+import { LINK_FORMAT, type LinkFormat } from "@/types/dashboard"
 import type {
   UploaderSwitcherProviderItem,
   UploaderSwitcherValue,
@@ -6,6 +9,37 @@ import type {
   AppConfig,
   ProviderUploaderSummary,
 } from "../providers/types"
+
+const LINK_FORMAT_TO_PASTE_STYLE: Record<LinkFormat, IPasteStyle> = {
+  [LINK_FORMAT.MARKDOWN]: IPasteStyle.MARKDOWN,
+  [LINK_FORMAT.HTML]: IPasteStyle.HTML,
+  [LINK_FORMAT.URL]: IPasteStyle.URL,
+  [LINK_FORMAT.UBB]: IPasteStyle.UBB,
+  [LINK_FORMAT.CUSTOM]: IPasteStyle.CUSTOM,
+}
+
+const PASTE_STYLE_TO_LINK_FORMAT: Record<string, LinkFormat> = Object.fromEntries(
+  Object.entries(LINK_FORMAT_TO_PASTE_STYLE).map(([format, style]) => [style, format as LinkFormat])
+)
+
+export function resolveLinkFormat(pasteStyle: string | undefined): LinkFormat {
+  if (!pasteStyle) return LINK_FORMAT.MARKDOWN
+  return PASTE_STYLE_TO_LINK_FORMAT[pasteStyle] ?? LINK_FORMAT.MARKDOWN
+}
+
+export function resolvePasteStyle(linkFormat: LinkFormat): IPasteStyle {
+  return LINK_FORMAT_TO_PASTE_STYLE[linkFormat]
+}
+
+/** 从剪贴板读取并抽取 HTTP URL，做 URL 上传对话框的初始值。读不到剪贴板权限就返回空串。 */
+export async function buildUrlDialogInitialValue(): Promise<string> {
+  try {
+    const clipboardText = await navigator.clipboard.readText()
+    return extractHttpUrlsFromText(clipboardText).join("\n")
+  } catch {
+    return ""
+  }
+}
 
 function buildProviderConfigs(
   appConfig: AppConfig,
