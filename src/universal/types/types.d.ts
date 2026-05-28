@@ -77,6 +77,7 @@ interface IShortKeyConfig {
   key: string // 按键
   name: string
   label: string
+  labelKey?: string
   from?: string
 }
 
@@ -84,6 +85,7 @@ interface IPluginShortKeyConfig {
   key: string
   name: string
   label: string
+  labelKey?: string
   handle: IShortKeyHandler
 }
 

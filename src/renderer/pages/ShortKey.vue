@@ -19,7 +19,7 @@
             :label="$T('SHORTCUT_NAME')"
           >
             <template #default="scope">
-              {{ scope.row.label ? scope.row.label : scope.row.name }}
+              {{ scope.row.labelKey ? $T(scope.row.labelKey) : (scope.row.label ? scope.row.label : scope.row.name) }}
             </template>
           </el-table-column>
           <el-table-column
