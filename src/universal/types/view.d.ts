@@ -11,6 +11,7 @@ interface ISettingForm {
   autoCopyUrl: boolean
   checkBetaUpdate: boolean
   useBuiltinClipboard: boolean
+  pasteImageFormat: import('#/types/enum').IPasteImageFormat
   language: string
   logFileSizeLimit: number
   encodeOutputURL: boolean

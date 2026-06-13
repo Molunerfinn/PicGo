@@ -12,6 +12,12 @@
     :label="$T('SETTINGS_STARTUP_MODE')"
     @change="handleChangeStartupMode"
   />
+  <SelectFormItem
+    v-model="form.pasteImageFormat"
+    :list="pasteImageFormatList"
+    :label="$T('SETTINGS_PASTE_IMAGE_FORMAT')"
+    @change="handleChangePasteImageFormat"
+  />
 </template>
 <script lang="ts" setup>
 import { reactive } from 'vue'
@@ -19,7 +25,7 @@ import { T as $T, i18nManager } from '@/i18n'
 import { saveConfig, sendToMain } from '@/utils/dataSender'
 import { GET_PICBEDS } from '~/universal/events/constants'
 import SelectFormItem from '@/components/settings/SelectFormItem.vue'
-import { IStartupMode } from '~/universal/types/enum'
+import { IStartupMode, IPasteImageFormat } from '~/universal/types/enum'
 import { isMacOSPlatform } from '@/utils/bridge'
 
 interface IProps {
@@ -50,6 +56,25 @@ const startupModeList = [
   }
 ].filter(item => !item.hide)
 
+const pasteImageFormatList = [
+  {
+    label: $T('PASTE_IMAGE_FORMAT_PNG'),
+    value: IPasteImageFormat.PNG
+  },
+  {
+    label: $T('PASTE_IMAGE_FORMAT_JPEG'),
+    value: IPasteImageFormat.JPEG
+  },
+  {
+    label: $T('PASTE_IMAGE_FORMAT_WEBP'),
+    value: IPasteImageFormat.WEBP
+  },
+  {
+    label: $T('PASTE_IMAGE_FORMAT_AVIF'),
+    value: IPasteImageFormat.AVIF
+  }
+]
+
 function handleLanguageChange (val: string) {
   i18nManager.setCurrentLanguage(val)
   saveConfig({
@@ -61,6 +86,12 @@ function handleLanguageChange (val: string) {
 function handleChangeStartupMode (val: IStartupMode) {
   saveConfig({
     'settings.startupMode': val
+  })
+}
+
+function handleChangePasteImageFormat (val: IPasteImageFormat) {
+  saveConfig({
+    'settings.pasteImageFormat': val
   })
 }
 

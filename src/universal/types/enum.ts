@@ -112,3 +112,10 @@ export enum IStartupMode {
   SHOW_MINI_WINDOW = 'SHOW_MINI_WINDOW',
   HIDE = 'HIDE'
 }
+
+export enum IPasteImageFormat {
+  PNG = 'PNG',
+  JPEG = 'JPEG',
+  WEBP = 'WEBP',
+  AVIF = 'AVIF'
+}

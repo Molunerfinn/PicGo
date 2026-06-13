@@ -18,7 +18,9 @@ import fse from 'fs-extra'
 import path from 'path'
 import { privacyManager } from '~/main/utils/privacyManager'
 import writeFile from 'write-file-atomic'
+import sharp from 'sharp'
 import { CLIPBOARD_IMAGE_FOLDER } from '~/universal/utils/static'
+import { IPasteImageFormat } from '#/types/enum'
 import { IpcMainEvent } from 'electron/main'
 import { dataReportManager } from '~/main/utils/dataReport'
 
@@ -98,6 +100,36 @@ class Uploader {
   }
 
   /**
+   * Get the buffer and extension for a clipboard image based on user's format preference
+   */
+  private async getClipboardImageBuffer (nativeImage: Electron.NativeImage): Promise<{ buffer: Buffer; ext: string }> {
+    const format = picgo.getConfig<string>('settings.pasteImageFormat') || IPasteImageFormat.PNG
+    const quality = picgo.getConfig<number>('settings.pasteImageQuality') || 90
+
+    switch (format) {
+      case IPasteImageFormat.JPEG: {
+        const buffer = nativeImage.toJPEG(quality)
+        return { buffer, ext: 'jpg' }
+      }
+      case IPasteImageFormat.WEBP: {
+        const pngBuffer = nativeImage.toPNG()
+        const buffer = await sharp(pngBuffer).webp({ quality }).toBuffer()
+        return { buffer, ext: 'webp' }
+      }
+      case IPasteImageFormat.AVIF: {
+        const pngBuffer = nativeImage.toPNG()
+        const buffer = await sharp(pngBuffer).avif({ quality: Math.min(quality, 63) }).toBuffer()
+        return { buffer, ext: 'avif' }
+      }
+      case IPasteImageFormat.PNG:
+      default: {
+        const buffer = nativeImage.toPNG()
+        return { buffer, ext: 'png' }
+      }
+    }
+  }
+
+  /**
    * use electron's clipboard image to upload
    */
   async uploadWithBuildInClipboard (): Promise<ImgInfo[]|false> {
@@ -109,9 +141,9 @@ class Uploader {
         if (nativeImage.isEmpty()) {
           return false
         }
-        const buffer = nativeImage.toPNG()
+        const { buffer, ext } = await this.getClipboardImageBuffer(nativeImage)
         const baseDir = picgo.baseDir
-        const fileName = `${dayjs().format('YYYYMMDDHHmmssSSS')}.png`
+        const fileName = `${dayjs().format('YYYYMMDDHHmmssSSS')}.${ext}`
         filePath = path.join(baseDir, CLIPBOARD_IMAGE_FOLDER, fileName)
         await writeFile(filePath, buffer)
         return await this.upload([filePath])

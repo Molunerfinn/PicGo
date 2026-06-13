@@ -55,7 +55,7 @@ import SwitchAreaSettings from './components/settings/switchArea/SwitchAreaSetti
 import CustomAreaSettings from './components/settings/customArea/CustomAreaSettings.vue'
 import SelectAreaSettings from './components/settings/selectArea/SelectAreaSettings.vue'
 import { openURL } from '@/utils/common'
-import { IStartupMode } from '#/types/enum'
+import { IStartupMode, IPasteImageFormat } from '#/types/enum'
 import { useStore } from '@/hooks/useStore'
 import { isLinuxPlatform } from '@/utils/bridge'
 
@@ -72,6 +72,7 @@ const form = reactive<ISettingForm>({
   autoCopyUrl: true,
   checkBetaUpdate: true,
   useBuiltinClipboard: false,
+  pasteImageFormat: IPasteImageFormat.PNG,
   language: 'en',
   logFileSizeLimit: 10,
   encodeOutputURL: true,
@@ -111,6 +112,7 @@ const applyAppConfig = (config: DeepReadonly<IConfig> | null) => {
   form.autoCopyUrl = settings.autoCopyUrl === undefined ? true : settings.autoCopyUrl
   form.checkBetaUpdate = settings.checkBetaUpdate === undefined ? true : settings.checkBetaUpdate
   form.useBuiltinClipboard = settings.useBuiltinClipboard === undefined ? false : settings.useBuiltinClipboard
+  form.pasteImageFormat = settings.pasteImageFormat || IPasteImageFormat.PNG
   form.language = settings.language ?? 'en'
   form.encodeOutputURL = settings.encodeOutputURL === undefined ? false : settings.encodeOutputURL
   form.customLink = settings.customLink || '$url'

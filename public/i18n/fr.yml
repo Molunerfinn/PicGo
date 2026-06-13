@@ -1,0 +1,388 @@
+LANG_DISPLAY_LABEL: Français
+ABOUT: À propos
+OPEN_MAIN_WINDOW: Ouvrir la fenêtre principale
+CHOOSE_DEFAULT_PICBED: Choisir l'hébergement par défaut
+OPEN_UPDATE_HELPER: Ouvrir l'assistant de mise à jour
+PRIVACY_TERMS_AGREEMENT: Politique de confidentialité et conditions d'utilisation
+RELOAD_APP: Redémarrer l'application
+UPLOAD_SUCCEED: Téléversement réussi
+UPLOAD_FAILED: Échec du téléversement
+UPLOAD_PROGRESS: Progression du téléversement
+OPERATION_SUCCEED: Opération réussie
+OPERATION_FAILED: Échec de l'opération
+UPLOADING: Téléversement en cours
+QUICK_UPLOAD: Téléversement rapide
+UPLOAD_BY_CLIPBOARD: Téléverser depuis le presse-papiers
+HIDE_WINDOW: Masquer la fenêtre
+SPONSOR_PICGO: Soutenir PicGo
+SHOW_PICBED_QRCODE: Afficher le QR code de configuration
+PICBED_QRCODE: QR code de configuration
+ENABLE: Activer
+DISABLE: Désactiver
+CONFIG_THING: Configurer ${c}
+FIND_NEW_VERSION: Nouvelle version trouvée
+NO_MORE_NOTICE: Ne plus afficher
+SHOW_DEVTOOLS: Ouvrir les outils de développement
+CURRENT_PICBED: Hébergement actuel
+OPEN_TOOLBOX: Ouvrir la boîte à outils
+
+# ---renderer i18n begin---
+
+CHOOSE_YOUR_DEFAULT_PICBED: "Choisir ${d} comme hébergement par défaut :"
+UPLOAD_AREA: Zone de téléversement
+GALLERY: Galerie
+PICBEDS_SETTINGS: Paramètres d'hébergement
+PICGO_SETTINGS: Paramètres PicGo
+PLUGIN_SETTINGS: Paramètres des plugins
+PICGO_CLOUD_TITLE: PicGo Cloud
+PICGO_CLOUD_ERROR_TITLE: Erreur PicGo Cloud
+PICGO_CLOUD_NOT_LOGGED_IN: Non connecté à PicGo Cloud
+PICGO_CLOUD_LOGIN: Connexion
+PICGO_CLOUD_LOGOUT: Déconnexion
+PICGO_CLOUD_CANCEL_LOGIN: Annuler la connexion
+PICGO_CLOUD_RETRY: Réessayer
+PICGO_CLOUD_CONFIG_SYNC: Synchronisation de la configuration
+PICGO_CLOUD_LOGIN_IN_PROGRESS: Connexion en cours. Veuillez terminer la connexion dans votre navigateur.
+PICGO_CLOUD_LOGGED_IN_AS: "Connecté en tant que : ${user}"
+PICGO_CLOUD_OPEN: Ouvrir PicGo Cloud
+PICGO_CLOUD_LOGIN_TIMEOUT: Délai de connexion expiré. Veuillez réessayer.
+PICGO_CLOUD_LOGIN_FAILED: Échec de la connexion. Veuillez réessayer.
+PICGO_CLOUD_AGREE_PREFIX: "J'ai lu et j'accepte les "
+PICGO_CLOUD_TERMS_OF_SERVICE: Conditions d'utilisation
+PICGO_CLOUD_AGREE_AND: " et la "
+PICGO_CLOUD_PRIVACY_POLICY: Politique de confidentialité
+PICGO_CLOUD_LOGIN_EXPIRED: Session expirée. Veuillez vous reconnecter.
+PICGO_CLOUD_ENCRYPTION_MODE_LABEL: Mode de chiffrement
+PICGO_CLOUD_ENCRYPTION_MODE_AUTO: Automatique
+PICGO_CLOUD_ENCRYPTION_MODE_SERVER: Chiffrement côté serveur
+PICGO_CLOUD_ENCRYPTION_MODE_E2E: Chiffrement de bout en bout
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_AUTO: Automatique : suit la dernière méthode de chiffrement utilisée par le cloud (par défaut, chiffrement côté serveur).
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_SERVER: Chiffrement côté serveur : votre configuration est chiffrée sur le serveur avant d'être stockée. Aucun PIN requis.
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_E2E: Chiffrement de bout en bout : utilisez votre PIN pour chiffrer/déchiffrer les données. PicGo ne stocke pas votre PIN ; si vous le perdez, les données ne pourront pas être récupérées.
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_DOC: Voir la documentation complète
+PICGO_CLOUD_E2E_CHECKBOX_LABEL: Activer le chiffrement E2E
+PICGO_CLOUD_E2E_ENABLE_WARNING_TITLE: Activer le chiffrement E2E
+PICGO_CLOUD_E2E_ENABLE_WARNING_MESSAGE: Le chiffrement E2E nécessite que vous conserviez votre PIN en lieu sûr. Si vous perdez votre PIN, les données chiffrées ne pourront pas être récupérées. PicGo ne stocke ni votre PIN ni aucune donnée de récupération.
+PICGO_CLOUD_REMOTE_E2E_AUTO_ENABLED: La configuration distante est chiffrée en E2E. E2E a été automatiquement activé localement.
+PICGO_CLOUD_E2E_PIN_SETUP_TITLE: Configurer le PIN E2E
+PICGO_CLOUD_E2E_PIN_DECRYPT_TITLE: Saisir le PIN E2E
+PICGO_CLOUD_E2E_PIN_RETRY_TITLE: "PIN incorrect. Veuillez réessayer (tentative ${retryCount})."
+PICGO_CLOUD_E2E_PIN_PLACEHOLDER: PIN
+PICGO_CLOUD_E2E_PIN_CONFIRM_PLACEHOLDER: Confirmer le PIN
+PICGO_CLOUD_CONFIG_SYNC_SUCCESS: Synchronisation de la configuration réussie.
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_DETECTED: Conflit détecté. Veuillez résoudre les conflits.
+PICGO_CLOUD_CONFIG_SYNC_FAILED: Échec de la synchronisation.
+PICGO_CLOUD_CONFIG_SYNC_ABORTED: Synchronisation annulée.
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_TITLE: Confirmer le changement de méthode de chiffrement ?
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_BODY: "Vous passez de \"${from}\" à \"${to}\".\n\nNote : changer de mode de chiffrement effacera tous vos historiques de version cloud.\nCela est dû au fait que les anciennes versions ne peuvent pas être déchiffrées ou vérifiées dans le nouveau mode.\nAprès le changement, le système créera immédiatement une nouvelle sauvegarde."
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CONFIRM: Confirmer le changement et effacer l'historique
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CANCEL: Annuler
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CANCELLED: Changement de méthode de chiffrement annulé
+PICGO_CLOUD_CONFIG_SYNC_FAILED_WITH_REASON: "Échec de la synchronisation : ${reason}"
+PICGO_CLOUD_CONFIG_SYNC_PIN_MAX_RETRY: Trop de tentatives de PIN incorrectes. Veuillez réessayer plus tard.
+PICGO_CLOUD_CONFIG_SYNC_LOCAL_CONFIG_INVALID: Configuration locale invalide. Veuillez vérifier votre fichier de configuration.
+PICGO_CLOUD_CONFIG_SYNC_IN_PROGRESS: Synchronisation en cours…
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_PENDING: Conflits en attente. Veuillez d'abord résoudre les conflits.
+PICGO_CLOUD_CONFIG_SYNC_NO_CONFLICT_SESSION: Aucune session de conflit trouvée.
+PICGO_CLOUD_CONFIG_SYNC_RESOLUTION_INCOMPLETE: Veuillez choisir Local ou Cloud pour tous les éléments en conflit.
+PICGO_CLOUD_CONFIG_SYNC_STARTING: Synchronisation démarrée…
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_TITLE: "Conflits détectés (${count})"
+PICGO_CLOUD_CONFIG_SYNC_CHOOSE_ALL_LOCAL: Tout choisir en local
+PICGO_CLOUD_CONFIG_SYNC_CHOOSE_ALL_CLOUD: Tout choisir en cloud
+PICGO_CLOUD_CONFIG_SYNC_RESET_ALL: Tout réinitialiser
+PICGO_CLOUD_CONFIG_SYNC_LOCAL_VERSION: Version locale
+PICGO_CLOUD_CONFIG_SYNC_CLOUD_VERSION: Version cloud
+PICGO_CLOUD_CONFIG_SYNC_ABORT: Abandonner
+PICGO_CLOUD_CONFIG_SYNC_CONFIRM_AND_SYNC: Confirmer et synchroniser
+PICGO_CLOUD_CONFIG_SYNC_VALUE_UNDEFINED: (vide)
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_RESOLVED: Conflits résolus.
+PICGO_CLOUD_LAST_SYNC_TIME: "Dernière synchronisation locale : ${time}"
+PICGO_CLOUD_LAST_SYNC_TIME_NONE: Aucune
+PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_TITLE: Redémarrage requis ?
+PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_MESSAGE: Certains paramètres peuvent nécessiter un redémarrage. Redémarrer maintenant ?
+PICGO_CLOUD_CONFIG_SYNC_RESTART_NOW: Redémarrer maintenant
+PICGO_CLOUD_CONFIG_SYNC_RESTART_LATER: Plus tard
+INPUT_BOX_CONFIRM_MISMATCH: Les deux saisies ne correspondent pas. Veuillez réessayer.
+PICGO_SPONSOR_TEXT: PicGo est un logiciel libre et gratuit. Si vous l'aimez, n'hésitez pas à m'offrir un café !
+ALIPAY: Alipay
+WECHATPAY: WeChat Pay
+CHOOSE_PICBED: Choisir l'hébergement
+COPY_PICBED_CONFIG: Copier la configuration
+COPY_PICBED_CONFIG_SUCCEED: Configuration copiée avec succès
+INPUT: Saisie
+CANCEL: Annuler
+CONFIRM: Confirmer
+CHOOSE_SHOWED_PICBED: Choisir l'hébergement affiché
+CHOOSE_PASTE_FORMAT: Choisir le format de collage
+SEARCH: Rechercher
+COPY: Copier
+DELETE: Supprimer
+SELECT_ALL: Tout sélectionner
+CHANGE_IMAGE_URL: Modifier l'URL de l'image
+CHANGE_IMAGE_URL_SUCCEED: URL de l'image modifiée avec succès
+COPY_LINK_SUCCEED: Lien copié avec succès
+BATCH_COPY_LINK_SUCCEED: Liens copiés en lot avec succès
+FILE_RENAME: Renommer le fichier
+COPY_FILE_PATH: Copier le chemin du fichier
+OPEN_FILE_PATH: Ouvrir le chemin du fichier
+SUCCESS: Succès
+FAILED: Échec
+
+# settings
+
+SETTINGS: Paramètres
+SETTINGS_OPEN_CONFIG_FILE: Ouvrir le fichier de configuration
+SETTINGS_CLICK_TO_OPEN: Cliquer pour ouvrir
+SETTINGS_SET_LOG_FILE: Définir le fichier de log
+SETTINGS_CLICK_TO_SET: Cliquer pour définir
+SETTINGS_CLICK_TO_CHECK: Cliquer pour vérifier
+SETTINGS_SET_SHORTCUT: Définir les raccourcis
+SETTINGS_URL_REWRITE: Réécriture d'URL
+SETTINGS_CUSTOM_LINK_FORMAT: Format de lien personnalisé
+SETTINGS_SET_PROXY_AND_MIRROR: Définir le proxy et le miroir
+SETTINGS_SET_SERVER: Configurer le serveur
+SETTINGS_CHECK_UPDATE: Vérifier les mises à jour
+SETTINGS_OPEN_UPDATE_HELPER: Ouvrir l'assistant de mise à jour
+SETTINGS_OPEN: Activé
+SETTINGS_CLOSE: Désactivé
+SETTINGS_ACCEPT_BETA_UPDATE: Accepter les mises à jour bêta
+SETTINGS_LAUNCH_ON_BOOT: Lancer au démarrage
+SETTINGS_RENAME_BEFORE_UPLOAD: Renommer avant téléversement
+SETTINGS_TIMESTAMP_RENAME: Renommer avec horodatage
+SETTINGS_OPEN_UPLOAD_TIPS: Afficher les notifications de téléversement
+SETTINGS_NOTIFICATION_SOUND: Émettre un son de notification
+SETTINGS_MINI_WINDOW_ON_TOP: Fenêtre mini toujours au premier plan
+SETTINGS_AUTO_COPY_URL_AFTER_UPLOAD: Copier automatiquement l'URL après téléversement
+SETTINGS_TIPS_PLACEHOLDER_URL: Utilisez $url pour représenter la position de l'URL
+SETTINGS_TIPS_PLACEHOLDER_FILENAME: Utilisez $fileName pour représenter la position du nom de fichier
+SETTINGS_TIPS_PLACEHOLDER_EXTNAME: Utilisez $extName pour représenter la position de l'extension
+SETTINGS_TIPS_SUCH_AS: Exemple
+SETTINGS_UPLOAD_PROXY: Proxy de téléversement
+SETTINGS_PLUGIN_INSTALL_PROXY: Proxy d'installation des plugins
+SETTINGS_PLUGIN_INSTALL_MIRROR: Miroir d'installation des plugins
+SETTINGS_CURRENT_VERSION: Version actuelle
+SETTINGS_NEWEST_VERSION: Dernière version
+SETTINGS_GETING: Récupération en cours
+SETTINGS_TIPS_HAS_NEW_VERSION: Une nouvelle version de PicGo est disponible. Cliquez sur Confirmer pour ouvrir la page de téléchargement.
+SETTINGS_LOG_FILE: Fichier de log
+SETTINGS_LOG_LEVEL: Niveau de log
+SETTINGS_LOG_FILE_SIZE: Taille du fichier de log
+SETTINGS_SET_PICGO_SERVER: Configurer PicGo-Server
+SETTINGS_TIPS_SERVER_NOTICE: Si vous ne savez pas à quoi sert le serveur, veuillez lire la documentation ou ne pas modifier la configuration.
+SETTINGS_ENABLE_SERVER: Activer le serveur
+SETTINGS_SET_SERVER_HOST: Définir l'adresse d'écoute
+SETTINGS_SET_SERVER_PORT: Définir le port d'écoute
+SETTINGS_TIP_PLACEHOLDER_HOST: Valeur par défaut recommandée : 127.0.0.1
+SETTINGS_TIP_PLACEHOLDER_PORT: Port par défaut recommandé : 36677
+SETTINGS_LOG_LEVEL_ALL: Tout-All
+SETTINGS_LOG_LEVEL_SUCCESS: Succès-Success
+SETTINGS_LOG_LEVEL_ERROR: Erreur-Error
+SETTINGS_LOG_LEVEL_INFO: Info-Info
+SETTINGS_LOG_LEVEL_WARN: Avertissement-Warn
+SETTINGS_LOG_LEVEL_NONE: Aucun-None
+SETTINGS_RESULT: Résultat
+SETTINGS_DEFAULT_PICBED: Définir l'hébergement par défaut
+SETTINGS_SET_DEFAULT_PICBED: Définir comme hébergement par défaut
+SETTINGS_NOT_CONFIG_OPTIONS: Aucune option de configuration
+SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD: Utiliser le presse-papiers intégré
+SETTINGS_CHOOSE_LANGUAGE: Choisir la langue
+BUILTIN_CLIPBOARD_TIPS: Utiliser la fonction de presse-papiers intégrée au lieu d'exécuter des scripts
+SETTINGS_PASTE_IMAGE_FORMAT: Format d'image au collage
+PASTE_IMAGE_FORMAT_PNG: PNG
+PASTE_IMAGE_FORMAT_JPEG: JPEG
+PASTE_IMAGE_FORMAT_WEBP: WebP
+PASTE_IMAGE_FORMAT_AVIF: AVIF
+UPLOADER_CONFIG_NAME: Nom de la configuration
+
+# url rewrite
+
+URL_REWRITE_HELP: Réécrit les URL des images téléversées. Les règles sont évaluées dans l'ordre ; la première règle correspondante s'applique.
+URL_REWRITE_ADD_RULE: Ajouter une règle
+URL_REWRITE_EDIT_RULE: Modifier la règle
+URL_REWRITE_EMPTY: Aucune règle
+URL_REWRITE_ORDER: Ordre
+URL_REWRITE_MATCH: Correspondance
+URL_REWRITE_REPLACE: Remplacement
+URL_REWRITE_FLAGS: Drapeaux
+URL_REWRITE_ENABLED: Activé
+URL_REWRITE_ACTIONS: Actions
+URL_REWRITE_MOVE_UP: Monter
+URL_REWRITE_MOVE_DOWN: Descendre
+URL_REWRITE_EDIT: Modifier
+URL_REWRITE_DELETE: Supprimer
+URL_REWRITE_DELETE_CONFIRM: Supprimer cette règle ?
+URL_REWRITE_MATCH_TIPS: Prend en charge les expressions régulières (JavaScript RegExp)
+URL_REWRITE_MATCH_PLACEHOLDER: https://example.com/path
+URL_REWRITE_REPLACE_TIPS: Chaîne de remplacement (prend en charge $1, $2...)
+URL_REWRITE_REPLACE_PLACEHOLDER: https://example.org/newpath
+URL_REWRITE_OPTIONS: Options
+URL_REWRITE_RULE_ENABLED: Activer cette règle
+URL_REWRITE_FLAG_GLOBAL_LABEL: Global (g)
+URL_REWRITE_FLAG_GLOBAL_DESC: Remplacer toutes les occurrences, pas seulement la première
+URL_REWRITE_FLAG_IGNORE_CASE_LABEL: Ignorer la casse (i)
+URL_REWRITE_FLAG_IGNORE_CASE_DESC: Correspondance insensible à la casse (par ex., JPG équivaut à jpg)
+URL_REWRITE_MATCH_REQUIRED: La règle de correspondance est requise
+URL_REWRITE_REPLACE_REQUIRED: Le contenu de remplacement est requis
+URL_REWRITE_INVALID_REGEX: Expression régulière invalide
+URL_REWRITE_PREVIEW_TITLE: Aperçu
+URL_REWRITE_PREVIEW_TIPS: Saisissez une URL pour voir comment les règles actuelles la réécrivent (correspondance dans l'ordre, seule la première règle correspondante s'applique)
+URL_REWRITE_PREVIEW_PLACEHOLDER: https://example.com/path/to/image.png
+URL_REWRITE_PREVIEW_RUN: Aperçu
+URL_REWRITE_PREVIEW_OUTPUT: URL de sortie
+URL_REWRITE_PREVIEW_INPUT_REQUIRED: Veuillez saisir une URL à prévisualiser
+URL_REWRITE_PREVIEW_RULE_INVALID: Règle invalide
+URL_REWRITE_PREVIEW_MATCHED_RULE: Règle correspondante
+URL_REWRITE_PREVIEW_NO_MATCH: Aucune règle correspondante
+UPLOADER_CONFIG_PLACEHOLDER: Veuillez saisir le nom de la configuration
+SELECTED_SETTING_HINT: Sélectionné
+SETTINGS_ENCODE_OUTPUT_URL: Encoder l'URL de sortie (ou copiée)
+SETTINGS_SHOW_DOCK_ICON: Afficher l'icône du Dock
+SETTINGS_SHOW_MENUBAR_ICON: Afficher l'icône de la barre de menus
+SETTINGS_SHOW_MENUBAR_ICON_TIPS: Si « Afficher l'icône du Dock » et « Afficher l'icône de la barre de menus » sont tous deux désactivés, vous ne pourrez pas retrouver la fenêtre principale de PicGo. Modifiez le fichier de configuration et définissez showDockIcon ou showMenubarIcon sur true pour récupérer l'accès.
+SETTINGS_STARTUP_MODE: Mode de démarrage
+SETTINGS_STARTUP_MODE_MAIN_WINDOW: Ouvrir la fenêtre principale
+SETTINGS_STARTUP_MODE_MINI_WINDOW: Ouvrir la fenêtre mini
+SETTINGS_STARTUP_MODE_HIDE: Démarrage silencieux
+
+# shortcut-page
+
+SHORTCUT_NAME: Nom du raccourci
+SHORTCUT_BIND: Raccourci clavier
+SHORTCUT_STATUS: État
+SHORTCUT_ENABLED: Activé
+SHORTCUT_DISABLED: Désactivé
+SHORTCUT_SOURCE: Source
+SHORTCUT_HANDLE: Action
+SHORTCUT_ENABLE: Activer
+SHORTCUT_DISABLE: Désactiver
+SHORTCUT_EDIT: Modifier
+SHORTCUT_CHANGE_UPLOAD: Modifier le raccourci de téléversement
+
+# gallery-page
+GALLERY_URL_REWRITE_TITLE: Réécrire les URL des images sélectionnées
+GALLERY_URL_REWRITE_RESULT_TITLE: Résultat de la réécriture d'URL
+GALLERY_URL_REWRITE_WARN_NO_SELECTION: Vous devez d'abord sélectionner au moins une image
+
+GALLERY_URL_REWRITE_APPLY_GLOBAL_RULES: Appliquer les règles globales de réécriture d'URL
+GALLERY_URL_REWRITE_GLOBAL_RULES_COUNT: Nombre de règles globales
+GALLERY_URL_REWRITE_TEMP_RULE_TIPS: Optionnel. Laissez vide pour ignorer la règle temporaire. La règle temporaire a une priorité plus élevée que les règles globales.
+GALLERY_URL_REWRITE_TEMP_RULE_REQUIRED: La règle temporaire nécessite à la fois « Correspondance » et « Remplacement »
+GALLERY_URL_REWRITE_NO_RULES_TO_APPLY: Aucune règle globale activée et aucune règle temporaire fournie
+GALLERY_URL_REWRITE_SAVE_TEMP_RULE_PROMPT: Enregistrer la règle temporaire dans la liste des règles globales de réécriture d'URL ?
+GALLERY_URL_REWRITE_APPLY_AND_SAVE: Appliquer et enregistrer
+GALLERY_URL_REWRITE_APPLY_ONLY: Appliquer uniquement
+GALLERY_URL_REWRITE_NO_CHANGES: Aucune URL modifiée
+GALLERY_URL_REWRITE_EMPTY_RESULT_WARN: Le résultat de la réécriture est vide ; ignoré
+
+# tray-page
+
+WAIT_TO_UPLOAD: En attente de téléversement
+ALREADY_UPLOAD: Téléversé
+
+# upload-page
+
+PICTURE_UPLOAD: Téléversement d'image
+DRAG_FILE_TO_HERE: Faites glisser le fichier ici, ou
+CLICK_TO_UPLOAD: cliquez pour téléverser
+LINK_FORMAT: Format du lien
+CUSTOM: Personnalisé
+CLIPBOARD_PICTURE: Image du presse-papiers
+TIPS_DRAG_VALID_PICTURE_OR_URL: Faites glisser une image ou une URL valide ici
+TIPS_INPUT_URL: Saisir l'URL
+TIPS_HTTP_PREFIX: Commence par http:// ou https://. Plusieurs URL acceptées (une par ligne)
+TIPS_INPUT_VALID_URL: Veuillez saisir une URL valide
+
+# plugins
+
+PLUGIN_SEARCH_PLACEHOLDER: Rechercher des plugins PicGo sur npm, ou cliquez sur le bouton pour voir la liste des meilleurs plugins
+PLUGIN_INSTALL: Installer
+PLUGIN_INSTALLING: Installation en cours…
+PLUGIN_INSTALLED: Installé
+PLUGIN_DOING_SOMETHING: En cours…
+PLUGIN_LIST: Liste des plugins
+PLUGIN_IMPORT_LOCAL: Importer des plugins locaux
+
+# tips
+
+TIPS_REMOVE_LINK: Cette action supprimera l'image de la galerie. Continuer ?
+TIPS_WILL_REMOVE_CHOOSED_IMAGES: Cette action supprimera ${m} images de la galerie. Continuer ?
+TIPS_MUST_CONTAINS_URL: Doit contenir $url, $fileName ou $extName
+TIPS_NETWORK_ERROR: Erreur réseau, impossible de récupérer
+TIPS_NEED_RELOAD: Redémarrage nécessaire
+TIPS_PLEASE_CHOOSE_LOG_LEVEL: Veuillez choisir le niveau de log
+TIPS_SET_SUCCEED: Configuration réussie
+TIPS_PLUGIN_NOT_GUI_IMPLEMENT: Ce plugin n'est pas optimisé pour l'interface graphique. Continuer ?
+TIPS_CLICK_NOTIFICATION_TO_RELOAD: Cliquez sur la notification pour redémarrer l'application
+TIPS_GET_PLUGIN_LIST_FAILED: Échec de la récupération de la liste des plugins
+
+# ---renderer i18n end---
+
+# plugins
+PLUGIN_INSTALL_SUCCEED: Plugin installé avec succès
+PLUGIN_INSTALL_FAILED: Échec de l'installation du plugin
+PLUGIN_UNINSTALL_SUCCEED: Plugin désinstallé avec succès
+PLUGIN_UNINSTALL_FAILED: Échec de la désinstallation du plugin
+PLUGIN_UPDATE_SUCCEED: Plugin mis à jour avec succès
+PLUGIN_UPDATE_FAILED: Échec de la mise à jour du plugin
+PLUGIN_IMPORT_SUCCEED: Plugin importé avec succès
+PLUGIN_IMPORT_FAILED: Échec de l'importation du plugin
+ENABLE_PLUGIN: Activer le plugin
+DISABLE_PLUGIN: Désactiver le plugin
+UNINSTALL_PLUGIN: Désinstaller le plugin
+UPDATE_PLUGIN: Mettre à jour le plugin
+
+# toolbox
+TOOLBOX: Boîte à outils
+TOOLBOX_TITLE: Résoudre les problèmes d'exécution de PicGo
+TOOLBOX_SUB_TITLE: Analysez immédiatement les éléments suivants pour résoudre les problèmes d'utilisation
+TOOLBOX_CHECK_CONFIG_FILE_BROKEN: Vérifier si le fichier de configuration est endommagé
+TOOLBOX_CHECK_GALLERY_FILE_BROKEN: Vérifier si le fichier de la galerie est endommagé
+TOOLBOX_CHECK_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD: Vérifier s'il y a un problème avec le téléversement d'images du presse-papiers
+TOOLBOX_CHECK_PROBLEM_WITH_PROXY: Vérifier si les paramètres de proxy sont corrects
+TOOLBOX_FIX_DONE_NEED_RELOAD: Réparation terminée. Redémarrage nécessaire. Redémarrer maintenant ?
+TOOLBOX_CANT_AUTO_FIX: Impossible de réparer automatiquement. Veuillez corriger vous-même les problèmes suivants
+TOOLBOX_START_SCAN: Démarrer l'analyse
+TOOLBOX_RE_SCAN: Réanalyser
+TOOLBOX_START_FIX: Démarrer la réparation
+TOOLBOX_SUCCESS_TIPS: Félicitations, aucun problème détecté
+TOOLBOX_CHECK_CONFIG_FILE_PATH_TIPS: "Chemin du fichier de configuration : ${path}"
+TOOLBOX_CHECK_CONFIG_FILE_BROKEN_TIPS: Le fichier de configuration est endommagé
+TOOLBOX_CHECK_GALLERY_FILE_PATH_TIPS: "Chemin du fichier de la galerie : ${path}"
+TOOLBOX_CHECK_GALLERY_FILE_BROKEN_TIPS: Le fichier de la galerie est endommagé
+TOOLBOX_CHECK_PROXY_SUCCESS_TIPS: Paramètres de proxy corrects
+TOOLBOX_CHECK_PROXY_NO_PROXY_TIPS: Aucun paramètre de proxy
+TOOLBOX_CHECK_PROXY_PROXY_IS_NOT_CORRECT: Paramètres de proxy incorrects
+TOOLBOX_CHECK_PROXY_PROXY_IS_NOT_WORKING: Paramètres de proxy inaccessibles
+TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_TIPS: "Chemin du dossier temporaire des images du presse-papiers : ${path}"
+TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_NOT_EXIST_TIPS: "Le dossier temporaire des images du presse-papiers n'existe pas : ${path}"
+TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_ERROR_TIPS: "Veuillez créer le dossier vous-même : ${path}"
+
+# tips
+TIPS_NOTICE: Remarque
+TIPS_WARNING: Avertissement
+TIPS_ERROR: Erreur
+TIPS_SKIPPED_INVALID_URLS: ${n} URL(s) invalide(s) ignorée(s). Consultez les logs pour plus de détails.
+TIPS_TOO_MANY_URLS_CONFIRM: Vous allez téléverser ${n} URL en une seule fois. Cela peut provoquer des ralentissements. Il est recommandé de les téléverser par lots. Continuer ?
+TIPS_NO_VALID_URLS: Aucune URL valide trouvée
+TIPS_INSTALL_NODE_AND_RELOAD_PICGO: Veuillez installer Node.js et redémarrer PicGo pour continuer
+TIPS_PLUGIN_REMOVE_GALLERY_ITEM: Un plugin tente de supprimer des images de la galerie. Continuer ?
+TIPS_PLUGIN_OVERWRITE_GALLERY: Un plugin tente d'écraser la liste de la galerie. Continuer ?
+TIPS_UPLOAD_NOT_PICTURES: Le dernier élément du presse-papiers n'est pas une image
+TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_DEFAULT: Fichier de configuration PicGo endommagé, restauré à la configuration par défaut
+TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_BACKUP: Fichier de configuration PicGo endommagé, restauré à la configuration de sauvegarde
+TIPS_PICGO_BACKUP_FILE_VERSION: "Version du fichier de sauvegarde : ${v}"
+TIPS_CUSTOM_CONFIG_FILE_PATH_ERROR: Erreur d'analyse du fichier de configuration personnalisé. Veuillez vérifier le contenu du chemin.
+TIPS_SHORTCUT_MODIFIED_SUCCEED: Raccourci modifié avec succès
+TIPS_SHORTCUT_MODIFIED_CONFLICT: Conflit de raccourci. Veuillez le redéfinir.
+TIPS_CUSTOM_LINK_STYLE_MODIFIED_SUCCEED: Format de lien personnalisé modifié avec succès
+TIPS_FIND_NEW_VERSION: Nouvelle version ${v} trouvée. De nombreuses nouvelles fonctionnalités ont été ajoutées. Voulez-vous télécharger la dernière version ?
+TIPS_DELETE_UPLOADER_CONFIG: Êtes-vous sûr de vouloir supprimer cette configuration ?
+TIPS_COPY_UPLOADER_CONFIG: Êtes-vous sûr de vouloir copier cette configuration ?
+TIPS_UPLOADER_CONFIG_NAME_EMPTY: Le nom de la configuration ne peut pas être vide
+TIPS_UPLOADER_CONFIG_NOT_FOUND: Configuration introuvable
+TIPS_UPLOADER_CONFIG_CANNOT_DELETE_LAST: Impossible de supprimer la dernière configuration
+
+# privacy
+PRIVACY: "Veuillez lire et accepter la Politique de confidentialité ${privacyUrl} et les Conditions d'utilisation ${termsUrl} avant d'utiliser l'application."
+PRIVACY_TIPS: Veuillez accepter la politique de confidentialité pour pouvoir téléverser.
+QUIT: Quitter
