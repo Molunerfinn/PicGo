@@ -58,6 +58,7 @@
     "picgo": "^2.0.3",
     "qrcode.vue": "^3.3.3",
     "semver": "^7.7.3",
+    "sharp": "^0.35.1",
     "shell-path": "2.1.0",
     "systeminformation": "^5.27.14",
     "tunnel": "^0.0.6",
