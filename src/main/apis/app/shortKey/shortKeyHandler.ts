@@ -89,6 +89,7 @@ class ShortKeyHandler {
           enable: true,
           name: config.name,
           label: config.label,
+          labelKey: config.labelKey,
           key: config.key
         }
       })
