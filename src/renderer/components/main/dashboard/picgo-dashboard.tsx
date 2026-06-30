@@ -182,7 +182,7 @@ export function PicGoDashboard () {
                   <div className="inline-flex size-24 rotate-3 items-center justify-center rounded-[2.5rem] bg-gradient-to-tr from-primary to-blue-400 shadow-2xl shadow-primary/20 transition-all duration-500 group-hover/dropzone:rotate-12 group-hover/dropzone:scale-110">
                     <UploadIcon className="size-11 text-white" />
                   </div>
-                  <h1 className="mb-6 mt-8 text-xl font-bold tracking-tight text-foreground md:text-2xl">
+                  <h1 className="mb-6 mt-8 text-2xl font-bold tracking-tight text-foreground md:text-3xl">
                     {t('DASHBOARD_DROP_IMAGES_HERE')}
                   </h1>
                   <div className="flex flex-col items-center gap-3">
