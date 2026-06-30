@@ -34,7 +34,7 @@ export function CloudAccountSummary ({
         </Avatar>
 
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <div className="truncate text-[28px] leading-none font-semibold tracking-tight text-foreground">
+          <div className="truncate text-[28px] font-semibold tracking-tight text-foreground">
             {userName}
           </div>
           <Badge

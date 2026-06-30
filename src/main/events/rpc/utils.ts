@@ -1,3 +1,4 @@
+import logger from '@core/picgo/logger'
 const errorToMessage = (e: unknown): string => {
   if (e instanceof Error) return e.message
   return String(e)
@@ -32,9 +33,11 @@ export const ok = <T>(data: T): IRPCResult<T> => ({
 
 export const fail = <T>(e: unknown): IRPCResult<T> => {
   const code = errorToCode(e)
+  const error = errorToMessage(e)
+  logger.error(`[RPC][FAIL] code=${code} message=${error}`)
   return {
     success: false,
-    error: errorToMessage(e),
+    error,
     ...(code ? { code } : {})
   }
 }
@@ -48,4 +51,3 @@ export const isIRPCResult = (value: unknown): value is IRPCResult<any> => {
   if (maybe.success) return 'data' in maybe
   return typeof maybe.error === 'string'
 }
-
