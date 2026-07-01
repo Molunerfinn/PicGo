@@ -51,6 +51,9 @@
     <a href="https://github.com/PicGo/bump-version">
       <img src="https://img.shields.io/badge/picgo-convention-blue.svg?style=flat-square" alt="">
     </a>
+    <a href="https://atomgit.com/Molunerfinn/PicGo">
+      <img src="https://atomgit.com/Molunerfinn/PicGo/star/badge.svg" alt="">
+    </a>
   </p>
 </div>
 
@@ -100,15 +103,15 @@ If you’re new to PicGo, start with the [User Guide](https://docs.picgo.app/gui
 
 ## Download & Install
 
-| Source                                                    | Link / Installation                                         | Platform   | Notes                                   |
-| --------------------------------------------------------- | ----------------------------------------------------------- | ---------- | --------------------------------------- |
-| GitHub Releases                                           | https://github.com/Molunerfinn/PicGo/releases               | All        | Downloads may be slow in mainland China |
-| [Shandong University mirror](https://mirrors.sdu.edu.cn/) | https://mirrors.sdu.edu.cn/github-release/Molunerfinn_PicGo | All        | Thanks to the mirror for hosting        |
-| [Scoop](https://scoop.sh/)                                | `scoop bucket add extras` & `scoop install picgo`           | Windows    | Thanks to @huangnauh and @Gladtbam      |
-| [Chocolatey](https://chocolatey.org/)                     | `choco install picgo`                                       | Windows    | Thanks to @iYato                        |
-| [Homebrew](https://brew.sh/)                              | `brew install picgo --cask`                                 | macOS      | Thanks to @womeimingzi11                |
-| [AUR](https://aur.archlinux.org/packages/yay)             | `yay -S picgo-appimage`                                     | Arch Linux | Thanks to @houbaron                     |
-| [Nix](https://search.nixos.org/packages?channel=unstable&query=picgo&show=picgo) | `nix-shell -p picgo`                 | Nix/NixOS  | Thanks to @qrzbing                      |
+| Source                                                                           | Link / Installation                                         | Platform   | Notes                                   |
+| -------------------------------------------------------------------------------- | ----------------------------------------------------------- | ---------- | --------------------------------------- |
+| GitHub Releases                                                                  | https://github.com/Molunerfinn/PicGo/releases               | All        | Downloads may be slow in mainland China |
+| [Shandong University mirror](https://mirrors.sdu.edu.cn/)                        | https://mirrors.sdu.edu.cn/github-release/Molunerfinn_PicGo | All        | Thanks to the mirror for hosting        |
+| [Scoop](https://scoop.sh/)                                                       | `scoop bucket add extras` & `scoop install picgo`           | Windows    | Thanks to @huangnauh and @Gladtbam      |
+| [Chocolatey](https://chocolatey.org/)                                            | `choco install picgo`                                       | Windows    | Thanks to @iYato                        |
+| [Homebrew](https://brew.sh/)                                                     | `brew install picgo --cask`                                 | macOS      | Thanks to @womeimingzi11                |
+| [AUR](https://aur.archlinux.org/packages/yay)                                    | `yay -S picgo-appimage`                                     | Arch Linux | Thanks to @houbaron                     |
+| [Nix](https://search.nixos.org/packages?channel=unstable&query=picgo&show=picgo) | `nix-shell -p picgo`                                        | Nix/NixOS  | Thanks to @qrzbing                      |
 
 ## Screenshots
 
