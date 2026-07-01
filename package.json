@@ -72,7 +72,7 @@
     "motion": "^12.35.1",
     "multer": "^1.4.5-lts.1",
     "next-themes": "^0.4.6",
-    "picgo": "^2.0.3",
+    "picgo": "^3.0.0",
     "prismjs": "^1.30.0",
     "qrcode.react": "^4.2.0",
     "qrcode.vue": "^3.3.3",
