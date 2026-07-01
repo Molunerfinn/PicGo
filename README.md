@@ -115,7 +115,7 @@ If you’re new to PicGo, start with the [User Guide](https://docs.picgo.app/gui
 
 ## Screenshots
 
-![](https://raw.githubusercontent.com/Molunerfinn/test/master/picgo/picgo-2.0.gif)
+![](https://raw.githubusercontent.com/Molunerfinn/PicGo/dev/assets/picgo-3.0.gif)
 
 ![picgo-menubar](https://user-images.githubusercontent.com/12621342/34242310-b5056510-e655-11e7-8568-60ffd4f71910.gif)
 
