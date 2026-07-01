@@ -9,12 +9,14 @@ import {
 import { IStartupMode, IWindowList } from '#/types/enum'
 import bus from '@core/bus'
 import { CREATE_APP_MENU } from '@core/bus/constants'
-import { TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
+import { TOGGLE_SHORTKEY_MODIFIED_MODE, WINDOW_STATE_CHANGED } from '#/events/constants'
 import { app } from 'electron'
 import { T } from '~/main/i18n'
 import { isLinux, isWindows } from '~/universal/utils/common'
 import { getStaticPath } from '#/utils/staticPath'
 import picgo from '@core/picgo'
+import { getMainWindowState, saveMainWindowState } from './windowState'
+import { isDev } from '~/main/utils/env'
 // import { URLSearchParams } from 'url'
 
 const windowList = new Map<IWindowList, IWindowListItem>()
@@ -62,8 +64,8 @@ windowList.set(IWindowList.TRAY_WINDOW, {
       frame: false,
       fullscreenable: false,
       resizable: false,
-      transparent: true,
-      vibrancy: 'ultra-dark',
+      transparent: false,
+      backgroundColor: '#111827',
       webPreferences: {
         ...defaultWebPreferences,
         webSecurity: false
@@ -83,18 +85,21 @@ windowList.set(IWindowList.SETTING_WINDOW, {
   multiple: false,
   options () {
     const showDockIcon = picgo.getConfig<boolean>('settings.showDockIcon') !== false
+    const mainWindowState = getMainWindowState()
     const options: IBrowserWindowOptions = {
-      height: 450,
-      width: 800,
+      height: mainWindowState.height,
+      width: mainWindowState.width,
+      minHeight: 450,
+      minWidth: 800,
       show: false,
-      frame: true,
+      frame: false,
       center: true,
       fullscreenable: false,
-      resizable: false,
+      resizable: true,
       title: 'PicGo',
-      transparent: true,
+      transparent: false,
+      backgroundColor: '#0f172a',
       skipTaskbar: !showDockIcon,
-      titleBarStyle: 'hidden',
       webPreferences: {
         ...defaultWebPreferences,
         webSecurity: false
@@ -110,6 +115,30 @@ windowList.set(IWindowList.SETTING_WINDOW, {
   },
   callback (window, windowManager) {
     window.loadURL(handleWindowParams(SETTING_WINDOW_URL))
+    if (isDev) {
+      window.webContents.openDevTools({ mode: 'detach' })
+    }
+    window.on('maximize', () => {
+      window.webContents.send(WINDOW_STATE_CHANGED, {
+        isMaximized: true
+      })
+    })
+    window.on('unmaximize', () => {
+      window.webContents.send(WINDOW_STATE_CHANGED, {
+        isMaximized: false
+      })
+    })
+    window.on('close', () => {
+      const nextBounds = window.isMaximized()
+        ? window.getNormalBounds()
+        : window.getBounds()
+
+      saveMainWindowState({
+        width: nextBounds.width,
+        height: nextBounds.height,
+        isMaximized: window.isMaximized()
+      })
+    })
     window.on('closed', () => {
       bus.emit(TOGGLE_SHORTKEY_MODIFIED_MODE, false)
       if (process.platform === 'linux') {
@@ -118,6 +147,9 @@ windowList.set(IWindowList.SETTING_WINDOW, {
         })
       }
     })
+    if (getMainWindowState().isMaximized) {
+      window.maximize()
+    }
     bus.emit(CREATE_APP_MENU)
     windowManager.create(IWindowList.MINI_WINDOW)
   }
@@ -135,7 +167,8 @@ windowList.set(IWindowList.MINI_WINDOW, {
       fullscreenable: false,
       skipTaskbar: true,
       resizable: false,
-      transparent: process.platform !== 'linux',
+      transparent: false,
+      backgroundColor: '#0f172a',
       icon: getStaticPath('logo.png'),
       webPreferences: {
         ...defaultWebPreferences
@@ -162,7 +195,7 @@ windowList.set(IWindowList.RENAME_WINDOW, {
       show: true,
       fullscreenable: false,
       resizable: false,
-      backgroundColor: 'rgba(26,40,42,0.9)',
+      backgroundColor: '#0f172a',
       webPreferences: {
         ...defaultWebPreferences
       }
@@ -197,14 +230,14 @@ windowList.set(IWindowList.TOOLBOX_WINDOW, {
   multiple: false,
   options () {
     const options: IBrowserWindowOptions = {
-      height: 450,
+      height: 480,
       width: 800,
       show: false,
       frame: true,
       center: true,
       fullscreenable: false,
       resizable: false,
-      backgroundColor: 'rgba(26,40,42,0.9)',
+      backgroundColor: '#0f172a',
       title: `PicGo-${T('TOOLBOX')}`,
       icon: getStaticPath('logo.png'),
       webPreferences: {
@@ -223,13 +256,13 @@ windowList.set(IWindowList.TOOLBOX_WINDOW, {
     if (currentWindow && currentWindow.isVisible()) {
     // bounds: { x: 821, y: 75, width: 800, height: 450 }
       const bounds = currentWindow.getBounds()
-      const positionX = bounds.x + bounds.width / 2 - 400
+      const positionX = Math.round(bounds.x + bounds.width / 2 - 400)
       let positionY
       // if is the settingWindow
       if (bounds.height > 400) {
-        positionY = bounds.y + bounds.height / 2 - 225
+        positionY = Math.round(bounds.y + bounds.height / 2 - 240)
       } else { // if is the miniWindow
-        positionY = bounds.y + bounds.height / 2
+        positionY = Math.round(bounds.y + bounds.height / 2)
       }
       window.setPosition(positionX, positionY, false)
     }

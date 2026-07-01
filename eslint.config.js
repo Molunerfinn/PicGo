@@ -5,8 +5,12 @@ const tsPlugin = require('@typescript-eslint/eslint-plugin')
 const tsParser = require('@typescript-eslint/parser')
 const importPlugin = require('eslint-plugin-import')
 const promisePlugin = require('eslint-plugin-promise')
+const reactHooksPlugin = require('eslint-plugin-react-hooks')
+const reactRefreshModule = require('eslint-plugin-react-refresh')
 const vuePlugin = require('eslint-plugin-vue')
 const stylistic = require('@stylistic/eslint-plugin')
+
+const reactRefreshPlugin = reactRefreshModule.default || reactRefreshModule.reactRefresh || reactRefreshModule
 
 const isProduction = process.env.NODE_ENV === 'production'
 const vueConfigs = vuePlugin.configs['flat/recommended'].map(config => ({
@@ -65,6 +69,8 @@ module.exports = [
       'test/e2e/*.js',
       'node_modules/**',
       'vitest.config.ts',
+      'src/renderer/temp-vue/**',
+      'src/renderer/routeTree.gen.ts'
     ]
   },
   {
@@ -79,6 +85,8 @@ module.exports = [
     plugins: {
       import: importPlugin,
       promise: promisePlugin,
+      'react-hooks': reactHooksPlugin,
+      'react-refresh': reactRefreshPlugin,
       '@stylistic': stylistic
     },
     settings: {
@@ -104,7 +112,8 @@ module.exports = [
       'no-unused-vars': 'off',
       '@stylistic/indent': ['error', 2],
       '@stylistic/semi': ['error', 'never'],
-      'no-unexpected-multiline': 'error' 
+      'no-unexpected-multiline': 'error',
+      ...reactHooksPlugin.configs.recommended.rules
     }
   },
   ...vueConfigs,
@@ -120,6 +129,32 @@ module.exports = [
     files: ['**/*.{ts,tsx,vue}'],
     rules: {
       'no-undef': 'off'
+    }
+  },
+  {
+    files: ['src/renderer/**/*.{ts,tsx,vue}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        paths: [
+          {
+            name: 'electron',
+            allowTypeImports: true,
+            message: 'Use the preload bridge from @/utils/bridge in renderer runtime code.'
+          },
+          {
+            name: 'electron/renderer',
+            allowTypeImports: true,
+            message: 'Use the preload bridge from @/utils/bridge in renderer runtime code.'
+          }
+        ]
+      }]
+    }
+  },
+  {
+    files: ['**/*.{tsx,jsx}'],
+    ignores: ['src/renderer/routes/**/*.tsx'],
+    rules: {
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }]
     }
   },
   {

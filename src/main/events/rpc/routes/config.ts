@@ -4,10 +4,39 @@ import picgo from '@core/picgo'
 import { T } from '~/main/i18n'
 import { fail, ok } from '../utils'
 import { notifyAppConfigUpdated } from '~/main/utils/appConfigNotifier'
+import windowManager from 'apis/app/window/windowManager'
+import { IWindowList } from '#/types/enum'
 
 const configRouter = new RPCRouter()
 
 configRouter
+  .add(IRPCActionType.CHANGE_CURRENT_UPLOADER, async (args) => {
+    try {
+      const [type, configName] = args as ISelectUploaderConfigArgs
+
+      if (configName) {
+        const activeConfig = picgo.uploaderConfig.use(type, configName)
+
+        if (windowManager.has(IWindowList.SETTING_WINDOW)) {
+          windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('syncPicBed')
+        }
+
+        notifyAppConfigUpdated()
+        return ok(activeConfig._id)
+      }
+
+      const activeConfig = picgo.uploaderConfig.use(type)
+
+      if (windowManager.has(IWindowList.SETTING_WINDOW)) {
+        windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send('syncPicBed')
+      }
+
+      notifyAppConfigUpdated()
+      return ok(activeConfig._id)
+    } catch (e) {
+      return fail(e)
+    }
+  })
   .add(IRPCActionType.GET_PICBED_CONFIG_LIST, async (args) => {
     try {
       const [type] = args as IGetUploaderConfigListArgs

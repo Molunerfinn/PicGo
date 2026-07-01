@@ -3,7 +3,7 @@
     "target": "esnext", // https://github.com/TypeStrong/ts-loader/issues/1061
     "module": "esnext",
     "strict": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "importHelpers": true,
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
@@ -15,8 +15,6 @@
     "baseUrl": ".",
     "types": [
       "vite/client",
-      "element-plus/global",
-      "vue3-photo-preview",
       "electron"
     ],
     "typeRoots": [
@@ -61,7 +59,8 @@
     "electron-builder.config.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/renderer/temp-vue/**"
   ],
   "vueCompilerOptions": {
     "target": 3,

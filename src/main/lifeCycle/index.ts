@@ -12,7 +12,7 @@ import { IRemoteNoticeTriggerHook, IWindowList } from '#/types/enum'
 import windowManager from 'apis/app/window/windowManager'
 import {
   updateShortKeyFromVersion212,
-  migrateGalleryFromVersion230
+  migrateAlbumFromVersion230
 } from '~/main/migrate'
 import {
   uploadSelectedFiles,
@@ -25,7 +25,7 @@ import server from '~/main/server/index'
 import updateChecker from '~/main/utils/updateChecker'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
 import { getUploadFiles } from '~/main/utils/handleArgv'
-import { GalleryDB } from '~/main/apis/core/datastore'
+import { AlbumDB } from '~/main/apis/core/datastore'
 import bus from '@core/bus'
 import logger from 'apis/core/picgo/logger'
 import picgo from 'apis/core/picgo'
@@ -66,7 +66,7 @@ class LifeCycle {
     ipcList.listen()
     busEventList.listen()
     updateShortKeyFromVersion212(picgo)
-    await migrateGalleryFromVersion230(GalleryDB.getInstance(), picgo)
+    await migrateAlbumFromVersion230(AlbumDB.getInstance(), picgo)
   }
 
   private onReady () {

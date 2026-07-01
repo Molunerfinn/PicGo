@@ -1,11 +1,7 @@
-import { onBeforeMount, ref } from 'vue'
+import { useState } from 'react'
 import { getPlatform } from '@/utils/bridge'
 
-export const useOS = () => {
-  const os = ref<string>('')
-
-  onBeforeMount(() => {
-    os.value = getPlatform()
-  })
+export function useOS () {
+  const [os] = useState(getPlatform())
   return os
 }

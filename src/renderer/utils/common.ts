@@ -1,6 +1,3 @@
-import { isReactive, isRef, toRaw, unref } from 'vue'
-import { sendToMain } from './dataSender'
-import { OPEN_URL, PICGO_OPEN_FILE } from '~/universal/events/constants'
 import { env, webUtils } from './bridge'
 
 const isDevelopment = env.isDev
@@ -21,48 +18,23 @@ export const trimValues = (obj: IStringKeyMap) => {
   return newObj
 }
 
-/**
- * get raw data from reactive or ref
- */
-export const getRawData = (args: any): any => {
-  if (args === null) return args
-  if (Array.isArray(args)) {
-    const data = args.map((item: any) => {
-      if (isRef(item)) {
-        return getRawData(unref(item))
-      }
-      if (isReactive(item)) {
-        return getRawData(toRaw(item))
-      }
-      return getRawData(item)
-    })
-    return data
-  }
-  if (typeof args === 'object') {
-    const data = {} as IStringKeyMap
-    Object.keys(args).forEach(key => {
-      const item = args[key]
-      if (isRef(item)) {
-        data[key] = getRawData(unref(item))
-      } else if (isReactive(item)) {
-        data[key] = getRawData(toRaw(item))
-      } else {
-        data[key] = getRawData(item)
-      }
-    })
-    return data
-  }
-  return args
-}
-
-export const openFile = (fileName: string) => {
-  sendToMain(PICGO_OPEN_FILE, fileName)
-}
-
-export const openURL = (url: string) => {
-  sendToMain(OPEN_URL, url)
-}
-
 export const getFilePath = (file: File) => {
   return webUtils.getPathForFile(file)
+}
+
+/**
+ * Normalize a timestamp value (number, string, or Date) to milliseconds.
+ * Returns 0 if the value is missing or not a valid date.
+ */
+export function resolveTimestampValue (value?: number | string | Date): number {
+  if (typeof value === 'number') {
+    return value
+  }
+
+  if (typeof value === 'string' || value instanceof Date) {
+    const ms = new Date(value).getTime()
+    return Number.isFinite(ms) ? ms : 0
+  }
+
+  return 0
 }

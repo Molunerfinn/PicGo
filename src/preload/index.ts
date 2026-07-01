@@ -1,5 +1,4 @@
 import {
-  clipboard,
   contextBridge,
   ipcRenderer,
   webFrame,
@@ -73,9 +72,8 @@ const createI18nBridge = (locales: I18nLocalesMap, defaultLanguage: string) => {
 
 const bridgeApi = {
   ipc,
-  clipboard: {
-    writeText: (text: string) => clipboard.writeText(text)
-  },
+  // 注：clipboard 不在此暴露——sandboxed preload（Electron 22+ 默认）下
+  // `require('electron').clipboard` 为 undefined。剪贴板操作改走 RPC（IRPCActionType.COPY_TEXT）。
   webUtils: {
     getPathForFile: (file: File): string => webUtils.getPathForFile(file)
   },

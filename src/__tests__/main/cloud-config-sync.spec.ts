@@ -6,6 +6,14 @@ import fs from 'fs-extra'
 import { IRPCActionType } from '~/universal/types/enum'
 import { IPicGoCloudConfigSyncToastType } from '#/types/cloudConfigSync'
 
+vi.mock('electron', () => ({
+  app: {
+    isPackaged: false,
+    getPath: vi.fn(() => os.tmpdir()),
+    getAppPath: vi.fn(() => process.cwd())
+  }
+}))
+
 type OnAskEncryptionSwitch = (context: { from: string; to: string }) => Promise<boolean>
 
 type SyncImplementation = (askSwitch?: OnAskEncryptionSwitch) => Promise<{ status: string; message?: string }>

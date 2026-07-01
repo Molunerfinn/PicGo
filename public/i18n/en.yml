@@ -22,6 +22,7 @@ DISABLE: Disable
 CONFIG_THING: Config ${c}
 FIND_NEW_VERSION: Find New Version
 NO_MORE_NOTICE: No More Notice
+MORE: More
 SHOW_DEVTOOLS: Show Devtools
 CURRENT_PICBED: Current Picbed
 OPEN_TOOLBOX: Open Toolbox
@@ -29,13 +30,19 @@ OPEN_TOOLBOX: Open Toolbox
 # ---renderer i18n begin---
 
 CHOOSE_YOUR_DEFAULT_PICBED: "Choose ${d} as your default picbed:"
+SIDEBAR_DASHBOARD: Dashboard
 UPLOAD_AREA: Upload Area
-GALLERY: Gallery
+ALBUM: Album
+ALBUM_PROVIDERS: Providers
 PICBEDS_SETTINGS: Picbeds Settings
 PICGO_SETTINGS: PicGo Settings
 PLUGIN_SETTINGS: Plugins Settings
+DASHBOARD_HISTORY_PANEL_TITLE: History Panel
 PICGO_CLOUD_TITLE: PicGo Cloud
+PICGO_CLOUD_DESCRIPTION: A cloud service built by PicGo, connecting all your devices.
+PICGO_CLOUD_BRAND_NAME: PicGo Cloud
 PICGO_CLOUD_ERROR_TITLE: PicGo Cloud Error
+PICGO_CLOUD_LOADING: Loading PicGo Cloud status...
 PICGO_CLOUD_NOT_LOGGED_IN: Not logged in to PicGo Cloud.
 PICGO_CLOUD_LOGIN: Log In
 PICGO_CLOUD_LOGOUT: Log Out
@@ -98,6 +105,55 @@ PICGO_CLOUD_CONFIG_SYNC_VALUE_UNDEFINED: (empty)
 PICGO_CLOUD_CONFIG_SYNC_CONFLICT_RESOLVED: Conflicts resolved.
 PICGO_CLOUD_LAST_SYNC_TIME: "Last local sync time: ${time}"
 PICGO_CLOUD_LAST_SYNC_TIME_NONE: None
+PICGO_CLOUD_LAST_SYNC_LABEL: Last sync
+PICGO_CLOUD_PLAN_USAGE_TITLE: Plan & Usage
+PICGO_CLOUD_PLAN_USAGE_DESC: View your current plan and usage overview.
+PICGO_CLOUD_PLAN_PERIOD_LABEL: Plan Period
+PICGO_CLOUD_STORAGE_LABEL: Storage
+PICGO_CLOUD_FILES_LABEL: Files
+PICGO_CLOUD_USAGE_PROGRESS: "${used} of ${total}"
+PICGO_CLOUD_USAGE_UNLIMITED: Unlimited
+PICGO_CLOUD_PLAN_PERIOD_RENEWS: "Renews on ${date}"
+PICGO_CLOUD_PLAN_PERIOD_CANCELS: "Cancels on ${date}"
+PICGO_CLOUD_PLAN_PERIOD_UNTIL: "Valid until ${date}"
+PICGO_CLOUD_PLAN_PERIOD_LIFETIME: Lifetime
+PICGO_CLOUD_PLAN_PERIOD_GRACE_LABEL: Grace Until
+PICGO_CLOUD_PLAN_PERIOD_GRACE_TOOLTIP: "Your paid plan has expired and is now in the grace period. PicGo Cloud images remain accessible until this date, but quota is temporarily downgraded to free. Most paid features are temporarily unavailable. After this date, the account enters the frozen state."
+PICGO_CLOUD_PLAN_PERIOD_FROZEN_LABEL: Frozen Until
+PICGO_CLOUD_PLAN_PERIOD_FROZEN_TOOLTIP: "Your account is frozen. PicGo Cloud images return errors. After this date, data may be cleaned up. Renew to restore access."
+PICGO_CLOUD_QUOTA_DOWNGRADED: "Quota temporarily downgraded to ${plan} during grace period. Renew to restore."
+PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_TITLE: Plan in grace period
+PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_DESC: "Your paid plan has expired and entered a ${days}-day grace period. Quota is temporarily downgraded to free, and most paid features are temporarily unavailable. Renew to restore full access."
+PICGO_CLOUD_LIFECYCLE_BANNER_FROZEN_TITLE: Account frozen
+PICGO_CLOUD_LIFECYCLE_BANNER_FROZEN_DESC: "Your account is frozen — cloud images are temporarily inaccessible and data will be cleaned up in ${days} days. Renew now to restore access."
+PICGO_CLOUD_LIFECYCLE_BANNER_PENDING_CLEANUP_TITLE: Data cleanup pending
+PICGO_CLOUD_LIFECYCLE_BANNER_PENDING_CLEANUP_DESC: Your account is pending cleanup and cloud data will be permanently deleted soon. Renew immediately if you want to keep your data.
+PICGO_CLOUD_LIFECYCLE_BANNER_CTA: Renew Now
+PICGO_CLOUD_LIFECYCLE_BANNER_DISMISS: Dismiss
+PICGO_CLOUD_AUTO_IMPORT_DISABLED_BY_LIFECYCLE: Auto-import is paused while your plan is in grace or frozen period. It will resume after renewal.
+PICGO_CLOUD_IMAGE_UNAVAILABLE: Image unavailable
+PICGO_CLOUD_ERROR_GRACE_RESTRICTED: This action is unavailable during the grace period. Please renew your plan and try again.
+PICGO_CLOUD_ERROR_ACCOUNT_FROZEN: Your account is frozen. Please renew your plan to restore access.
+PICGO_CLOUD_ERROR_IMPORT_DISABLED: Auto-import is disabled. Enable it in PicGo Cloud settings first.
+PICGO_CLOUD_ERROR_PLAN_INELIGIBLE: Your current plan does not support this feature. Please upgrade and try again.
+PICGO_CLOUD_ERROR_QUOTA_EXCEEDED_ACTIVE: You have reached your plan quota. Upgrade to a higher plan to get more.
+PICGO_CLOUD_ERROR_QUOTA_EXCEEDED_GRACE: Quota is downgraded to free tier during grace period. Renew to restore.
+PICGO_CLOUD_ERROR_PLAN_REQUIRED: This feature requires a paid plan.
+PICGO_CLOUD_USAGE_LOAD_FAILED: Failed to load usage data.
+PICGO_CLOUD_CONFIG_SYNC_LOAD_FAILED: Failed to load sync state.
+PICGO_CLOUD_FREE_PLAN_BANNER: You're on a free plan. Upgrade to unlock more quota and advanced cloud features.
+PICGO_CLOUD_VIEW_PLANS: View Plans
+PICGO_CLOUD_CONFIG_SYNC_TITLE: Configuration Sync
+PICGO_CLOUD_CONFIG_SYNC_CARD_DESC: Sync your settings across devices securely.
+PICGO_CLOUD_SYNC_NOW: Sync Now
+PICGO_CLOUD_SYNC_QUOTA_LABEL: Sync quota
+PICGO_CLOUD_SYNC_QUOTA_TIP: "Your plan retains the most recent ${limit} configuration snapshots. Even at ${limit} of ${limit}, syncing remains available — older snapshots beyond the limit are pruned automatically after each sync."
+PICGO_CLOUD_LOGIN_PANEL_TITLE: Sign in to PicGo Cloud
+PICGO_CLOUD_LOGIN_PANEL_DESC: Sign in to use PicGo Cloud as PicGo's official image host and enable cloud features.
+PICGO_CLOUD_LOGIN_FEATURES_TITLE: Cloud features
+PICGO_CLOUD_OFFICIAL_IMAGE_HOST_TITLE: Official Image Host
+PICGO_CLOUD_OFFICIAL_IMAGE_HOST_DESC: PicGo's official image host with built-in album cloud sync.
+PICGO_CLOUD_PAID_PLAN_BADGE: Paid plan
 PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_TITLE: Restart Required?
 PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_MESSAGE: Some settings may require a restart to take effect. Restart now?
 PICGO_CLOUD_CONFIG_SYNC_RESTART_NOW: Restart Now
@@ -142,6 +198,9 @@ SETTINGS_CUSTOM_LINK_FORMAT: Custom Link Format
 SETTINGS_SET_PROXY_AND_MIRROR: Set Proxy and Mirror
 SETTINGS_SET_SERVER: Set Server
 SETTINGS_CHECK_UPDATE: Check Update
+SETTINGS_UPDATE_CHECK_RESULT: Latest version is ${version}, ${action}
+SETTINGS_UPDATE_CHECK_NO_UPDATE: no update needed
+SETTINGS_UPDATE_CHECK_CAN_UPDATE: update available
 SETTINGS_OPEN_UPDATE_HELPER: Open Update Helper
 SETTINGS_OPEN: Open
 SETTINGS_CLOSE: Close
@@ -182,7 +241,7 @@ SETTINGS_LOG_LEVEL_WARN: Warn
 SETTINGS_LOG_LEVEL_NONE: None
 SETTINGS_RESULT: Result
 SETTINGS_DEFAULT_PICBED: Default Picbed
-SETTINGS_SET_DEFAULT_PICBED: Set Default Picbed
+SETTINGS_SET_DEFAULT_PICBED: Set Default Uploader
 SETTINGS_NOT_CONFIG_OPTIONS: Not Config Options
 SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD: Use Builtin Clipboard to Upload
 SETTINGS_CHOOSE_LANGUAGE: Choose Language
@@ -253,21 +312,21 @@ SHORTCUT_DISABLE: Disable
 SHORTCUT_EDIT: Edit
 SHORTCUT_CHANGE_UPLOAD: Change Upload Shortcut
 
-# gallery-page
-GALLERY_URL_REWRITE_TITLE: Rewrite Selected Image URLs
-GALLERY_URL_REWRITE_RESULT_TITLE: Rewrite Image URL Result
-GALLERY_URL_REWRITE_WARN_NO_SELECTION: You must select at least one picture first
+# album-page
+ALBUM_URL_REWRITE_TITLE: Rewrite Selected Image URLs
+ALBUM_URL_REWRITE_RESULT_TITLE: Rewrite Image URL Result
+ALBUM_URL_REWRITE_WARN_NO_SELECTION: You must select at least one picture first
 
-GALLERY_URL_REWRITE_APPLY_GLOBAL_RULES: Apply global URL rewrite rules
-GALLERY_URL_REWRITE_GLOBAL_RULES_COUNT: Global rules
-GALLERY_URL_REWRITE_TEMP_RULE_TIPS: Optional. Leave empty to skip the temporary rule. Temporary rule has higher priority than global rules.
-GALLERY_URL_REWRITE_TEMP_RULE_REQUIRED: Match and Replace are required for the temporary rule
-GALLERY_URL_REWRITE_NO_RULES_TO_APPLY: No global rules enabled and no temporary rule provided
-GALLERY_URL_REWRITE_SAVE_TEMP_RULE_PROMPT: Save the temporary rule to global URL rewrite rules?
-GALLERY_URL_REWRITE_APPLY_AND_SAVE: Apply and Save
-GALLERY_URL_REWRITE_APPLY_ONLY: Apply Only
-GALLERY_URL_REWRITE_NO_CHANGES: No URLs were changed
-GALLERY_URL_REWRITE_EMPTY_RESULT_WARN: The rewrite result is empty; skipped
+ALBUM_URL_REWRITE_APPLY_GLOBAL_RULES: Apply global URL rewrite rules
+ALBUM_URL_REWRITE_GLOBAL_RULES_COUNT: Global rules
+ALBUM_URL_REWRITE_TEMP_RULE_TIPS: Optional. Leave empty to skip the temporary rule. Temporary rule has higher priority than global rules.
+ALBUM_URL_REWRITE_TEMP_RULE_REQUIRED: Match and Replace are required for the temporary rule
+ALBUM_URL_REWRITE_NO_RULES_TO_APPLY: No global rules enabled and no temporary rule provided
+ALBUM_URL_REWRITE_SAVE_TEMP_RULE_PROMPT: Save the temporary rule to global URL rewrite rules?
+ALBUM_URL_REWRITE_APPLY_AND_SAVE: Apply and Save
+ALBUM_URL_REWRITE_APPLY_ONLY: Apply Only
+ALBUM_URL_REWRITE_NO_CHANGES: No URLs were changed
+ALBUM_URL_REWRITE_EMPTY_RESULT_WARN: The rewrite result is empty; skipped
 
 # tray-page
 
@@ -290,9 +349,12 @@ TIPS_INPUT_VALID_URL: Input valid URL
 # plugins
 
 PLUGIN_SEARCH_PLACEHOLDER: Search picgo plugins on npm, or click the button to view the awesome plugins list
+PLUGIN_SEARCH_EXACT_MATCH: Exact plugin name match
 PLUGIN_INSTALL: Install
 PLUGIN_INSTALLING: Installing...
 PLUGIN_INSTALLED: Installed
+PLUGIN_DEPRECATED_BADGE: Deprecated
+PLUGIN_DEPRECATED_TITLE: This plugin has been deprecated by the author
 PLUGIN_DOING_SOMETHING: Doing...
 PLUGIN_LIST: Plugin List
 PLUGIN_IMPORT_LOCAL: Import Local Plugins
@@ -331,7 +393,7 @@ TOOLBOX: Toolbox
 TOOLBOX_TITLE: Troubleshoot PicGo runtime issues
 TOOLBOX_SUB_TITLE: Scan the following items immediately to fix usage issues
 TOOLBOX_CHECK_CONFIG_FILE_BROKEN: Check if the configuration file is damaged
-TOOLBOX_CHECK_GALLERY_FILE_BROKEN: Check if the album file is damaged
+TOOLBOX_CHECK_ALBUM_FILE_BROKEN: Check if the album file is damaged
 TOOLBOX_CHECK_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD: Check if there is a problem with clipboard picture upload
 TOOLBOX_CHECK_PROBLEM_WITH_PROXY: Check if the proxy settings are normal
 TOOLBOX_FIX_DONE_NEED_RELOAD: Repair completed, need to restart to take effect, restart or not
@@ -342,8 +404,8 @@ TOOLBOX_START_FIX: Start fixing
 TOOLBOX_SUCCESS_TIPS: Congratulations, no problems were found
 TOOLBOX_CHECK_CONFIG_FILE_PATH_TIPS: "The configuration file path is: ${path}"
 TOOLBOX_CHECK_CONFIG_FILE_BROKEN_TIPS: The configuration file is damaged
-TOOLBOX_CHECK_GALLERY_FILE_PATH_TIPS: "The album file path is: ${path}"
-TOOLBOX_CHECK_GALLERY_FILE_BROKEN_TIPS: The album file is damaged
+TOOLBOX_CHECK_ALBUM_FILE_PATH_TIPS: "The album file path is: ${path}"
+TOOLBOX_CHECK_ALBUM_FILE_BROKEN_TIPS: The album file is damaged
 TOOLBOX_CHECK_PROXY_SUCCESS_TIPS: Proxy settings normal
 TOOLBOX_CHECK_PROXY_NO_PROXY_TIPS: No proxy settings
 TOOLBOX_CHECK_PROXY_PROXY_IS_NOT_CORRECT: Proxy settings incorrect
@@ -360,8 +422,8 @@ TIPS_SKIPPED_INVALID_URLS: Skipped ${n} invalid URL(s), see logs for details
 TIPS_TOO_MANY_URLS_CONFIRM: You are about to upload ${n} URLs at once. This may cause lag. It's recommended to upload in batches. Continue?
 TIPS_NO_VALID_URLS: No valid URL found
 TIPS_INSTALL_NODE_AND_RELOAD_PICGO: Please install Node.js and restart PicGo to continue
-TIPS_PLUGIN_REMOVE_GALLERY_ITEM: Plugin is trying to remove some images from the album gallery, continue?
-TIPS_PLUGIN_OVERWRITE_GALLERY: Plugin is trying to overwrite the album gallery, continue?
+TIPS_PLUGIN_REMOVE_ALBUM_ITEM: Plugin is trying to remove some images from your album, continue?
+TIPS_PLUGIN_OVERWRITE_ALBUM: Plugin is trying to overwrite your album, continue?
 TIPS_UPLOAD_NOT_PICTURES: The latest clipboard item is not a picture
 TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_DEFAULT: PicGo config file broken, has been restored to default
 TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_BACKUP: PicGo config file broken, has been restored to backup
@@ -381,3 +443,151 @@ TIPS_UPLOADER_CONFIG_CANNOT_DELETE_LAST: Cannot delete the last config
 PRIVACY: "Please read and agree to the Privacy Policy ${privacyUrl} and Terms of Service ${termsUrl} before using."
 PRIVACY_TIPS: Please agree the privacy policy to upload
 QUIT: Quit
+ALBUM_ALL_PHOTOS: All Photos
+ALBUM_COLLECTIONS: Collections
+ALBUM_TAGS: Tags
+ALBUM_MENU: Menu
+ALBUM_OPEN_INSPECTOR: Open Inspector
+ALBUM_INSPECTOR_TITLE: Album Inspector
+ALBUM_INSPECTOR_DESCRIPTION: Inspect and edit selected images.
+ALBUM_CLEAR_SELECTION: Clear Selection
+ALBUM_SELECTED_COUNT: ${count} selected
+ALBUM_GRID_VIEW: Grid View
+ALBUM_LIST_VIEW: List View
+ALBUM_PREVIEW: Fullscreen Preview
+ALBUM_PREVIEW_EMPTY: No images to preview
+ALBUM_PREVIEW_PREV: Previous
+ALBUM_PREVIEW_NEXT: Next
+ALBUM_PREVIEW_CLOSE: Close preview
+ALBUM_PREVIEW_COUNT: ${current} / ${total}
+ALBUM_QUICK_ACTIONS: Quick Actions
+ALBUM_EXPORT: Download
+ALBUM_URL: URL
+ALBUM_BATCH_REWRITE: Batch Rewrite
+ALBUM_COLLECTION: Collection
+ALBUM_ADD_TAG: Add tag
+ALBUM_TAG_SUGGESTIONS: Suggestions
+ALBUM_COLUMN_NAME: Name
+ALBUM_COLUMN_PROVIDER: Provider
+ALBUM_COLUMN_SIZE: Size
+ALBUM_COLUMN_DATE: Date
+ALBUM_ADD: Add
+ALBUM_SOURCE_LOCAL: Local
+ALBUM_SOURCE_CLOUD: Cloud
+ALBUM_CLOUD_LOAD_FAILED: Failed to load cloud album
+ALBUM_CLOUD_LOGIN_REQUIRED_TITLE: Login Required
+ALBUM_CLOUD_LOGIN_REQUIRED_DESC: Sign in to a paid PicGo Cloud account to use cloud album
+ALBUM_CLOUD_LOGIN_BUTTON: Log In
+ALBUM_CLOUD_UPGRADE_TITLE: Upgrade Required
+ALBUM_CLOUD_UPGRADE_DESC: Cloud album requires a paid plan
+ALBUM_CLOUD_UPGRADE_BUTTON: Upgrade
+ALBUM_CLOUD_FEATURES_TITLE: Why Cloud Album?
+ALBUM_CLOUD_FEATURE_SYNC: Access your upload history across all devices
+ALBUM_CLOUD_FEATURE_AUTO_IMPORT: Auto-import new uploads info (requires opt-in)
+ALBUM_CLOUD_FEATURE_SECURE: One-click import local history to cloud
+ALBUM_CLOUD_IMPORT_GUIDE_TITLE: Import Local Records
+ALBUM_CLOUD_IMPORT_GUIDE_DESC: Import your local upload history to cloud album. Only records are imported, not the actual image files.
+ALBUM_CLOUD_IMPORT_GUIDE_BUTTON: Start Import
+ALBUM_CLOUD_EMPTY_TITLE: No Items
+ALBUM_CLOUD_EMPTY_DESC: Your cloud album is empty. Upload an image to get started.
+ALBUM_CLOUD_IMPORTING: Importing to cloud album...
+ALBUM_CLOUD_IMPORT_SUCCESS: Successfully imported ${num} items to cloud album
+ALBUM_CLOUD_IMPORT_FAILED: Failed to import to cloud album
+ALBUM_CLOUD_REFRESH: Refresh
+ALBUM_CLOUD_IMPORT_CONFIRM_TITLE: Enable Auto-Import
+ALBUM_CLOUD_IMPORT_CONFIRM_DESC: This will enable auto-import so that future uploads are automatically recorded in your cloud album. All existing local records will also be imported now.
+ALBUM_CLOUD_DELETE_FAILED: Failed to delete from cloud album
+ALBUM_INSPECTOR_DETAILS_TITLE: Details
+ALBUM_INSPECTOR_FILE_NAME: File name
+ALBUM_INSPECTOR_UPLOADER: Uploader
+ALBUM_INSPECTOR_CONTENT_TYPE: Content type
+ALBUM_INSPECTOR_CREATED_AT: Created
+ALBUM_INSPECTOR_UPDATED_AT: Updated
+ALBUM_INSPECTOR_FILE_SIZE: Size
+ALBUM_CLOUD_IMPORT_STATUS_TITLE: Cloud Album
+ALBUM_CLOUD_IMPORTED: Imported to cloud
+ALBUM_CLOUD_IMPORTED_TOOLTIP: This is a local marker. If the record was deleted from cloud, this status won't update. You can re-import if needed.
+ALBUM_CLOUD_REIMPORT: Re-import
+ALBUM_CLOUD_NATIVE: Uploaded via PicGo Cloud
+ALBUM_CLOUD_IMPORT_BUTTON: Import to Cloud Album
+ALBUM_CLOUD_IMPORT_BUTTON_COUNT: Import ${num} item(s) to Cloud Album
+ALBUM_CLOUD_ALL_IMPORTED: All in cloud album
+ALBUM_CLOUD_AUTO_IMPORT_REQUIRED_TITLE: Enable Auto Import
+ALBUM_CLOUD_AUTO_IMPORT_REQUIRED_DESC: Auto import needs to be enabled before importing items to cloud album. Enable it now and continue?
+ALBUM_CLOUD_AUTO_IMPORT_ENABLE_AND_IMPORT: Enable & Import
+ALBUM_CLOUD_IMPORT_SINGLE_SUCCESS: Successfully imported to cloud album
+PICGO_CLOUD_AUTO_IMPORT_LABEL: Auto-import to Cloud Album
+PICGO_CLOUD_AUTO_IMPORT_DESC: Auto-import upload records from other uploaders to cloud album (PicGo Cloud is saved by default)
+SIDEBAR_PLUGINS: Plugins
+SIDEBAR_SYSTEM: System
+SIDEBAR_NOTIFICATIONS: Notifications
+SIDEBAR_EXPAND: Click to Expand
+SIDEBAR_COLLAPSE: Collapse Sidebar
+HISTORY_PANEL_TITLE: History
+HISTORY_PANEL_FILTER_PLACEHOLDER: Filter...
+HISTORY_PANEL_TODAY: Today
+HISTORY_PANEL_YESTERDAY: Yesterday
+DASHBOARD_NO_VISIBLE_PROVIDERS: No visible providers
+DASHBOARD_NO_VISIBLE_PROVIDERS_DESCRIPTION: All providers are hidden. Open settings to change provider visibility.
+DASHBOARD_OPEN_SETTINGS: Open Settings
+DASHBOARD_DROP_IMAGES_HERE: Drop files here
+DASHBOARD_OR: or
+DASHBOARD_CLICK_TO_UPLOAD: Click to Upload
+DASHBOARD_PASTE_FROM_CLIPBOARD: Paste from Clipboard
+DASHBOARD_PASTE_FROM_URL: Paste from URL
+DASHBOARD_CLIPBOARD: Clipboard
+FIELD_IS_REQUIRED: ${field} is required
+CONFIG_RENAME: Config Rename
+SETTINGS_SECTION_GENERAL: General
+SETTINGS_SECTION_APPEARANCE: Appearance
+SETTINGS_SECTION_UPLOAD_WORKFLOW: Upload Workflow
+SETTINGS_SECTION_NETWORK: Network
+SETTINGS_SECTION_ADVANCED: Advanced
+SETTINGS_SECTION_ABOUT: About
+SETTINGS_NO_RESULTS_TITLE: No settings found
+SETTINGS_NO_RESULTS_DESCRIPTION: Try another keyword or clear the search input.
+SETTINGS_OPEN_SHORTCUTS: Shortcuts
+SETTINGS_LINK_WEBSITE: Website
+SETTINGS_LINK_GITHUB: GitHub
+SETTINGS_LINK_DOCS: Documentation
+SETTINGS_LINK_PRIVACY: Privacy Policy
+SETTINGS_LINK_TERMS: Terms of Service
+SETTINGS_APPEARANCE_MODE: Appearance
+SETTINGS_APPEARANCE_MODE_LIGHT: Light
+SETTINGS_APPEARANCE_MODE_DARK: Dark
+SETTINGS_APPEARANCE_MODE_AUTO: Auto
+COMMON_FOR_EXAMPLE: "Ex.: ${value}"
+SETTINGS_SET_DEFAULT_CONFIG: Set as default
+PROVIDER_DRAFT_CONFIG: Draft
+PROVIDER_ACTIVE_UPLOADER_LABEL: Active
+PROVIDER_ACTIVE_UPLOADER_TOOLTIP: ${uploaderName} is the active uploader
+PROVIDER_DEFAULT_CONFIG_LABEL: Default
+PROVIDER_DEFAULT_CONFIG_TOOLTIP: Used when ${uploaderName} is active.
+PROVIDER_SIDEBAR_EMPTY: No uploaders or configs found.
+PROVIDER_UPLOADER_ACTIONS: ${uploaderName} actions
+PROVIDER_SIDEBAR_COLLAPSE: Collapse
+PROVIDER_SIDEBAR_EXPAND: Expand
+PROVIDER_CONFIG_ACTIONS: Config actions
+PROVIDER_CREATE_CONFIG: Create config
+PROVIDER_CREATE_CONFIG_DISABLED_EMPTY_SCHEMA: This uploader has no configuration options, creating additional configs is unnecessary
+PROVIDER_INSTALL_MORE_UPLOADERS: Install more uploaders
+PROVIDER_NO_UPLOADER_SELECTED: No uploader selected.
+PROVIDER_NO_CONFIG_YET: No config yet
+PROVIDER_NO_CONFIG_DESCRIPTION: Create a new config for ${uploaderName} to start editing schema-based options.
+PROVIDER_CONFIGURATION: Configuration
+PROVIDER_UPDATED_AT_LABEL: Updated
+PROVIDER_DELETE_CONFIG_HINT: Permanently remove this configuration.
+UPLOADER_SWITCHER_SELECT_PROVIDER: Select provider
+UPLOADER_SWITCHER_CONFIG: Config
+UPLOADER_SWITCHER_NO_CONFIG: No config
+ALBUM_URL_REWRITE_DESCRIPTION: Batch rewrite the URLs for selected images.
+ALBUM_URL_REWRITE_CHANGED: Changed
+ALBUM_URL_REWRITE_UNCHANGED: Unchanged
+TRAY_ALREADY_UPLOAD_EMPTY: No uploaded images yet
+PLUGIN_EMPTY: No plugins found.
+PLUGIN_EMPTY_DESCRIPTION: Search npm and install plugins to get started.
+PLUGIN_DETAIL: Detail
+PLUGIN_NO_CONFIG_SCHEMA: This plugin does not expose config schema.
+PLUGIN_NO_TRANSFORMER_SCHEMA: This plugin does not expose transformer schema.
+PLUGIN_NO_README: No README available for this plugin.
+NO_OPTIONS_FOUND: No options found.

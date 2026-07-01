@@ -1,5 +1,5 @@
 import keycode from 'keycode'
-import { isMacOSPlatform } from './bridge'
+import { isMacOS } from './bridge'
 
 const isSpecialKey = (keyCode: number) => {
   const keyArr = [
@@ -14,7 +14,7 @@ const isSpecialKey = (keyCode: number) => {
 }
 
 const keyDetect = (event: KeyboardEvent) => {
-  const meta = isMacOSPlatform() ? 'Cmd' : 'Super'
+  const meta = isMacOS() ? 'Cmd' : 'Super'
   const specialKey = {
     Ctrl: event.ctrlKey,
     Shift: event.shiftKey,

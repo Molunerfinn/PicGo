@@ -25,9 +25,6 @@ declare global {
       once: (channel: string, listener: BridgeIpcListener) => BridgeIpcCleanup
       removeAllListeners: (channel: string) => void
     }
-    clipboard: {
-      writeText: (text: string) => void
-    }
     webUtils: {
       getPathForFile: (file: File) => string
     }

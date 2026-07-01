@@ -7,11 +7,9 @@ onlyBuiltDependencies:
   - husky
   - vue-demi
 
-# for multi-arch builds, include both x64 and arm64 versions of electron
-# will be deprecated in future(use different arch machine to build different arch binaries)
+overrides:
+  picgo: link:../PicGo-Core
+
 supportedArchitectures:
-  os:
-    - current
-  cpu:
-    - x64
-    - arm64
+  cpu: [x64, arm64]
+  os: [current]

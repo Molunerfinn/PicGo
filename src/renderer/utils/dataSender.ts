@@ -1,17 +1,16 @@
-import { GET_PICBEDS, PICGO_GET_CONFIG, PICGO_SAVE_CONFIG, RPC_ACTIONS } from '#/events/constants'
+import { GET_PICBEDS, OPEN_URL, PICGO_GET_CONFIG, PICGO_OPEN_FILE, PICGO_SAVE_CONFIG, RPC_ACTIONS } from '#/events/constants'
 import { v4 as uuid } from 'uuid'
 import { IRPCActionType } from '~/universal/types/enum'
-import { getRawData } from './common'
 import { ipc } from './bridge'
 
 export async function saveConfig (_config: IObj | string, value?: any) {
   let config
   if (typeof _config === 'string') {
     config = {
-      [_config]: getRawData(value)
+      [_config]: value
     }
   } else {
-    config = getRawData(_config)
+    config = _config
   }
   await ipc.invoke(PICGO_SAVE_CONFIG, config)
 }
@@ -47,8 +46,7 @@ export function getPicBeds (): Promise<IPicBedType[]> {
  * `ipcMain.handle(RPC_ACTIONS, ...)` in the main process RPC server.
  */
 export function invokeRPC<T> (action: IRPCActionType, ...args: any[]): Promise<IRPCResult<T>> {
-  const data = getRawData(args)
-  return ipc.invoke<IRPCResult<T>>(RPC_ACTIONS, action, data)
+  return ipc.invoke<IRPCResult<T>>(RPC_ACTIONS, action, args)
 }
 
 /**
@@ -57,14 +55,20 @@ export function invokeRPC<T> (action: IRPCActionType, ...args: any[]): Promise<I
  * or the response will be handled by other listener
  */
 export function sendRPC (action: IRPCActionType, ...args: any[]): void {
-  const data = getRawData(args)
-  ipc.send(RPC_ACTIONS, action, data)
+  ipc.send(RPC_ACTIONS, action, args)
 }
 
 /**
  * @deprecated will be replaced by sendRPC in the future
  */
 export function sendToMain (channel: string, ...args: any[]) {
-  const data = getRawData(args)
-  ipc.send(channel, ...data)
+  ipc.send(channel, ...args)
+}
+
+export function openFile (fileName: string) {
+  sendToMain(PICGO_OPEN_FILE, fileName)
+}
+
+export function openURL (url: string) {
+  sendToMain(OPEN_URL, url)
 }

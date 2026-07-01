@@ -46,20 +46,50 @@ interface IServerConfig {
 
 // Image && PicBed
 interface ImgInfo {
+  /**
+   * will be deleted after uploading.
+   */
   buffer?: Buffer
+  /**
+   * will be deleted after uploading.
+   */
   base64Image?: string
   fileName?: string
   width?: number
   height?: number
   extname?: string
+  /**
+   * basic url for image item.
+   */
   imgUrl?: string
-  id?: string
-  type?: string
+  /**
+   * originImgUrl is used for some special cases, such as url rewrite. we will keep the original url in originalImgUrl and do the url rewrite in imgUrl, so that we can use the original url when we need it.
+   */
   originImgUrl?: string
+  /**
+   * if item is a file not image, this will be the file url for downloading
+   */
+  url?: string
+  /**
+   * unique id. if item saved in db, it will have an id
+   */
+  id?: string
+  /**
+   * uploader type. such as "picgo-cloud", "smms", "github", etc
+   */
+  type?: string
+  /**
+   * uploaded time, Date.now().
+   */
+  createdAt?: number | string | Date
+  /**
+   * updated time, Date.now(). if item is updated, such as url rewrite, this will be updated. otherwise, it will be the same as createdAt.
+   */
+  updatedAt?: number | string | Date
   [propName: string]: any
 }
 
-interface IGalleryItem extends ImgInfo {
+interface IAlbumItem extends ImgInfo {
   src: string
   key: string
   intro: string
@@ -104,6 +134,8 @@ interface IKeyCommandType {
 interface IBrowserWindowOptions {
   height: number,
   width: number,
+  minHeight?: number,
+  minWidth?: number,
   show: boolean,
   fullscreenable: boolean,
   resizable: boolean,
@@ -175,6 +207,8 @@ interface IPicGoPluginConfig {
   }[]
   /** support markdown */
   tips?: string
+  /** Names of fields this field's choices/default depend on. */
+  dependsOn?: string[]
   [propName: string]: any
 }
 
@@ -190,19 +224,20 @@ interface IPicGoPluginShowConfigDialogOption {
   width?: number
 }
 
+type IPicGoPluginOriginChoice = string | {
+  name?: string
+  value?: any
+  checked?: boolean
+}
+
 interface IPicGoPluginOriginConfig {
   name: string
   type: string
   required: boolean
-  default?: any
+  default?: any | ((answers: Record<string, unknown>) => any)
   alias?: string
-  choices?: {
-    name?: string
-    value?: any
-  }[] | (() => {
-    name?: string
-    value?: any
-  }[])
+  choices?: IPicGoPluginOriginChoice[] | ((answers: Record<string, unknown>) => IPicGoPluginOriginChoice[])
+  dependsOn?: string[]
   [propName: string]: any
 }
 
@@ -246,6 +281,8 @@ interface IGuiApi {
   showNotification: (options?: IShowNotificationOption) => void
   showMessageBox: (options?: IShowMessageBoxOption) => Promise<IShowMessageBoxResult>
   showConfigDialog: <T extends IStringKeyMap>(options: IPicGoPluginShowConfigDialogOption) => Promise<T | false>
+  albumDB: import('@picgo/store').DBStore
+  /** @deprecated Use `albumDB` instead. */
   galleryDB: import('@picgo/store').DBStore
 }
 interface IShowInputBoxOption {

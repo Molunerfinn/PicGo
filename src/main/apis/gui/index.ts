@@ -4,8 +4,8 @@ import {
   ipcMain
 } from 'electron'
 import picgo from '@core/picgo'
-import { GalleryDB } from 'apis/core/datastore'
-import { dbPathChecker, defaultConfigPath, getGalleryDBPath } from 'apis/core/datastore/dbChecker'
+import { AlbumDB } from 'apis/core/datastore'
+import { dbPathChecker, defaultConfigPath, getAlbumDBPath } from 'apis/core/datastore/dbChecker'
 import uploader from 'apis/app/uploader'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import { handleCopyUrl, showNotification as showMainNotification } from '~/main/utils/common'
@@ -88,11 +88,11 @@ class GuiApi implements IGuiApi {
             // icon: imgs[i].imgUrl
           })
         }, i * 100)
-        await GalleryDB.getInstance().insert(imgs[i])
+        await AlbumDB.getInstance().insert(imgs[i])
       }
       handleCopyUrl(pasteText.join('\n'))
       webContents?.send('uploadFiles', imgs)
-      webContents?.send(IRPCActionType.UPDATE_GALLERY)
+      webContents?.send(IRPCActionType.UPDATE_ALBUM)
       return imgs
     }
     return []
@@ -144,25 +144,27 @@ class GuiApi implements IGuiApi {
    */
   async getConfigPath () {
     const currentConfigPath = dbPathChecker()
-    const galleryDBPath = getGalleryDBPath().dbPath
+    const albumDBPath = getAlbumDBPath().dbPath
     return {
       defaultConfigPath,
       currentConfigPath,
-      galleryDBPath
+      albumDBPath,
+      /** @deprecated Use `albumDBPath` instead. */
+      galleryDBPath: albumDBPath
     }
   }
 
-  get galleryDB (): DBStore {
-    return new Proxy<DBStore>(GalleryDB.getInstance(), {
+  get albumDB (): DBStore {
+    return new Proxy<DBStore>(AlbumDB.getInstance(), {
       get (target, prop: keyof DBStore) {
         if (prop === 'overwrite') {
-          return new Proxy(GalleryDB.getInstance().overwrite, {
+          return new Proxy(AlbumDB.getInstance().overwrite, {
             apply (target, ctx, args) {
               return new Promise((resolve) => {
                 const guiApi = GuiApi.getInstance()
                 guiApi.showMessageBox({
                   title: T('TIPS_WARNING'),
-                  message: T('TIPS_PLUGIN_REMOVE_GALLERY_ITEM'),
+                  message: T('TIPS_PLUGIN_REMOVE_ALBUM_ITEM'),
                   type: 'info',
                   buttons: ['Yes', 'No']
                 }).then(res => {
@@ -177,13 +179,13 @@ class GuiApi implements IGuiApi {
           })
         }
         if (prop === 'removeById') {
-          return new Proxy(GalleryDB.getInstance().removeById, {
+          return new Proxy(AlbumDB.getInstance().removeById, {
             apply (target, ctx, args) {
               return new Promise((resolve) => {
                 const guiApi = GuiApi.getInstance()
                 guiApi.showMessageBox({
                   title: T('TIPS_WARNING'),
-                  message: T('TIPS_PLUGIN_REMOVE_GALLERY_ITEM'),
+                  message: T('TIPS_PLUGIN_REMOVE_ALBUM_ITEM'),
                   type: 'info',
                   buttons: ['Yes', 'No']
                 }).then(res => {
@@ -200,6 +202,11 @@ class GuiApi implements IGuiApi {
         return Reflect.get(target, prop)
       }
     })
+  }
+
+  /** @deprecated Use `albumDB` instead. */
+  get galleryDB (): DBStore {
+    return this.albumDB
   }
 }
 

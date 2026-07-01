@@ -14,14 +14,15 @@ const formatCustomLink = (customLink: string, item: ImgInfo) => {
   keys.forEach(item => {
     if (customLink.indexOf(`$${item}`) !== -1) {
       const reg = new RegExp(`\\$${item}`, 'g')
-      customLink = customLink.replace(reg, formatObj[item])
+      customLink = customLink.replace(reg, formatObj[item]!)
     }
   })
   return customLink
 }
 
 export default (style: IPasteStyle, item: ImgInfo, customLink: string | undefined) => {
-  const url = handleUrlEncodeWithSetting(item.url || item.imgUrl)
+  const pasteUrl = item.url || item.imgUrl || ''
+  const url = handleUrlEncodeWithSetting(pasteUrl)
   const _customLink = customLink || '$url'
   const tpl = {
     markdown: `![](${url})`,

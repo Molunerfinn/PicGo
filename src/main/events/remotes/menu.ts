@@ -1,5 +1,5 @@
 import windowManager from 'apis/app/window/windowManager'
-import { IWindowList } from '#/types/enum'
+import { IPluginMenuAction, IWindowList } from '#/types/enum'
 import { Menu, BrowserWindow, app, dialog } from 'electron'
 import picgo from '@core/picgo'
 import {
@@ -8,8 +8,7 @@ import {
 import { privacyManager } from '~/main/utils/privacyManager'
 import pkg from 'root/package.json'
 import GuiApi from 'apis/gui'
-import { PICGO_CONFIG_PLUGIN, PICGO_HANDLE_PLUGIN_DONE, PICGO_HANDLE_PLUGIN_ING, PICGO_TOGGLE_PLUGIN, SHOW_MAIN_PAGE_DONATION, SHOW_MAIN_PAGE_QRCODE } from '~/universal/events/constants'
-import picgoCoreIPC from '~/main/events/picgoCoreIPC'
+import { PICGO_CONFIG_PLUGIN, PICGO_PLUGIN_MENU_ACTION, SHOW_MAIN_PAGE_DONATION, SHOW_MAIN_PAGE_QRCODE } from '~/universal/events/constants'
 import { PicGo as PicGoCore } from 'picgo'
 import { T } from '~/main/i18n'
 import { buildPicBedListMenu } from './picBedListMenu'
@@ -122,68 +121,32 @@ const buildMainPageMenu = (win: BrowserWindow) => {
 
 // TODO: separate to single file
 
-const handleRestoreState = (item: string, name: string): void => {
-  if (item === 'uploader') {
-    const current = picgo.getConfig('picBed.current')
-    if (current === name) {
-      picgo.saveConfig({
-        'picBed.current': 'smms',
-        'picBed.uploader': 'smms'
-      })
-    }
-  }
-  if (item === 'transformer') {
-    const current = picgo.getConfig('picBed.transformer')
-    if (current === name) {
-      picgo.saveConfig({
-        'picBed.transformer': 'path'
-      })
-    }
-  }
-}
-
 const buildPluginPageMenu = (plugin: IPicGoPlugin) => {
   const menu = [{
     label: T('ENABLE_PLUGIN'),
     enabled: !plugin.enabled,
     click () {
-      picgo.saveConfig({
-        [`picgoPlugins.${plugin.fullName}`]: true
-      })
       const window = windowManager.get(IWindowList.SETTING_WINDOW)!
-      window.webContents.send(PICGO_TOGGLE_PLUGIN, plugin.fullName, true)
+      window.webContents.send(PICGO_PLUGIN_MENU_ACTION, plugin.fullName, IPluginMenuAction.ENABLE)
     }
   }, {
     label: T('DISABLE_PLUGIN'),
     enabled: plugin.enabled,
     click () {
-      picgo.saveConfig({
-        [`picgoPlugins.${plugin.fullName}`]: false
-      })
       const window = windowManager.get(IWindowList.SETTING_WINDOW)!
-      window.webContents.send(PICGO_HANDLE_PLUGIN_ING, plugin.fullName)
-      window.webContents.send(PICGO_TOGGLE_PLUGIN, plugin.fullName, false)
-      window.webContents.send(PICGO_HANDLE_PLUGIN_DONE, plugin.fullName)
-      if (plugin.config.transformer.name) {
-        handleRestoreState('transformer', plugin.config.transformer.name)
-      }
-      if (plugin.config.uploader.name) {
-        handleRestoreState('uploader', plugin.config.uploader.name)
-      }
+      window.webContents.send(PICGO_PLUGIN_MENU_ACTION, plugin.fullName, IPluginMenuAction.DISABLE)
     }
   }, {
     label: T('UNINSTALL_PLUGIN'),
     click () {
       const window = windowManager.get(IWindowList.SETTING_WINDOW)!
-      window.webContents.send(PICGO_HANDLE_PLUGIN_ING, plugin.fullName)
-      picgoCoreIPC.handlePluginUninstall(plugin.fullName)
+      window.webContents.send(PICGO_PLUGIN_MENU_ACTION, plugin.fullName, IPluginMenuAction.UNINSTALL)
     }
   }, {
     label: T('UPDATE_PLUGIN'),
     click () {
       const window = windowManager.get(IWindowList.SETTING_WINDOW)!
-      window.webContents.send(PICGO_HANDLE_PLUGIN_ING, plugin.fullName)
-      picgoCoreIPC.handlePluginUpdate(plugin.fullName)
+      window.webContents.send(PICGO_PLUGIN_MENU_ACTION, plugin.fullName, IPluginMenuAction.UPDATE)
     }
   }]
   for (const i in plugin.config) {
@@ -212,7 +175,7 @@ const buildPluginPageMenu = (plugin: IPicGoPlugin) => {
     const currentTransformer = picgo.getConfig<string>('picBed.transformer') || 'path'
     const pluginTransformer = plugin.config.transformer.name
     const obj = {
-      label: `${currentTransformer === pluginTransformer ? T('DISABLE') : T('ENABLE')}transformer - ${plugin.config.transformer.name}`,
+      label: `${currentTransformer === pluginTransformer ? T('DISABLE') : T('ENABLE')} transformer - ${plugin.config.transformer.name}`,
       click () {
         const transformer = plugin.config.transformer.name
         const currentTransformer = picgo.getConfig<string>('picBed.transformer') || 'path'
@@ -240,10 +203,9 @@ const buildPluginPageMenu = (plugin: IPicGoPlugin) => {
       menu.push({
         label: i.label,
         click () {
-          // ipcRenderer.send('pluginActions', plugin.fullName, i.label)
-          const picgPlugin = picgo.pluginLoader.getPlugin(plugin.fullName)
-          if (picgPlugin?.guiMenu?.(picgo)?.length) {
-            const menu: GuiMenuItem[] = picgPlugin.guiMenu(picgo)
+          const picgoPlugin = picgo.pluginLoader.getPlugin(plugin.fullName)
+          if (picgoPlugin?.guiMenu?.(picgo)?.length) {
+            const menu: GuiMenuItem[] = picgoPlugin.guiMenu(picgo)
             menu.forEach(item => {
               if (item.label === i.label) {
                 item.handle(picgo, GuiApi.getInstance())

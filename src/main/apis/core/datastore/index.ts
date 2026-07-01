@@ -1,23 +1,24 @@
 import path from 'path'
 import fs from 'fs-extra'
 import { DBStore } from '@picgo/store'
-import { getGalleryDBPath } from './dbChecker'
+import { getAlbumDBPath } from './dbChecker'
 
-const DB_PATH: string = getGalleryDBPath().dbPath
+const DB_PATH: string = getAlbumDBPath().dbPath
 fs.ensureDirSync(path.dirname(DB_PATH))
 
-class GalleryDB {
+class AlbumDB {
   private static instance: DBStore
   private constructor () {}
 
   public static getInstance (): DBStore {
-    if (!GalleryDB.instance) {
-      GalleryDB.instance = new DBStore(DB_PATH, 'gallery')
+    if (!AlbumDB.instance) {
+      // Keep the namespace 'gallery' for @picgo/store to preserve existing user data on disk.
+      AlbumDB.instance = new DBStore(DB_PATH, 'gallery')
     }
-    return GalleryDB.instance
+    return AlbumDB.instance
   }
 }
 
 export {
-  GalleryDB
+  AlbumDB
 }

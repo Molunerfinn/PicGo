@@ -11,7 +11,7 @@ import uploader from 'apis/app/uploader'
 import pasteTemplate from '~/main/utils/pasteTemplate'
 import picgo from '@core/picgo'
 import logger from '@core/picgo/logger'
-import { GalleryDB } from '~/main/apis/core/datastore'
+import { AlbumDB } from '~/main/apis/core/datastore'
 import server from '~/main/server'
 import getPicBeds from '~/main/utils/getPicBeds'
 import shortKeyHandler from 'apis/app/shortKey/shortKeyHandler'
@@ -21,9 +21,12 @@ import {
   OPEN_DEVTOOLS,
   SHOW_MINI_PAGE_MENU,
   MINIMIZE_WINDOW,
+  MAXIMIZE_WINDOW,
   CLOSE_WINDOW,
+  WINDOW_STATE_CHANGED,
   SHOW_MAIN_PAGE_MENU,
   SHOW_UPLOAD_PAGE_MENU,
+  SHOW_PRIVACY_MESSAGE,
   OPEN_USER_STORE_FILE,
   OPEN_URL,
   SHOW_PLUGIN_PAGE_MENU,
@@ -41,6 +44,7 @@ import { buildMainPageMenu, buildMiniPageMenu, buildPluginPageMenu, buildPicBedL
 import path from 'path'
 import { T } from '~/main/i18n'
 import { STORE_PATH } from '~/main/utils/env'
+import { privacyManager } from '~/main/utils/privacyManager'
 
 export default {
   listen () {
@@ -59,10 +63,10 @@ export default {
           // icon: file[0]
           // icon: img[0].imgUrl
         })
-        await GalleryDB.getInstance().insert(img[0])
+        await AlbumDB.getInstance().insert(img[0])
         trayWindow.webContents.send('clipboardFiles', [])
         if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-          windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send(IRPCActionType.UPDATE_GALLERY)
+          windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send(IRPCActionType.UPDATE_ALBUM)
         }
       }
       trayWindow.webContents.send('uploadFiles')
@@ -181,6 +185,9 @@ export default {
         window
       })
     })
+    ipcMain.on(SHOW_PRIVACY_MESSAGE, () => {
+      privacyManager.show(false)
+    })
     ipcMain.on(SHOW_UPLOAD_PAGE_MENU, () => {
       const window = windowManager.get(IWindowList.SETTING_WINDOW)!
       const menu = buildPicBedListMenu()
@@ -198,6 +205,18 @@ export default {
     ipcMain.on(MINIMIZE_WINDOW, () => {
       const window = BrowserWindow.getFocusedWindow()
       window?.minimize()
+    })
+    ipcMain.on(MAXIMIZE_WINDOW, () => {
+      const window = BrowserWindow.getFocusedWindow()
+      if (!window) return
+      if (window.isMaximized()) {
+        window.unmaximize()
+      } else {
+        window.maximize()
+      }
+      window.webContents.send(WINDOW_STATE_CHANGED, {
+        isMaximized: window.isMaximized()
+      })
     })
     ipcMain.on(CLOSE_WINDOW, () => {
       const window = BrowserWindow.getFocusedWindow()

@@ -1,0 +1,202 @@
+import { useEffect, useRef, type MouseEvent } from "react"
+import DOMPurify from "dompurify"
+import { TriangleAlertIcon } from "lucide-react"
+import { marked } from "marked"
+import Prism from "prismjs"
+import "prismjs/components/prism-bash"
+import "prismjs/components/prism-diff"
+import "prismjs/components/prism-javascript"
+import "prismjs/components/prism-json"
+import "prismjs/components/prism-jsx"
+import "prismjs/components/prism-markdown"
+import "prismjs/components/prism-powershell"
+import "prismjs/components/prism-tsx"
+import "prismjs/components/prism-typescript"
+import "prismjs/components/prism-yaml"
+import { useTranslation } from "react-i18next"
+
+import { Skeleton } from "@/components/ui/skeleton"
+import { openURL } from "@/utils/dataSender"
+import { usePluginStore } from "@/store"
+import {
+  pluginDeprecationStatus,
+  pluginReadmeStatus,
+  type PluginDetailSelectedItem,
+  type PluginReadmeState,
+} from "./types"
+import { buildPluginDeprecationKey } from "./utils"
+
+interface PluginDetailReadmeTabContentProps {
+  selectedItem: PluginDetailSelectedItem | null
+  readmeState: PluginReadmeState | null
+}
+
+function renderSanitizedMarkdown(markdown: string) {
+  const parsed = marked.parse(markdown, {
+    gfm: true,
+    breaks: true,
+  })
+  const html = typeof parsed === "string" ? parsed : markdown
+  return DOMPurify.sanitize(html)
+}
+
+function resolveLeadingIndentSize(line: string) {
+  return line.match(/^[ \t]*/)?.[0].length ?? 0
+}
+
+function normalizeCodeBlockFirstLineSpacing(codeText: string) {
+  const normalizedText = codeText.replace(/\r\n/g, "\n").replace(/^\uFEFF/, "")
+  const lines = normalizedText.split("\n")
+  const firstLineIndex = lines.findIndex((line) => line.trim().length > 0)
+
+  if (firstLineIndex < 0) {
+    return normalizedText
+  }
+
+  const nextLine = lines
+    .slice(firstLineIndex + 1)
+    .find((line) => line.trim().length > 0)
+
+  if (!nextLine) {
+    return normalizedText
+  }
+
+  const firstLine = lines[firstLineIndex] ?? ""
+  const firstIndentSize = resolveLeadingIndentSize(firstLine)
+  const nextIndentSize = resolveLeadingIndentSize(nextLine)
+
+  if (firstIndentSize === nextIndentSize + 1) {
+    lines[firstLineIndex] = firstLine.slice(1)
+  }
+
+  return lines.join("\n")
+}
+
+export function PluginDetailReadmeTabContent({
+  selectedItem,
+  readmeState,
+}: PluginDetailReadmeTabContentProps) {
+  const { t } = useTranslation()
+  const articleRef = useRef<HTMLElement | null>(null)
+  const deprecationByPlugin = usePluginStore.use.deprecationByPlugin()
+  const deprecationState = selectedItem
+    ? deprecationByPlugin[buildPluginDeprecationKey(selectedItem.fullName, selectedItem.version)]
+    : undefined
+  const showDeprecationBanner = Boolean(
+    deprecationState?.status === pluginDeprecationStatus.Ready &&
+    deprecationState.isDeprecated
+  )
+  const deprecationMessage = deprecationState?.message.trim() ?? ""
+
+  // Post-process rendered markdown (spacing, grouped links, syntax highlighting) when README is ready.
+  useEffect(() => {
+    if (readmeState?.status !== pluginReadmeStatus.Ready) {
+      return
+    }
+
+    const articleElement = articleRef.current
+
+    if (!articleElement) {
+      return
+    }
+
+    const codeElements = articleElement.querySelectorAll("pre code")
+
+    codeElements.forEach((codeElement) => {
+      const source = codeElement.textContent ?? ""
+      const normalized = normalizeCodeBlockFirstLineSpacing(source)
+
+      if (normalized !== source) {
+        codeElement.textContent = normalized
+      }
+    })
+
+    const paragraphElements = articleElement.querySelectorAll("p")
+
+    paragraphElements.forEach((paragraphElement) => {
+      if (paragraphElement.querySelectorAll("a").length > 1) {
+        paragraphElement.classList.add("app-plugin-readme-link-group")
+      }
+    })
+
+    Prism.highlightAllUnder(articleElement)
+  }, [readmeState?.content, readmeState?.status])
+
+  const handleReadmeLinkClick = (event: MouseEvent<HTMLElement>) => {
+    const target = event.target
+
+    if (!(target instanceof Element)) {
+      return
+    }
+
+    const anchor = target.closest("a[href]")
+
+    if (!(anchor instanceof HTMLAnchorElement)) {
+      return
+    }
+
+    event.preventDefault()
+    event.stopPropagation()
+
+    openURL(anchor.href)
+  }
+
+  if (!selectedItem) {
+    return null
+  }
+
+  return (
+    <div className="space-y-4">
+      {showDeprecationBanner ? (
+        <div className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm">
+          <TriangleAlertIcon className="text-destructive mt-0.5 size-4 shrink-0" />
+          <div className="min-w-0 flex-1">
+            <div className="text-destructive font-medium">
+              {t("PLUGIN_DEPRECATED_TITLE")}
+            </div>
+            {deprecationMessage ? (
+              <p className="text-muted-foreground mt-1 whitespace-pre-wrap break-words">
+                {deprecationMessage}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
+      {readmeState?.status === pluginReadmeStatus.Loading ? (
+        <div className="space-y-2">
+          <Skeleton className="h-5 w-2/3" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
+      ) : null}
+
+      {readmeState?.status === pluginReadmeStatus.Error ? (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-4 text-sm">
+          <div className="text-destructive font-medium">{t("FAILED")}</div>
+          <p className="text-muted-foreground mt-1">
+            {readmeState.errorMessage ?? t("TIPS_GET_PLUGIN_LIST_FAILED")}
+          </p>
+        </div>
+      ) : null}
+
+      {readmeState?.status === pluginReadmeStatus.Empty ? (
+        <div className="text-muted-foreground rounded-lg border border-dashed border-border px-6 py-12 text-center text-sm">
+          {t("PLUGIN_NO_README")}
+        </div>
+      ) : null}
+
+      {readmeState?.status === pluginReadmeStatus.Ready ? (
+        <article
+          ref={articleRef}
+          className="app-plugin-readme prose prose-sm max-w-none prose-a:no-underline prose-a:transition-colors hover:prose-a:text-(--app-plugin-tab-active-color) hover:prose-a:underline prose-code:rounded-md prose-code:bg-(--app-plugin-readme-inline-code-bg) prose-code:px-1 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-lg prose-pre:border prose-pre:border-(--app-plugin-readme-pre-border) prose-pre:bg-(--app-plugin-readme-pre-bg) prose-blockquote:text-muted-foreground prose-img:rounded-lg prose-table:table prose-table:w-full prose-table:border-collapse prose-table:text-sm prose-thead:border-b prose-tr:border-b prose-th:border prose-th:border-border prose-th:bg-muted/40 prose-th:px-3 prose-th:py-2 prose-th:font-semibold prose-td:border prose-td:border-border prose-td:px-3 prose-td:py-2 [&_pre]:overflow-x-auto"
+          onClick={handleReadmeLinkClick}
+          dangerouslySetInnerHTML={{
+            __html: renderSanitizedMarkdown(readmeState.content),
+          }}
+        />
+      ) : null}
+    </div>
+  )
+}

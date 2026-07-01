@@ -1,11 +1,11 @@
 import { buildRendererUrl } from '~/main/utils/env'
 
-export const TRAY_WINDOW_URL = buildRendererUrl()
+export const TRAY_WINDOW_URL = buildRendererUrl('tray')
 
-export const SETTING_WINDOW_URL = buildRendererUrl('main-page/upload')
+export const SETTING_WINDOW_URL = buildRendererUrl('main/dashboard')
 
-export const MINI_WINDOW_URL = buildRendererUrl('mini-page')
+export const MINI_WINDOW_URL = buildRendererUrl('mini')
 
-export const RENAME_WINDOW_URL = buildRendererUrl('rename-page')
+export const RENAME_WINDOW_URL = buildRendererUrl('rename')
 
-export const TOOLBOX_WINDOW_URL = buildRendererUrl('toolbox-page')
+export const TOOLBOX_WINDOW_URL = buildRendererUrl('toolbox')

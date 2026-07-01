@@ -1,8 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createApp } from 'vue'
 import type { IConfig } from 'picgo'
 import { getConfig, getPicBeds } from '@/utils/dataSender'
-import { store, storeKey, type IStore } from '@/store'
+import {
+  appActions,
+  PicGoCloudLoginStatusValues,
+  useStore
+} from '@/store'
 
 vi.mock('@/utils/dataSender', () => {
   return {
@@ -12,10 +15,17 @@ vi.mock('@/utils/dataSender', () => {
   }
 })
 
-const buildStore = (): IStore => {
-  const app = createApp({})
-  store.install(app)
-  return app._context.provides[storeKey as symbol] as IStore
+const resetStore = () => {
+  useStore.setState({
+    defaultPicBed: 'smms',
+    appConfig: null,
+    picBeds: [],
+    picgoCloud: {
+      loginStatus: PicGoCloudLoginStatusValues.Idle,
+      loginError: null,
+      hasAgreedToTermsAndPrivacy: false
+    }
+  })
 }
 
 describe('renderer/store appConfig', () => {
@@ -24,6 +34,7 @@ describe('renderer/store appConfig', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    resetStore()
   })
 
   it('refreshAppConfig updates appConfig and defaultPicBed', async () => {
@@ -36,11 +47,13 @@ describe('renderer/store appConfig', () => {
     }
     getConfigMock.mockResolvedValue(config)
 
-    const storeInstance = buildStore()
-    await storeInstance.refreshAppConfig()
+    await appActions.refreshAppConfig()
 
-    expect(storeInstance.state.appConfig).toStrictEqual(config)
-    expect(storeInstance.state.defaultPicBed).toBe('github')
+    const nextState = useStore.getState()
+    expect(nextState.appConfig?.picBed.uploader).toBe('github')
+    expect(nextState.appConfig?.picBed.current).toBe('smms')
+    expect(nextState.appConfig?.settings.autoCopyUrl).toBe(true)
+    expect(nextState.defaultPicBed).toBe('github')
   })
 
   it('refreshPicBeds updates picBeds', async () => {
@@ -50,9 +63,8 @@ describe('renderer/store appConfig', () => {
     ]
     getPicBedsMock.mockResolvedValue(picBeds)
 
-    const storeInstance = buildStore()
-    await storeInstance.refreshPicBeds()
+    await appActions.refreshPicBeds()
 
-    expect(storeInstance.state.picBeds).toEqual(picBeds)
+    expect(useStore.getState().picBeds).toEqual(picBeds)
   })
 })

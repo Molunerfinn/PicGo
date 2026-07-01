@@ -8,7 +8,7 @@ import {
 } from 'electron'
 import uploader from 'apis/app/uploader'
 import picgo from '@core/picgo'
-import { GalleryDB } from '~/main/apis/core/datastore'
+import { AlbumDB } from '~/main/apis/core/datastore'
 import windowManager from 'apis/app/window/windowManager'
 import { IPasteStyle, IWindowList } from '#/types/enum'
 import pasteTemplate from '~/main/utils/pasteTemplate'
@@ -235,7 +235,7 @@ export function createTray () {
               // icon: files[i]
             })
           }, i * 100)
-          await GalleryDB.getInstance().insert(imgs[i])
+          await AlbumDB.getInstance().insert(imgs[i])
         }
         handleCopyUrl(pasteText.join('\n'))
         trayWindow.webContents.send('dragFiles', imgs)

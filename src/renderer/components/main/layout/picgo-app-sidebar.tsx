@@ -1,0 +1,249 @@
+import { useState } from "react"
+import {
+  CircleUserRoundIcon,
+  CloudIcon,
+  CrownIcon,
+  DatabaseIcon,
+  EllipsisIcon,
+  ImageIcon,
+  LayoutIcon,
+  MoonIcon,
+  PanelLeftCloseIcon,
+  PuzzleIcon,
+  SettingsIcon,
+  SunIcon,
+} from "lucide-react"
+import { useMatchRoute, useNavigate } from "@tanstack/react-router"
+import { useTranslation } from "react-i18next"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sidebar } from "@/components/ui/sidebar"
+import { useSidebar } from "@/components/ui/sidebar-context"
+import { cn } from "@/lib/utils"
+import { usePicGoCloudUserInfo } from "@/queries/picgo-cloud"
+import { usePicGoCloudBillingQuery } from "@/queries/picgo-cloud-billing"
+import { resolvePlanLabel } from "@/utils/plan"
+import { SidebarNavButton } from "./sidebar-nav-button"
+import { MainMoreDialog } from "./main-more-dialog"
+
+const SIDEBAR_ICON_CLASSNAME = "size-[18px]"
+
+export function PicGoAppSidebar({
+  isDark,
+  onToggleTheme,
+}: {
+  isDark: boolean
+  onToggleTheme: () => void
+}) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const matchRoute = useMatchRoute()
+  const { state, setOpen } = useSidebar()
+  const { userInfo: cloudUserInfo, isPaid: cloudIsPaid } = usePicGoCloudUserInfo()
+  const { data: cloudBilling } = usePicGoCloudBillingQuery()
+  const cloudPhase = cloudBilling?.lifecycle?.phase
+  const cloudNeedsRenew =
+    cloudPhase === "grace" ||
+    cloudPhase === "frozen" ||
+    cloudPhase === "pending_cleanup"
+  // 已登录但 free，或付费用户进入 grace/frozen/pending_cleanup 时显示皇冠提示升级 / 续费
+  const showCloudCrown = !!cloudUserInfo && (!cloudIsPaid || cloudNeedsRenew)
+  const collapsed = state === "collapsed"
+  const [avatarError, setAvatarError] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
+
+  const matchActive = (to: string) =>
+    !!matchRoute({ to, fuzzy: true, pending: false })
+
+  const isDashboardActive = matchActive("/main/dashboard")
+  const isAlbumActive = matchActive("/main/album")
+  const isProviderActive = matchActive("/main/providers")
+  const isCloudActive = matchActive("/main/cloud")
+  const isPluginsActive = matchActive("/main/plugins")
+  const isSettingsActive =
+    matchActive("/main/settings/settings") ||
+    matchActive("/main/settings/shortcuts") ||
+    matchActive("/main/settings/url-rewrite")
+
+  return (
+    <Sidebar
+      collapsible="icon"
+      className="absolute left-4 top-0 bottom-4 h-auto overflow-hidden rounded-xl border-sidebar-border backdrop-blur-xl border"
+    >
+      <div className="h-full flex flex-col transition-all duration-300">
+        <div className="p-4 pb-8">
+          <div
+            className={cn(
+              "flex items-center transition-all duration-300 justify-between px-2"
+            )}
+          >
+            <div
+              className={cn(
+                "flex items-center transition-all duration-300",
+                collapsed ? "cursor-pointer hover:opacity-80" : "gap-3"
+              )}
+              onClick={() => collapsed && setOpen(true)}
+              title={collapsed ? t("SIDEBAR_EXPAND") : undefined}
+              role={collapsed ? "button" : undefined}
+            >
+              <img
+                src="https://pics.molunerfinn.com/doc/picgo-logo.png"
+                alt="PicGo Logo"
+                className="size-8 object-contain"
+              />
+              <span
+                className={cn(
+                  'text-xl font-bold tracking-tight transition-all duration-300 whitespace-nowrap overflow-hidden origin-left',
+                  collapsed ? 'w-0 opacity-0 scale-90' : 'w-auto opacity-100 scale-100'
+                )}
+              >
+                PicGo
+              </span>
+            </div>
+
+            {!collapsed ? (
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => setOpen(false)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <PanelLeftCloseIcon className={SIDEBAR_ICON_CLASSNAME} />
+                <span className="sr-only">{t("SIDEBAR_COLLAPSE")}</span>
+              </Button>
+            ) : null}
+          </div>
+        </div>
+
+        <ScrollArea className="flex-1">
+          <div className="px-4">
+            <nav className="space-y-1">
+              <SidebarNavButton
+                icon={<LayoutIcon className={SIDEBAR_ICON_CLASSNAME} />}
+                label={t("SIDEBAR_DASHBOARD")}
+                active={isDashboardActive}
+                onClick={() => navigate({ to: "/main/dashboard" })}
+                collapsed={collapsed}
+              />
+              <SidebarNavButton
+                icon={<ImageIcon className={SIDEBAR_ICON_CLASSNAME} />}
+                label={t("ALBUM")}
+                active={isAlbumActive}
+                onClick={() => navigate({ to: "/main/album" })}
+                collapsed={collapsed}
+              />
+              <SidebarNavButton
+                icon={<DatabaseIcon className={SIDEBAR_ICON_CLASSNAME} />}
+                label={t("ALBUM_PROVIDERS")}
+                active={isProviderActive}
+                onClick={() => navigate({ to: "/main/providers" })}
+                collapsed={collapsed}
+              />
+              <SidebarNavButton
+                icon={<CloudIcon className={SIDEBAR_ICON_CLASSNAME} />}
+                label="PicGo Cloud"
+                active={isCloudActive}
+                onClick={() => navigate({ to: "/main/cloud" })}
+                collapsed={collapsed}
+                trailing={
+                  showCloudCrown
+                    ? <CrownIcon className="size-4 text-amber-500" />
+                    : undefined
+                }
+              />
+              <SidebarNavButton
+                icon={<PuzzleIcon className={SIDEBAR_ICON_CLASSNAME} />}
+                label={t("SIDEBAR_PLUGINS")}
+                active={isPluginsActive}
+                onClick={() => navigate({ to: "/main/plugins" })}
+                collapsed={collapsed}
+              />
+            </nav>
+
+            <div className="mt-8">
+              {!collapsed ? (
+                <p className="text-muted-foreground animate-in fade-in mb-3 px-4 text-xs font-semibold uppercase tracking-wider">
+                  {t("SIDEBAR_SYSTEM")}
+                </p>
+              ) : (
+                <div className="bg-border mx-2 my-4 h-px" />
+              )}
+
+              <nav className="space-y-1">
+                <SidebarNavButton
+                  icon={<SettingsIcon className={SIDEBAR_ICON_CLASSNAME} />}
+                  label={t("SETTINGS")}
+                  active={isSettingsActive}
+                  onClick={() => navigate({ to: "/main/settings/settings" })}
+                  collapsed={collapsed}
+                />
+                <SidebarNavButton
+                  icon={<EllipsisIcon className={SIDEBAR_ICON_CLASSNAME} />}
+                  label={t("MORE")}
+                  active={false}
+                  onClick={() => setMoreOpen(true)}
+                  collapsed={collapsed}
+                />
+              </nav>
+            </div>
+          </div>
+        </ScrollArea>
+
+        <div className="p-4">
+          <Card
+            onClick={() => navigate({ to: "/main/cloud" })}
+            className={cn(
+              "bg-muted/30 hover:bg-muted/50 group/user-card cursor-pointer overflow-hidden border border-border shadow-none transition-colors",
+              collapsed ? "border-none bg-transparent py-0" : "py-0"
+            )}
+          >
+            <CardContent
+              className={cn(
+                "flex items-center gap-3 p-3",
+                collapsed ? "justify-center p-0" : ""
+              )}
+            >
+              <div className="bg-muted text-muted-foreground group-hover/user-card:text-primary flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border transition-colors">
+                {cloudUserInfo?.avatar && !avatarError
+                  ? <img src={cloudUserInfo.avatar} alt="" className="size-full object-cover" draggable={false} onError={() => setAvatarError(true)} />
+                  : <CircleUserRoundIcon className="size-6" />}
+              </div>
+
+              {!collapsed ? (
+                <>
+                  <div className="animate-in fade-in min-w-0 flex-1 duration-300">
+                    <p className="group-hover/user-card:text-primary truncate text-sm font-bold transition-colors">
+                      {cloudUserInfo?.user || t("PICGO_CLOUD_LOGIN")}
+                    </p>
+                    <p className="text-muted-foreground truncate text-xs">
+                      {cloudUserInfo ? resolvePlanLabel(cloudUserInfo.plan) : t("PICGO_CLOUD_BRAND_NAME")}
+                    </p>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onToggleTheme()
+                    }}
+                    className="text-muted-foreground hover:text-primary rounded-full"
+                  >
+                    {isDark ? (
+                      <SunIcon className={SIDEBAR_ICON_CLASSNAME} />
+                    ) : (
+                      <MoonIcon className={SIDEBAR_ICON_CLASSNAME} />
+                    )}
+                  </Button>
+                </>
+              ) : null}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+      <MainMoreDialog open={moreOpen} onOpenChange={setMoreOpen} />
+    </Sidebar>
+  )
+}

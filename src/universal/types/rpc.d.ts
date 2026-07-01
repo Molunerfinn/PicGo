@@ -1,7 +1,7 @@
 
 type IRPCResult<T> =
   | { success: true, data: T }
-  | { success: false, error: string }
+  | { success: false, error: string, code?: string }
 
 type IGetUploaderConfigListArgs = [type: string]
 type IDeleteUploaderConfigArgs = [type: string, configName: string]
@@ -9,13 +9,14 @@ type ISelectUploaderConfigArgs = [type: string, configName: string]
 type IUpdateUploaderConfigArgs = [type: string, configId: string, config: IStringKeyMap]
 type ICopyUploaderConfigArgs = [type: string, configName: string, newConfigName: string]
 type IGetLatestVersionArgs = [isCheckBetaVersion: boolean]
+type IGetWindowStateArgs = []
 type IToolboxCheckArgs = [type: import('./enum').IToolboxItemType]
 type IOpenFileArgs = [filePath: string]
 type ICopyTextArgs = [text: string]
 type IShowDockIconArgs = [visible: boolean]
 type IShowMenubarIconArgs = [visible: boolean]
 type IShowNotificationArgs = [title: string, body: string, id?: string]
-type IGetGalleryMenuListArgs = [selectedList: IGalleryItem[]]
+type IGetAlbumMenuListArgs = [selectedList: IAlbumItem[]]
 
 interface IRPCServer {
   start: () => void

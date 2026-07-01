@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="frozen-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="100%" stop-color="#fde68a"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="480" height="320" fill="url(#frozen-bg)"/>
+
+  <g transform="translate(240, 110)">
+    <circle r="42" fill="#ffffff" stroke="#f59e0b" stroke-width="2"/>
+    <g transform="translate(0, 0)" fill="none" stroke="#d97706" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-18 -10 v6 a18 18 0 0 1 36 0 v-6 a18 18 0 0 0 -36 0 z"/>
+      <rect x="-22" y="-4" width="44" height="30" rx="4" fill="#fde68a" stroke="#d97706"/>
+      <circle cx="0" cy="11" r="2.5" fill="#d97706" stroke="none"/>
+      <path d="M0 13.5 v5"/>
+    </g>
+  </g>
+
+  <text x="240" y="208" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="22" font-weight="700" fill="#78350f" text-anchor="middle" letter-spacing="0.3">Account Frozen</text>
+
+  <text x="240" y="236" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="13" font-weight="400" fill="#92400e" text-anchor="middle" letter-spacing="0.2">Renew your plan to restore image access</text>
+
+  <text x="240" y="290" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="10" font-weight="500" fill="#a16207" text-anchor="middle" letter-spacing="1.5" opacity="0.6">POWERED BY PICGO CLOUD</text>
+</svg>

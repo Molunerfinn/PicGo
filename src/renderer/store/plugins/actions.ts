@@ -1,0 +1,415 @@
+import type {
+  PluginSearchResultItem,
+  PluginInstalledItem,
+  PluginConfigSectionType,
+  PluginImportResult,
+  PluginReadmeState,
+  PluginDeprecationState
+} from '@/components/main/plugins/types'
+import { pluginDeprecationStatus, pluginReadmeStatus } from '@/components/main/plugins/types'
+import { pluginsAdapter } from '@/adapters/plugins'
+import { buildPluginDeprecationKey, mapInstalledPluginItem, mapPluginSearchResult } from '@/components/main/plugins/utils'
+import { appActions } from '@/store/app-actions'
+import { useAppStore } from '@/store/app-store'
+import i18n from '@/i18n'
+import { toast } from 'sonner'
+import { usePluginStore } from './store'
+
+function buildPluginSearchKeyword (query: string) {
+  return query.includes('picgo-plugin-')
+    ? query
+    : `picgo-plugin-${query}`
+}
+
+function filterPluginSearchResults (
+  results: PluginSearchResultItem[],
+  query: string,
+  exactMatch: boolean
+) {
+  if (!exactMatch) {
+    return results
+  }
+
+  const keyword = buildPluginSearchKeyword(query)
+  return results.filter((item) => item.fullName.includes(keyword))
+}
+
+function syncSearchResultsInstallState (
+  results: PluginSearchResultItem[],
+  installedPlugins: PluginInstalledItem[]
+) {
+  const installedNames = new Set(installedPlugins.map((item) => item.fullName))
+
+  return results.map((item) => ({
+    ...item,
+    hasInstall: installedNames.has(item.fullName)
+  }))
+}
+
+export const pluginStoreActions = {
+  setSearchValue (value: string) {
+    usePluginStore.setState((state) => {
+      state.searchValue = value
+    })
+  },
+  toggleExactMatch () {
+    usePluginStore.setState((state) => {
+      state.exactMatch = !state.exactMatch
+    })
+    pluginStoreActions.applySearchFilter()
+  },
+  setSearching (isSearching: boolean) {
+    usePluginStore.setState((state) => {
+      state.isSearching = isSearching
+    })
+  },
+  setSearchResults (searchResults: PluginSearchResultItem[]) {
+    usePluginStore.setState((state) => {
+      state.rawSearchResults = searchResults
+      state.searchResults = searchResults
+      state.isSearching = false
+    })
+  },
+  applySearchFilter () {
+    usePluginStore.setState((state) => {
+      const normalizedQuery = state.searchValue.trim()
+      state.searchResults = filterPluginSearchResults(
+        state.rawSearchResults,
+        normalizedQuery,
+        state.exactMatch
+      )
+    })
+  },
+  setInstalledPlugins (pluginsInstalled: PluginInstalledItem[]) {
+    useAppStore.setState((state) => {
+      state.pluginsInstalled = pluginsInstalled
+    })
+
+    usePluginStore.setState((state) => {
+      const syncedResults = syncSearchResultsInstallState(
+        state.rawSearchResults,
+        pluginsInstalled
+      )
+      state.rawSearchResults = syncedResults
+      state.searchResults = filterPluginSearchResults(
+        syncedResults,
+        state.searchValue.trim(),
+        state.exactMatch
+      )
+    })
+  },
+  setMutating (fullName: string, isMutating: boolean) {
+    usePluginStore.setState((state) => {
+      state.isMutatingByPlugin[fullName] = isMutating
+    })
+  },
+  setImportingLocal (isImportingLocal: boolean) {
+    usePluginStore.setState((state) => {
+      state.isImportingLocal = isImportingLocal
+    })
+  },
+  setReadmeState (fullName: string, nextState: PluginReadmeState) {
+    usePluginStore.setState((state) => {
+      state.readmeByPlugin[fullName] = nextState
+    })
+  },
+  setDeprecationState (key: string, nextState: PluginDeprecationState) {
+    usePluginStore.setState((state) => {
+      state.deprecationByPlugin[key] = nextState
+    })
+  },
+  async searchPlugins (query: string) {
+    const normalizedQuery = query.trim()
+
+    if (!normalizedQuery) {
+      pluginStoreActions.setSearchResults([])
+      return
+    }
+
+    const npmSearchText = buildPluginSearchKeyword(normalizedQuery)
+    const exactMatch = usePluginStore.getState().exactMatch
+
+    pluginStoreActions.setSearching(true)
+
+    try {
+      const installedPlugins = useAppStore.getState().pluginsInstalled
+      const searchResults = await pluginsAdapter.searchPlugins(
+        npmSearchText,
+        installedPlugins.map((item) => ({
+          name: item.name,
+          fullName: item.fullName,
+          author: item.author,
+          description: item.description,
+          logo: item.logo,
+          version: item.version,
+          gui: item.gui,
+          homepage: item.homepage,
+          enabled: item.enabled,
+          guiMenu: item.guiMenu,
+          config: {
+            plugin: item.config.plugin,
+            uploader: item.uploader
+              ? {
+                name: item.uploader.name,
+                fullName: item.uploader.id,
+                config: item.uploader.schema
+              }
+              : { name: '', fullName: '', config: [] },
+            transformer: item.config.transformer
+          },
+          ing: false,
+          hasInstall: item.hasInstall
+        }))
+      )
+
+      const normalizedResults = searchResults.map(mapPluginSearchResult)
+      const filteredResults = exactMatch
+        ? normalizedResults.filter((item) => item.fullName.includes(npmSearchText))
+        : normalizedResults
+
+      usePluginStore.setState((state) => {
+        state.rawSearchResults = normalizedResults
+        state.searchResults = filteredResults
+        state.isSearching = false
+      })
+    } catch (error) {
+      pluginStoreActions.setSearching(false)
+      throw error
+    }
+  },
+  async installPlugin (fullName: string) {
+    pluginStoreActions.setMutating(fullName, true)
+
+    try {
+      const result = await pluginsAdapter.installPlugin(fullName)
+      if (!result.success) {
+        throw new Error(result.errMsg || result.body || 'Install plugin failed')
+      }
+
+      await appActions.hydrateAppState()
+      const installedPlugins = await pluginsAdapter.getInstalledPlugins()
+      pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
+      toast.success(i18n.t('PLUGIN_INSTALL_SUCCEED'))
+    } finally {
+      pluginStoreActions.setMutating(fullName, false)
+    }
+  },
+  async setPluginEnabled (fullName: string, enabled: boolean) {
+    pluginStoreActions.setMutating(fullName, true)
+
+    try {
+      const result = await pluginsAdapter.togglePluginEnabled(fullName, enabled)
+
+      if (!result.success) {
+        throw new Error(result.error || 'Toggle plugin failed')
+      }
+
+      await appActions.hydrateAppState()
+      const installedPlugins = await pluginsAdapter.getInstalledPlugins()
+      pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
+      toast.success(i18n.t(enabled ? 'ENABLE_PLUGIN' : 'DISABLE_PLUGIN'))
+    } finally {
+      pluginStoreActions.setMutating(fullName, false)
+    }
+  },
+  async updatePlugin (fullName: string) {
+    pluginStoreActions.setMutating(fullName, true)
+
+    try {
+      const result = await pluginsAdapter.updatePlugin(fullName)
+      if (!result.success) {
+        throw new Error(result.error || 'Update plugin failed')
+      }
+      await appActions.hydrateAppState()
+      const installedPlugins = await pluginsAdapter.getInstalledPlugins()
+      pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
+      await pluginsAdapter.setNeedReload(true)
+
+      useAppStore.setState((state) => {
+        if (state.appConfig) {
+          state.appConfig.needReload = true
+        }
+      })
+      toast.success(i18n.t('PLUGIN_UPDATE_SUCCEED'))
+    } finally {
+      pluginStoreActions.setMutating(fullName, false)
+    }
+  },
+  async uninstallPlugin (fullName: string) {
+    pluginStoreActions.setMutating(fullName, true)
+
+    try {
+      const result = await pluginsAdapter.uninstallPlugin(fullName)
+      if (!result.success) {
+        throw new Error(result.error || 'Uninstall plugin failed')
+      }
+      await appActions.hydrateAppState()
+      const installedPlugins = await pluginsAdapter.getInstalledPlugins()
+      pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
+      await pluginsAdapter.setNeedReload(true)
+
+      useAppStore.setState((state) => {
+        if (state.appConfig) {
+          state.appConfig.needReload = true
+        }
+      })
+      toast.success(i18n.t('PLUGIN_UNINSTALL_SUCCEED'))
+    } finally {
+      pluginStoreActions.setMutating(fullName, false)
+    }
+  },
+  async savePluginConfig (
+    fullName: string,
+    section: PluginConfigSectionType,
+    values: Record<string, unknown>
+  ) {
+    pluginStoreActions.setMutating(fullName, true)
+
+    try {
+      const installedPlugin = useAppStore.getState().pluginsInstalled.find(
+        (item) => item.fullName === fullName
+      )
+
+      if (!installedPlugin) {
+        throw new Error('Plugin not found')
+      }
+
+      const targetConfigName =
+        section === 'config'
+          ? installedPlugin.config.plugin.fullName || installedPlugin.config.plugin.name
+          : installedPlugin.config.transformer.fullName || installedPlugin.config.transformer.name
+
+      await pluginsAdapter.savePluginConfig(
+        section === 'config' ? 'plugin' : 'transformer',
+        targetConfigName,
+        values as IStringKeyMap
+      )
+      await appActions.refreshAppConfig()
+      const installedPlugins = await pluginsAdapter.getInstalledPlugins()
+      pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
+    } finally {
+      pluginStoreActions.setMutating(fullName, false)
+    }
+  },
+  async togglePluginTransformer (fullName: string) {
+    const installedPlugin = useAppStore.getState().pluginsInstalled.find(
+      (item) => item.fullName === fullName
+    )
+
+    if (!installedPlugin?.config.transformer.name) {
+      throw new Error('Transformer not found')
+    }
+
+    const transformerName = installedPlugin.config.transformer.name
+    const currentTransformer =
+      useAppStore.getState().appConfig?.picBed.transformer ?? 'path'
+    const nextTransformer =
+      currentTransformer === transformerName ? 'path' : transformerName
+
+    await pluginsAdapter.saveTransformer(nextTransformer)
+    await pluginsAdapter.setNeedReload(true)
+    await appActions.refreshAppConfig()
+    await appActions.hydrateAppState()
+
+    return nextTransformer
+  },
+  async runPluginGuiMenuAction (fullName: string, label: string) {
+    return {
+      fullName,
+      label,
+      message: ''
+    }
+  },
+  async fetchPluginDeprecation (fullName: string, version: string) {
+    const cacheKey = buildPluginDeprecationKey(fullName, version)
+    const currentState = usePluginStore.getState().deprecationByPlugin[cacheKey]
+
+    if (currentState?.status === pluginDeprecationStatus.Loading) {
+      return
+    }
+
+    pluginStoreActions.setDeprecationState(cacheKey, {
+      status: pluginDeprecationStatus.Loading,
+      isDeprecated: false,
+      message: ''
+    })
+
+    try {
+      const result = await pluginsAdapter.fetchPluginDeprecation(fullName, version)
+
+      pluginStoreActions.setDeprecationState(cacheKey, {
+        status: pluginDeprecationStatus.Ready,
+        isDeprecated: result.isDeprecated,
+        message: result.message
+      })
+    } catch {
+      pluginStoreActions.setDeprecationState(cacheKey, {
+        status: pluginDeprecationStatus.Error,
+        isDeprecated: false,
+        message: ''
+      })
+    }
+  },
+  async fetchPluginReadme (fullName: string, options?: { installed?: boolean }) {
+    const currentState = usePluginStore.getState().readmeByPlugin[fullName]
+
+    if (currentState?.status === pluginReadmeStatus.Loading) {
+      return
+    }
+
+    pluginStoreActions.setReadmeState(fullName, {
+      status: pluginReadmeStatus.Loading,
+      content: '',
+      errorMessage: null
+    })
+
+    try {
+      const content = await pluginsAdapter.fetchPluginReadme(fullName, options)
+
+      pluginStoreActions.setReadmeState(fullName, {
+        status: content.trim() ? pluginReadmeStatus.Ready : pluginReadmeStatus.Empty,
+        content,
+        errorMessage: null
+      })
+    } catch (error) {
+      pluginStoreActions.setReadmeState(fullName, {
+        status: pluginReadmeStatus.Error,
+        content: '',
+        errorMessage: error instanceof Error ? error.message : String(error)
+      })
+    }
+  },
+  async importLocalPlugin (): Promise<PluginImportResult | null> {
+    pluginStoreActions.setImportingLocal(true)
+
+    try {
+      const result = await pluginsAdapter.importLocalPlugin()
+      if (!result.success) {
+        throw new Error(result.error || 'Import local plugin failed')
+      }
+
+      if (!result.data) {
+        return null
+      }
+
+      await appActions.hydrateAppState()
+      const installedPlugins = await pluginsAdapter.getInstalledPlugins()
+      pluginStoreActions.setInstalledPlugins(installedPlugins.map(mapInstalledPluginItem))
+      const installedPlugin = useAppStore.getState().pluginsInstalled.find(
+        (item) => item.fullName === result.data || item.name === result.data
+      )
+
+      if (!installedPlugin) {
+        throw new Error('Imported plugin not found')
+      }
+
+      toast.success(i18n.t('PLUGIN_IMPORT_SUCCEED'))
+      return {
+        path: result.data,
+        installedPlugin
+      }
+    } finally {
+      pluginStoreActions.setImportingLocal(false)
+    }
+  }
+}

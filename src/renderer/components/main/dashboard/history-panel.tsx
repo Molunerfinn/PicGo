@@ -1,0 +1,381 @@
+import dayjs from 'dayjs'
+import { useState } from 'react'
+import { Virtuoso } from 'react-virtuoso'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { albumAdapter } from '@/adapters/album'
+import { AlbumPreview } from '@/components/main/album/album-preview'
+import { type AlbumPhoto, resolveIsVideo } from '@/components/main/album/utils'
+import { SearchInput } from '@/components/common/search-input'
+import { cn } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
+import { AlbumSourceSwitcher } from '@/components/common/album-source-switcher'
+import { CloudEmptyState } from '@/components/common/cloud-empty-state'
+import { CloudFeatureHighlights } from '@/components/common/cloud-feature-highlights'
+import { CloudRefreshButton } from '@/components/common/cloud-refresh-button'
+import { AlbumSource } from '#/types/cloudAlbum'
+import { useAlbumStore } from '@/store'
+import { usePicGoCloudUserInfo } from '@/queries/picgo-cloud'
+import { resolveTimestampValue } from '@/utils/common'
+import { DEFAULT_DATE_TIME_FORMAT } from '@/utils/consts'
+import type { DashboardHistoryRecord } from './hooks/use-dashboard-history'
+import { HistoryItem } from './history-item'
+
+interface DashboardHistoryItem {
+  id: number | string
+  previewId: number
+  name: string
+  time: string
+  imgUrl: string
+  isVideo: boolean
+  timestamp: number
+  raw: DashboardHistoryRecord
+  keywords: string[]
+}
+
+interface DashboardHistoryGroup {
+  key: string
+  label: string
+  items: DashboardHistoryItem[]
+}
+
+type DashboardHistoryEntry =
+  | {
+    type: 'header'
+    key: string
+    label: string
+    isFirstGroup: boolean
+  }
+  | {
+    type: 'item'
+    key: string
+    item: DashboardHistoryItem
+  }
+
+function resolveAlbumTimestamp (item: DashboardHistoryRecord) {
+  return resolveTimestampValue(item.createdAt) || resolveTimestampValue(item.updatedAt)
+}
+
+function isSameDay (left: Date, right: Date) {
+  return left.getFullYear() === right.getFullYear() &&
+    left.getMonth() === right.getMonth() &&
+    left.getDate() === right.getDate()
+}
+
+function formatHistoryTimestamp (timestamp: number) {
+  if (timestamp <= 0) {
+    return ''
+  }
+
+  return dayjs(timestamp).format(DEFAULT_DATE_TIME_FORMAT)
+}
+
+function buildHistoryItems (items: DashboardHistoryRecord[]): DashboardHistoryItem[] {
+  return [...items]
+    .sort((left, right) => resolveAlbumTimestamp(right) - resolveAlbumTimestamp(left))
+    .map((item, index) => {
+      const name = item.fileName || item.imgUrl || item.originImgUrl || item.id || `${index + 1}`
+      const timestamp = resolveAlbumTimestamp(item)
+      const keywords = [name, item.imgUrl, item.originImgUrl, item.fileName]
+        .filter((value): value is string => typeof value === 'string' && value.length > 0)
+
+      return {
+        id: item.id || item.imgUrl || `${index}`,
+        previewId: index,
+        name,
+        time: formatHistoryTimestamp(timestamp),
+        imgUrl: item.imgUrl || item.originImgUrl || '',
+        isVideo: resolveIsVideo(item),
+        timestamp,
+        raw: item,
+        keywords
+      }
+    })
+}
+
+function buildGroupKey (timestamp: number) {
+  const date = new Date(timestamp)
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+}
+
+function formatGroupLabel (timestamp: number, t: (key: string) => string) {
+  const date = new Date(timestamp)
+  const now = new Date()
+  const yesterday = new Date(now)
+  yesterday.setDate(now.getDate() - 1)
+
+  if (isSameDay(date, now)) {
+    return t('HISTORY_PANEL_TODAY')
+  }
+
+  if (isSameDay(date, yesterday)) {
+    return t('HISTORY_PANEL_YESTERDAY')
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }).format(date)
+}
+
+function buildHistoryGroups (
+  items: DashboardHistoryItem[],
+  t: (key: string) => string
+): DashboardHistoryGroup[] {
+  const groups: DashboardHistoryGroup[] = []
+
+  items.forEach((item) => {
+    const key = buildGroupKey(item.timestamp)
+    const lastGroup = groups[groups.length - 1]
+
+    if (lastGroup?.key === key) {
+      lastGroup.items.push(item)
+      return
+    }
+
+    groups.push({
+      key,
+      label: formatGroupLabel(item.timestamp, t),
+      items: [item]
+    })
+  })
+
+  return groups
+}
+
+function buildVirtuosoResetKey (groups: DashboardHistoryGroup[], searchText: string) {
+  const groupSignature = groups
+    .map((group) => `${group.key}:${group.items.map((item) => item.id).join(',')}`)
+    .join('|')
+
+  return `${searchText}:${groupSignature}`
+}
+
+function buildHistoryEntries (groups: DashboardHistoryGroup[]): DashboardHistoryEntry[] {
+  return groups.flatMap((group, groupIndex) => {
+    const header: DashboardHistoryEntry = {
+      type: 'header',
+      key: `header:${group.key}`,
+      label: group.label,
+      isFirstGroup: groupIndex === 0
+    }
+
+    const items = group.items.map((item): DashboardHistoryEntry => ({
+      type: 'item',
+      key: `item:${item.id}`,
+      item
+    }))
+
+    return [header, ...items]
+  })
+}
+
+function HistoryItemSkeleton () {
+  return (
+    <div className="flex items-center gap-3 px-4 py-2">
+      <Skeleton className="size-10 shrink-0 rounded-md" />
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <Skeleton className="h-3.5 w-3/4" />
+        <Skeleton className="h-3 w-1/2" />
+      </div>
+    </div>
+  )
+}
+
+export function HistoryPanel ({
+  className,
+  loadThumbnails = true,
+  items,
+  loading = false,
+  onStartImport,
+  onCloudRefresh
+}: {
+  className?: string
+  loadThumbnails?: boolean
+  items: DashboardHistoryRecord[]
+  loading?: boolean
+  onStartImport?: () => Promise<void> | void
+  onCloudRefresh?: () => Promise<void> | void
+}) {
+  const { t } = useTranslation()
+  const albumSource = useAlbumStore.use.albumSource()
+  const { userInfo: cloudUserInfo, isPaid: isCloudPaidUser } = usePicGoCloudUserInfo()
+  const isCloud = albumSource === AlbumSource.CLOUD
+  const showCloudRestriction = isCloud && !isCloudPaidUser
+  const showCloudEmpty = isCloud && isCloudPaidUser && !loading && items.length === 0
+  const [searchText, setSearchText] = useState('')
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [activePreviewId, setActivePreviewId] = useState<number | null>(null)
+  const historyItems = buildHistoryItems(items)
+
+  const keyword = searchText.trim().toLowerCase()
+  const filteredItems = keyword
+    ? historyItems.filter((item) => item.keywords.some((value) => value.toLowerCase().includes(keyword)))
+    : historyItems
+
+  const todayLabel = t('HISTORY_PANEL_TODAY')
+  const yesterdayLabel = t('HISTORY_PANEL_YESTERDAY')
+  const previewLabel = t('ALBUM_PREVIEW')
+  const groups = buildHistoryGroups(filteredItems, (key) => {
+    if (key === 'HISTORY_PANEL_TODAY') {
+      return todayLabel
+    }
+
+    return yesterdayLabel
+  })
+  const entries = buildHistoryEntries(groups)
+  const virtuosoKey = buildVirtuosoResetKey(groups, keyword)
+  const previewItems: AlbumPhoto[] = filteredItems
+    .filter((item) => Boolean(item.imgUrl))
+    .map((item) => ({
+      id: item.previewId,
+      dbId: String(item.id),
+      imgUrl: item.imgUrl,
+      originImgUrl: item.raw.originImgUrl,
+      alt: item.name,
+      name: item.name,
+      sizeMb: 0,
+      date: item.time,
+      type: item.raw.type || '',
+      raw: item.raw,
+      collection: '',
+      tags: [],
+      isVideo: item.isVideo
+    }))
+
+  const handleCopy = async (item: DashboardHistoryItem) => {
+    try {
+      await albumAdapter.copyImageLink(item.raw)
+      toast.success(t('COPY_LINK_SUCCEED'))
+    } catch (error) {
+      console.error(error)
+      toast.error(t('OPERATION_FAILED'))
+    }
+  }
+
+  const handlePreview = (item: DashboardHistoryItem) => {
+    if (!item.imgUrl) {
+      return
+    }
+
+    setActivePreviewId(item.previewId)
+    setPreviewOpen(true)
+  }
+
+  return (
+    <>
+      <div className={cn('flex h-full min-h-0 flex-col', className)}>
+        <div className="px-4 pb-4 pt-6">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="flex min-w-0 flex-1 items-center gap-1">
+              <h2 className="text-lg font-bold">{t('HISTORY_PANEL_TITLE')}</h2>
+              {isCloud && isCloudPaidUser && onCloudRefresh ? (
+                <CloudRefreshButton onRefresh={onCloudRefresh} />
+              ) : null}
+            </div>
+            <AlbumSourceSwitcher className="mr-6 shrink-0 xl:mr-0" />
+          </div>
+          <SearchInput
+            value={searchText}
+            onValueChange={setSearchText}
+            placeholder={t('HISTORY_PANEL_FILTER_PLACEHOLDER')}
+            ariaLabel={t('HISTORY_PANEL_FILTER_PLACEHOLDER')}
+            clearLabel={t('ALBUM_CLEAR_SELECTION')}
+          />
+        </div>
+
+        <div className="min-h-0 flex-1">
+          {showCloudRestriction
+            ? (
+              <div className="flex h-full flex-col gap-2 overflow-y-auto px-4 py-2">
+                <CloudFeatureHighlights />
+                <CloudEmptyState
+                  userInfo={cloudUserInfo}
+                  cloudTotal={0}
+                  cloudLoading={false}
+                  onStartImport={() => {}}
+                />
+              </div>
+            )
+            : showCloudEmpty
+              ? (
+                <CloudEmptyState
+                  userInfo={cloudUserInfo}
+                  cloudTotal={0}
+                  cloudLoading={false}
+                  onStartImport={onStartImport ?? (() => {})}
+                />
+              )
+              : loading && items.length === 0
+                ? (
+                  <div className="space-y-1 py-2">
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <HistoryItemSkeleton key={index} />
+                    ))}
+                  </div>
+                )
+                : entries.length > 0
+                  ? (
+                    <Virtuoso
+                      key={virtuosoKey}
+                      style={{ height: '100%' }}
+                      data={entries}
+                      overscan={320}
+                      increaseViewportBy={320}
+                      computeItemKey={(index, entry) => entry?.key ?? `history-entry-${index}`}
+                      itemContent={(_, entry) => {
+                        if (!entry) {
+                          return null
+                        }
+
+                        if (entry.type === 'header') {
+                          return (
+                            <div
+                              className={cn(
+                                'px-4 pb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground',
+                                entry.isFirstGroup ? 'pt-0' : 'pt-6'
+                              )}
+                            >
+                              {entry.label}
+                            </div>
+                          )
+                        }
+
+                        return (
+                          <div className="px-4 pb-3">
+                            <HistoryItem
+                              item={entry.item}
+                              loadThumbnail={loadThumbnails}
+                              previewLabel={previewLabel}
+                              onPreview={() => {
+                                handlePreview(entry.item)
+                              }}
+                              onCopy={async () => {
+                                await handleCopy(entry.item)
+                              }}
+                            />
+                          </div>
+                        )
+                      }}
+                    />
+                  )
+                  : <div className="px-4 pb-6 text-sm text-muted-foreground" />}
+        </div>
+      </div>
+
+      <AlbumPreview
+        isOpen={previewOpen}
+        images={previewItems}
+        activeId={activePreviewId}
+        onClose={() => {
+          setPreviewOpen(false)
+          setActivePreviewId(null)
+        }}
+        onActiveIdChange={(id) => {
+          setActivePreviewId(id)
+        }}
+      />
+    </>
+  )
+}

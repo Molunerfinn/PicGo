@@ -1,17 +1,16 @@
 import { simpleClone, trimValues } from '#/utils/common'
 import picgo from '@core/picgo'
+import { evaluatePluginConfig } from 'picgo'
 import { v4 as uuid } from 'uuid'
 
 export const handleConfigWithFunction = (config: IPicGoPluginOriginConfig[]): IPicGoPluginConfig[] => {
-  for (const i in config) {
-    if (typeof config[i].default === 'function') {
-      config[i].default = config[i].default()
+  const resolved = evaluatePluginConfig(config as Parameters<typeof evaluatePluginConfig>[0], {}, {
+    onError: (fieldName, kind, error) => {
+      const message = error instanceof Error ? error.message : String(error)
+      picgo.log.warn(`[plugin-config] ${fieldName}.${kind} threw: ${message}`)
     }
-    if (typeof config[i].choices === 'function') {
-      config[i].choices = (config[i].choices as Function)()
-    }
-  }
-  return config as IPicGoPluginConfig[]
+  })
+  return resolved as unknown as IPicGoPluginConfig[]
 }
 
 export const completeUploaderMetaConfig = (originData: IStringKeyMap): IUploaderConfigListItem => {

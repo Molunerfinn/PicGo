@@ -1,6 +1,9 @@
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
-import vue from '@vitejs/plugin-vue'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import { resolve } from 'path'
+import { i18nTypesPlugin } from './scripts/vite-plugin-i18n-types'
 
 const alias = {
   '@': resolve(__dirname, 'src/renderer'),
@@ -42,7 +45,17 @@ export default defineConfig({
     root: 'src/renderer',
     publicDir: resolve(__dirname, 'src/renderer/public'),
     resolve: { alias },
-    plugins: [vue()],
+    plugins: [
+      tanstackRouter({
+        target: 'react',
+        autoCodeSplitting: true,
+        routesDirectory: './routes',
+        generatedRouteTree: './routeTree.gen.ts'
+      }),
+      react(),
+      i18nTypesPlugin(),
+      tailwindcss()
+    ],
     build: {
       outDir: 'dist_electron/renderer',
       rollupOptions: {
