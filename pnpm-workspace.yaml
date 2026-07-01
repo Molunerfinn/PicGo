@@ -7,9 +7,6 @@ onlyBuiltDependencies:
   - husky
   - vue-demi
 
-overrides:
-  picgo: link:../PicGo-Core
-
 supportedArchitectures:
   cpu: [x64, arm64]
   os: [current]

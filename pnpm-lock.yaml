@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  picgo: link:../PicGo-Core
-
 importers:
 
   .:
