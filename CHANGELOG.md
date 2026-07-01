@@ -1,3 +1,26 @@
+# :tada: 3.0.0 (2026-07-01)
+
+
+### :sparkles: Features
+
+* v3 ([#1414](https://github.com/Molunerfinn/PicGo/issues/1414)) ([93bbb29](https://github.com/Molunerfinn/PicGo/commit/93bbb29))
+
+
+### :bug: Bug Fixes
+
+* **gui:** migrate renderer electron access to preload bridge ([#1405](https://github.com/Molunerfinn/PicGo/issues/1405)) ([e1b04b8](https://github.com/Molunerfinn/PicGo/commit/e1b04b8))
+* picgo-core link bug ([810cfb1](https://github.com/Molunerfinn/PicGo/commit/810cfb1))
+* signed path extract error ([#1407](https://github.com/Molunerfinn/PicGo/issues/1407)) ([d3dcd23](https://github.com/Molunerfinn/PicGo/commit/d3dcd23))
+
+
+### :pencil: Documentation
+
+* add 2.5.3 docs ([ff85ede](https://github.com/Molunerfinn/PicGo/commit/ff85ede))
+* fix `https//` typo in Chinese FAQ [#1](https://github.com/Molunerfinn/PicGo/issues/1) ([#1410](https://github.com/Molunerfinn/PicGo/issues/1410)) ([7bd84a7](https://github.com/Molunerfinn/PicGo/commit/7bd84a7))
+* update readme ([01130f2](https://github.com/Molunerfinn/PicGo/commit/01130f2))
+
+
+
 ## :tada: 2.5.3 (2026-03-06)
 
 
