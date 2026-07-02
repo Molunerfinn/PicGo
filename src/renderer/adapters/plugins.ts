@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { OPEN_URL, SHOW_PLUGIN_PAGE_MENU } from '#/events/constants'
+import { SHOW_PLUGIN_PAGE_MENU } from '#/events/constants'
 import { IRPCActionType } from '~/universal/types/enum'
-import { getConfig, invokeRPC, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
+import { getConfig, invokeRPC, openURL, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
 import { ipc } from '@/utils/bridge'
 import type { ProviderPluginConfig } from '@/components/main/providers/types'
 import { normalizePluginConfigSchema } from '@/components/common/normalize-plugin-schema'
@@ -222,9 +222,9 @@ export const pluginsAdapter = {
     if (!url) {
       return
     }
-    sendToMain(OPEN_URL, url)
+    openURL(url)
   },
   openAwesomeList () {
-    sendToMain(OPEN_URL, 'https://github.com/PicGo/Awesome-PicGo')
+    openURL('https://github.com/PicGo/Awesome-PicGo')
   }
 }

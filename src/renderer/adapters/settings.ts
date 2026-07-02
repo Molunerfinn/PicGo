@@ -1,7 +1,7 @@
-import { GET_PICBEDS, OPEN_URL, PICGO_OPEN_FILE, TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
+import { GET_PICBEDS, PICGO_OPEN_FILE, TOGGLE_SHORTKEY_MODIFIED_MODE } from '#/events/constants'
 import { IRPCActionType } from '~/universal/types/enum'
 import { appConfigAdapter } from './app-config'
-import { getConfig, invokeRPC, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
+import { getConfig, invokeRPC, openURL, saveConfig, sendRPC, sendToMain } from '@/utils/dataSender'
 import { ipc } from '@/utils/bridge'
 
 export const settingsAdapter = {
@@ -27,7 +27,7 @@ export const settingsAdapter = {
     sendToMain(PICGO_OPEN_FILE, 'picgo.log')
   },
   openExternalUrl (url: string) {
-    sendToMain(OPEN_URL, url)
+    openURL(url)
   },
   updateServer () {
     sendToMain('updateServer')

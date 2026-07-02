@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { SHOW_PLUGIN_PAGE_MENU, OPEN_URL } from '#/events/constants'
+import { SHOW_PLUGIN_PAGE_MENU } from '#/events/constants'
 import { IRPCActionType } from '~/universal/types/enum'
 
 vi.mock('@/utils/dataSender', () => ({
   getConfig: vi.fn(),
   invokeRPC: vi.fn(),
+  openURL: vi.fn(),
   saveConfig: vi.fn(),
   sendRPC: vi.fn(),
   sendToMain: vi.fn()
@@ -14,6 +15,7 @@ import { pluginsAdapter } from '@/adapters/plugins'
 import {
   getConfig,
   invokeRPC,
+  openURL,
   saveConfig,
   sendRPC,
   sendToMain
@@ -152,15 +154,13 @@ describe('renderer/adapters plugins', () => {
     expect(sendRPCMock).toHaveBeenCalledWith(IRPCActionType.RELOAD_APP)
   })
 
-  it('opens homepage and awesome list through main events', () => {
+  it('opens homepage and awesome list through openURL', () => {
+    const openURLMock = vi.mocked(openURL)
+
     pluginsAdapter.openPluginHomepage('https://example.com')
     pluginsAdapter.openAwesomeList()
 
-    expect(sendToMainMock).toHaveBeenNthCalledWith(1, OPEN_URL, 'https://example.com')
-    expect(sendToMainMock).toHaveBeenNthCalledWith(
-      2,
-      OPEN_URL,
-      'https://github.com/PicGo/Awesome-PicGo'
-    )
+    expect(openURLMock).toHaveBeenNthCalledWith(1, 'https://example.com')
+    expect(openURLMock).toHaveBeenNthCalledWith(2, 'https://github.com/PicGo/Awesome-PicGo')
   })
 })
