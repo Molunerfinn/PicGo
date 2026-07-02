@@ -86,13 +86,13 @@ export function PicGoRenamePage() {
 
   return (
     <UtilityWindowLayout page="rename">
-      <AppMainCard className="h-(--app-utility-shell-height) w-full flex-none rounded-xl border-(--app-panel-border) bg-(--app-panel-bg) px-4 py-4">
-        <form className="flex h-full flex-col" onSubmit={handleConfirm}>
+      <AppMainCard className="h-(--app-utility-shell-height) w-full flex-none rounded-xl border-(--app-panel-border) bg-(--app-panel-bg) px-4 py-2">
+        <form className="flex h-full flex-col gap-2" onSubmit={handleConfirm}>
           <Label htmlFor="rename-file-name" className="text-sm font-semibold">
             {t("FILE_RENAME")}
           </Label>
 
-          <div className="flex flex-1 items-center">
+          <div>
             <div className="relative w-full">
               <Input
                 id="rename-file-name"
@@ -127,7 +127,7 @@ export function PicGoRenamePage() {
             </div>
           </div>
 
-          <div className="flex justify-end gap-1.5">
+          <div className="flex justify-end gap-1.5 pt-3">
             <Button
               type="button"
               variant="outline"
