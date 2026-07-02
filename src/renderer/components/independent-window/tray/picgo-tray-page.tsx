@@ -124,13 +124,15 @@ export function PicGoTrayPage () {
   return (
     <UtilityWindowLayout page='tray'>
       <AppMainCard className='h-(--app-utility-shell-height) w-full gap-0 overflow-hidden rounded-xl border-(--app-panel-border) bg-(--app-panel-bg) py-0'>
-        <button
-          type='button'
-          className='h-8 w-full cursor-pointer bg-primary/80 px-3 text-center text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary dark:bg-primary/75 dark:hover:bg-primary'
-          onClick={handleOpenMainWindow}
-        >
-          {t('OPEN_MAIN_WINDOW')}
-        </button>
+        <div className='px-2 pt-2 pb-2'>
+          <button
+            type='button'
+            className='h-7 w-full cursor-pointer rounded-full border-none bg-primary/80 text-center text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary dark:bg-primary/75 dark:hover:bg-primary'
+            onClick={handleOpenMainWindow}
+          >
+            {t('OPEN_MAIN_WINDOW')}
+          </button>
+        </div>
 
         <ScrollArea className='min-h-0 flex-1'>
           <div className='space-y-2 p-2'>

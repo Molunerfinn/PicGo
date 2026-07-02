@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-import { getConfig, getPicBeds } from '@/utils/dataSender'
+import { getConfig, getPicBeds, openURL } from '@/utils/dataSender'
 import { clipboard, ipc } from '@/utils/bridge'
 import { toast } from 'sonner'
 import { mainMoreAdapter } from '@/adapters/main-more'
@@ -181,6 +181,18 @@ export function MainMoreDialog ({ open, onOpenChange }: MainMoreDialogProps) {
             <DialogTitle>{t('SPONSOR_PICGO')}</DialogTitle>
             <DialogDescription>{t('PICGO_SPONSOR_TEXT')}</DialogDescription>
           </DialogHeader>
+
+          <div className='flex justify-center'>
+            <Button
+              type='button'
+              variant='outline'
+              className='gap-2'
+              onClick={() => openURL('https://github.com/sponsors/Molunerfinn')}
+            >
+              <HeartHandshakeIcon className='size-4' />
+              GitHub Sponsors
+            </Button>
+          </div>
 
           <div className='grid gap-4 sm:grid-cols-2'>
             <div className='space-y-3 rounded-xl border border-border p-4 text-center'>
