@@ -162,7 +162,7 @@ windowList.set(IWindowList.MINI_WINDOW, {
     const obj: IBrowserWindowOptions = {
       height: 64,
       width: 64,
-      show: isLinux,
+      show: false,
       frame: false,
       fullscreenable: false,
       skipTaskbar: true,
