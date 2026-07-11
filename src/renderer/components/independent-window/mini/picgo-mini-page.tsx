@@ -41,6 +41,7 @@ export function PicGoMiniPage() {
   const { t } = useTranslation()
   const isLinuxPlatform = isLinux()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const didDragRef = useRef(false)
   const [isDragOver, setIsDragOver] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [mouseDownX, setMouseDownX] = useState(-1)
@@ -61,6 +62,7 @@ export function PicGoMiniPage() {
   useEffect(() => {
     const handleMouseDown = (event: MouseEvent) => {
       setDragging(true)
+      didDragRef.current = false
       setMouseDownX(event.pageX)
       setMouseDownY(event.pageY)
       setMouseDownScreenX(event.screenX)
@@ -75,6 +77,7 @@ export function PicGoMiniPage() {
         return
       }
 
+      didDragRef.current = true
       miniPageAdapter.moveMiniWindow({
         x: event.screenX - mouseDownX,
         y: event.screenY - mouseDownY,
@@ -207,8 +210,8 @@ export function PicGoMiniPage() {
             tabIndex={0}
             aria-label={t("CLICK_TO_UPLOAD")}
             className="h-full w-full"
-            onClick={handleOpenFilePicker}
-            onDoubleClick={handleOpenFilePicker}
+            onClick={() => { if (!didDragRef.current) handleOpenFilePicker() }}
+            onDoubleClick={() => { if (!didDragRef.current) handleOpenFilePicker() }}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault()
