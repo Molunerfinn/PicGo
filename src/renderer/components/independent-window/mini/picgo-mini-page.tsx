@@ -210,8 +210,6 @@ export function PicGoMiniPage() {
             tabIndex={0}
             aria-label={t("CLICK_TO_UPLOAD")}
             className="h-full w-full"
-            onClick={() => { if (!didDragRef.current) handleOpenFilePicker() }}
-            onDoubleClick={() => { if (!didDragRef.current) handleOpenFilePicker() }}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault()
