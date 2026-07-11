@@ -98,7 +98,7 @@ function buildGroupKey (timestamp: number) {
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
 }
 
-function formatGroupLabel (timestamp: number, t: (key: string) => string) {
+function formatGroupLabel (timestamp: number, t: (key: string) => string, locale?: string) {
   const date = new Date(timestamp)
   const now = new Date()
   const yesterday = new Date(now)
@@ -112,7 +112,7 @@ function formatGroupLabel (timestamp: number, t: (key: string) => string) {
     return t('HISTORY_PANEL_YESTERDAY')
   }
 
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
@@ -121,7 +121,8 @@ function formatGroupLabel (timestamp: number, t: (key: string) => string) {
 
 function buildHistoryGroups (
   items: DashboardHistoryItem[],
-  t: (key: string) => string
+  t: (key: string) => string,
+  locale?: string
 ): DashboardHistoryGroup[] {
   const groups: DashboardHistoryGroup[] = []
 
@@ -136,7 +137,7 @@ function buildHistoryGroups (
 
     groups.push({
       key,
-      label: formatGroupLabel(item.timestamp, t),
+      label: formatGroupLabel(item.timestamp, t, locale),
       items: [item]
     })
   })
@@ -198,7 +199,7 @@ export function HistoryPanel ({
   onStartImport?: () => Promise<void> | void
   onCloudRefresh?: () => Promise<void> | void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const albumSource = useAlbumStore.use.albumSource()
   const { userInfo: cloudUserInfo, isPaid: isCloudPaidUser } = usePicGoCloudUserInfo()
   const isCloud = albumSource === AlbumSource.CLOUD
@@ -223,7 +224,7 @@ export function HistoryPanel ({
     }
 
     return yesterdayLabel
-  })
+  }, i18n.language)
   const entries = buildHistoryEntries(groups)
   const virtuosoKey = buildVirtuosoResetKey(groups, keyword)
   const previewItems: AlbumPhoto[] = filteredItems

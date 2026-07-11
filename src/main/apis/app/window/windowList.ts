@@ -167,8 +167,7 @@ windowList.set(IWindowList.MINI_WINDOW, {
       fullscreenable: false,
       skipTaskbar: true,
       resizable: false,
-      transparent: false,
-      backgroundColor: '#0f172a',
+      transparent: true,
       icon: getStaticPath('logo.png'),
       webPreferences: {
         ...defaultWebPreferences

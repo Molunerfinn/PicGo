@@ -16,6 +16,7 @@ import {
 import { useMatchRoute, useNavigate } from "@tanstack/react-router"
 import { useTranslation } from "react-i18next"
 
+import pkg from 'root/package.json'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -95,11 +96,12 @@ export function PicGoAppSidebar({
               />
               <span
                 className={cn(
-                  'text-xl font-bold tracking-tight transition-all duration-300 whitespace-nowrap overflow-hidden origin-left',
+                  'inline-flex items-center text-xl font-bold tracking-tight transition-all duration-300 whitespace-nowrap overflow-hidden origin-left',
                   collapsed ? 'w-0 opacity-0 scale-90' : 'w-auto opacity-100 scale-100'
                 )}
               >
                 PicGo
+                <span className="ml-1.5 text-xs font-normal text-muted-foreground">v{pkg.version}</span>
               </span>
             </div>
 

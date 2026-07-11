@@ -41,6 +41,7 @@ export function PicGoMiniPage() {
   const { t } = useTranslation()
   const isLinuxPlatform = isLinux()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const didDragRef = useRef(false)
   const [isDragOver, setIsDragOver] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [mouseDownX, setMouseDownX] = useState(-1)
@@ -49,6 +50,11 @@ export function PicGoMiniPage() {
   const [mouseDownScreenY, setMouseDownScreenY] = useState(-1)
   const { showProgress, progress, hasError, uploadFiles } = useMiniUpload()
 
+  useEffect(() => {
+    document.body.style.background = 'transparent'
+    document.documentElement.style.background = 'transparent'
+  }, [])
+
   const handleOpenFilePicker = () => {
     fileInputRef.current?.click()
   }
@@ -56,6 +62,7 @@ export function PicGoMiniPage() {
   useEffect(() => {
     const handleMouseDown = (event: MouseEvent) => {
       setDragging(true)
+      didDragRef.current = false
       setMouseDownX(event.pageX)
       setMouseDownY(event.pageY)
       setMouseDownScreenX(event.screenX)
@@ -70,6 +77,7 @@ export function PicGoMiniPage() {
         return
       }
 
+      didDragRef.current = true
       miniPageAdapter.moveMiniWindow({
         x: event.screenX - mouseDownX,
         y: event.screenY - mouseDownY,
@@ -166,7 +174,7 @@ export function PicGoMiniPage() {
   }
 
   return (
-    <UtilityWindowLayout page="mini" shellClassName="flex">
+    <UtilityWindowLayout page="mini" shellClassName="flex" className="bg-transparent">
       <div
         id="mini-page"
         className={cn(
@@ -202,8 +210,6 @@ export function PicGoMiniPage() {
             tabIndex={0}
             aria-label={t("CLICK_TO_UPLOAD")}
             className="h-full w-full"
-            onClick={handleOpenFilePicker}
-            onDoubleClick={handleOpenFilePicker}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault()

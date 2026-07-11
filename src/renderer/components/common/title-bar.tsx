@@ -1,10 +1,9 @@
 import { useEffect, useState, type CSSProperties } from 'react'
-import { Copy, Maximize2, Minus, Square, X } from 'lucide-react'
+import { Copy, Maximize2, Minus, Shrink, Square, X } from 'lucide-react'
 import { WINDOW_STATE_CHANGED } from '#/events/constants'
 import { windowControlsAdapter } from '@/adapters/window-controls'
 import { ipc } from '@/utils/bridge'
 import { cn } from '@/lib/utils'
-import pkg from 'root/package.json'
 
 interface TitleBarProps {
   isMac?: boolean
@@ -12,7 +11,6 @@ interface TitleBarProps {
 
 export function TitleBar ({ isMac = false }: TitleBarProps) {
   const [isMaximized, setIsMaximized] = useState(false)
-  const version = pkg.version
 
   useEffect(() => {
     async function syncWindowState () {
@@ -105,6 +103,16 @@ export function TitleBar ({ isMac = false }: TitleBarProps) {
       </button>
       <button
         type="button"
+        aria-label="Open mini window"
+        className="flex h-full w-12 cursor-pointer items-center justify-center transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+        onClick={() => {
+          windowControlsAdapter.openMiniWindow()
+        }}
+      >
+        <Shrink className="size-4" />
+      </button>
+      <button
+        type="button"
         aria-label={isMaximized ? 'Restore window' : 'Maximize window'}
         className="flex h-full w-12 cursor-pointer items-center justify-center transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         onClick={toggleMaximize}
@@ -133,10 +141,6 @@ export function TitleBar ({ isMac = false }: TitleBarProps) {
     >
       <div className="flex h-full items-center px-4">
         {isMac ? macWindowControls : null}
-      </div>
-
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xs font-medium opacity-50">
-        {`PicGo - ${version}`}
       </div>
 
       <div className="flex h-full items-center">
