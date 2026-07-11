@@ -166,7 +166,7 @@ export function PicGoMiniPage() {
   }
 
   return (
-    <UtilityWindowLayout page="mini" shellClassName="flex">
+    <UtilityWindowLayout page="mini" shellClassName="flex" className="bg-transparent">
       <div
         id="mini-page"
         className={cn(
