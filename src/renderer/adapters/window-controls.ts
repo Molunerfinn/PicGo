@@ -19,5 +19,8 @@ export const windowControlsAdapter = {
   },
   minimizeWindow () {
     sendToMain(MINIMIZE_WINDOW)
+  },
+  openMiniWindow () {
+    sendToMain('openMiniWindow')
   }
 }
