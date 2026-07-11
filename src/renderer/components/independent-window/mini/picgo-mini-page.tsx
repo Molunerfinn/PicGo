@@ -49,6 +49,11 @@ export function PicGoMiniPage() {
   const [mouseDownScreenY, setMouseDownScreenY] = useState(-1)
   const { showProgress, progress, hasError, uploadFiles } = useMiniUpload()
 
+  useEffect(() => {
+    document.body.style.background = 'transparent'
+    document.documentElement.style.background = 'transparent'
+  }, [])
+
   const handleOpenFilePicker = () => {
     fileInputRef.current?.click()
   }
