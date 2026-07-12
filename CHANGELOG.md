@@ -1,3 +1,24 @@
+## :tada: 3.0.1 (2026-07-12)
+
+
+### :sparkles: Features
+
+* **i18n:** add Japanese (ja) translation ([#1422](https://github.com/Molunerfinn/PicGo/issues/1422)) ([33c9530](https://github.com/Molunerfinn/PicGo/commit/33c9530))
+* **i18n:** add Korean (ko) translation ([#1420](https://github.com/Molunerfinn/PicGo/issues/1420)) ([622031f](https://github.com/Molunerfinn/PicGo/commit/622031f))
+
+
+### :bug: Bug Fixes
+
+* **gui:** mini window ignores startup HIDE mode on Linux ([#1417](https://github.com/Molunerfinn/PicGo/issues/1417)) ([4d92ca1](https://github.com/Molunerfinn/PicGo/commit/4d92ca1))
+
+
+### :pencil: Documentation
+
+* update docs ([4056447](https://github.com/Molunerfinn/PicGo/commit/4056447))
+* update docs ([e26a21c](https://github.com/Molunerfinn/PicGo/commit/e26a21c))
+
+
+
 # :tada: 3.0.0 (2026-07-01)
 
 
