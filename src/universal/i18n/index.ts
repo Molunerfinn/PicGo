@@ -10,4 +10,7 @@ export const builtinI18nList: II18nItem[] = [{
 }, {
   label: '한국어',
   value: 'ko'
+}, {
+  label: '日本語',
+  value: 'ja'
 }]

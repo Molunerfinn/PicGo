@@ -1,0 +1,593 @@
+LANG_DISPLAY_LABEL: "日本語"
+ABOUT: 情報
+OPEN_MAIN_WINDOW: メインウィンドウを開く
+CHOOSE_DEFAULT_PICBED: デフォルトの画像ホスティングを選択
+OPEN_UPDATE_HELPER: アップデートヘルパーを開く
+PRIVACY_TERMS_AGREEMENT: プライバシーポリシーと利用規約への同意
+RELOAD_APP: アプリを再読み込み
+UPLOAD_FAILED: アップロード失敗
+UPLOAD_SUCCEED: アップロード成功
+UPLOAD_PROGRESS: アップロード進行状況
+OPERATION_FAILED: 操作失敗
+OPERATION_SUCCEED: 操作成功
+UPLOADING: アップロード中
+QUICK_UPLOAD: クイックアップロード
+UPLOAD_BY_CLIPBOARD: クリップボードからアップロード
+HIDE_WINDOW: ウィンドウを隠す
+SPONSOR_PICGO: PicGoを支援する
+SHOW_PICBED_QRCODE: 画像ホスティングQRコードを表示
+PICBED_QRCODE: 画像ホスティングQRコード
+ENABLE: 有効
+DISABLE: 無効
+CONFIG_THING: "${c}を設定"
+FIND_NEW_VERSION: 新しいバージョンを発見
+NO_MORE_NOTICE: 今後通知しない
+MORE: その他
+SHOW_DEVTOOLS: 開発者ツールを表示
+CURRENT_PICBED: 現在の画像ホスティング
+OPEN_TOOLBOX: ツールボックスを開く
+
+# ---renderer i18n begin---
+
+CHOOSE_YOUR_DEFAULT_PICBED: "${d}をデフォルトの画像ホスティングに設定:"
+SIDEBAR_DASHBOARD: ダッシュボード
+UPLOAD_AREA: アップロードエリア
+ALBUM: アルバム
+ALBUM_PROVIDERS: プロバイダー
+PICBEDS_SETTINGS: 画像ホスティング設定
+PICGO_SETTINGS: PicGo設定
+PLUGIN_SETTINGS: プラグイン設定
+DASHBOARD_HISTORY_PANEL_TITLE: 履歴パネル
+PICGO_CLOUD_TITLE: PicGo Cloud
+PICGO_CLOUD_DESCRIPTION: すべてのデバイスをつなぐPicGoのクラウドサービスです。
+PICGO_CLOUD_BRAND_NAME: PicGo Cloud
+PICGO_CLOUD_ERROR_TITLE: PicGo Cloudエラー
+PICGO_CLOUD_LOADING: PicGo Cloudの状態を読み込み中...
+PICGO_CLOUD_NOT_LOGGED_IN: PicGo Cloudにログインしていません。
+PICGO_CLOUD_LOGIN: ログイン
+PICGO_CLOUD_LOGOUT: ログアウト
+PICGO_CLOUD_CANCEL_LOGIN: ログインをキャンセル
+PICGO_CLOUD_RETRY: リトライ
+PICGO_CLOUD_CONFIG_SYNC: 設定同期
+PICGO_CLOUD_LOGIN_IN_PROGRESS: ログイン処理中です。ブラウザでログインを完了してください。
+PICGO_CLOUD_LOGGED_IN_AS: "ログイン中: ${user}"
+PICGO_CLOUD_OPEN: PicGo Cloudを開く
+PICGO_CLOUD_LOGIN_TIMEOUT: ログインがタイムアウトしました。もう一度お試しください。
+PICGO_CLOUD_LOGIN_FAILED: ログインに失敗しました。もう一度お試しください。
+PICGO_CLOUD_AGREE_PREFIX: "PicGoの以下に同意します: "
+PICGO_CLOUD_TERMS_OF_SERVICE: 利用規約
+PICGO_CLOUD_AGREE_AND: "および"
+PICGO_CLOUD_PRIVACY_POLICY: プライバシーポリシー
+PICGO_CLOUD_LOGIN_EXPIRED: ログインが期限切れです。再度ログインしてください。
+PICGO_CLOUD_ENCRYPTION_MODE_LABEL: 暗号化モード
+PICGO_CLOUD_ENCRYPTION_MODE_AUTO: 自動
+PICGO_CLOUD_ENCRYPTION_MODE_SERVER: サーバー側暗号化
+PICGO_CLOUD_ENCRYPTION_MODE_E2E: エンドツーエンド暗号化
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_AUTO: "自動: クラウドで最後に使用した暗号化方式に従います（デフォルトはサーバー側暗号化）。"
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_SERVER: "サーバー側暗号化: 設定はサーバーに保存される前に暗号化されます。PINは不要です。"
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_E2E: "エンドツーエンド暗号化: PINを使用してデータを暗号化/復号化します。PicGoはPINを保存しません。紛失した場合、データは復元できません。"
+PICGO_CLOUD_ENCRYPTION_MODE_TIP_DOC: ドキュメントを読む
+PICGO_CLOUD_E2E_CHECKBOX_LABEL: E2E暗号化を有効にする
+PICGO_CLOUD_E2E_ENABLE_WARNING_TITLE: E2E暗号化を有効にする
+PICGO_CLOUD_E2E_ENABLE_WARNING_MESSAGE: "E2E暗号化を使用するにはPINを安全に保管する必要があります。PINを紛失すると、暗号化されたデータを復元できません。PicGoはPINや復旧データを保存しません。"
+PICGO_CLOUD_REMOTE_E2E_AUTO_ENABLED: リモート設定がE2E暗号化されています。ローカルでもE2Eが有効になりました。
+PICGO_CLOUD_E2E_PIN_SETUP_TITLE: E2E暗号化PINの設定
+PICGO_CLOUD_E2E_PIN_DECRYPT_TITLE: E2E暗号化PINを入力
+PICGO_CLOUD_E2E_PIN_RETRY_TITLE: "PINが正しくありません。もう一度お試しください（${retryCount}回目）。"
+PICGO_CLOUD_E2E_PIN_PLACEHOLDER: PIN
+PICGO_CLOUD_E2E_PIN_CONFIRM_PLACEHOLDER: PINを確認
+PICGO_CLOUD_CONFIG_SYNC_SUCCESS: 設定の同期に成功しました。
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_DETECTED: 競合が検出されました。競合を解決してください。
+PICGO_CLOUD_CONFIG_SYNC_FAILED: 設定の同期に失敗しました。
+PICGO_CLOUD_CONFIG_SYNC_ABORTED: 設定の同期がキャンセルされました。
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_TITLE: 暗号化方式を切り替えますか？
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_BODY: "「${from}」から「${to}」に切り替えます。\n\n注意: 暗号化モードを切り替えると、クラウドの履歴バージョンがすべて削除されます。\nこれは古い履歴バージョンが新しいモードで復号化または検証できないためです。\n切り替え後、システムは新しいバックアップを開始点として即座に作成します。"
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CONFIRM: 切り替えを確認して履歴を削除
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CANCEL: キャンセル
+PICGO_CLOUD_CONFIG_SYNC_ENCRYPTION_SWITCH_CANCELLED: ユーザーにより暗号化の切り替えがキャンセルされました
+PICGO_CLOUD_CONFIG_SYNC_FAILED_WITH_REASON: "設定同期失敗: ${reason}"
+PICGO_CLOUD_CONFIG_SYNC_PIN_MAX_RETRY: PINの入力回数が上限に達しました。もう一度お試しください。
+PICGO_CLOUD_CONFIG_SYNC_LOCAL_CONFIG_INVALID: ローカル設定が無効です。設定ファイルを確認してください。
+PICGO_CLOUD_CONFIG_SYNC_IN_PROGRESS: 設定の同期が進行中です。
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_PENDING: 保留中の競合セッションがあります。先に競合を解決してください。
+PICGO_CLOUD_CONFIG_SYNC_NO_CONFLICT_SESSION: 競合セッションが見つかりません。
+PICGO_CLOUD_CONFIG_SYNC_RESOLUTION_INCOMPLETE: すべての競合項目についてローカルまたはクラウドを選択してください。
+PICGO_CLOUD_CONFIG_SYNC_STARTING: 設定の同期を開始しています...
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_TITLE: "競合が検出されました（${count}件）"
+PICGO_CLOUD_CONFIG_SYNC_CHOOSE_ALL_LOCAL: すべてローカルを選択
+PICGO_CLOUD_CONFIG_SYNC_CHOOSE_ALL_CLOUD: すべてクラウドを選択
+PICGO_CLOUD_CONFIG_SYNC_RESET_ALL: すべてリセット
+PICGO_CLOUD_CONFIG_SYNC_LOCAL_VERSION: ローカルバージョン
+PICGO_CLOUD_CONFIG_SYNC_CLOUD_VERSION: クラウドバージョン
+PICGO_CLOUD_CONFIG_SYNC_ABORT: 中止
+PICGO_CLOUD_CONFIG_SYNC_CONFIRM_AND_SYNC: 確認して同期
+PICGO_CLOUD_CONFIG_SYNC_VALUE_UNDEFINED: (空)
+PICGO_CLOUD_CONFIG_SYNC_CONFLICT_RESOLVED: 競合が解決されました。
+PICGO_CLOUD_LAST_SYNC_TIME: "最終ローカル同期日時: ${time}"
+PICGO_CLOUD_LAST_SYNC_TIME_NONE: なし
+PICGO_CLOUD_LAST_SYNC_LABEL: 最終同期
+PICGO_CLOUD_PLAN_USAGE_TITLE: プランと使用量
+PICGO_CLOUD_PLAN_USAGE_DESC: 現在のプランと使用量の概要を確認します。
+PICGO_CLOUD_PLAN_PERIOD_LABEL: プラン期間
+PICGO_CLOUD_STORAGE_LABEL: ストレージ
+PICGO_CLOUD_FILES_LABEL: ファイル
+PICGO_CLOUD_USAGE_PROGRESS: "${total}中${used}使用"
+PICGO_CLOUD_USAGE_UNLIMITED: 無制限
+PICGO_CLOUD_PLAN_PERIOD_RENEWS: "${date}に更新"
+PICGO_CLOUD_PLAN_PERIOD_CANCELS: "${date}に解約"
+PICGO_CLOUD_PLAN_PERIOD_UNTIL: "${date}まで有効"
+PICGO_CLOUD_PLAN_PERIOD_LIFETIME: 永久ライセンス
+PICGO_CLOUD_PLAN_PERIOD_GRACE_LABEL: 猶予期限
+PICGO_CLOUD_PLAN_PERIOD_GRACE_TOOLTIP: "有料プランが期限切れとなり、現在猶予期間中です。この日付まではPicGo Cloud画像にアクセスできますが、使用量は一時的に無料枠に引き下げられます。ほとんどの有料機能は一時的に利用できません。この日付以降、アカウントは凍結状態になります。"
+PICGO_CLOUD_PLAN_PERIOD_FROZEN_LABEL: 凍結期限
+PICGO_CLOUD_PLAN_PERIOD_FROZEN_TOOLTIP: "アカウントが凍結されています。PicGo Cloud画像はエラーを返します。この日付以降、データが削除される場合があります。アクセスを復元するには更新してください。"
+PICGO_CLOUD_QUOTA_DOWNGRADED: "猶予期間中、使用量は一時的に${plan}に引き下げられています。復元するには更新してください。"
+PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_TITLE: プランが猶予期間中です
+PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_DESC: "有料プランが期限切れとなり、${days}日間の猶予期間に入りました。使用量は一時的に無料枠に引き下げられ、ほとんどの有料機能が一時的に利用できません。全機能を復元するには更新してください。"
+PICGO_CLOUD_LIFECYCLE_BANNER_FROZEN_TITLE: アカウントが凍結されました
+PICGO_CLOUD_LIFECYCLE_BANNER_FROZEN_DESC: "アカウントが凍結されています。クラウド画像は一時的にアクセスできず、${days}日後にデータが削除されます。今すぐ更新してアクセスを復元してください。"
+PICGO_CLOUD_LIFECYCLE_BANNER_PENDING_CLEANUP_TITLE: データ削除予定
+PICGO_CLOUD_LIFECYCLE_BANNER_PENDING_CLEANUP_DESC: アカウントは削除待ち状態であり、クラウドデータがまもなく完全に削除されます。データを保持するにはすぐに更新してください。
+PICGO_CLOUD_LIFECYCLE_BANNER_CTA: 今すぐ更新
+PICGO_CLOUD_LIFECYCLE_BANNER_DISMISS: 閉じる
+PICGO_CLOUD_AUTO_IMPORT_DISABLED_BY_LIFECYCLE: プランが猶予期間または凍結期間中のため、自動インポートは一時停止されています。更新後に再開されます。
+PICGO_CLOUD_IMAGE_UNAVAILABLE: 画像を利用できません
+PICGO_CLOUD_ERROR_GRACE_RESTRICTED: 猶予期間中はこの操作を利用できません。プランを更新してからもう一度お試しください。
+PICGO_CLOUD_ERROR_ACCOUNT_FROZEN: アカウントが凍結されています。アクセスを復元するにはプランを更新してください。
+PICGO_CLOUD_ERROR_IMPORT_DISABLED: 自動インポートが無効です。PicGo Cloud設定で先に有効にしてください。
+PICGO_CLOUD_ERROR_PLAN_INELIGIBLE: 現在のプランではこの機能をサポートしていません。アップグレードしてからもう一度お試しください。
+PICGO_CLOUD_ERROR_QUOTA_EXCEEDED_ACTIVE: プランの使用量上限に達しました。上位プランにアップグレードしてください。
+PICGO_CLOUD_ERROR_QUOTA_EXCEEDED_GRACE: 猶予期間中は使用量が無料枠に引き下げられます。復元するには更新してください。
+PICGO_CLOUD_ERROR_PLAN_REQUIRED: この機能には有料プランが必要です。
+PICGO_CLOUD_USAGE_LOAD_FAILED: 使用量データの読み込みに失敗しました。
+PICGO_CLOUD_CONFIG_SYNC_LOAD_FAILED: 同期状態の読み込みに失敗しました。
+PICGO_CLOUD_FREE_PLAN_BANNER: 無料プランをご利用中です。アップグレードすると、より多くの容量と高度なクラウド機能を利用できます。
+PICGO_CLOUD_VIEW_PLANS: プランを見る
+PICGO_CLOUD_CONFIG_SYNC_TITLE: 設定同期
+PICGO_CLOUD_CONFIG_SYNC_CARD_DESC: デバイス間で設定を安全に同期します。
+PICGO_CLOUD_SYNC_NOW: 今すぐ同期
+PICGO_CLOUD_SYNC_QUOTA_LABEL: 同期クォータ
+PICGO_CLOUD_SYNC_QUOTA_TIP: "プランでは最新の${limit}個の設定スナップショットが保持されます。${limit}個中${limit}個を使用していても同期は引き続き可能です。上限を超えた古いスナップショットは同期のたびに自動的に削除されます。"
+PICGO_CLOUD_LOGIN_PANEL_TITLE: PicGo Cloudにログイン
+PICGO_CLOUD_LOGIN_PANEL_DESC: PicGo Cloudを公式画像ホスティングとして使用し、クラウド機能を有効にするにはログインしてください。
+PICGO_CLOUD_LOGIN_FEATURES_TITLE: クラウド機能
+PICGO_CLOUD_OFFICIAL_IMAGE_HOST_TITLE: 公式画像ホスティング
+PICGO_CLOUD_OFFICIAL_IMAGE_HOST_DESC: アルバムクラウド同期が組み込まれたPicGoの公式画像ホスティングです。
+PICGO_CLOUD_PAID_PLAN_BADGE: 有料プラン
+PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_TITLE: 再起動が必要ですか？
+PICGO_CLOUD_CONFIG_SYNC_RESTART_PROMPT_MESSAGE: 一部の設定は再起動が必要な場合があります。今すぐ再起動しますか？
+PICGO_CLOUD_CONFIG_SYNC_RESTART_NOW: 今すぐ再起動
+PICGO_CLOUD_CONFIG_SYNC_RESTART_LATER: あとで
+INPUT_BOX_CONFIRM_MISMATCH: 2つの入力値が一致しません。
+PICGO_SPONSOR_TEXT: PicGoはフリーソフトウェアです。気に入っていただけたら、コーヒー一杯の支援をお忘れなく。
+ALIPAY: Alipay
+WECHATPAY: WeChat Pay
+CHOOSE_PICBED: 画像ホスティングを選択
+COPY_PICBED_CONFIG: 画像ホスティング設定をコピー
+COPY_PICBED_CONFIG_SUCCEED: 画像ホスティング設定のコピーに成功
+INPUT: 入力
+CANCEL: キャンセル
+CONFIRM: 確認
+CHOOSE_SHOWED_PICBED: 表示する画像ホスティングを選択
+CHOOSE_PASTE_FORMAT: 貼り付け形式を選択
+SEARCH: 検索
+COPY: コピー
+DELETE: 削除
+SELECT_ALL: すべて選択
+CHANGE_IMAGE_URL: 画像URLを変更
+CHANGE_IMAGE_URL_SUCCEED: 画像URLの変更に成功
+COPY_LINK_SUCCEED: リンクのコピーに成功
+BATCH_COPY_LINK_SUCCEED: リンクの一括コピーに成功
+FILE_RENAME: ファイル名を変更
+COPY_FILE_PATH: ファイルパスをコピー
+OPEN_FILE_PATH: ファイルパスを開く
+SUCCESS: 成功
+FAILED: 失敗
+
+# settings
+
+SETTINGS: 設定
+SETTINGS_OPEN_CONFIG_FILE: 設定ファイルを開く
+SETTINGS_CLICK_TO_OPEN: クリックして開く
+SETTINGS_SET_LOG_FILE: ログファイルの設定
+SETTINGS_CLICK_TO_SET: クリックして設定
+SETTINGS_CLICK_TO_CHECK: クリックして確認
+SETTINGS_SET_SHORTCUT: ショートカットの設定
+SETTINGS_URL_REWRITE: URLリライト
+SETTINGS_CUSTOM_LINK_FORMAT: カスタムリンク形式
+SETTINGS_SET_PROXY_AND_MIRROR: プロキシとミラーの設定
+SETTINGS_SET_SERVER: サーバーの設定
+SETTINGS_CHECK_UPDATE: アップデートを確認
+SETTINGS_UPDATE_CHECK_RESULT: "最新バージョンは${version}です。${action}"
+SETTINGS_UPDATE_CHECK_NO_UPDATE: 更新の必要はありません
+SETTINGS_UPDATE_CHECK_CAN_UPDATE: アップデート可能
+SETTINGS_OPEN_UPDATE_HELPER: アップデートヘルパーを開く
+SETTINGS_OPEN: 開く
+SETTINGS_CLOSE: 閉じる
+SETTINGS_ACCEPT_BETA_UPDATE: ベータ版アップデートを許可
+SETTINGS_LAUNCH_ON_BOOT: 起動時に自動実行
+SETTINGS_RENAME_BEFORE_UPLOAD: アップロード前にリネーム
+SETTINGS_TIMESTAMP_RENAME: タイムスタンプでリネーム
+SETTINGS_OPEN_UPLOAD_TIPS: アップロードのヒントを表示
+SETTINGS_NOTIFICATION_SOUND: 通知音を再生
+SETTINGS_MINI_WINDOW_ON_TOP: ミニウィンドウを常に最前面に
+SETTINGS_AUTO_COPY_URL_AFTER_UPLOAD: アップロード後にURLを自動コピー
+SETTINGS_TIPS_PLACEHOLDER_URL: $urlでURL位置を表します
+SETTINGS_TIPS_PLACEHOLDER_FILENAME: $fileNameでファイル名の位置を表します
+SETTINGS_TIPS_PLACEHOLDER_EXTNAME: $extNameでファイル拡張子の位置を表します
+SETTINGS_TIPS_SUCH_AS: "例: $url/$fileName"
+SETTINGS_UPLOAD_PROXY: アップロードプロキシ
+SETTINGS_PLUGIN_INSTALL_PROXY: プラグインインストール用プロキシ
+SETTINGS_PLUGIN_INSTALL_MIRROR: プラグインインストール用ミラー
+SETTINGS_CURRENT_VERSION: 現在のバージョン
+SETTINGS_NEWEST_VERSION: 最新バージョン
+SETTINGS_GETING: 取得中...
+SETTINGS_TIPS_HAS_NEW_VERSION: PicGoに新しいバージョンがあります。確認をクリックしてダウンロードページを開いてください
+SETTINGS_LOG_FILE: ログファイル
+SETTINGS_LOG_LEVEL: ログレベル
+SETTINGS_LOG_FILE_SIZE: ログファイルサイズ
+SETTINGS_SET_PICGO_SERVER: PicGoサーバーの設定
+SETTINGS_TIPS_SERVER_NOTICE: サーバー機能がわからない場合は、ドキュメントを参照するか、設定を変更しないでください。
+SETTINGS_ENABLE_SERVER: サーバーを有効にする
+SETTINGS_SET_SERVER_HOST: サーバーホストを設定
+SETTINGS_SET_SERVER_PORT: サーバーポートを設定
+SETTINGS_TIP_PLACEHOLDER_HOST: デフォルト:127.0.0.1
+SETTINGS_TIP_PLACEHOLDER_PORT: デフォルト:36677
+SETTINGS_LOG_LEVEL_ALL: すべて
+SETTINGS_LOG_LEVEL_SUCCESS: 成功
+SETTINGS_LOG_LEVEL_ERROR: エラー
+SETTINGS_LOG_LEVEL_INFO: 情報
+SETTINGS_LOG_LEVEL_WARN: 警告
+SETTINGS_LOG_LEVEL_NONE: なし
+SETTINGS_RESULT: 結果
+SETTINGS_DEFAULT_PICBED: デフォルトの画像ホスティング
+SETTINGS_SET_DEFAULT_PICBED: デフォルトのアップローダーを設定
+SETTINGS_NOT_CONFIG_OPTIONS: 設定項目なし
+SETTINGS_USE_BUILTIN_CLIPBOARD_UPLOAD: 内蔵クリップボードを使用してアップロード
+SETTINGS_CHOOSE_LANGUAGE: 言語を選択
+UPLOADER_CONFIG_NAME: 設定名
+BUILTIN_CLIPBOARD_TIPS: スクリプトの代わりに内蔵クリップボード機能を使用してアップロード
+
+# url rewrite
+
+URL_REWRITE_HELP: アップロードされた画像URLをリライトします。ルールは順番に評価され、最初にマッチしたルールが適用されます。
+URL_REWRITE_ADD_RULE: ルールを追加
+URL_REWRITE_EDIT_RULE: ルールを編集
+URL_REWRITE_EMPTY: ルールなし
+URL_REWRITE_ORDER: 順序
+URL_REWRITE_MATCH: マッチパターン
+URL_REWRITE_REPLACE: 置換文字列
+URL_REWRITE_FLAGS: フラグ
+URL_REWRITE_ENABLED: 有効
+URL_REWRITE_ACTIONS: 操作
+URL_REWRITE_MOVE_UP: 上へ
+URL_REWRITE_MOVE_DOWN: 下へ
+URL_REWRITE_EDIT: 編集
+URL_REWRITE_DELETE: 削除
+URL_REWRITE_DELETE_CONFIRM: このルールを削除しますか？
+URL_REWRITE_MATCH_TIPS: 正規表現（JavaScript RegExp）に対応しています
+URL_REWRITE_MATCH_PLACEHOLDER: https://example.com/path
+URL_REWRITE_REPLACE_TIPS: 置換文字列（$1, $2, ... に対応）
+URL_REWRITE_REPLACE_PLACEHOLDER: https://example.org/newpath
+URL_REWRITE_OPTIONS: オプション
+URL_REWRITE_RULE_ENABLED: このルールを有効にする
+URL_REWRITE_FLAG_GLOBAL_LABEL: グローバル (g)
+URL_REWRITE_FLAG_GLOBAL_DESC: 最初のマッチだけでなく、すべてのマッチを置換します
+URL_REWRITE_FLAG_IGNORE_CASE_LABEL: 大文字小文字を区別しない (i)
+URL_REWRITE_FLAG_IGNORE_CASE_DESC: "大文字小文字を区別せずにマッチします（例: JPGとjpgを同一視）"
+URL_REWRITE_MATCH_REQUIRED: マッチパターンは必須です
+URL_REWRITE_REPLACE_REQUIRED: 置換文字列は必須です
+URL_REWRITE_INVALID_REGEX: 無効な正規表現です
+URL_REWRITE_PREVIEW_TITLE: プレビュー
+URL_REWRITE_PREVIEW_TIPS: URLを入力すると、現在のルールがどのようにリライトするかを確認できます（順番にマッチし、最初のマッチのみ適用されます）
+URL_REWRITE_PREVIEW_PLACEHOLDER: https://example.com/path/to/image.png
+URL_REWRITE_PREVIEW_RUN: プレビュー
+URL_REWRITE_PREVIEW_OUTPUT: 出力URL
+URL_REWRITE_PREVIEW_INPUT_REQUIRED: プレビューするURLを入力してください
+URL_REWRITE_PREVIEW_RULE_INVALID: 無効なルールです
+URL_REWRITE_PREVIEW_MATCHED_RULE: マッチしたルール
+URL_REWRITE_PREVIEW_NO_MATCH: マッチするルールなし
+UPLOADER_CONFIG_PLACEHOLDER: 設定名を入力してください
+SELECTED_SETTING_HINT: 選択済み
+SETTINGS_ENCODE_OUTPUT_URL: 出力（またはコピーした）URLをエンコード
+SETTINGS_SHOW_DOCK_ICON: Dockアイコンを表示
+SETTINGS_SHOW_MENUBAR_ICON: メニューバーアイコンを表示
+SETTINGS_SHOW_MENUBAR_ICON_TIPS: "「Dockアイコンを表示」と「メニューバーアイコンを表示」の両方がオフの場合、PicGoのメインウィンドウが見つからなくなります。設定ファイルを編集してshowDockIconまたはshowMenubarIconをtrueに設定すると復元できます。"
+SETTINGS_STARTUP_MODE: 起動モード
+SETTINGS_STARTUP_MODE_MAIN_WINDOW: メインウィンドウを開く
+SETTINGS_STARTUP_MODE_MINI_WINDOW: ミニウィンドウを開く
+SETTINGS_STARTUP_MODE_HIDE: サイレント起動
+
+# shortcut-page
+
+SHORTCUT_NAME: ショートカット名
+SHORTCUT_BIND: ショートカットバインド
+SHORTCUT_STATUS: ステータス
+SHORTCUT_ENABLED: 有効
+SHORTCUT_DISABLED: 無効
+SHORTCUT_SOURCE: ソース
+SHORTCUT_HANDLE: ハンドル
+SHORTCUT_ENABLE: 有効にする
+SHORTCUT_DISABLE: 無効にする
+SHORTCUT_EDIT: 編集
+SHORTCUT_CHANGE_UPLOAD: アップロードショートカットを変更
+
+# album-page
+ALBUM_URL_REWRITE_TITLE: 選択した画像URLをリライト
+ALBUM_URL_REWRITE_RESULT_TITLE: 画像URLリライト結果
+ALBUM_URL_REWRITE_WARN_NO_SELECTION: 最低1枚の画像を選択してください
+
+ALBUM_URL_REWRITE_APPLY_GLOBAL_RULES: グローバルURLリライトルールを適用
+ALBUM_URL_REWRITE_GLOBAL_RULES_COUNT: グローバルルール
+ALBUM_URL_REWRITE_TEMP_RULE_TIPS: 任意項目です。一時ルールをスキップするには空のままにしてください。一時ルールはグローバルルールより優先されます。
+ALBUM_URL_REWRITE_TEMP_RULE_REQUIRED: 一時ルールにはマッチパターンと置換文字列の両方が必要です
+ALBUM_URL_REWRITE_NO_RULES_TO_APPLY: 有効なグローバルルールがなく、一時ルールも入力されていません
+ALBUM_URL_REWRITE_SAVE_TEMP_RULE_PROMPT: 一時ルールをグローバルURLリライトルールに保存しますか？
+ALBUM_URL_REWRITE_APPLY_AND_SAVE: 適用して保存
+ALBUM_URL_REWRITE_APPLY_ONLY: 適用のみ
+ALBUM_URL_REWRITE_NO_CHANGES: 変更されたURLはありません
+ALBUM_URL_REWRITE_EMPTY_RESULT_WARN: リライト結果が空のためスキップしました
+
+# tray-page
+
+WAIT_TO_UPLOAD: アップロード待ち
+ALREADY_UPLOAD: アップロード済み
+
+# upload-page
+
+PICTURE_UPLOAD: 画像アップロード
+DRAG_FILE_TO_HERE: ファイルをここにドラッグ、または
+CLICK_TO_UPLOAD: クリックしてアップロード
+LINK_FORMAT: リンク形式
+CUSTOM: カスタム
+CLIPBOARD_PICTURE: クリップボード
+TIPS_DRAG_VALID_PICTURE_OR_URL: 有効な画像またはURLをここにドラッグしてください
+TIPS_INPUT_URL: URLを入力
+TIPS_HTTP_PREFIX: http://またはhttps://で始めてください。複数URL対応（1行に1つ）
+TIPS_INPUT_VALID_URL: 有効なURLを入力してください
+
+# plugins
+
+PLUGIN_SEARCH_PLACEHOLDER: npmでpicgoプラグインを検索するか、ボタンをクリックしておすすめプラグイン一覧を確認してください
+PLUGIN_SEARCH_EXACT_MATCH: プラグイン名の完全一致
+PLUGIN_INSTALL: インストール
+PLUGIN_INSTALLING: インストール中...
+PLUGIN_INSTALLED: インストール済み
+PLUGIN_DEPRECATED_BADGE: 非推奨
+PLUGIN_DEPRECATED_TITLE: このプラグインは作者によりサポートが終了しています
+PLUGIN_DOING_SOMETHING: 処理中...
+PLUGIN_LIST: プラグイン一覧
+PLUGIN_IMPORT_LOCAL: ローカルプラグインをインポート
+
+# tips
+
+TIPS_REMOVE_LINK: この操作で画像がアルバムから削除されます。続行しますか？
+TIPS_WILL_REMOVE_CHOOSED_IMAGES: この操作で画像がアルバムから削除されます。続行しますか？
+TIPS_MUST_CONTAINS_URL: $url、$fileName、$extNameのいずれかを含める必要があります
+TIPS_NETWORK_ERROR: ネットワークエラー
+TIPS_NEED_RELOAD: アプリの再読み込みが必要です
+TIPS_PLEASE_CHOOSE_LOG_LEVEL: ログレベルを選択してください
+TIPS_SET_SUCCEED: 設定成功
+TIPS_PLUGIN_NOT_GUI_IMPLEMENT: このプラグインはGUIに最適化されていません。続行しますか？
+TIPS_CLICK_NOTIFICATION_TO_RELOAD: 通知をクリックしてアプリを再読み込み
+TIPS_GET_PLUGIN_LIST_FAILED: プラグイン一覧の取得に失敗しました
+
+# ---renderer i18n end---
+
+# plugins
+PLUGIN_INSTALL_SUCCEED: プラグインのインストールに成功
+PLUGIN_INSTALL_FAILED: プラグインのインストールに失敗
+PLUGIN_UNINSTALL_SUCCEED: プラグインのアンインストールに成功
+PLUGIN_UNINSTALL_FAILED: プラグインのアンインストールに失敗
+PLUGIN_UPDATE_SUCCEED: プラグインのアップデートに成功
+PLUGIN_UPDATE_FAILED: プラグインのアップデートに失敗
+PLUGIN_IMPORT_SUCCEED: プラグインのインポートに成功
+PLUGIN_IMPORT_FAILED: プラグインのインポートに失敗
+ENABLE_PLUGIN: プラグインを有効にする
+DISABLE_PLUGIN: プラグインを無効にする
+UNINSTALL_PLUGIN: プラグインをアンインストール
+UPDATE_PLUGIN: プラグインをアップデート
+
+# toolbox
+TOOLBOX: ツールボックス
+TOOLBOX_TITLE: PicGoの実行問題を診断
+TOOLBOX_SUB_TITLE: 以下の項目を即座に検査して使用上の問題を修正します
+TOOLBOX_CHECK_CONFIG_FILE_BROKEN: 設定ファイルの破損を確認
+TOOLBOX_CHECK_ALBUM_FILE_BROKEN: アルバムファイルの破損を確認
+TOOLBOX_CHECK_PROBLEM_WITH_CLIPBOARD_PIC_UPLOAD: クリップボード画像アップロードの問題を確認
+TOOLBOX_CHECK_PROBLEM_WITH_PROXY: プロキシ設定の正常性を確認
+TOOLBOX_FIX_DONE_NEED_RELOAD: 修復が完了しました。適用するには再起動が必要です。再起動しますか？
+TOOLBOX_CANT_AUTO_FIX: 自動修復できません。以下の問題を手動で修正してください
+TOOLBOX_START_SCAN: スキャン開始
+TOOLBOX_RE_SCAN: 再スキャン
+TOOLBOX_START_FIX: 修復開始
+TOOLBOX_SUCCESS_TIPS: おめでとうございます。問題は見つかりませんでした
+TOOLBOX_CHECK_CONFIG_FILE_PATH_TIPS: "設定ファイルのパス: ${path}"
+TOOLBOX_CHECK_CONFIG_FILE_BROKEN_TIPS: 設定ファイルが破損しています
+TOOLBOX_CHECK_ALBUM_FILE_PATH_TIPS: "アルバムファイルのパス: ${path}"
+TOOLBOX_CHECK_ALBUM_FILE_BROKEN_TIPS: アルバムファイルが破損しています
+TOOLBOX_CHECK_PROXY_SUCCESS_TIPS: プロキシ設定正常
+TOOLBOX_CHECK_PROXY_NO_PROXY_TIPS: プロキシ設定なし
+TOOLBOX_CHECK_PROXY_PROXY_IS_NOT_CORRECT: プロキシ設定が正しくありません
+TOOLBOX_CHECK_PROXY_PROXY_IS_NOT_WORKING: プロキシ設定が利用できません
+TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_TIPS: "クリップボード画像の一時フォルダのパス: ${path}"
+TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_NOT_EXIST_TIPS: "クリップボード画像の一時フォルダが存在しません: ${path}"
+TOOLBOX_CHECK_CLIPBOARD_FILE_PATH_ERROR_TIPS: "次のフォルダを手動で作成してください: ${path}"
+
+# tips
+TIPS_NOTICE: お知らせ
+TIPS_WARNING: 警告
+TIPS_ERROR: エラー
+TIPS_SKIPPED_INVALID_URLS: "無効なURL${n}件をスキップしました。詳細はログを確認してください"
+TIPS_TOO_MANY_URLS_CONFIRM: "一度にURL${n}件をアップロードしようとしています。遅延が発生する可能性があるため、分割してアップロードすることをお勧めします。続行しますか？"
+TIPS_NO_VALID_URLS: 有効なURLが見つかりません
+TIPS_INSTALL_NODE_AND_RELOAD_PICGO: Node.jsをインストールしてPicGoを再起動してください
+TIPS_PLUGIN_REMOVE_ALBUM_ITEM: プラグインがアルバムから一部の画像を削除しようとしています。続行しますか？
+TIPS_PLUGIN_OVERWRITE_ALBUM: プラグインがアルバムを上書きしようとしています。続行しますか？
+TIPS_UPLOAD_NOT_PICTURES: 最新のクリップボード項目は画像ではありません
+TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_DEFAULT: PicGo設定ファイルが破損したため、デフォルトに復元されました
+TIPS_PICGO_CONFIG_FILE_BROKEN_WITH_BACKUP: PicGo設定ファイルが破損したため、バックアップから復元されました
+TIPS_PICGO_BACKUP_FILE_VERSION: "バックアップファイルのバージョン: ${v}"
+TIPS_CUSTOM_CONFIG_FILE_PATH_ERROR: カスタム設定ファイルの解析エラーです。パスの内容を確認してください
+TIPS_SHORTCUT_MODIFIED_SUCCEED: ショートカットの変更に成功しました
+TIPS_SHORTCUT_MODIFIED_CONFLICT: ショートカットが競合しています。再設定してください
+TIPS_CUSTOM_LINK_STYLE_MODIFIED_SUCCEED: カスタムリンクスタイルの変更に成功しました
+TIPS_FIND_NEW_VERSION: "新しいバージョン${v}が見つかりました。多くの新機能が追加されています。最新バージョンをダウンロードしますか？"
+TIPS_DELETE_UPLOADER_CONFIG: この設定を削除しますか？
+TIPS_COPY_UPLOADER_CONFIG: この設定をコピーしますか？
+TIPS_UPLOADER_CONFIG_NAME_EMPTY: 設定名を空にすることはできません
+TIPS_UPLOADER_CONFIG_NOT_FOUND: 設定が見つかりません
+TIPS_UPLOADER_CONFIG_CANNOT_DELETE_LAST: 最後の設定は削除できません
+
+# privacy
+PRIVACY: "ご利用の前にプライバシーポリシー${privacyUrl}と利用規約${termsUrl}をお読みいただき、同意してください。"
+PRIVACY_TIPS: アップロードするにはプライバシーポリシーに同意してください
+QUIT: 終了
+ALBUM_ALL_PHOTOS: すべての写真
+ALBUM_COLLECTIONS: コレクション
+ALBUM_TAGS: タグ
+ALBUM_MENU: メニュー
+ALBUM_OPEN_INSPECTOR: インスペクターを開く
+ALBUM_INSPECTOR_TITLE: アルバムインスペクター
+ALBUM_INSPECTOR_DESCRIPTION: 選択した画像を検査・編集します。
+ALBUM_CLEAR_SELECTION: 選択を解除
+ALBUM_SELECTED_COUNT: "${count}件選択中"
+ALBUM_GRID_VIEW: グリッド表示
+ALBUM_LIST_VIEW: リスト表示
+ALBUM_PREVIEW: フルスクリーンプレビュー
+ALBUM_PREVIEW_EMPTY: プレビューする画像がありません
+ALBUM_PREVIEW_PREV: 前へ
+ALBUM_PREVIEW_NEXT: 次へ
+ALBUM_PREVIEW_CLOSE: プレビューを閉じる
+ALBUM_PREVIEW_COUNT: "${current} / ${total}"
+ALBUM_QUICK_ACTIONS: クイック操作
+ALBUM_EXPORT: ダウンロード
+ALBUM_URL: URL
+ALBUM_BATCH_REWRITE: 一括リライト
+ALBUM_COLLECTION: コレクション
+ALBUM_ADD_TAG: タグを追加
+ALBUM_TAG_SUGGESTIONS: おすすめタグ
+ALBUM_COLUMN_NAME: 名前
+ALBUM_COLUMN_PROVIDER: プロバイダー
+ALBUM_COLUMN_SIZE: サイズ
+ALBUM_COLUMN_DATE: 日付
+ALBUM_ADD: 追加
+ALBUM_SOURCE_LOCAL: ローカル
+ALBUM_SOURCE_CLOUD: クラウド
+ALBUM_CLOUD_LOAD_FAILED: クラウドアルバムの読み込みに失敗しました
+ALBUM_CLOUD_LOGIN_REQUIRED_TITLE: ログインが必要です
+ALBUM_CLOUD_LOGIN_REQUIRED_DESC: クラウドアルバムを使用するには有料のPicGo Cloudアカウントでログインしてください
+ALBUM_CLOUD_LOGIN_BUTTON: ログイン
+ALBUM_CLOUD_UPGRADE_TITLE: アップグレードが必要です
+ALBUM_CLOUD_UPGRADE_DESC: クラウドアルバムには有料プランが必要です
+ALBUM_CLOUD_UPGRADE_BUTTON: アップグレード
+ALBUM_CLOUD_FEATURES_TITLE: クラウドアルバムを使う理由
+ALBUM_CLOUD_FEATURE_SYNC: すべてのデバイスからアップロード履歴にアクセス
+ALBUM_CLOUD_FEATURE_AUTO_IMPORT: 新しいアップロード情報を自動インポート（オプトインが必要）
+ALBUM_CLOUD_FEATURE_SECURE: ローカル履歴をワンクリックでクラウドにインポート
+ALBUM_CLOUD_IMPORT_GUIDE_TITLE: ローカル記録をインポート
+ALBUM_CLOUD_IMPORT_GUIDE_DESC: ローカルのアップロード履歴をクラウドアルバムにインポートします。実際の画像ファイルではなく、記録のみがインポートされます。
+ALBUM_CLOUD_IMPORT_GUIDE_BUTTON: インポート開始
+ALBUM_CLOUD_EMPTY_TITLE: 項目なし
+ALBUM_CLOUD_EMPTY_DESC: クラウドアルバムは空です。画像をアップロードして始めましょう。
+ALBUM_CLOUD_IMPORTING: クラウドアルバムにインポート中...
+ALBUM_CLOUD_IMPORT_SUCCESS: "${num}件をクラウドアルバムにインポートしました"
+ALBUM_CLOUD_IMPORT_FAILED: クラウドアルバムへのインポートに失敗しました
+ALBUM_CLOUD_REFRESH: 更新
+ALBUM_CLOUD_IMPORT_CONFIRM_TITLE: 自動インポートを有効にする
+ALBUM_CLOUD_IMPORT_CONFIRM_DESC: この操作を実行すると自動インポートが有効になり、以降のアップロードがクラウドアルバムに自動記録されます。既存のローカル記録も同時にインポートされます。
+ALBUM_CLOUD_DELETE_FAILED: クラウドアルバムからの削除に失敗しました
+ALBUM_INSPECTOR_DETAILS_TITLE: 詳細情報
+ALBUM_INSPECTOR_FILE_NAME: ファイル名
+ALBUM_INSPECTOR_UPLOADER: アップローダー
+ALBUM_INSPECTOR_CONTENT_TYPE: コンテンツタイプ
+ALBUM_INSPECTOR_CREATED_AT: 作成日
+ALBUM_INSPECTOR_UPDATED_AT: 更新日
+ALBUM_INSPECTOR_FILE_SIZE: サイズ
+ALBUM_CLOUD_IMPORT_STATUS_TITLE: クラウドアルバム
+ALBUM_CLOUD_IMPORTED: クラウドにインポート済み
+ALBUM_CLOUD_IMPORTED_TOOLTIP: これはローカルマーカーです。クラウドから記録が削除されても、このステータスは更新されません。必要に応じて再インポートできます。
+ALBUM_CLOUD_REIMPORT: 再インポート
+ALBUM_CLOUD_NATIVE: PicGo Cloud経由でアップロード
+ALBUM_CLOUD_IMPORT_BUTTON: クラウドアルバムにインポート
+ALBUM_CLOUD_IMPORT_BUTTON_COUNT: "${num}件をクラウドアルバムにインポート"
+ALBUM_CLOUD_ALL_IMPORTED: すべてクラウドアルバムに登録済み
+ALBUM_CLOUD_AUTO_IMPORT_REQUIRED_TITLE: 自動インポートを有効にする
+ALBUM_CLOUD_AUTO_IMPORT_REQUIRED_DESC: クラウドアルバムにインポートするには、まず自動インポートを有効にする必要があります。今すぐ有効にして続行しますか？
+ALBUM_CLOUD_AUTO_IMPORT_ENABLE_AND_IMPORT: 有効にしてインポート
+ALBUM_CLOUD_IMPORT_SINGLE_SUCCESS: クラウドアルバムへのインポートに成功しました
+PICGO_CLOUD_AUTO_IMPORT_LABEL: クラウドアルバムへ自動インポート
+PICGO_CLOUD_AUTO_IMPORT_DESC: 他のアップローダーのアップロード記録をクラウドアルバムに自動インポートします（PicGo Cloudはデフォルトで保存されます）
+SIDEBAR_PLUGINS: プラグイン
+SIDEBAR_SYSTEM: システム
+SIDEBAR_NOTIFICATIONS: 通知
+SIDEBAR_EXPAND: クリックして展開
+SIDEBAR_COLLAPSE: サイドバーを折りたたむ
+HISTORY_PANEL_TITLE: 履歴
+HISTORY_PANEL_FILTER_PLACEHOLDER: フィルター...
+HISTORY_PANEL_TODAY: 今日
+HISTORY_PANEL_YESTERDAY: 昨日
+DASHBOARD_NO_VISIBLE_PROVIDERS: 表示するプロバイダーがありません
+DASHBOARD_NO_VISIBLE_PROVIDERS_DESCRIPTION: すべてのプロバイダーが非表示になっています。設定でプロバイダーの表示を変更してください。
+DASHBOARD_OPEN_SETTINGS: 設定を開く
+DASHBOARD_DROP_IMAGES_HERE: ファイルをここにドロップ
+DASHBOARD_OR: または
+DASHBOARD_CLICK_TO_UPLOAD: クリックしてアップロード
+DASHBOARD_PASTE_FROM_CLIPBOARD: クリップボードから貼り付け
+DASHBOARD_PASTE_FROM_URL: URLから貼り付け
+DASHBOARD_CLIPBOARD: クリップボード
+FIELD_IS_REQUIRED: ${field}は必須です
+CONFIG_RENAME: 設定名を変更
+SETTINGS_SECTION_GENERAL: 一般
+SETTINGS_SECTION_APPEARANCE: 外観
+SETTINGS_SECTION_UPLOAD_WORKFLOW: アップロードワークフロー
+SETTINGS_SECTION_NETWORK: ネットワーク
+SETTINGS_SECTION_ADVANCED: 詳細設定
+SETTINGS_SECTION_ABOUT: 情報
+SETTINGS_NO_RESULTS_TITLE: 設定が見つかりません
+SETTINGS_NO_RESULTS_DESCRIPTION: 別のキーワードを試すか、検索入力をクリアしてください。
+SETTINGS_OPEN_SHORTCUTS: ショートカット
+SETTINGS_LINK_WEBSITE: Webサイト
+SETTINGS_LINK_GITHUB: GitHub
+SETTINGS_LINK_DOCS: ドキュメント
+SETTINGS_LINK_PRIVACY: プライバシーポリシー
+SETTINGS_LINK_TERMS: 利用規約
+SETTINGS_APPEARANCE_MODE: 外観
+SETTINGS_APPEARANCE_MODE_LIGHT: ライト
+SETTINGS_APPEARANCE_MODE_DARK: ダーク
+SETTINGS_APPEARANCE_MODE_AUTO: 自動
+COMMON_FOR_EXAMPLE: "例: ${value}"
+SETTINGS_SET_DEFAULT_CONFIG: デフォルトに設定
+PROVIDER_DRAFT_CONFIG: 下書き
+PROVIDER_ACTIVE_UPLOADER_LABEL: アクティブ
+PROVIDER_ACTIVE_UPLOADER_TOOLTIP: ${uploaderName}がアクティブなアップローダーです
+PROVIDER_DEFAULT_CONFIG_LABEL: デフォルト
+PROVIDER_DEFAULT_CONFIG_TOOLTIP: ${uploaderName}がアクティブな場合に使用されます。
+PROVIDER_SIDEBAR_EMPTY: アップローダーまたは設定が見つかりません。
+PROVIDER_UPLOADER_ACTIONS: ${uploaderName}の操作
+PROVIDER_SIDEBAR_COLLAPSE: 折りたたむ
+PROVIDER_SIDEBAR_EXPAND: 展開
+PROVIDER_CONFIG_ACTIONS: 設定の操作
+PROVIDER_CREATE_CONFIG: 設定を作成
+PROVIDER_CREATE_CONFIG_DISABLED_EMPTY_SCHEMA: このアップローダーには設定項目がないため、追加の設定を作成する必要はありません
+PROVIDER_INSTALL_MORE_UPLOADERS: アップローダーを追加インストール
+PROVIDER_NO_UPLOADER_SELECTED: アップローダーが選択されていません。
+PROVIDER_NO_CONFIG_YET: 設定はまだありません
+PROVIDER_NO_CONFIG_DESCRIPTION: ${uploaderName}のスキーマベースのオプションを編集するには、新しい設定を作成してください。
+PROVIDER_CONFIGURATION: 設定
+PROVIDER_UPDATED_AT_LABEL: 更新日
+PROVIDER_DELETE_CONFIG_HINT: この設定を完全に削除します。
+UPLOADER_SWITCHER_SELECT_PROVIDER: プロバイダーを選択
+UPLOADER_SWITCHER_CONFIG: 設定
+UPLOADER_SWITCHER_NO_CONFIG: 設定なし
+ALBUM_URL_REWRITE_DESCRIPTION: 選択した画像のURLを一括リライトします。
+ALBUM_URL_REWRITE_CHANGED: 変更あり
+ALBUM_URL_REWRITE_UNCHANGED: 変更なし
+TRAY_ALREADY_UPLOAD_EMPTY: アップロードされた画像はまだありません
+PLUGIN_EMPTY: プラグインが見つかりません。
+PLUGIN_EMPTY_DESCRIPTION: npmを検索してプラグインをインストールして始めましょう。
+PLUGIN_DETAIL: 詳細
+PLUGIN_NO_CONFIG_SCHEMA: このプラグインは設定スキーマを提供していません。
+PLUGIN_NO_TRANSFORMER_SCHEMA: このプラグインはトランスフォーマースキーマを提供していません。
+PLUGIN_NO_README: このプラグインのREADMEはありません。
+NO_OPTIONS_FOUND: オプションが見つかりません。
