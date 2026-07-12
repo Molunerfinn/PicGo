@@ -8,6 +8,7 @@ import enRaw from '../../../public/i18n/en.yml?raw'
 import zhCNRaw from '../../../public/i18n/zh-CN.yml?raw'
 import zhTWRaw from '../../../public/i18n/zh-TW.yml?raw'
 import koRaw from '../../../public/i18n/ko.yml?raw'
+import jaRaw from '../../../public/i18n/ja.yml?raw'
 
 type TranslationMap = Record<string, string>
 
@@ -16,7 +17,7 @@ function parseLocale (raw: string): TranslationMap {
 }
 
 function applyLanguage (lang: string) {
-  const nextLanguage = ['en', 'zh-CN', 'zh-TW', 'ko'].includes(lang) ? lang : 'en'
+  const nextLanguage = ['en', 'zh-CN', 'zh-TW', 'ko', 'ja'].includes(lang) ? lang : 'en'
   return i18n.changeLanguage(nextLanguage).catch(() => {
     return i18n.changeLanguage('en')
   })
@@ -36,7 +37,8 @@ export function initializeI18n () {
         en: { translation: parseLocale(enRaw) },
         'zh-CN': { translation: parseLocale(zhCNRaw) },
         'zh-TW': { translation: parseLocale(zhTWRaw) },
-        ko: { translation: parseLocale(koRaw) }
+        ko: { translation: parseLocale(koRaw) },
+        ja: { translation: parseLocale(jaRaw) }
       },
       lng: 'en',
       fallbackLng: 'en',

@@ -63,6 +63,7 @@ export function SettingsSectionGeneral({
               <SelectItem value="zh-CN">简体中文</SelectItem>
               <SelectItem value="zh-TW">繁體中文</SelectItem>
               <SelectItem value="ko">한국어</SelectItem>
+              <SelectItem value="ja">日本語</SelectItem>
             </SelectContent>
           </Select>
         }
