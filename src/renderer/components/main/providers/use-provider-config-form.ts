@@ -78,9 +78,10 @@ export function useProviderConfigForm({
         target: "uploader",
         uploaderName: refreshTarget.uploaderName,
         draftValues,
+        schemaOnly: isDraftSelected,
       })
     },
-    []
+    [isDraftSelected]
   )
 
   // Re-hydrate when the persisted config's _updatedAt changes (initial load,
@@ -113,6 +114,9 @@ export function useProviderConfigForm({
       .then((nextSchema) => {
         if (cancelled) return
         setLiveSchema(nextSchema)
+        if (isDraftSelected) {
+          setValues(buildFormValues(nextSchema, selectedConfig))
+        }
       })
       .catch((error) => {
         if (cancelled) return

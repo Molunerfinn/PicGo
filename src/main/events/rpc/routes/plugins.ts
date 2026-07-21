@@ -12,6 +12,7 @@ import { notifyAppConfigUpdated } from '~/main/utils/appConfigNotifier'
 import { dialog } from 'electron'
 import windowManager from '~/main/apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
+import { createSchemaOnlyUploaderContext } from '~/main/utils/schemaOnlyUploaderContext'
 
 const README_FILE_CANDIDATES = ['README.md', 'readme.md', 'Readme.md'] as const
 
@@ -210,7 +211,10 @@ pluginsRouter
       } else if (payload.target === 'uploader') {
         const handler = picgo.helper.uploader.get(payload.uploaderName)
         if (handler?.config) {
-          rawSchema = handler.config(picgo)
+          const configContext = payload.schemaOnly
+            ? createSchemaOnlyUploaderContext(picgo, payload.uploaderName)
+            : picgo
+          rawSchema = handler.config(configContext)
         }
       }
 
@@ -235,7 +239,12 @@ pluginsRouter
 type IRefreshConfigSchemaArgs =
   | { target: 'plugin', pluginFullName: string, draftValues?: Record<string, unknown> }
   | { target: 'transformer', pluginFullName: string, draftValues?: Record<string, unknown> }
-  | { target: 'uploader', uploaderName: string, draftValues?: Record<string, unknown> }
+  | {
+    target: 'uploader'
+    uploaderName: string
+    draftValues?: Record<string, unknown>
+    schemaOnly?: boolean
+  }
 
 export {
   pluginsRouter

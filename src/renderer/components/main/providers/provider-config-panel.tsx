@@ -300,9 +300,11 @@ export function ProviderConfigPanel({
                 </div>
 
                 <ProviderFormFields
+                  key={`${selectedUploaderId}:${selectedConfig._id}`}
                   schema={schema}
                   values={formValues}
                   fieldErrors={fieldErrors}
+                  allowPasswordReveal={isDraftSelected}
                   onValueChange={handleValueChange}
                 />
 
@@ -335,4 +337,3 @@ export function ProviderConfigPanel({
     </AppMainCard>
   )
 }
-
