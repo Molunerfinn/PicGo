@@ -39,6 +39,7 @@ interface SchemaFormFieldsProps {
   schema: ProviderPluginConfig[]
   values: SchemaFormValues
   fieldErrors?: SchemaFieldErrorMap
+  allowPasswordReveal?: boolean
   onValueChange: (name: string, value: unknown) => void
 }
 
@@ -46,6 +47,14 @@ interface CheckboxFieldProps {
   field: ProviderPluginConfig
   selectedValue: unknown
   isInvalid: boolean
+  onValueChange: (name: string, value: unknown) => void
+}
+
+interface PasswordFieldProps {
+  field: ProviderPluginConfig
+  selectedValue: unknown
+  isInvalid: boolean
+  allowPasswordReveal: boolean
   onValueChange: (name: string, value: unknown) => void
 }
 
@@ -151,16 +160,51 @@ function CheckboxField({
   )
 }
 
+function PasswordField({
+  field,
+  selectedValue,
+  isInvalid,
+  allowPasswordReveal,
+  onValueChange,
+}: PasswordFieldProps) {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+
+  return (
+    <div className="relative">
+      <Input
+        value={String(selectedValue ?? "")}
+        type={isPasswordVisible ? "text" : "password"}
+        placeholder={field.message || field.name}
+        className={allowPasswordReveal ? "pr-10" : undefined}
+        aria-invalid={isInvalid}
+        onChange={(event) => onValueChange(field.name, event.target.value)}
+      />
+      {allowPasswordReveal && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          className="absolute top-1/2 right-1 -translate-y-1/2"
+          onClick={() => setIsPasswordVisible((prev) => !prev)}
+        >
+          {isPasswordVisible ? (
+            <EyeOffIcon className="size-4" />
+          ) : (
+            <EyeIcon className="size-4" />
+          )}
+        </Button>
+      )}
+    </div>
+  )
+}
+
 export function SchemaFormFields({
   schema,
   values,
   fieldErrors = {},
+  allowPasswordReveal = true,
   onValueChange,
 }: SchemaFormFieldsProps) {
-  const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>(
-    {}
-  )
-
   return (
     <div className="space-y-5">
       {schema.map((field) => {
@@ -169,7 +213,6 @@ export function SchemaFormFields({
         const optionValueMap = new Map(
           choices.map((choice) => [String(choice.value), choice.value] as const)
         )
-        const isPasswordVisible = Boolean(visiblePasswords[field.name])
         const fieldError = fieldErrors[field.name]
         const isInvalid = Boolean(fieldError)
 
@@ -230,34 +273,14 @@ export function SchemaFormFields({
             )}
 
             {field.type === "password" && (
-              <div className="relative">
-                <Input
-                  value={String(value ?? "")}
-                  type={isPasswordVisible ? "text" : "password"}
-                  placeholder={field.message || field.name}
-                  className="pr-10"
-                  aria-invalid={isInvalid}
-                  onChange={(event) => onValueChange(field.name, event.target.value)}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  className="absolute top-1/2 right-1 -translate-y-1/2"
-                  onClick={() => {
-                    setVisiblePasswords((prev) => ({
-                      ...prev,
-                      [field.name]: !prev[field.name],
-                    }))
-                  }}
-                >
-                  {isPasswordVisible ? (
-                    <EyeOffIcon className="size-4" />
-                  ) : (
-                    <EyeIcon className="size-4" />
-                  )}
-                </Button>
-              </div>
+              <PasswordField
+                key={`${field.name}:${allowPasswordReveal ? "reveal" : "locked"}`}
+                field={field}
+                selectedValue={value}
+                isInvalid={isInvalid}
+                allowPasswordReveal={allowPasswordReveal}
+                onValueChange={onValueChange}
+              />
             )}
 
             {field.type === "list" && (

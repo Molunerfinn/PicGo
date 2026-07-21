@@ -116,6 +116,88 @@ describe('SchemaFormFields editor field', () => {
 
 })
 
+describe('SchemaFormFields password field', () => {
+  const passwordSchema: ProviderPluginConfig[] = [
+    {
+      name: 'secret',
+      type: 'password',
+      required: true,
+      alias: 'Secret'
+    }
+  ]
+
+  it('allows password reveal by default', () => {
+    renderSchema(passwordSchema, { secret: 'saved-secret' })
+
+    const input = screen.getByDisplayValue('saved-secret') as HTMLInputElement
+    expect(input.type).toBe('password')
+
+    fireEvent.click(screen.getByRole('button'))
+
+    expect(input.type).toBe('text')
+  })
+
+  it('keeps the password masked and removes the reveal button when disabled', () => {
+    const onValueChange = vi.fn()
+    render(
+      <SchemaFormFields
+        schema={passwordSchema}
+        values={{ secret: 'saved-secret' }}
+        allowPasswordReveal={false}
+        onValueChange={onValueChange}
+      />
+    )
+
+    const input = screen.getByDisplayValue('saved-secret') as HTMLInputElement
+    expect(input.type).toBe('password')
+    expect(screen.queryByRole('button')).toBeNull()
+
+    fireEvent.change(input, { target: { value: 'replacement-secret' } })
+    expect(onValueChange).toHaveBeenCalledWith('secret', 'replacement-secret')
+  })
+
+  it('clears visible password state when reveal becomes disabled', () => {
+    const onValueChange = vi.fn()
+    const { rerender } = render(
+      <SchemaFormFields
+        schema={passwordSchema}
+        values={{ secret: 'saved-secret' }}
+        allowPasswordReveal
+        onValueChange={onValueChange}
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button'))
+    expect(
+      (screen.getByDisplayValue('saved-secret') as HTMLInputElement).type
+    ).toBe('text')
+
+    rerender(
+      <SchemaFormFields
+        schema={passwordSchema}
+        values={{ secret: 'saved-secret' }}
+        allowPasswordReveal={false}
+        onValueChange={onValueChange}
+      />
+    )
+    expect(
+      (screen.getByDisplayValue('saved-secret') as HTMLInputElement).type
+    ).toBe('password')
+
+    rerender(
+      <SchemaFormFields
+        schema={passwordSchema}
+        values={{ secret: 'saved-secret' }}
+        allowPasswordReveal
+        onValueChange={onValueChange}
+      />
+    )
+    expect(
+      (screen.getByDisplayValue('saved-secret') as HTMLInputElement).type
+    ).toBe('password')
+  })
+})
+
 describe('SchemaFormFields unknown field type', () => {
   it('does not render any input control for an unrecognized type, label only', () => {
     renderSchema([

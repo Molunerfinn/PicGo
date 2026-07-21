@@ -9,7 +9,12 @@ import { normalizePluginConfigSchema } from '@/components/common/normalize-plugi
 export type IRefreshConfigSchemaArgs =
   | { target: 'plugin', pluginFullName: string, draftValues: Record<string, unknown> }
   | { target: 'transformer', pluginFullName: string, draftValues: Record<string, unknown> }
-  | { target: 'uploader', uploaderName: string, draftValues: Record<string, unknown> }
+  | {
+    target: 'uploader'
+    uploaderName: string
+    draftValues: Record<string, unknown>
+    schemaOnly?: boolean
+  }
 
 interface PluginInstallResult {
   success: boolean

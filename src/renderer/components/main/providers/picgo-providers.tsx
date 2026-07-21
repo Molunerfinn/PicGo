@@ -3,6 +3,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
+import { pluginsAdapter } from "@/adapters/plugins"
 import { appActions, providerStoreActions, useAppStore, useProviderStore } from "@/store"
 import { ProviderConfigNameDialog } from "./provider-config-name-dialog"
 import { ProviderConfigPanel } from "./provider-config-panel"
@@ -35,7 +36,6 @@ export function PicGoProviders() {
 
   const appConfig = useAppStore.use.appConfig()
   const providers = useAppStore.use.providers()
-  const providerSchemas = useAppStore.use.providerSchemas()
   const hasHydrated = useAppStore.use.hasHydrated()
   const isLoadingUploaders = useProviderStore.use.isHydrating()
 
@@ -167,14 +167,12 @@ export function PicGoProviders() {
 
   const handleCreateConfigDraft = async (uploaderId: string, configName: string) => {
     try {
-      const resolvedSchema =
-        (await providerStoreActions.ensureSchema(uploaderId)).config ??
-        providerSchemas[uploaderId]?.config
-
-      if (!resolvedSchema) {
-        toast.error(t("FAILED"))
-        return
-      }
+      const resolvedSchema = await pluginsAdapter.refreshConfigSchema({
+        target: "uploader",
+        uploaderName: uploaderId,
+        draftValues: {},
+        schemaOnly: true,
+      })
 
       const now = Date.now()
       const draftId = createDraftConfigId(uploaderId)

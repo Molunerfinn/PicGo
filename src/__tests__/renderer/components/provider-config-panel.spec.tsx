@@ -4,6 +4,13 @@ import { act, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { evaluatePluginConfig } from 'picgo'
 
+const routerMocks = vi.hoisted(() => ({
+  search: {
+    uploader: 'picgo-plugin-test',
+    configId: 'config-1'
+  }
+}))
+
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
@@ -15,10 +22,7 @@ vi.mock('@tanstack/react-router', async () => {
   return {
     ...actual,
     useNavigate: () => vi.fn(),
-    useSearch: () => ({
-      uploader: 'picgo-plugin-test',
-      configId: 'config-1'
-    })
+    useSearch: () => routerMocks.search
   }
 })
 
@@ -39,12 +43,18 @@ vi.mock('@/store/providers/actions', () => ({
 }))
 
 import { ProviderConfigPanel } from '@/components/main/providers/provider-config-panel'
+import type { ProviderDraftConfigItem } from '@/components/main/providers/types'
 import { useAppStore } from '@/store/app-store'
 import { useProviderStoreBase as useProviderStore } from '@/store/providers/store'
 import { pluginsAdapter } from '@/adapters/plugins'
 import { normalizePluginConfigSchema } from '@/components/common/normalize-plugin-schema'
 import { IPasteStyle, IStartupMode } from '~/universal/types/enum'
 import { buildCascadeRawSchema } from '../fixtures/cascade-fixture'
+
+beforeEach(() => {
+  routerMocks.search.uploader = 'picgo-plugin-test'
+  routerMocks.search.configId = 'config-1'
+})
 
 const baseAppConfig = {
   picBed: {
@@ -88,17 +98,21 @@ const baseAppConfig = {
   needReload: false
 }
 
-function setupStoreWithSavedConfig(savedConfig: Record<string, unknown>) {
+function setupStoreWithSavedConfig(
+  savedConfig: Record<string, unknown>,
+  schemaOverride?: unknown[]
+) {
   // Mimics what the main process sends at startup: schema evaluated with
   // empty answers, so the plugin's `default(answers)` for downstream fields
   // computes against synthAnswers defaults — NOT the user's saved values.
   // Provider-config-panel then has to issue an initial sync to bring the
   // schema in line with the saved values.
-  const initialSchema = evaluatePluginConfig(
-    buildCascadeRawSchema(savedConfig.region as string) as Parameters<
-      typeof evaluatePluginConfig
-    >[0]
-  ) as unknown[]
+  const initialSchema = schemaOverride ??
+    evaluatePluginConfig(
+      buildCascadeRawSchema(savedConfig.region as string) as Parameters<
+        typeof evaluatePluginConfig
+      >[0]
+    ) as unknown[]
 
   useAppStore.setState({
     defaultPicBed: 'picgo-plugin-test',
@@ -182,10 +196,12 @@ function getFieldSelectTrigger(label: string) {
   return trigger as HTMLElement
 }
 
-function renderPanel() {
+function renderPanel(
+  draftConfigMap: Record<string, ProviderDraftConfigItem | undefined> = {}
+) {
   return render(
     <ProviderConfigPanel
-      draftConfigMap={{}}
+      draftConfigMap={draftConfigMap}
       setDraftConfigMap={vi.fn()}
       onCreateConfigIntent={vi.fn()}
       onDeleteConfigIntent={vi.fn()}
@@ -360,6 +376,122 @@ describe('ProviderConfigPanel — editor field rendering', () => {
       const textarea = screen.getByRole('textbox') as HTMLTextAreaElement
       expect(textarea.tagName).toBe('TEXTAREA')
       expect(textarea.value).toBe('line-one\nline-two\nline-three')
+    })
+  })
+})
+
+describe('ProviderConfigPanel — saved password rendering', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('keeps saved password fields masked without a reveal button', async () => {
+    const passwordSchema = [
+      {
+        name: 'secret',
+        type: 'password',
+        alias: 'Secret',
+        required: true,
+        message: 'Enter secret'
+      }
+    ]
+    setupStoreWithSavedConfig(
+      { secret: 'saved-secret' },
+      passwordSchema
+    )
+    vi.mocked(pluginsAdapter.refreshConfigSchema).mockResolvedValue(
+      normalizePluginConfigSchema(passwordSchema)
+    )
+
+    renderPanel()
+
+    await waitFor(() => {
+      const label = screen.getByText('Secret')
+      const field = label.closest('[data-slot="field"]')
+      if (!field) throw new Error('No field container for password field')
+
+      const input = field.querySelector('input')
+      expect(input?.value).toBe('saved-secret')
+      expect(input?.type).toBe('password')
+      expect(field.querySelector('button')).toBeNull()
+    })
+  })
+})
+
+describe('ProviderConfigPanel — draft schema rendering', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('keeps schema refreshes isolated from persisted uploader defaults', async () => {
+    const draftId = 'draft:picgo-plugin-test'
+    const cachedSchema = [
+      {
+        name: 'version',
+        type: 'list',
+        choices: ['v4', 'v5'],
+        default: 'v5',
+        required: false
+      },
+      {
+        name: 'secret',
+        type: 'password',
+        alias: 'Secret',
+        default: 'persisted-secret',
+        required: true
+      }
+    ]
+    const cleanSchema = [
+      cachedSchema[0],
+      {
+        ...cachedSchema[1],
+        default: ''
+      }
+    ]
+
+    setupStoreWithSavedConfig(
+      {
+        version: 'v5',
+        secret: 'persisted-secret'
+      },
+      cachedSchema
+    )
+    routerMocks.search.configId = draftId
+    vi.mocked(pluginsAdapter.refreshConfigSchema).mockResolvedValue(
+      normalizePluginConfigSchema(cleanSchema)
+    )
+
+    renderPanel({
+      'picgo-plugin-test': {
+        _id: draftId,
+        _configName: 'New Config',
+        _createdAt: 1700000000001,
+        _updatedAt: 1700000000001,
+        _isDraft: true,
+        version: 'v5',
+        secret: ''
+      }
+    })
+
+    await waitFor(() => {
+      expect(pluginsAdapter.refreshConfigSchema).toHaveBeenCalledWith(
+        expect.objectContaining({
+          target: 'uploader',
+          uploaderName: 'picgo-plugin-test',
+          schemaOnly: true
+        })
+      )
+    })
+
+    await waitFor(() => {
+      const label = screen.getByText('Secret')
+      const field = label.closest('[data-slot="field"]')
+      if (!field) throw new Error('No field container for draft password field')
+
+      const input = field.querySelector('input')
+      expect(input?.value).toBe('')
+      expect(input?.type).toBe('password')
+      expect(field.querySelector('button')).not.toBeNull()
     })
   })
 })
