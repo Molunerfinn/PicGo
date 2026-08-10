@@ -25,8 +25,7 @@ const defaultWebPreferences = {
   preload: path.join(__dirname, '../preload/index.js'),
   nodeIntegration: false,
   contextIsolation: true,
-  nodeIntegrationInWorker: false,
-  backgroundThrottling: false
+  nodeIntegrationInWorker: false
 }
 
 const handleWindowParams = (windowURL: string) => {
