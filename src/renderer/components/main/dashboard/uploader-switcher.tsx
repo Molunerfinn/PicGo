@@ -71,7 +71,8 @@ export function UploaderSwitcher({
           className="group h-10 cursor-pointer bg-card/80 px-4 backdrop-blur transition-all hover:border-primary/30"
           disabled={disabled}
         >
-          <span className="size-2 animate-pulse rounded-full bg-green-500" />
+          {/* 刻意不加 animate-pulse：2s infinite 会让主窗口空闲时也持续产出合成帧，把周围几层 backdrop-blur 一起钉在满帧率上重算，GPU 进程无法进入空闲。静态圆点表意相同。 */}
+          <span className="size-2 rounded-full bg-green-500" />
           <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
             {current.providerName}
             <span className="mx-1 font-normal text-muted-foreground">/</span>
