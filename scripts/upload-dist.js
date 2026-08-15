@@ -11,6 +11,7 @@ const distPath = path.join(__dirname, '../dist')
 const S3Client = require('@aws-sdk/client-s3').S3Client
 const Upload = require('@aws-sdk/lib-storage').Upload
 const uploadToDev = process.argv.includes('--dev')
+const uploadVersionFilesOnly = process.argv.includes('--version-files-only')
 
 const S3_BUCKET = 'release'
 const S3_LEGACY_BUCKET = 'picgo'
@@ -103,6 +104,7 @@ const uploadDist = async () => {
 
     console.log(`[PicGo] Upload mode: ${shouldUploadAll() ? 'ALL PLATFORMS' : process.platform}`)
     console.log(`[PicGo] Version: ${VERSION}`)
+    console.log(`[PicGo] Install package upload: ${uploadVersionFilesOnly ? 'SKIPPED' : 'ENABLED'}`)
     console.log(`[PicGo] Total files to upload: ${configs.length}\n`)
 
     const uploadedVersionFiles = new Set()
@@ -117,11 +119,11 @@ const uploadDist = async () => {
       console.log(`[${index + 1}/${configs.length}] Processing ${fileName}`)
 
       // 上传构建产物
-      if (fs.existsSync(filePath)) {
+      if (!uploadVersionFilesOnly && fs.existsSync(filePath)) {
         console.log(`   Uploading to S3: ${FILE_PATH}${fileName}`)
         await uploadFileToS3(client, S3_BUCKET, `${FILE_PATH}${fileName}`, filePath)
         console.log(`   ✅ Uploaded: ${fileName}`)
-      } else {
+      } else if (!uploadVersionFilesOnly) {
         console.warn(`   ⚠️  File not found: ${fileName}`)
       }
 

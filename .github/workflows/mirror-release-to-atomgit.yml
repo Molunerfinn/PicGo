@@ -1,0 +1,60 @@
+name: Mirror Release to AtomGit
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Published GitHub release tag to mirror
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mirror-atomgit-${{ github.event.release.tag_name || inputs.release_tag }}
+  cancel-in-progress: false
+
+jobs:
+  mirror-release:
+    name: Mirror GitHub Release to AtomGit
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+      ATOM_OWNER: ${{ vars.ATOM_OWNER || 'Molunerfinn' }}
+      ATOM_REPO: ${{ vars.ATOM_REPO || 'PicGo' }}
+      ATOM_TARGET_COMMITISH: ${{ vars.ATOM_TARGET_COMMITISH }}
+    steps:
+      - name: Check out git repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Read GitHub release metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --json tagName,name,body,isDraft,isPrerelease,targetCommitish \
+            > github-release.json
+
+      - name: Download GitHub release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p dist
+          gh release download "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir dist
+
+      - name: Publish AtomGit release
+        env:
+          ATOM_PAT: ${{ secrets.ATOM_PAT }}
+        run: node scripts/publish-atomgit-release.js
