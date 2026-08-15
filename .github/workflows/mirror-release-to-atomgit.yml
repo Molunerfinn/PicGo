@@ -27,7 +27,7 @@ jobs:
       ATOM_OWNER: ${{ vars.ATOM_OWNER || 'Molunerfinn' }}
       ATOM_REPO: ${{ vars.ATOM_REPO || 'PicGo' }}
       ATOM_TARGET_COMMITISH: ${{ vars.ATOM_TARGET_COMMITISH }}
-      ATOM_UPLOAD_CONCURRENCY: ${{ vars.ATOM_UPLOAD_CONCURRENCY || '3' }}
+      ATOM_UPLOAD_TIMEOUT_MINUTES: ${{ vars.ATOM_UPLOAD_TIMEOUT_MINUTES || '10' }}
     steps:
       - name: Check out git repository
         uses: actions/checkout@v4
