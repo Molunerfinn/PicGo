@@ -1,6 +1,9 @@
 name: Mirror Release to AtomGit
 
 on:
+  push:
+    branches:
+      - atomgit-release-ci-test
   release:
     types:
       - published
@@ -23,7 +26,7 @@ jobs:
     name: Mirror GitHub Release to AtomGit
     runs-on: ubuntu-latest
     env:
-      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag || 'v3.0.2' }}
       ATOM_OWNER: ${{ vars.ATOM_OWNER || 'Molunerfinn' }}
       ATOM_REPO: ${{ vars.ATOM_REPO || 'PicGo' }}
       ATOM_TARGET_COMMITISH: ${{ vars.ATOM_TARGET_COMMITISH }}
