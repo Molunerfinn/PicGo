@@ -144,7 +144,7 @@ interface IBrowserWindowOptions {
     nodeIntegration: boolean,
     nodeIntegrationInWorker: boolean,
     contextIsolation: boolean,
-    backgroundThrottling: boolean
+    backgroundThrottling?: boolean
     webSecurity?: boolean
   },
   vibrancy?: string | any,
