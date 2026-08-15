@@ -11,6 +11,7 @@ const DIST_DIR = path.resolve(process.env.DIST_DIR || 'dist')
 const RELEASE_METADATA_PATH = path.resolve(process.env.GITHUB_RELEASE_JSON || 'github-release.json')
 const MAX_ATTEMPTS = 3
 const RETRYABLE_STATUS_CODES = new Set([408, 429, 500, 502, 503, 504])
+const UPLOAD_CONCURRENCY = Number.parseInt(process.env.ATOM_UPLOAD_CONCURRENCY || '3', 10)
 
 function requireEnvironmentVariable(name, value) {
   if (!value) {
@@ -24,6 +25,14 @@ function encodePathSegment(value) {
 
 function wait(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
+function formatFileSize(bytes) {
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
+function formatDuration(milliseconds) {
+  return `${Math.round(milliseconds / 1000)}s`
 }
 
 async function requestWithRetry(url, createOptions, label) {
@@ -187,6 +196,9 @@ async function uploadAsset(filePath) {
   const fileSize = fs.statSync(filePath).size
   const uploadHeaders = new Headers(uploadRequest.headers)
   uploadHeaders.set('Content-Length', String(fileSize))
+  const startedAt = Date.now()
+
+  console.log(`[AtomGit] Uploading ${fileName} (${formatFileSize(fileSize)})`)
   const response = await requestWithRetry(
     uploadRequest.url,
     () => ({
@@ -199,7 +211,22 @@ async function uploadAsset(filePath) {
   )
 
   await assertSuccessfulResponse(response, `Upload ${fileName}`)
-  console.log(`[AtomGit] Uploaded ${fileName}`)
+  console.log(`[AtomGit] Uploaded ${fileName} in ${formatDuration(Date.now() - startedAt)}`)
+}
+
+async function uploadAssets(assetPaths) {
+  let nextAssetIndex = 0
+  const workerCount = Math.min(UPLOAD_CONCURRENCY, assetPaths.length)
+
+  const runWorker = async () => {
+    while (nextAssetIndex < assetPaths.length) {
+      const assetIndex = nextAssetIndex
+      nextAssetIndex += 1
+      await uploadAsset(assetPaths[assetIndex])
+    }
+  }
+
+  await Promise.all(Array.from({ length: workerCount }, runWorker))
 }
 
 function readReleaseMetadata() {
@@ -237,6 +264,9 @@ async function publishRelease() {
   requireEnvironmentVariable('ATOM_OWNER', ATOM_OWNER)
   requireEnvironmentVariable('ATOM_REPO', ATOM_REPO)
   requireEnvironmentVariable('RELEASE_TAG', RELEASE_TAG)
+  if (!Number.isInteger(UPLOAD_CONCURRENCY) || UPLOAD_CONCURRENCY < 1 || UPLOAD_CONCURRENCY > 10) {
+    throw new Error('ATOM_UPLOAD_CONCURRENCY must be an integer between 1 and 10')
+  }
 
   const metadata = readReleaseMetadata()
   const assetPaths = findAssets()
@@ -248,6 +278,7 @@ async function publishRelease() {
   await verifyCredentials()
   const release = await getOrCreateRelease(metadata)
   const existingAssetNames = getExistingAssetNames(release)
+  const pendingAssetPaths = []
 
   for (const assetPath of assetPaths) {
     const fileName = path.basename(assetPath)
@@ -256,7 +287,12 @@ async function publishRelease() {
       continue
     }
 
-    await uploadAsset(assetPath)
+    pendingAssetPaths.push(assetPath)
+  }
+
+  if (pendingAssetPaths.length > 0) {
+    console.log(`[AtomGit] Uploading ${pendingAssetPaths.length} assets with concurrency ${UPLOAD_CONCURRENCY}`)
+    await uploadAssets(pendingAssetPaths)
   }
 
   console.log(`[AtomGit] Release ${RELEASE_TAG} mirror completed`)
