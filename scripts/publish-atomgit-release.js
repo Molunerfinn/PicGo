@@ -1,4 +1,6 @@
 const fs = require('fs')
+const http = require('http')
+const https = require('https')
 const path = require('path')
 
 const API_URL = process.env.ATOM_API_URL || 'https://api.atomgit.com/api/v5'
@@ -11,7 +13,7 @@ const DIST_DIR = path.resolve(process.env.DIST_DIR || 'dist')
 const RELEASE_METADATA_PATH = path.resolve(process.env.GITHUB_RELEASE_JSON || 'github-release.json')
 const MAX_ATTEMPTS = 3
 const RETRYABLE_STATUS_CODES = new Set([408, 429, 500, 502, 503, 504])
-const UPLOAD_TIMEOUT_MINUTES = Number.parseInt(process.env.ATOM_UPLOAD_TIMEOUT_MINUTES || '10', 10)
+const UPLOAD_TIMEOUT_MINUTES = Number.parseInt(process.env.ATOM_UPLOAD_TIMEOUT_MINUTES || '70', 10)
 
 function requireEnvironmentVariable(name, value) {
   if (!value) {
@@ -74,8 +76,7 @@ function atomGitHeaders(additionalHeaders = {}) {
   }
 }
 
-async function readResponseBody(response) {
-  const text = await response.text()
+function parseResponseText(text) {
   if (!text) {
     return null
   }
@@ -85,6 +86,10 @@ async function readResponseBody(response) {
   } catch {
     return text
   }
+}
+
+async function readResponseBody(response) {
+  return parseResponseText(await response.text())
 }
 
 function formatResponseBody(body) {
@@ -190,6 +195,36 @@ async function getUploadRequest(fileName) {
   return body
 }
 
+function putAssetBuffer(url, headers, fileBuffer) {
+  return new Promise((resolve, reject) => {
+    const targetUrl = new URL(url)
+    const requestClient = targetUrl.protocol === 'http:' ? http : https
+    const request = requestClient.request(targetUrl, {
+      method: 'PUT',
+      headers: Object.fromEntries(headers.entries())
+    }, response => {
+      const chunks = []
+
+      response.on('data', chunk => {
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+      })
+      response.on('end', () => {
+        resolve({
+          status: response.statusCode || 0,
+          body: Buffer.concat(chunks).toString('utf8')
+        })
+      })
+      response.on('error', reject)
+    })
+
+    request.setTimeout(UPLOAD_TIMEOUT_MINUTES * 60 * 1000, () => {
+      request.destroy(new Error(`Upload request timed out after ${UPLOAD_TIMEOUT_MINUTES} minutes`))
+    })
+    request.on('error', reject)
+    request.end(fileBuffer)
+  })
+}
+
 async function uploadAsset(filePath) {
   const fileName = path.basename(filePath)
   const fileBuffer = await fs.promises.readFile(filePath)
@@ -205,12 +240,7 @@ async function uploadAsset(filePath) {
     let response
 
     try {
-      response = await fetch(uploadRequest.url, {
-        method: 'PUT',
-        headers: uploadHeaders,
-        body: fileBuffer,
-        signal: AbortSignal.timeout(UPLOAD_TIMEOUT_MINUTES * 60 * 1000)
-      })
+      response = await putAssetBuffer(uploadRequest.url, uploadHeaders, fileBuffer)
     } catch (error) {
       if (attempt === MAX_ATTEMPTS) {
         throw error
@@ -221,13 +251,12 @@ async function uploadAsset(filePath) {
       continue
     }
 
-    if (response.ok) {
-      await response.text()
+    if (response.status >= 200 && response.status < 300) {
       console.log(`[AtomGit] Uploaded ${fileName} in ${formatDuration(Date.now() - startedAt)}`)
       return
     }
 
-    const responseBody = await readResponseBody(response)
+    const responseBody = parseResponseText(response.body)
     if (!RETRYABLE_STATUS_CODES.has(response.status) || attempt === MAX_ATTEMPTS) {
       throw new Error(`Upload ${fileName} failed with HTTP ${response.status}: ${formatResponseBody(responseBody)}`)
     }
@@ -272,8 +301,8 @@ async function publishRelease() {
   requireEnvironmentVariable('ATOM_OWNER', ATOM_OWNER)
   requireEnvironmentVariable('ATOM_REPO', ATOM_REPO)
   requireEnvironmentVariable('RELEASE_TAG', RELEASE_TAG)
-  if (!Number.isInteger(UPLOAD_TIMEOUT_MINUTES) || UPLOAD_TIMEOUT_MINUTES < 1 || UPLOAD_TIMEOUT_MINUTES > 120) {
-    throw new Error('ATOM_UPLOAD_TIMEOUT_MINUTES must be an integer between 1 and 120')
+  if (!Number.isInteger(UPLOAD_TIMEOUT_MINUTES) || UPLOAD_TIMEOUT_MINUTES < 1 || UPLOAD_TIMEOUT_MINUTES > 180) {
+    throw new Error('ATOM_UPLOAD_TIMEOUT_MINUTES must be an integer between 1 and 180')
   }
 
   const metadata = readReleaseMetadata()
