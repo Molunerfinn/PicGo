@@ -11,7 +11,7 @@ const DIST_DIR = path.resolve(process.env.DIST_DIR || 'dist')
 const RELEASE_METADATA_PATH = path.resolve(process.env.GITHUB_RELEASE_JSON || 'github-release.json')
 const MAX_ATTEMPTS = 3
 const RETRYABLE_STATUS_CODES = new Set([408, 429, 500, 502, 503, 504])
-const UPLOAD_CONCURRENCY = Number.parseInt(process.env.ATOM_UPLOAD_CONCURRENCY || '3', 10)
+const UPLOAD_TIMEOUT_MINUTES = Number.parseInt(process.env.ATOM_UPLOAD_TIMEOUT_MINUTES || '10', 10)
 
 function requireEnvironmentVariable(name, value) {
   if (!value) {
@@ -192,41 +192,49 @@ async function getUploadRequest(fileName) {
 
 async function uploadAsset(filePath) {
   const fileName = path.basename(filePath)
-  const uploadRequest = await getUploadRequest(fileName)
-  const fileSize = fs.statSync(filePath).size
-  const uploadHeaders = new Headers(uploadRequest.headers)
-  uploadHeaders.set('Content-Length', String(fileSize))
+  const fileBuffer = await fs.promises.readFile(filePath)
+  const fileSize = fileBuffer.byteLength
   const startedAt = Date.now()
 
   console.log(`[AtomGit] Uploading ${fileName} (${formatFileSize(fileSize)})`)
-  const response = await requestWithRetry(
-    uploadRequest.url,
-    () => ({
-      method: 'PUT',
-      headers: uploadHeaders,
-      body: fs.createReadStream(filePath),
-      duplex: 'half'
-    }),
-    `upload ${fileName}`
-  )
 
-  await assertSuccessfulResponse(response, `Upload ${fileName}`)
-  console.log(`[AtomGit] Uploaded ${fileName} in ${formatDuration(Date.now() - startedAt)}`)
-}
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+    const uploadRequest = await getUploadRequest(fileName)
+    const uploadHeaders = new Headers(uploadRequest.headers)
+    uploadHeaders.set('Content-Length', String(fileSize))
+    let response
 
-async function uploadAssets(assetPaths) {
-  let nextAssetIndex = 0
-  const workerCount = Math.min(UPLOAD_CONCURRENCY, assetPaths.length)
+    try {
+      response = await fetch(uploadRequest.url, {
+        method: 'PUT',
+        headers: uploadHeaders,
+        body: fileBuffer,
+        signal: AbortSignal.timeout(UPLOAD_TIMEOUT_MINUTES * 60 * 1000)
+      })
+    } catch (error) {
+      if (attempt === MAX_ATTEMPTS) {
+        throw error
+      }
 
-  const runWorker = async () => {
-    while (nextAssetIndex < assetPaths.length) {
-      const assetIndex = nextAssetIndex
-      nextAssetIndex += 1
-      await uploadAsset(assetPaths[assetIndex])
+      console.warn(`[AtomGit] Upload ${fileName} failed; requesting a new upload URL (${attempt}/${MAX_ATTEMPTS})`)
+      await wait(1000 * attempt)
+      continue
     }
-  }
 
-  await Promise.all(Array.from({ length: workerCount }, runWorker))
+    if (response.ok) {
+      await response.text()
+      console.log(`[AtomGit] Uploaded ${fileName} in ${formatDuration(Date.now() - startedAt)}`)
+      return
+    }
+
+    const responseBody = await readResponseBody(response)
+    if (!RETRYABLE_STATUS_CODES.has(response.status) || attempt === MAX_ATTEMPTS) {
+      throw new Error(`Upload ${fileName} failed with HTTP ${response.status}: ${formatResponseBody(responseBody)}`)
+    }
+
+    console.warn(`[AtomGit] Upload ${fileName} returned ${response.status}; requesting a new upload URL (${attempt}/${MAX_ATTEMPTS})`)
+    await wait(1000 * attempt)
+  }
 }
 
 function readReleaseMetadata() {
@@ -264,8 +272,8 @@ async function publishRelease() {
   requireEnvironmentVariable('ATOM_OWNER', ATOM_OWNER)
   requireEnvironmentVariable('ATOM_REPO', ATOM_REPO)
   requireEnvironmentVariable('RELEASE_TAG', RELEASE_TAG)
-  if (!Number.isInteger(UPLOAD_CONCURRENCY) || UPLOAD_CONCURRENCY < 1 || UPLOAD_CONCURRENCY > 10) {
-    throw new Error('ATOM_UPLOAD_CONCURRENCY must be an integer between 1 and 10')
+  if (!Number.isInteger(UPLOAD_TIMEOUT_MINUTES) || UPLOAD_TIMEOUT_MINUTES < 1 || UPLOAD_TIMEOUT_MINUTES > 120) {
+    throw new Error('ATOM_UPLOAD_TIMEOUT_MINUTES must be an integer between 1 and 120')
   }
 
   const metadata = readReleaseMetadata()
@@ -278,7 +286,6 @@ async function publishRelease() {
   await verifyCredentials()
   const release = await getOrCreateRelease(metadata)
   const existingAssetNames = getExistingAssetNames(release)
-  const pendingAssetPaths = []
 
   for (const assetPath of assetPaths) {
     const fileName = path.basename(assetPath)
@@ -287,12 +294,7 @@ async function publishRelease() {
       continue
     }
 
-    pendingAssetPaths.push(assetPath)
-  }
-
-  if (pendingAssetPaths.length > 0) {
-    console.log(`[AtomGit] Uploading ${pendingAssetPaths.length} assets with concurrency ${UPLOAD_CONCURRENCY}`)
-    await uploadAssets(pendingAssetPaths)
+    await uploadAsset(assetPath)
   }
 
   console.log(`[AtomGit] Release ${RELEASE_TAG} mirror completed`)
