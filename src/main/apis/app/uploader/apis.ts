@@ -8,6 +8,7 @@ import { handleCopyUrl, handleUrlEncodeWithSetting, showNotification } from '~/m
 import { T } from '~/main/i18n/index'
 import logger from '@core/picgo/logger'
 import picgo from '@core/picgo'
+import { normalizeWslPath } from '~/main/utils/normalizeWslPath'
 // import dayjs from 'dayjs'
 
 const handleClipboardUploading = async (): Promise<false | ImgInfo[]> => {
@@ -60,7 +61,7 @@ export const uploadClipboardFiles = async (): Promise<string> => {
 }
 
 export const uploadSelectedFilesWithInfo = async (webContents: WebContents, files: IFileWithPath[]): Promise<ImgInfo[]> => {
-  const input = files.map(item => item.path)
+  const input = files.map(item => normalizeWslPath(item.path))
   const imgs = await uploader.setWebContents(webContents).upload(input)
   if (imgs !== false) {
     const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || 'markdown'

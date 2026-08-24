@@ -33,7 +33,8 @@ const mocks = vi.hoisted(() => {
     handleCopyUrlMock: vi.fn(),
     handleUrlEncodeWithSettingMock: vi.fn(),
     showNotificationMock: vi.fn(),
-    TMock: vi.fn()
+    TMock: vi.fn(),
+    normalizeWslPathMock: vi.fn()
   }
 })
 
@@ -85,6 +86,10 @@ vi.mock('~/main/i18n/index', () => ({
   T: mocks.TMock
 }))
 
+vi.mock('~/main/utils/normalizeWslPath', () => ({
+  normalizeWslPath: mocks.normalizeWslPathMock
+}))
+
 const createWebContents = (): WebContentsStub => ({
   send: vi.fn()
 })
@@ -132,6 +137,7 @@ describe('main uploader API helpers', () => {
     })
     mocks.handleUrlEncodeWithSettingMock.mockImplementation((url: string) => `encoded:${url}`)
     mocks.TMock.mockImplementation((key: string) => `t:${key}`)
+    mocks.normalizeWslPathMock.mockImplementation((filePath: string) => filePath)
   })
 
   afterEach(() => {
@@ -268,5 +274,18 @@ describe('main uploader API helpers', () => {
     expect(mocks.handleUrlEncodeWithSettingMock).toHaveBeenNthCalledWith(2, images[1].imgUrl)
     expect(mocks.albumInsertMock).toHaveBeenNthCalledWith(1, images[0])
     expect(mocks.albumInsertMock).toHaveBeenNthCalledWith(2, images[1])
+  })
+
+  it('normalizes selected paths before passing them to PicGo core', async () => {
+    const webContents = createWebContents()
+    const inputPath = 'wsl$\\Ubuntu\\home\\user\\image.png'
+    const normalizedPath = '\\\\wsl$\\Ubuntu\\home\\user\\image.png'
+    mocks.normalizeWslPathMock.mockReturnValue(normalizedPath)
+    mocks.uploadMock.mockResolvedValue([])
+
+    await uploadSelectedFilesWithInfo(asWebContents(webContents), [{ path: inputPath }])
+
+    expect(mocks.normalizeWslPathMock).toHaveBeenCalledWith(inputPath)
+    expect(mocks.uploadMock).toHaveBeenCalledWith([normalizedPath])
   })
 })
