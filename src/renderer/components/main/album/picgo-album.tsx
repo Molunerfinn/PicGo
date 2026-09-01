@@ -1,6 +1,7 @@
 import {
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react"
@@ -33,9 +34,12 @@ import {
   useAlbumSelectionBox,
 } from "./hooks/use-album-selection-box"
 import {
+  buildAlbumConfigMap,
   buildAlbumPhotos,
+  buildAlbumProviderFilters,
   filterAlbumImages,
   AlbumViewMode,
+  unknownConfigKey,
   type AlbumProviderFilter,
   type AlbumPhoto,
   type NavContext,
@@ -82,6 +86,11 @@ export function PicGoAlbum() {
   const masonryColumnCount =
     useAlbumStore.use.masonryColumnCount() || GALLERY_MASONRY_COLUMN_COUNT_DEFAULT
   const picBeds = useAppStore.use.picBeds()
+  const appConfig = useAppStore.use.appConfig()
+  const configMap = useMemo(
+    () => buildAlbumConfigMap(appConfig?.uploader),
+    [appConfig?.uploader]
+  )
   const {
     userInfo: cloudUserInfo,
     isPaid: isCloudPaidUser,
@@ -115,19 +124,17 @@ export function PicGoAlbum() {
   const displayImages = isCloud ? cloudItems : filteredImages
   const masonryLayoutScopeKey = isCloud
     ? `cloud:${cloudTypeFilter || allPhotosKey}:${cloudSearch}`
-    : `local:${navContext.type}:${navContext.value}:${searchValue}`
+    : `local:${navContext.type}:${navContext.providerType ?? ""}:${navContext.value}:${searchValue}`
   const imageMap = new Map(displayImages.map((image) => [image.id, image]))
   const selectedSet = new Set(selectedIds)
   const selectedImages = selectedIds
     .map((id) => imageMap.get(id))
     .filter((image): image is AlbumPhoto => Boolean(image))
-  const visibleProviders: AlbumProviderFilter[] = picBeds
-    .filter((item) => item.visible !== false)
-    .map((item) => ({
-      type: item.type,
-      name: item.name,
-      count: images.filter((image) => image.type === item.type).length,
-    }))
+  const visibleProviders: AlbumProviderFilter[] = buildAlbumProviderFilters(
+    images,
+    picBeds,
+    configMap
+  )
 
   // TODO(v3-post-launch): Restore selected tag derivation when Tags inspector actions return.
   // const selectedTags = getSelectedTags(selectedImages)
@@ -159,7 +166,7 @@ export function PicGoAlbum() {
       }
       const result = await cloudAlbumAdapter.list(query)
       if (result.success && cloudFirstPageRequestIdRef.current === requestId) {
-        const photos = buildAlbumPhotos(result.data.items, picBeds)
+        const photos = buildAlbumPhotos(result.data.items, picBeds, configMap)
         albumStoreActions.setCloudItems(photos)
         albumStoreActions.setCloudTotal(result.data.total)
         albumStoreActions.setCloudOffset(result.data.items.length)
@@ -232,7 +239,7 @@ export function PicGoAlbum() {
       }
       const result = await cloudAlbumAdapter.list(query)
       if (result.success) {
-        const photos = buildAlbumPhotos(result.data.items, picBeds)
+        const photos = buildAlbumPhotos(result.data.items, picBeds, configMap)
         albumStoreActions.appendCloudItems(photos)
         albumStoreActions.setCloudOffset(state.cloudOffset + result.data.items.length)
         albumStoreActions.setCloudHasMore(state.cloudOffset + result.data.items.length < result.data.total)
@@ -252,14 +259,14 @@ export function PicGoAlbum() {
       try {
         await appActions.ensureHydrated()
         const albumItems = await albumAdapter.getAlbumItems()
-        setImages(buildAlbumPhotos(albumItems, picBeds))
+        setImages(buildAlbumPhotos(albumItems, picBeds, configMap))
       } catch (error) {
         console.error(error)
       }
     }
 
     refreshAlbumPage()
-  }, [picBeds, refreshNonce, isCloud])
+  }, [picBeds, configMap, refreshNonce, isCloud])
 
   // Cloud gallery data fetch — 免费用户切到 Cloud tab 时只看升级提示，不发列表请求
   useEffect(() => {
@@ -724,7 +731,19 @@ export function PicGoAlbum() {
       ? (isCloud
         ? picBeds.find((bed) => bed.type === navContext.value)?.name ?? navContext.value
         : visibleProviders.find((provider) => provider.type === navContext.value)?.name ?? navContext.value)
-      : navContext.value
+      : navContext.type === NavType.Config
+        ? (() => {
+          const provider = visibleProviders.find(
+            (item) => item.type === navContext.providerType
+          )
+          const providerName = provider?.name ?? navContext.providerType ?? ""
+          const configName = navContext.value === unknownConfigKey
+            ? t("ALBUM_CONFIG_UNKNOWN")
+            : provider?.configs.find((config) => config.id === navContext.value)?.name ??
+              navContext.value
+          return providerName ? `${providerName} / ${configName}` : configName
+        })()
+        : navContext.value
 
   return (
     <main className="flex min-h-0 min-w-0 flex-1 gap-4">

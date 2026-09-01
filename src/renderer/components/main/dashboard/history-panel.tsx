@@ -239,6 +239,10 @@ export function HistoryPanel ({
       sizeMb: 0,
       date: item.time,
       type: item.raw.type || '',
+      // Preview-only: the history panel has no config sidebar, so carry
+      // whatever the record stored without inferring anything.
+      configId: typeof item.raw._configId === 'string' ? item.raw._configId : '',
+      configName: typeof item.raw._configName === 'string' ? item.raw._configName : '',
       raw: item.raw,
       collection: '',
       tags: [],
