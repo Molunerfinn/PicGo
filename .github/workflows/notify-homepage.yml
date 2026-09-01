@@ -1,0 +1,32 @@
+name: Notify Homepage
+
+# Releases are created as drafts, so a tag push is too early -- the download
+# page reads releases/latest, which only reflects a release once it is
+# published. Firing on `published` also covers the case where a draft sits for
+# days before going live.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  rebuild-homepage:
+    name: Rebuild picgo.app
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger homepage deploy
+        env:
+          GH_TOKEN: ${{ secrets.HOMEPAGE_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::HOMEPAGE_DISPATCH_TOKEN is not set"
+            exit 1
+          fi
+
+          # The homepage builds its download list from the GitHub API at build
+          # time, so it needs a rebuild to pick up a new release.
+          gh workflow run deploy.yml \
+            --repo PicGo/PicGo-Homepage \
+            --ref production
+
+          echo "Requested a production rebuild of picgo.app"
