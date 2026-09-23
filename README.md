@@ -1,27 +1,43 @@
-<div align="center" markdown="1">
-  <sup>Special thanks to:</sup>
-  <br>
-  <a href="https://www.nocobase.com/?utm_source=picgo">
-    <img alt="NocoBase sponsorship" width="400" src="https://static-docs.nocobase.com/Logo-Black.png">
-  </a>
-
-### [NocoBase, AI + No-Code Build reliable business systems](https://www.nocobase.com/?utm_source=picgo)
-
-</div>
-
-<div align="center" markdown="1">
-  <sup>Sponsored by:</sup>
-  <br>
-  <a href="https://console.neon.tech/app/?promo=PicGo">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://neon.com/brand/neon-logo-dark-color.svg">
-      <source media="(prefers-color-scheme: light)" srcset="https://neon.com/brand/neon-logo-light-color.svg">
-      <img alt="Neon sponsorship" width="400" src="https://neon.com/brand/neon-logo-dark-color.svg">
-    </picture>
-  </a>
-
-### [Fast Postgres Databases for Teams and Agents](https://console.neon.tech/app/?promo=PicGo)
-
+<div align="center">
+  <h3>Special thanks to</h3>
+  <table>
+    <tr>
+      <td align="center" valign="middle" width="50%">
+        <a href="https://modelflare.dev/sign-up?partner=1GIMVVBLWP1V">
+          <img alt="Modelflare sponsorship" width="400" src="https://pics.picgo.app/m/ef1a160c-c9ce-4605-9b9c-b2d355cd2de4.png">
+        </a>
+        <h3><a href="https://modelflare.dev/sign-up?partner=1GIMVVBLWP1V">Modelflare</a></h3>
+        <p>Full strength, stable, nothing watered down. Global SOTA models at a lower cost.</p>
+      </td>
+      <td align="center" valign="middle" width="50%">
+        <a href="https://castaly.modelflare.dev/sign-up?partner=1GIMVVBLWP1V">
+          <img alt="Castaly sponsorship" width="400" src="https://pics.picgo.app/m/284def41-2f23-47e6-9d64-7017d386a221.png">
+        </a>
+        <h3><a href="https://castaly.modelflare.dev/sign-up?partner=1GIMVVBLWP1V">Castaly</a></h3>
+        <p>Full strength, no upscaling. 40+ image and video models, including NSFW.</p>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle" width="50%">
+        <a href="https://www.nocobase.com/?utm_source=picgo">
+          <img alt="NocoBase sponsorship" width="400" src="https://static-docs.nocobase.com/Logo-Black.png">
+        </a>
+        <h3><a href="https://www.nocobase.com/?utm_source=picgo">NocoBase</a></h3>
+        <p>AI + No-Code Build reliable business systems</p>
+      </td>
+      <td align="center" valign="middle" width="50%">
+        <a href="https://console.neon.tech/app/?promo=PicGo">
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://neon.com/brand/neon-logo-dark-color.svg">
+            <source media="(prefers-color-scheme: light)" srcset="https://neon.com/brand/neon-logo-light-color.svg">
+            <img alt="Neon sponsorship" width="400" src="https://neon.com/brand/neon-logo-dark-color.svg">
+          </picture>
+        </a>
+        <h3><a href="https://console.neon.tech/app/?promo=PicGo">Neon</a></h3>
+        <p>Fast Postgres Databases for Teams and Agents</p>
+      </td>
+    </tr>
+  </table>
 </div>
 
 
