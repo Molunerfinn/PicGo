@@ -3,18 +3,18 @@
   <table>
     <tr>
       <td align="center" valign="middle" width="50%">
-        <a href="https://modelflare.dev/sign-up?partner=1GIMVVBLWP1V">
+        <a href="https://modelflare.dev/zh/sign-up?partner=1GIMVVBLWP1V">
           <img alt="Modelflare sponsorship" width="400" src="https://pics.picgo.app/m/ef1a160c-c9ce-4605-9b9c-b2d355cd2de4.png">
         </a>
-        <h3><a href="https://modelflare.dev/sign-up?partner=1GIMVVBLWP1V">Modelflare</a></h3>
-        <p>满血稳定不掺水，低成本享受全球 SOTA 模型。</p>
+        <h3><a href="https://modelflare.dev/zh/sign-up?partner=1GIMVVBLWP1V">Modelflare</a></h3>
+        <p>Modelflare: 满血稳定不掺水，低成本享受全球 SOTA 模型。</p>
       </td>
       <td align="center" valign="middle" width="50%">
-        <a href="https://castaly.modelflare.dev/sign-up?partner=1GIMVVBLWP1V">
+        <a href="https://castaly.modelflare.dev/zh/sign-up?partner=1GIMVVBLWP1V">
           <img alt="Castaly sponsorship" width="400" src="https://pics.picgo.app/m/284def41-2f23-47e6-9d64-7017d386a221.png">
         </a>
-        <h3><a href="https://castaly.modelflare.dev/sign-up?partner=1GIMVVBLWP1V">Castaly</a></h3>
-        <p>满血不超分，含 NSFW 在内 40+图片视频模型。</p>
+        <h3><a href="https://castaly.modelflare.dev/zh/sign-up?partner=1GIMVVBLWP1V">Castaly</a></h3>
+        <p>Castaly: 满血不超分，含 NSFW 在内 40+图片视频模型。</p>
       </td>
     </tr>
     <tr>

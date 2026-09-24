@@ -7,14 +7,14 @@
           <img alt="Modelflare sponsorship" width="400" src="https://pics.picgo.app/m/ef1a160c-c9ce-4605-9b9c-b2d355cd2de4.png">
         </a>
         <h3><a href="https://modelflare.dev/sign-up?partner=1GIMVVBLWP1V">Modelflare</a></h3>
-        <p>Full strength, stable, nothing watered down. Global SOTA models at a lower cost.</p>
+        <p>Modelflare: Full strength, stable, nothing watered down. Global SOTA models at a lower cost.</p>
       </td>
       <td align="center" valign="middle" width="50%">
         <a href="https://castaly.modelflare.dev/sign-up?partner=1GIMVVBLWP1V">
           <img alt="Castaly sponsorship" width="400" src="https://pics.picgo.app/m/284def41-2f23-47e6-9d64-7017d386a221.png">
         </a>
         <h3><a href="https://castaly.modelflare.dev/sign-up?partner=1GIMVVBLWP1V">Castaly</a></h3>
-        <p>Full strength, no upscaling. 40+ image and video models, including NSFW.</p>
+        <p>Castaly: Full strength, no upscaling. 40+ image and video models, including NSFW.</p>
       </td>
     </tr>
     <tr>
