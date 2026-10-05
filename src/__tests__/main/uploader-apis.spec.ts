@@ -164,7 +164,7 @@ describe('main uploader API helpers', () => {
     })
     expect(mocks.albumInsertMock).toHaveBeenCalledWith(image)
     expect(trayWindow.webContents.send).toHaveBeenCalledWith('clipboardFiles', [])
-    expect(trayWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPLOAD_FILES, [image])
+    expect(trayWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPLOAD_COMPLETED, [image])
     expect(settingWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPDATE_ALBUM)
   })
 
@@ -183,7 +183,7 @@ describe('main uploader API helpers', () => {
     expect(mocks.handleUrlEncodeWithSettingMock).toHaveBeenCalledWith(image.imgUrl)
     expect(mocks.handleCopyUrlMock).toHaveBeenCalledWith(`paste:${IPasteStyle.MARKDOWN}:${image.imgUrl}:$url`)
     expect(mocks.albumInsertMock).toHaveBeenCalledWith(image)
-    expect(trayWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPLOAD_FILES, [image])
+    expect(trayWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPLOAD_COMPLETED, [image])
   })
 
   it('forwards clipboard options to the supplied origin window without consulting the fallback window', async () => {
@@ -275,7 +275,7 @@ describe('main uploader API helpers', () => {
     })
     expect(mocks.albumInsertMock).toHaveBeenNthCalledWith(1, images[0])
     expect(mocks.albumInsertMock).toHaveBeenNthCalledWith(2, images[1])
-    expect(trayWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPLOAD_FILES, images)
+    expect(trayWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPLOAD_COMPLETED, images)
     expect(settingWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPDATE_ALBUM)
   })
 
@@ -306,7 +306,7 @@ describe('main uploader API helpers', () => {
     })
     expect(mocks.handleCopyUrlMock).toHaveBeenCalledWith(`paste:${IPasteStyle.MARKDOWN}:${image.imgUrl}:$url`)
     expect(mocks.albumInsertMock).toHaveBeenCalledWith(image)
-    expect(trayWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPLOAD_FILES, [image])
+    expect(trayWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPLOAD_COMPLETED, [image])
     expect(settingWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPDATE_ALBUM)
   })
 

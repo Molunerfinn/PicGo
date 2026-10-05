@@ -64,9 +64,9 @@ export function useTrayUploadedItems () {
     }
   })
 
-  useIPCOn(IRPCActionType.UPLOAD_FILES, async (items: ImgInfo[] = []) => {
+  useIPCOn(IRPCActionType.UPLOAD_COMPLETED, async (items: ImgInfo[] = []) => {
     if (isCloudSource) {
-      // UPLOAD_FILES only means PicGo upload succeeded. In cloud mode, refreshing
+      // UPLOAD_COMPLETED means the GUI upload flow ended. In cloud mode, refreshing
       // here races with UPDATE_CLOUD_ALBUM and causes duplicate album.list calls.
       // The cloud list is refreshed by UPDATE_CLOUD_ALBUM below.
       setUploadFlag(false)
