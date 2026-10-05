@@ -1,6 +1,7 @@
 {
   "name": "picgo",
   "version": "3.0.2",
+  "packageManager": "pnpm@10.29.2",
   "private": true,
   "main": "dist_electron/main/index.js",
   "description": "A powerful & simple image uploader for creators.",
@@ -25,6 +26,7 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "upload-dist": "node ./scripts/upload-dist.js",
+    "verify:packaged-deps": "node ./scripts/verify-packaged-deps.js",
     "lint:dpdm": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/background.ts",
     "lint:dpdm-fe": "dpdm -T --tsconfig ./tsconfig.json --no-tree --no-warning --exit-code circular:1 src/renderer/main.tsx",
     "check": "pnpm run tsc && pnpm run lint --fix",
