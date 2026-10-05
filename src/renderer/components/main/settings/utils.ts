@@ -340,6 +340,7 @@ export const defaultSettingsConfig: SettingsConfigState = {
     port: 36677,
     host: "127.0.0.1",
     enable: true,
+    secret: "",
   },
   startupMode: IStartupMode.HIDE,
   shortKey: defaultSettingsShortKeyMap,
