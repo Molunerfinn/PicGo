@@ -8,23 +8,23 @@ import { handleCopyUrl, handleUrlEncodeWithSetting, showNotification } from '~/m
 import { T } from '~/main/i18n/index'
 import logger from '@core/picgo/logger'
 import picgo from '@core/picgo'
+import type { UploadOptions } from 'picgo'
 // import dayjs from 'dayjs'
 
-const handleClipboardUploading = async (): Promise<false | ImgInfo[]> => {
+const handleClipboardUploading = async (options?: UploadOptions, webContents?: WebContents): Promise<false | ImgInfo[]> => {
   const useBuiltinClipboard = !!picgo.getConfig<boolean>('settings.useBuiltinClipboard')
-  const win = windowManager.getAvailableWindow()
+  const uploadWebContents = webContents ?? windowManager.getAvailableWindow().webContents
   if (useBuiltinClipboard) {
-    return await uploader.setWebContents(win!.webContents).uploadWithBuildInClipboard()
+    return await uploader.uploadWithBuildInClipboard({ webContents: uploadWebContents, options })
   }
-  return await uploader.setWebContents(win!.webContents).upload()
+  return await uploader.upload({ webContents: uploadWebContents, options })
 }
 
-export const uploadClipboardFilesWithInfo = async (): Promise<ImgInfo[]> => {
+export const uploadClipboardFilesWithInfo = async (options?: UploadOptions, webContents?: WebContents): Promise<ImgInfo[]> => {
   logger.info('upload clipboard file')
-  const img = await handleClipboardUploading()
+  const img = await handleClipboardUploading(options, webContents)
   if (img !== false) {
     if (img.length > 0) {
-      const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)
       const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || 'markdown'
       handleCopyUrl(pasteTemplate(pasteStyle, img[0], picgo.getConfig<string>('settings.customLink')))
       setTimeout(() => {
@@ -36,10 +36,16 @@ export const uploadClipboardFilesWithInfo = async (): Promise<ImgInfo[]> => {
       }, 100)
       await AlbumDB.getInstance().insert(img[0])
       // trayWindow just be created in mac/windows, not in linux
-      trayWindow?.webContents?.send('clipboardFiles', [])
-      trayWindow?.webContents?.send('uploadFiles', img)
+      const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)
+      if (trayWindow && !trayWindow.webContents.isDestroyed()) {
+        trayWindow.webContents.send('clipboardFiles', [])
+        trayWindow.webContents.send(IRPCActionType.UPLOAD_COMPLETED, img)
+      }
       if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-        windowManager.get(IWindowList.SETTING_WINDOW)!.webContents?.send(IRPCActionType.UPDATE_ALBUM)
+        const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)
+        if (settingWindow && !settingWindow.webContents.isDestroyed()) {
+          settingWindow.webContents.send(IRPCActionType.UPDATE_ALBUM)
+        }
       }
       return img
     } else {
@@ -54,14 +60,14 @@ export const uploadClipboardFilesWithInfo = async (): Promise<ImgInfo[]> => {
   }
 }
 
-export const uploadClipboardFiles = async (): Promise<string> => {
-  const img = await uploadClipboardFilesWithInfo()
+export const uploadClipboardFiles = async (options?: UploadOptions, webContents?: WebContents): Promise<string> => {
+  const img = await uploadClipboardFilesWithInfo(options, webContents)
   return img[0]?.imgUrl ? handleUrlEncodeWithSetting(img[0].imgUrl) : ''
 }
 
-export const uploadSelectedFilesWithInfo = async (webContents: WebContents, files: IFileWithPath[]): Promise<ImgInfo[]> => {
+export const uploadSelectedFilesWithInfo = async (webContents: WebContents, files: IFileWithPath[], options?: UploadOptions): Promise<ImgInfo[]> => {
   const input = files.map(item => item.path)
-  const imgs = await uploader.setWebContents(webContents).upload(input)
+  const imgs = await uploader.upload({ input, webContents, options })
   if (imgs !== false) {
     const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || 'markdown'
     const pasteText: string[] = []
@@ -78,9 +84,15 @@ export const uploadSelectedFilesWithInfo = async (webContents: WebContents, file
     }
     handleCopyUrl(pasteText.join('\n'))
     // trayWindow just be created in mac/windows, not in linux
-    windowManager.get(IWindowList.TRAY_WINDOW)?.webContents?.send('uploadFiles', imgs)
+    const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)
+    if (trayWindow && !trayWindow.webContents.isDestroyed()) {
+      trayWindow.webContents.send(IRPCActionType.UPLOAD_COMPLETED, imgs)
+    }
     if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-      windowManager.get(IWindowList.SETTING_WINDOW)!.webContents?.send(IRPCActionType.UPDATE_ALBUM)
+      const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)
+      if (settingWindow && !settingWindow.webContents.isDestroyed()) {
+        settingWindow.webContents.send(IRPCActionType.UPDATE_ALBUM)
+      }
     }
     return imgs
   } else {
@@ -88,8 +100,8 @@ export const uploadSelectedFilesWithInfo = async (webContents: WebContents, file
   }
 }
 
-export const uploadSelectedFiles = async (webContents: WebContents, files: IFileWithPath[]): Promise<string[]> => {
-  const imgs = await uploadSelectedFilesWithInfo(webContents, files)
+export const uploadSelectedFiles = async (webContents: WebContents, files: IFileWithPath[], options?: UploadOptions): Promise<string[]> => {
+  const imgs = await uploadSelectedFilesWithInfo(webContents, files, options)
   return imgs
     .map(item => item.imgUrl)
     .filter((url): url is string => typeof url === 'string' && url !== '')

@@ -15,6 +15,7 @@ import type {
   ProviderUploaderSchema,
   ProviderUploaderSummary,
 } from "./types"
+import { PICGO_CLOUD_UPLOADER_TYPE } from "#/utils/static"
 
 interface ProviderUploaderStoreItem {
   summary: Omit<ProviderUploaderSummary, "isDefaultUploader">
@@ -67,6 +68,21 @@ function createConfigItem(
 }
 
 const store = new Map<string, ProviderUploaderStoreItem>([
+  [
+    PICGO_CLOUD_UPLOADER_TYPE,
+    {
+      summary: {
+        id: PICGO_CLOUD_UPLOADER_TYPE,
+        name: "PicGo Cloud",
+        visible: true,
+      },
+      schema: [],
+      configState: {
+        defaultId: "",
+        configList: [],
+      },
+    },
+  ],
   [
     "github",
     {
@@ -533,7 +549,7 @@ Array.from(store.values()).forEach((item) => {
 })
 
 let idSeed = 100
-let defaultUploaderId = "smms"
+let defaultUploaderId = PICGO_CLOUD_UPLOADER_TYPE
 
 function nextId(uploaderId: string) {
   idSeed += 1
@@ -591,6 +607,12 @@ function resolveSelectedId(configState: ProviderUploaderConfigList) {
 }
 
 function resolveFirstAvailableUploaderId() {
+  const picGoCloud = store.get(PICGO_CLOUD_UPLOADER_TYPE)
+
+  if (picGoCloud?.summary.visible) {
+    return PICGO_CLOUD_UPLOADER_TYPE
+  }
+
   const firstVisible = Array.from(store.values()).find((item) => item.summary.visible)
 
   if (firstVisible) {

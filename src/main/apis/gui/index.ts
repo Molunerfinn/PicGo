@@ -75,7 +75,7 @@ class GuiApi implements IGuiApi {
   async upload (input: IUploadOption) {
     this.windowId = await getWindowId()
     const webContents = this.getWebContentsByWindowId(this.windowId)
-    const imgs = await uploader.setWebContents(webContents!).upload(input)
+    const imgs = await uploader.upload({ input, webContents })
     if (imgs !== false) {
       const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || 'markdown'
       const pasteText: string[] = []
@@ -91,8 +91,10 @@ class GuiApi implements IGuiApi {
         await AlbumDB.getInstance().insert(imgs[i])
       }
       handleCopyUrl(pasteText.join('\n'))
-      webContents?.send('uploadFiles', imgs)
-      webContents?.send(IRPCActionType.UPDATE_ALBUM)
+      if (webContents && !webContents.isDestroyed()) {
+        webContents.send(IRPCActionType.UPLOAD_COMPLETED, imgs)
+        webContents.send(IRPCActionType.UPDATE_ALBUM)
+      }
       return imgs
     }
     return []

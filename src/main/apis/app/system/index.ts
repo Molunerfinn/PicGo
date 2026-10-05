@@ -219,9 +219,11 @@ export function createTray () {
     tray.on('drop-files', async (event, files: string[]) => {
       const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || 'markdown'
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
-      const imgs = await uploader
-        .setWebContents(trayWindow.webContents)
-        .upload(files)
+      const webContents = trayWindow.webContents
+      const imgs = await uploader.upload({
+        input: files,
+        webContents
+      })
       if (imgs !== false) {
         const pasteText: string[] = []
         for (let i = 0; i < imgs.length; i++) {
@@ -238,7 +240,7 @@ export function createTray () {
           await AlbumDB.getInstance().insert(imgs[i])
         }
         handleCopyUrl(pasteText.join('\n'))
-        trayWindow.webContents.send('dragFiles', imgs)
+        if (!webContents.isDestroyed()) webContents.send('dragFiles', imgs)
       }
     })
     // toggleWindow()

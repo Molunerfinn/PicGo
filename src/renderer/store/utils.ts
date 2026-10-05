@@ -1,4 +1,5 @@
 import type { IConfig } from 'picgo'
+import { PICGO_CLOUD_UPLOADER_TYPE } from '#/utils/static'
 import type {
   AppConfig,
   ProviderUploaderSummary
@@ -183,11 +184,7 @@ export function normalizeAlbumViewMode (value: string | undefined): AlbumViewMod
 }
 
 export function resolveDefaultPicBed (config: IConfig | null) {
-  if (!config) {
-    return 'smms'
-  }
-
-  return config.picBed.uploader || config.picBed.current || 'smms'
+  return config?.picBed?.uploader || config?.picBed?.current || PICGO_CLOUD_UPLOADER_TYPE
 }
 
 export function normalizePicBedList (

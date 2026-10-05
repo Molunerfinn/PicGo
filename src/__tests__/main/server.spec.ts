@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { UploadOptions } from 'picgo'
+import type { IServerUploadAdapter } from 'picgo/dist/types/internal'
 
 type ServerConfig = {
   port: number | string
@@ -6,18 +8,12 @@ type ServerConfig = {
   enable: boolean
 }
 
-type ServerUploadAdapter = {
-  uploadClipboard: () => Promise<ImgInfo[] | Error>
-  uploadPaths: (paths: string[]) => Promise<ImgInfo[] | Error>
-  getTempDir: () => string
-}
-
 const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null
 }
 
 let serverConfig: ServerConfig | undefined
-let installedUploadAdapter: ServerUploadAdapter | undefined
+let installedUploadAdapter: IServerUploadAdapter | undefined
 
 const getConfigMock = vi.fn((key?: string) => {
   if (key === 'settings.server') return serverConfig
@@ -32,7 +28,7 @@ const saveConfigMock = vi.fn((patch: unknown) => {
   }
 })
 
-const setUploadAdapterMock = vi.fn((adapter?: ServerUploadAdapter) => {
+const setUploadAdapterMock = vi.fn((adapter?: IServerUploadAdapter) => {
   installedUploadAdapter = adapter
 })
 const registerPostMock = vi.fn()
@@ -179,10 +175,36 @@ describe('main/server (GUI adapter to picgo-core)', () => {
 
     await expect(adapter.uploadClipboard()).resolves.toEqual([clipboardImage])
     await expect(adapter.uploadPaths(['/tmp/a.png'])).resolves.toEqual(selectedImages)
-    expect(uploadClipboardFilesWithInfoMock).toHaveBeenCalledTimes(1)
+    expect(uploadClipboardFilesWithInfoMock).toHaveBeenCalledWith(undefined)
     expect(getAvailableWindowMock).toHaveBeenCalledTimes(1)
-    expect(uploadSelectedFilesWithInfoMock).toHaveBeenCalledWith(webContents, [{ path: '/tmp/a.png' }])
-    expect(adapter.getTempDir()).toBe('/tmp/picgo-form-images')
+    expect(uploadSelectedFilesWithInfoMock).toHaveBeenCalledWith(webContents, [{ path: '/tmp/a.png' }], undefined)
+    expect(adapter.getTempDir?.()).toBe('/tmp/picgo-form-images')
     expect(getFormImageFolderPathMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('forwards all Core upload options through clipboard and path adapters', async () => {
+    serverConfig = { port: 36677, host: '127.0.0.1', enable: true }
+    const webContents = { send: vi.fn() }
+    const options: UploadOptions = {
+      uploader: 'github',
+      configName: 'Work',
+      configId: 'github-work-id'
+    }
+    getAvailableWindowMock.mockReturnValue({ webContents })
+    uploadClipboardFilesWithInfoMock.mockResolvedValue([])
+    uploadSelectedFilesWithInfoMock.mockResolvedValue([])
+
+    const mod = await import('../../main/server')
+    const server = mod.default
+    server.startup()
+
+    expect(installedUploadAdapter).toBeDefined()
+    const adapter = installedUploadAdapter!
+
+    await adapter.uploadClipboard(options)
+    await adapter.uploadPaths(['/tmp/a.png'], options)
+
+    expect(uploadClipboardFilesWithInfoMock).toHaveBeenCalledWith(options)
+    expect(uploadSelectedFilesWithInfoMock).toHaveBeenCalledWith(webContents, [{ path: '/tmp/a.png' }], options)
   })
 })

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { IConfig } from 'picgo'
 import { getConfig, getPicBeds } from '@/utils/dataSender'
+import { initialAppStoreState } from '@/store/app-store'
 import {
   appActions,
   PicGoCloudLoginStatusValues,
@@ -17,7 +18,7 @@ vi.mock('@/utils/dataSender', () => {
 
 const resetStore = () => {
   useStore.setState({
-    defaultPicBed: 'smms',
+    defaultPicBed: initialAppStoreState.defaultPicBed,
     appConfig: null,
     picBeds: [],
     picgoCloud: {
@@ -54,6 +55,32 @@ describe('renderer/store appConfig', () => {
     expect(nextState.appConfig?.picBed.current).toBe('smms')
     expect(nextState.appConfig?.settings.autoCopyUrl).toBe(true)
     expect(nextState.defaultPicBed).toBe('github')
+  })
+
+  it.each([
+    { uploader: '', current: undefined, expected: 'picgo-cloud' },
+    { uploader: '', current: '', expected: 'picgo-cloud' },
+    { uploader: '', current: 'smms', expected: 'smms' },
+    { uploader: 'smms', current: 'picgo-cloud', expected: 'smms' }
+  ])('hydrates the uploader as $expected for uploader=$uploader current=$current', async ({ uploader, current, expected }) => {
+    const config: IConfig = { picBed: { uploader, current }, picgoPlugins: {} }
+    getConfigMock.mockResolvedValue(config)
+    getPicBedsMock.mockResolvedValue([])
+
+    await appActions.hydrateAppState()
+
+    expect(useStore.getState().defaultPicBed).toBe(expected)
+    expect(config.picBed).toEqual({ uploader, current })
+  })
+
+  it('uses PicGo Cloud while configuration is unavailable', async () => {
+    expect(useStore.getState().defaultPicBed).toBe('picgo-cloud')
+    useStore.setState({ defaultPicBed: 'github' })
+    getConfigMock.mockResolvedValue(undefined)
+
+    await appActions.refreshAppConfig()
+
+    expect(useStore.getState().defaultPicBed).toBe('picgo-cloud')
   })
 
   it('refreshPicBeds updates picBeds', async () => {
