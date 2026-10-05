@@ -62,6 +62,8 @@ Place renderer unit specs in `test/unit/specs` with the `.spec.js` suffix; Karma
 
 ## Commit & Pull Request Guidelines
 Commits follow the PicGo conventional preset enforced by Husky (`pnpm lint:dpdm` + Commitlint). Stage your changes and run `pnpm cz` to craft messages that pass CI. Pull requests should explain the change, link related issues, and attach UI screenshots or recordings. Note how you validated the work (dev server, build, Karma, Spectron) and call out migration or configuration steps reviewers must perform.
+- Write pull request titles, descriptions, and review comments in English, even when the conversation with the maintainer is in another language.
+- Merge pull requests with squash merge (`gh pr merge <number> --squash`), using the PR title as the squash commit subject. Do not use merge commits or rebase merges, and only merge after all required CI checks have passed.
 
 ## Internationalization Tips
 Add locales by creating `public/i18n/<locale>.yml`, exposing its `LANG_DISPLAY_LABEL`, and registering it in `src/universal/i18n/index.ts`. Typed i18n declarations are generated automatically from `public/i18n/en.yml` into `src/universal/types/i18n.d.ts` and `src/renderer/i18n/i18next.d.ts`.
