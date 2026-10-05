@@ -87,3 +87,63 @@ jobs:
       - name: Run tests
         if: matrix.check == 'Tests'
         run: pnpm test
+
+  packaged-deps:
+    name: Packaged Deps
+    if: github.event.deleted != true
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Locate pnpm store
+        id: pnpm-store
+        shell: bash
+        run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: ${{ runner.os }}-node-24-pnpm-10.29.2-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-24-pnpm-10.29.2-
+
+      - name: Cache Electron downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/electron
+            ~/.cache/electron-builder
+          key: ${{ runner.os }}-electron-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-electron-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      # Unpacked Linux app only: no installer, no signing, no publishing. It is enough to catch pnpm/electron-builder combinations that silently drop runtime deps from app.asar (#1400, electron-builder 26.13.1 ~ 26.17.0).
+      - name: Package Linux app
+        run: pnpm exec electron-builder --config electron-builder.config.ts --linux dir --publish never
+        env:
+          # scripts/notarize.js already returns early on non-darwin builds; skip registering afterSign at all to be explicit.
+          SKIP_NOTARIZE: 'true'
+
+      - name: Verify packaged runtime deps
+        run: pnpm run verify:packaged-deps
