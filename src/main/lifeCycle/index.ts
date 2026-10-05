@@ -152,12 +152,19 @@ class LifeCycle {
         }
       }
     })
+    if (process.platform === 'win32') {
+      // Electron names the Windows login item after the AppUserModelId, so set it first.
+      app.setAppUserModelId('com.molunerfinn.picgo')
+      // Remove the entry older builds registered before the id was set; together with
+      // the settings toggle it made PicGo launch twice at login and show its window.
+      app.setLoginItemSettings({
+        openAtLogin: false,
+        name: 'electron.app.PicGo'
+      })
+    }
     app.setLoginItemSettings({
       openAtLogin: picgo.getConfig<boolean>('settings.autoStart') || false
     })
-    if (process.platform === 'win32') {
-      app.setAppUserModelId('com.molunerfinn.picgo')
-    }
 
     if (process.env.XDG_CURRENT_DESKTOP && process.env.XDG_CURRENT_DESKTOP.includes('Unity')) {
       process.env.XDG_CURRENT_DESKTOP = 'Unity'
