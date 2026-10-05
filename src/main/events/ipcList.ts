@@ -52,8 +52,9 @@ export default {
     // from macOS tray
     ipcMain.on('uploadClipboardFiles', async () => {
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)!
+      const webContents = trayWindow.webContents
       // macOS use builtin clipboard is OK
-      const img = await uploader.setWebContents(trayWindow.webContents).uploadWithBuildInClipboard()
+      const img = await uploader.uploadWithBuildInClipboard({ webContents })
       if (img !== false) {
         const pasteStyle = picgo.getConfig<IPasteStyle>('settings.pasteStyle') || 'markdown'
         handleCopyUrl(pasteTemplate(pasteStyle, img[0], picgo.getConfig<string>('settings.customLink')))
@@ -64,17 +65,17 @@ export default {
           // icon: img[0].imgUrl
         })
         await AlbumDB.getInstance().insert(img[0])
-        trayWindow.webContents.send('clipboardFiles', [])
-        if (windowManager.has(IWindowList.SETTING_WINDOW)) {
-          windowManager.get(IWindowList.SETTING_WINDOW)!.webContents.send(IRPCActionType.UPDATE_ALBUM)
+        if (!webContents.isDestroyed()) webContents.send('clipboardFiles', [])
+        const settingsContents = windowManager.get(IWindowList.SETTING_WINDOW)?.webContents
+        if (settingsContents && !settingsContents.isDestroyed()) {
+          settingsContents.send(IRPCActionType.UPDATE_ALBUM)
         }
       }
-      trayWindow.webContents.send('uploadFiles')
+      if (!webContents.isDestroyed()) webContents.send('uploadFiles')
     })
 
-    ipcMain.on('uploadClipboardFilesFromUploadPage', () => {
-      console.log('handle')
-      uploadClipboardFiles()
+    ipcMain.on('uploadClipboardFilesFromUploadPage', async (evt: IpcMainEvent) => {
+      await uploadClipboardFiles(undefined, evt.sender)
     })
 
     ipcMain.on('uploadChoosedFiles', async (evt: IpcMainEvent, files: IFileWithPath[]) => {

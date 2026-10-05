@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { WebContents } from 'electron'
+import type { UploadOptions } from 'picgo'
 import { IPasteStyle, IRPCActionType, IWindowList } from '#/types/enum'
 import {
   uploadClipboardFiles,
@@ -10,6 +11,7 @@ import {
 
 type WebContentsStub = {
   send: ReturnType<typeof vi.fn>
+  isDestroyed: ReturnType<typeof vi.fn>
 }
 
 type WindowStub = {
@@ -22,7 +24,6 @@ const mocks = vi.hoisted(() => {
     configValues,
     getConfigMock: vi.fn(),
     loggerInfoMock: vi.fn(),
-    setWebContentsMock: vi.fn(),
     uploadMock: vi.fn(),
     uploadWithBuildInClipboardMock: vi.fn(),
     getAvailableWindowMock: vi.fn(),
@@ -51,7 +52,8 @@ vi.mock('@core/picgo/logger', () => ({
 
 vi.mock('../../main/apis/app/uploader', () => ({
   default: {
-    setWebContents: mocks.setWebContentsMock
+    upload: mocks.uploadMock,
+    uploadWithBuildInClipboard: mocks.uploadWithBuildInClipboardMock
   }
 }))
 
@@ -86,7 +88,8 @@ vi.mock('~/main/i18n/index', () => ({
 }))
 
 const createWebContents = (): WebContentsStub => ({
-  send: vi.fn()
+  send: vi.fn(),
+  isDestroyed: vi.fn(() => false)
 })
 
 const asWebContents = (webContents: WebContentsStub): WebContents => {
@@ -116,10 +119,6 @@ describe('main uploader API helpers', () => {
     settingWindow = { webContents: createWebContents() }
 
     mocks.getConfigMock.mockImplementation(<T>(key: string): T => mocks.configValues[key] as T)
-    mocks.setWebContentsMock.mockReturnValue({
-      upload: mocks.uploadMock,
-      uploadWithBuildInClipboard: mocks.uploadWithBuildInClipboardMock
-    })
     mocks.getAvailableWindowMock.mockReturnValue(availableWindow)
     mocks.windowManagerGetMock.mockImplementation((name: IWindowList) => {
       if (name === IWindowList.TRAY_WINDOW) return trayWindow
@@ -154,8 +153,10 @@ describe('main uploader API helpers', () => {
 
     expect(result).toEqual([image])
     expect(mocks.loggerInfoMock).toHaveBeenCalledWith('upload clipboard file')
-    expect(mocks.setWebContentsMock).toHaveBeenCalledWith(availableWindow.webContents)
-    expect(mocks.uploadMock).toHaveBeenCalledWith()
+    expect(mocks.uploadMock).toHaveBeenCalledWith({
+      webContents: availableWindow.webContents,
+      options: undefined
+    })
     expect(mocks.handleCopyUrlMock).toHaveBeenCalledWith(`paste:${IPasteStyle.MARKDOWN}:${image.imgUrl}:$url`)
     expect(mocks.showNotificationMock).toHaveBeenCalledWith({
       title: 't:UPLOAD_SUCCEED',
@@ -185,20 +186,47 @@ describe('main uploader API helpers', () => {
     expect(trayWindow.webContents.send).toHaveBeenCalledWith('uploadFiles', [image])
   })
 
+  it('forwards clipboard options to the supplied origin window without consulting the fallback window', async () => {
+    const originWebContents = createWebContents()
+    const options: UploadOptions = {
+      uploader: 'github',
+      configName: 'Work',
+      configId: 'github-work-id'
+    }
+    mocks.uploadMock.mockResolvedValue([])
+
+    const result = await uploadClipboardFilesWithInfo(options, asWebContents(originWebContents))
+
+    expect(result).toEqual([])
+    expect(mocks.getAvailableWindowMock).not.toHaveBeenCalled()
+    expect(mocks.uploadMock).toHaveBeenCalledWith({
+      webContents: originWebContents,
+      options
+    })
+  })
+
   it('uses the builtin clipboard upload path when configured', async () => {
     const image: ImgInfo = {
       imgUrl: 'https://raw.example/builtin.png',
       fileName: 'builtin.png',
       extname: '.png'
     }
+    const options: UploadOptions = {
+      uploader: 'smms',
+      configName: 'Personal',
+      configId: 'smms-personal-id'
+    }
     mocks.configValues['settings.useBuiltinClipboard'] = true
     mocks.uploadWithBuildInClipboardMock.mockResolvedValue([image])
 
-    const result = await uploadClipboardFilesWithInfo()
+    const result = await uploadClipboardFilesWithInfo(options)
     vi.runOnlyPendingTimers()
 
     expect(result).toEqual([image])
-    expect(mocks.uploadWithBuildInClipboardMock).toHaveBeenCalledWith()
+    expect(mocks.uploadWithBuildInClipboardMock).toHaveBeenCalledWith({
+      webContents: availableWindow.webContents,
+      options
+    })
     expect(mocks.uploadMock).not.toHaveBeenCalled()
     expect(mocks.albumInsertMock).toHaveBeenCalledWith(image)
   })
@@ -228,8 +256,11 @@ describe('main uploader API helpers', () => {
     vi.runOnlyPendingTimers()
 
     expect(result).toEqual(images)
-    expect(mocks.setWebContentsMock).toHaveBeenCalledWith(webContents)
-    expect(mocks.uploadMock).toHaveBeenCalledWith(['/tmp/a.png', '/tmp/b.png'])
+    expect(mocks.uploadMock).toHaveBeenCalledWith({
+      input: ['/tmp/a.png', '/tmp/b.png'],
+      webContents,
+      options: undefined
+    })
     expect(mocks.handleCopyUrlMock).toHaveBeenCalledWith([
       `paste:${IPasteStyle.MARKDOWN}:${images[0].imgUrl}:$url`,
       `paste:${IPasteStyle.MARKDOWN}:${images[1].imgUrl}:$url`
@@ -246,6 +277,54 @@ describe('main uploader API helpers', () => {
     expect(mocks.albumInsertMock).toHaveBeenNthCalledWith(2, images[1])
     expect(trayWindow.webContents.send).toHaveBeenCalledWith('uploadFiles', images)
     expect(settingWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPDATE_ALBUM)
+  })
+
+  it('forwards selected-file options without changing the raw result or side effects', async () => {
+    const webContents = createWebContents()
+    const files: IFileWithPath[] = [{ path: '/tmp/a.png' }]
+    const image: ImgInfo = {
+      imgUrl: 'https://raw.example/a image.png',
+      fileName: 'a image.png',
+      extname: '.png',
+      origin: '/tmp/a.png'
+    }
+    const options: UploadOptions = {
+      uploader: 'github',
+      configName: 'Work',
+      configId: 'github-work-id'
+    }
+    mocks.uploadMock.mockResolvedValue([image])
+
+    const result = await uploadSelectedFilesWithInfo(asWebContents(webContents), files, options)
+    vi.runOnlyPendingTimers()
+
+    expect(result).toEqual([image])
+    expect(mocks.uploadMock).toHaveBeenCalledWith({
+      input: ['/tmp/a.png'],
+      webContents,
+      options
+    })
+    expect(mocks.handleCopyUrlMock).toHaveBeenCalledWith(`paste:${IPasteStyle.MARKDOWN}:${image.imgUrl}:$url`)
+    expect(mocks.albumInsertMock).toHaveBeenCalledWith(image)
+    expect(trayWindow.webContents.send).toHaveBeenCalledWith('uploadFiles', [image])
+    expect(settingWindow.webContents.send).toHaveBeenCalledWith(IRPCActionType.UPDATE_ALBUM)
+  })
+
+  it('does not send post-upload updates to destroyed managed windows', async () => {
+    const webContents = createWebContents()
+    const image: ImgInfo = {
+      imgUrl: 'https://raw.example/a.png',
+      fileName: 'a.png'
+    }
+    trayWindow.webContents.isDestroyed.mockReturnValue(true)
+    settingWindow.webContents.isDestroyed.mockReturnValue(true)
+    mocks.uploadMock.mockResolvedValue([image])
+
+    await uploadSelectedFilesWithInfo(asWebContents(webContents), [{ path: '/tmp/a.png' }])
+    vi.runOnlyPendingTimers()
+
+    expect(trayWindow.webContents.send).not.toHaveBeenCalled()
+    expect(settingWindow.webContents.send).not.toHaveBeenCalled()
   })
 
   it('keeps legacy selected-file helper return values URL-encoded', async () => {

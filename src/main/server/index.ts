@@ -6,7 +6,7 @@ import {
   uploadSelectedFilesWithInfo
 } from 'apis/app/uploader/apis'
 import { getFormImageFolderPath } from 'apis/core/datastore/dbChecker'
-import type { IInternalServerManager } from 'picgo/dist/types/internal'
+import type { IInternalServerManager, IServerUploadAdapter } from 'picgo/dist/types/internal'
 
 class Server {
   private config: IServerConfig
@@ -43,14 +43,15 @@ class Server {
   private ensureUploadAdapterInstalled () {
     if (this.hasInstalledUploadAdapter) return
     const server = picgo.server as IInternalServerManager
-    server.setUploadAdapter({
-      uploadClipboard: async () => await uploadClipboardFilesWithInfo(),
-      uploadPaths: async (paths: string[]) => {
+    const uploadAdapter: IServerUploadAdapter = {
+      uploadClipboard: async (options) => await uploadClipboardFilesWithInfo(options),
+      uploadPaths: async (paths, options) => {
         const win = windowManager.getAvailableWindow()
-        return await uploadSelectedFilesWithInfo(win.webContents, paths.map(item => ({ path: item })))
+        return await uploadSelectedFilesWithInfo(win.webContents, paths.map(item => ({ path: item })), options)
       },
       getTempDir: getFormImageFolderPath
-    })
+    }
+    server.setUploadAdapter(uploadAdapter)
     this.hasInstalledUploadAdapter = true
   }
 
