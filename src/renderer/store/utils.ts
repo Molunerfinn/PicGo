@@ -285,7 +285,9 @@ export function normalizeSettingsConfig (
     server: {
       host: normalizeString(rawServer.host, defaultSettingsConfig.server.host),
       port: normalizeNumber(rawServer.port, defaultSettingsConfig.server.port),
-      enable: normalizeBoolean(rawServer.enable, defaultSettingsConfig.server.enable)
+      enable: normalizeBoolean(rawServer.enable, defaultSettingsConfig.server.enable),
+      // Keep the saved secret: the server dialog re-saves the whole `settings.server` object, so dropping it here would silently clear it (and disable authentication) on the next save.
+      secret: normalizeString(rawServer.secret, '')
     },
     startupMode: isSettingsStartupMode(rawSettings.startupMode)
       ? rawSettings.startupMode
