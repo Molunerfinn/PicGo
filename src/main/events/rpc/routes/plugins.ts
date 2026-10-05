@@ -13,6 +13,7 @@ import { dialog } from 'electron'
 import windowManager from '~/main/apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
 import { createSchemaOnlyUploaderContext } from '~/main/utils/schemaOnlyUploaderContext'
+import { PICGO_CLOUD_UPLOADER_TYPE } from '#/utils/static'
 
 const README_FILE_CANDIDATES = ['README.md', 'readme.md', 'Readme.md'] as const
 
@@ -26,15 +27,15 @@ function handleRestoreState (fullName: string) {
   const currentUploader =
     picgo.getConfig<string>('picBed.uploader') ||
     picgo.getConfig<string>('picBed.current') ||
-    'smms'
+    PICGO_CLOUD_UPLOADER_TYPE
   const currentTransformer = picgo.getConfig<string>('picBed.transformer') || 'path'
   const uploaderName = plugin.uploader || ''
   const transformerName = plugin.transformer || ''
   const configToRestore: Record<string, string> = {}
 
   if (uploaderName && currentUploader === uploaderName) {
-    configToRestore['picBed.current'] = 'smms'
-    configToRestore['picBed.uploader'] = 'smms'
+    configToRestore['picBed.current'] = PICGO_CLOUD_UPLOADER_TYPE
+    configToRestore['picBed.uploader'] = PICGO_CLOUD_UPLOADER_TYPE
   }
 
   if (transformerName && currentTransformer === transformerName) {

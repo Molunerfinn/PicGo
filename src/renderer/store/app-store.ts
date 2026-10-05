@@ -10,6 +10,7 @@ import type {
   ProviderUploaderSummary
 } from '@/components/main/providers/types'
 import { createSelectors } from './create-selectors'
+import { PICGO_CLOUD_UPLOADER_TYPE } from '#/utils/static'
 
 export const PicGoCloudLoginStatusValues = {
   Idle: 'IDLE',
@@ -39,7 +40,7 @@ export interface AppStoreState {
 }
 
 export const initialAppStoreState: AppStoreState = {
-  defaultPicBed: 'smms',
+  defaultPicBed: PICGO_CLOUD_UPLOADER_TYPE,
   appConfig: null,
   picBeds: [],
   providers: [],

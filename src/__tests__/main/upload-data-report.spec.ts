@@ -178,6 +178,31 @@ describe('upload data reporting', () => {
     expect(mocks.getConfig).toHaveBeenCalledWith('picBed.uploader')
   })
 
+  it.each([
+    { uploader: undefined, current: undefined, expected: 'picgo-cloud' },
+    { uploader: '', current: '', expected: 'picgo-cloud' },
+    { uploader: undefined, current: 'smms', expected: 'smms' },
+    { uploader: 'smms', current: 'picgo-cloud', expected: 'smms' }
+  ])('resolves the root fallback as $expected for uploader=$uploader current=$current', async ({ uploader, current, expected }) => {
+    mocks.getConfig.mockImplementation((key: string) => {
+      if (key === 'picBed.uploader') return uploader
+      if (key === 'picBed.current') return current
+      return undefined
+    })
+    const webContents = createWebContents()
+    const { dataReportManager } = await import('../../main/utils/dataReport')
+
+    await dataReportManager.reportUploadData(asWebContents(webContents), {
+      fromClipboard: false,
+      duration: 100,
+      outputList: [{ fileName: 'image.png', mimeType: 'image/png', size: 1024 }]
+    })
+
+    const payloads = getTalkingDataPayloads(webContents)
+    expect(getPayloadByEventId(payloads, 'upload').MapKv.type).toBe(expected)
+    expect(getPayloadByEventId(payloads, 'upload_image').MapKv.type).toBe(expected)
+  })
+
   it('does not register or report after the origin window is destroyed during device initialization', async () => {
     const deviceId = createDeferred<string>()
     const webContents = createWebContents()

@@ -6,6 +6,7 @@ import { calcUploadBigFileSizeRange, calcUploadProcessDurationRange, calcVideoDu
 import picgo from '@core/picgo'
 import { getVideoDuration } from '@picgo/video-duration'
 import { MB, SECOND } from './constants'
+import { PICGO_CLOUD_UPLOADER_TYPE } from '#/utils/static'
 
 export interface IReportUploadItem extends IImgInfo {
   type?: string
@@ -68,7 +69,7 @@ class DataReportManager {
     let legacyUploaderType: string | undefined
     const resolveUploaderType = (type?: string): string => {
       if (type) return type
-      legacyUploaderType ??= picgo.getConfig<string>('picBed.uploader') || picgo.getConfig<string>('picBed.current') || 'smms'
+      legacyUploaderType ??= picgo.getConfig<string>('picBed.uploader') || picgo.getConfig<string>('picBed.current') || PICGO_CLOUD_UPLOADER_TYPE
       return legacyUploaderType
     }
     const batchOutput = outputList.find(item => item.type)
