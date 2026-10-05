@@ -233,6 +233,11 @@ SETTINGS_SET_SERVER_HOST: Set Server Host
 SETTINGS_SET_SERVER_PORT: Set Server Port
 SETTINGS_TIP_PLACEHOLDER_HOST: Default:127.0.0.1
 SETTINGS_TIP_PLACEHOLDER_PORT: Default:36677
+SETTINGS_SET_SERVER_SECRET: Set Server Secret
+SETTINGS_TIP_PLACEHOLDER_SECRET: Leave empty to disable authentication
+SETTINGS_TIPS_SERVER_SECRET: "When set, POST /upload requests must send the header Authorization: Bearer <secret> (or X-PicGo-Secret: <secret>). Leave empty to allow uploads without authentication."
+SETTINGS_SHOW_SECRET: Show secret
+SETTINGS_HIDE_SECRET: Hide secret
 SETTINGS_LOG_LEVEL_ALL: All
 SETTINGS_LOG_LEVEL_SUCCESS: Success
 SETTINGS_LOG_LEVEL_ERROR: Error

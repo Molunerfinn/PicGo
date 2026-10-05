@@ -42,6 +42,7 @@ interface IServerConfig {
   port: number | string
   host: string
   enable: boolean
+  secret?: string
 }
 
 // Image && PicBed

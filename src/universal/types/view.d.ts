@@ -23,6 +23,7 @@ interface ISettingForm {
     port: number
     host: string
     enable: boolean
+    secret?: string
   }
   startupMode: import('#/types/enum').IStartupMode
 }
