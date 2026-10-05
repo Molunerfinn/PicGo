@@ -39,7 +39,7 @@ export const uploadClipboardFilesWithInfo = async (options?: UploadOptions, webC
       const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)
       if (trayWindow && !trayWindow.webContents.isDestroyed()) {
         trayWindow.webContents.send('clipboardFiles', [])
-        trayWindow.webContents.send('uploadFiles', img)
+        trayWindow.webContents.send(IRPCActionType.UPLOAD_FILES, img)
       }
       if (windowManager.has(IWindowList.SETTING_WINDOW)) {
         const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)
@@ -86,7 +86,7 @@ export const uploadSelectedFilesWithInfo = async (webContents: WebContents, file
     // trayWindow just be created in mac/windows, not in linux
     const trayWindow = windowManager.get(IWindowList.TRAY_WINDOW)
     if (trayWindow && !trayWindow.webContents.isDestroyed()) {
-      trayWindow.webContents.send('uploadFiles', imgs)
+      trayWindow.webContents.send(IRPCActionType.UPLOAD_FILES, imgs)
     }
     if (windowManager.has(IWindowList.SETTING_WINDOW)) {
       const settingWindow = windowManager.get(IWindowList.SETTING_WINDOW)

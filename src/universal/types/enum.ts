@@ -114,6 +114,8 @@ export enum IRPCActionType {
 
   // gallery and toolbox rpc
   UPDATE_ALBUM = 'UPDATE_ALBUM',
+  // Upload-completion notification. Keep the existing channel name for compatibility.
+  UPLOAD_FILES = 'uploadFiles',
   GET_ALBUM_MENU_LIST = 'GET_ALBUM_MENU_LIST',
   OPEN_CONFIG_DIALOG = 'OPEN_CONFIG_DIALOG',
 

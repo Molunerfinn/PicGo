@@ -92,7 +92,7 @@ class GuiApi implements IGuiApi {
       }
       handleCopyUrl(pasteText.join('\n'))
       if (webContents && !webContents.isDestroyed()) {
-        webContents.send('uploadFiles', imgs)
+        webContents.send(IRPCActionType.UPLOAD_FILES, imgs)
         webContents.send(IRPCActionType.UPDATE_ALBUM)
       }
       return imgs

@@ -71,7 +71,7 @@ export default {
           settingsContents.send(IRPCActionType.UPDATE_ALBUM)
         }
       }
-      if (!webContents.isDestroyed()) webContents.send('uploadFiles')
+      if (!webContents.isDestroyed()) webContents.send(IRPCActionType.UPLOAD_FILES)
     })
 
     ipcMain.on('uploadClipboardFilesFromUploadPage', async (evt: IpcMainEvent) => {
