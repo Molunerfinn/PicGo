@@ -42,7 +42,6 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 11.7.0
           run_install: false
 
       - name: Locate pnpm store
@@ -54,9 +53,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.pnpm-store.outputs.path }}
-          key: ${{ runner.os }}-node-24-pnpm-11.7.0-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
+          key: ${{ runner.os }}-node-24-pnpm-10.29.2-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-24-pnpm-11.7.0-
+            ${{ runner.os }}-node-24-pnpm-10.29.2-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

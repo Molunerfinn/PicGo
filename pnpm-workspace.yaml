@@ -15,6 +15,9 @@ onlyBuiltDependencies:
   - husky
   - vue-demi
 
+patchedDependencies:
+  app-builder-lib@26.1.0: patches/app-builder-lib@26.1.0.patch
+
 supportedArchitectures:
   cpu: [ x64, arm64 ]
   os: [ current ]
