@@ -1,6 +1,6 @@
 {
   "name": "picgo",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "packageManager": "pnpm@10.29.2",
   "private": true,
   "main": "dist_electron/main/index.js",

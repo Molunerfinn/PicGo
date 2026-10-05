@@ -1,3 +1,34 @@
+## :tada: 3.0.3 (2026-10-05)
+
+
+### :sparkles: Features
+
+* rebuild picgo.app when a release is published ([#1444](https://github.com/Molunerfinn/PicGo/issues/1444)) ([d554307](https://github.com/Molunerfinn/PicGo/commit/d554307))
+* **server:** support per-upload configurations ([#1447](https://github.com/Molunerfinn/PicGo/issues/1447)) ([5cead90](https://github.com/Molunerfinn/PicGo/commit/5cead90))
+
+
+### :bug: Bug Fixes
+
+* avoid duplicate Windows login item launching PicGo twice ([5399f30](https://github.com/Molunerfinn/PicGo/commit/5399f30))
+* **build:** patch electron-builder keychain unlock for macOS 26.6 ([#1448](https://github.com/Molunerfinn/PicGo/issues/1448)) ([6e8387f](https://github.com/Molunerfinn/PicGo/commit/6e8387f))
+* **gui:** make backgroundThrottling optional in window options type ([a0d5dfa](https://github.com/Molunerfinn/PicGo/commit/a0d5dfa)), closes [#1435](https://github.com/Molunerfinn/PicGo/issues/1435) [#1435](https://github.com/Molunerfinn/PicGo/issues/1435)
+* **gui:** 移除 backgroundThrottling: false 修复 macOS GPU 进程空转 ([#1435](https://github.com/Molunerfinn/PicGo/issues/1435)) ([45fd078](https://github.com/Molunerfinn/PicGo/commit/45fd078))
+
+
+### :pencil: Documentation
+
+* add AI-friendly section for skills and dsh plugin ([d7d2c22](https://github.com/Molunerfinn/PicGo/commit/d7d2c22))
+* prefix sponsor descriptions with brand names ([a24af30](https://github.com/Molunerfinn/PicGo/commit/a24af30))
+* replace Warp sponsorship with NocoBase ([e21e92c](https://github.com/Molunerfinn/PicGo/commit/e21e92c))
+* update sponsor table with Modelflare and Castaly ([99b0331](https://github.com/Molunerfinn/PicGo/commit/99b0331))
+
+
+### :arrow_up: Dependencies Upgrade
+
+* bump @picgo/bump-version to 3.0.0 ([07ec706](https://github.com/Molunerfinn/PicGo/commit/07ec706))
+
+
+
 ## :tada: 3.0.2 (2026-08-14)
 
 
