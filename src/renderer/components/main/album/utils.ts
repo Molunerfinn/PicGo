@@ -220,8 +220,60 @@ export function buildAlbumConfigMap (
   return result
 }
 
-function normalizeUrlPrefix (prefix: string): string {
-  return prefix.trim().replace(/\/+$/, '').toLowerCase()
+type UrlParts = {
+  /** `scheme://host[:port]`, lowercased — scheme and host are case-insensitive. */
+  origin: string
+  /** Path without a trailing slash, case preserved — object keys can be case-sensitive. */
+  path: string
+}
+
+/**
+ * Split a value into an origin and a path so they can be compared separately.
+ * Returns null for values without an absolute scheme+host, which cannot be
+ * matched against a photo url — a bare `host`/`domain` config field therefore
+ * claims nothing, exactly as it did before.
+ */
+function parseUrlParts (value: string): UrlParts | null {
+  const trimmed = value.trim()
+  if (!trimmed) {
+    return null
+  }
+
+  let parsed: URL
+  try {
+    parsed = new URL(trimmed)
+  } catch {
+    return null
+  }
+  if (!parsed.hostname) {
+    return null
+  }
+
+  return {
+    origin: `${parsed.protocol}//${parsed.host}`.toLowerCase(),
+    path: parsed.pathname.replace(/\/+$/, '')
+  }
+}
+
+/**
+ * Whether `target` falls under `prefix`. The origin must match exactly, so a
+ * host-only prefix cannot claim a lookalike host (`cdn.example.org` must not
+ * claim `cdn.example.org.other.net`), and a path prefix must end on a segment
+ * boundary, so `/foo` cannot claim `/foobar/photo.png`.
+ */
+function matchesUrlPrefix (target: UrlParts, prefix: UrlParts): boolean {
+  if (target.origin !== prefix.origin) {
+    return false
+  }
+  if (!prefix.path) {
+    return true
+  }
+  if (!target.path.startsWith(prefix.path)) {
+    return false
+  }
+
+  const next = target.path.charAt(prefix.path.length)
+  return next === '' || next === '/'
 }
 
 /**
@@ -237,21 +289,22 @@ export function inferConfigIdFromUrl (
 ): string {
   // Prefer the original url: a rewritten `imgUrl` may point at a CDN that no
   // longer resembles any config's prefix.
-  const url = (item.originImgUrl || item.imgUrl || '').toLowerCase()
-  if (!url) {
+  const target = parseUrlParts(item.originImgUrl || item.imgUrl || '')
+  if (!target) {
     return ''
   }
 
   let matchedId = ''
   let matchedLength = 0
   configs.forEach((config) => {
-    const prefix = normalizeUrlPrefix(config.urlPrefix)
-    if (!prefix || !url.startsWith(prefix)) {
+    const prefix = parseUrlParts(config.urlPrefix)
+    if (!prefix || !matchesUrlPrefix(target, prefix)) {
       return
     }
-    if (prefix.length > matchedLength) {
+    const length = prefix.origin.length + prefix.path.length
+    if (length > matchedLength) {
       matchedId = config.id
-      matchedLength = prefix.length
+      matchedLength = length
     }
   })
 
@@ -306,6 +359,12 @@ export function buildAlbumPhotos (
  * Build the sidebar's provider tree: one node per visible picbed, each with a
  * child per uploader config plus an "unknown" bucket for photos that could not
  * be attributed.
+ *
+ * A config can be deleted after its photos were uploaded. Those photos keep a
+ * non-empty `configId` that no longer appears in the config list, so they would
+ * otherwise be counted in the provider total but reachable through no child at
+ * all. They get a child of their own, labelled with the name snapshotted at
+ * upload time, which keeps `configs` + `unknownCount` a partition of `count`.
  */
 export function buildAlbumProviderFilters (
   images: AlbumPhoto[],
@@ -317,16 +376,40 @@ export function buildAlbumProviderFilters (
     .map((item) => {
       const typeImages = images.filter((image) => image.type === item.type)
       const configs = configMap[item.type] ?? []
+      const knownIds = new Set(configs.map((config) => config.id))
+      const orphanedIds = new Map<string, { name: string, count: number }>()
+
+      typeImages.forEach((image) => {
+        if (!image.configId || knownIds.has(image.configId)) {
+          return
+        }
+        const entry = orphanedIds.get(image.configId)
+        if (entry) {
+          entry.count += 1
+        } else {
+          orphanedIds.set(image.configId, {
+            name: image.configName || image.configId,
+            count: 1
+          })
+        }
+      })
 
       return {
         type: item.type,
         name: item.name,
         count: typeImages.length,
-        configs: configs.map((config) => ({
-          id: config.id,
-          name: config.name,
-          count: typeImages.filter((image) => image.configId === config.id).length
-        })),
+        configs: [
+          ...configs.map((config) => ({
+            id: config.id,
+            name: config.name,
+            count: typeImages.filter((image) => image.configId === config.id).length
+          })),
+          ...Array.from(orphanedIds, ([id, entry]) => ({
+            id,
+            name: entry.name,
+            count: entry.count
+          }))
+        ],
         unknownCount: typeImages.filter((image) => !image.configId).length
       }
     })

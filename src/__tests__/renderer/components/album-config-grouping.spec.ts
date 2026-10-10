@@ -63,6 +63,52 @@ describe('inferConfigIdFromUrl', () => {
     expect(id).toBe('nested')
   })
 
+  it('requires a path boundary so a sibling segment is not claimed', () => {
+    const configs = [{ id: 'foo', name: 'foo', urlPrefix: 'https://cdn.example.org/foo' }]
+
+    expect(inferConfigIdFromUrl(
+      s3Item({ imgUrl: 'https://cdn.example.org/foobar/photo.png' }),
+      configs
+    )).toBe('')
+    expect(inferConfigIdFromUrl(
+      s3Item({ imgUrl: 'https://cdn.example.org/foo/photo.png' }),
+      configs
+    )).toBe('foo')
+    expect(inferConfigIdFromUrl(
+      s3Item({ imgUrl: 'https://cdn.example.org/foo' }),
+      configs
+    )).toBe('foo')
+  })
+
+  it('requires the host to match exactly', () => {
+    const configs = [{ id: 'cdn', name: 'cdn', urlPrefix: 'https://cdn.example.org' }]
+
+    expect(inferConfigIdFromUrl(
+      s3Item({ imgUrl: 'https://cdn.example.org.other.net/photo.png' }),
+      configs
+    )).toBe('')
+    expect(inferConfigIdFromUrl(
+      s3Item({ imgUrl: 'https://cdn.example.org/photo.png' }),
+      configs
+    )).toBe('cdn')
+  })
+
+  it('ignores host case but keeps paths case-sensitive', () => {
+    const configs = [
+      { id: 'upper', name: 'upper', urlPrefix: 'https://cdn.example.org/Photos' },
+      { id: 'lower', name: 'lower', urlPrefix: 'https://cdn.example.org/photos' }
+    ]
+
+    expect(inferConfigIdFromUrl(
+      s3Item({ imgUrl: 'https://CDN.Example.ORG/Photos/a.png' }),
+      configs
+    )).toBe('upper')
+    expect(inferConfigIdFromUrl(
+      s3Item({ imgUrl: 'https://cdn.example.org/photos/a.png' }),
+      configs
+    )).toBe('lower')
+  })
+
   it('ignores a rewritten imgUrl in favour of originImgUrl', () => {
     const id = inferConfigIdFromUrl(
       s3Item({
@@ -231,6 +277,60 @@ describe('buildAlbumProviderFilters', () => {
     expect(s3.unknownCount).toBe(1)
   })
 
+  it('keeps photos from a deleted config reachable through a child node', () => {
+    const withDeletedConfig = buildAlbumPhotos(
+      [
+        s3Item({ _configId: MY_IMG_ID, _configName: 'my-img' }),
+        s3Item({ _configId: 'deleted-config', _configName: 'deleted' })
+      ],
+      picBeds,
+      configMap
+    )
+    const s3 = buildAlbumProviderFilters(withDeletedConfig, picBeds, configMap)
+      .find((item) => item.type === S3_TYPE)!
+
+    expect(s3.count).toBe(2)
+    expect(s3.configs).toEqual([
+      { id: MY_IMG_ID, name: 'my-img', count: 1 },
+      { id: COS_ID, name: 'cos', count: 0 },
+      { id: 'deleted-config', name: 'deleted', count: 1 }
+    ])
+    expect(s3.unknownCount).toBe(0)
+  })
+
+  it('falls back to the config id when a deleted config has no snapshotted name', () => {
+    const withDeletedConfig = buildAlbumPhotos(
+      [s3Item({ _configId: 'deleted-config' })],
+      picBeds,
+      configMap
+    )
+    const s3 = buildAlbumProviderFilters(withDeletedConfig, picBeds, configMap)
+      .find((item) => item.type === S3_TYPE)!
+
+    expect(s3.configs).toEqual([
+      { id: MY_IMG_ID, name: 'my-img', count: 0 },
+      { id: COS_ID, name: 'cos', count: 0 },
+      { id: 'deleted-config', name: 'deleted-config', count: 1 }
+    ])
+  })
+
+  it('counts every photo of a provider exactly once across its children', () => {
+    const mixed = buildAlbumPhotos(
+      [
+        s3Item({ _configId: MY_IMG_ID }),
+        s3Item({ _configId: 'deleted-config', _configName: 'deleted' }),
+        s3Item({ imgUrl: 'https://orphan.example.net/d.png' })
+      ],
+      picBeds,
+      configMap
+    )
+    const s3 = buildAlbumProviderFilters(mixed, picBeds, configMap)
+      .find((item) => item.type === S3_TYPE)!
+    const reachable = s3.configs.reduce((total, config) => total + config.count, 0) + s3.unknownCount
+
+    expect(reachable).toBe(s3.count)
+  })
+
   it('reports zero counts for picbeds with no photos', () => {
     const filters = buildAlbumProviderFilters(images, picBeds, configMap)
     const smms = filters.find((item) => item.type === 'smms')!
@@ -270,6 +370,24 @@ describe('filterAlbumImages with config nav', () => {
     )
 
     expect(result.map((image) => image.name)).toEqual(['b.png'])
+  })
+
+  it('filters to a config that no longer exists', () => {
+    const withDeletedConfig = buildAlbumPhotos(
+      [
+        s3Item({ fileName: 'a.png', _configId: MY_IMG_ID, _configName: 'my-img' }),
+        s3Item({ fileName: 'd.png', _configId: 'deleted-config', _configName: 'deleted' })
+      ],
+      picBeds,
+      configMap
+    )
+    const result = filterAlbumImages(
+      withDeletedConfig,
+      { type: NavType.Config, value: 'deleted-config', providerType: S3_TYPE },
+      ''
+    )
+
+    expect(result.map((image) => image.name)).toEqual(['d.png'])
   })
 
   it('filters to the unknown bucket', () => {
