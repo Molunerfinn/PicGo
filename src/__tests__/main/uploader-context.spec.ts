@@ -535,7 +535,8 @@ describe('Uploader task context', () => {
     await unlinkStarted.promise
 
     expect(mocks.writeFileMock).toHaveBeenCalledWith(
-      expect.stringMatching(/^\/picgo-base\/.*\/\d{17}\.png$/),
+      // Separator-agnostic: path.join yields backslashes on Windows.
+      expect.stringMatching(/^[/\\]picgo-base[/\\].*[/\\]\d{17}\.png$/),
       Buffer.from('png')
     )
     const generatedPath = mocks.writeFileMock.mock.calls[0][0]

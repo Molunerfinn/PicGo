@@ -94,6 +94,44 @@ const waitForRename = (
   })
 }
 
+interface IUploaderConfigSnapshot {
+  configId: string
+  configName: string
+}
+
+/**
+ * Read the uploader config that is currently active, so album items can record
+ * which of a picbed's configs produced them. Returns null when the config has
+ * no `_id` yet (config created before the multi-config upgrade).
+ */
+const getActiveUploaderConfigSnapshot = (): IUploaderConfigSnapshot | null => {
+  const type = picgo.getConfig<string>('picBed.current')
+  if (!type) {
+    return null
+  }
+  const config = picgo.getConfig<IStringKeyMap>(`picBed.${type}`)
+  if (!config?._id || typeof config._id !== 'string') {
+    return null
+  }
+  return {
+    configId: config._id,
+    configName: typeof config._configName === 'string' ? config._configName : ''
+  }
+}
+
+const applyUploaderConfigSnapshot = (
+  output: ImgInfo[],
+  snapshot: IUploaderConfigSnapshot | null
+) => {
+  if (!snapshot) {
+    return
+  }
+  output.forEach((item) => {
+    item._configId = snapshot.configId
+    item._configName = snapshot.configName
+  })
+}
+
 class Uploader {
   private readonly uploadTaskStorage = new AsyncLocalStorage<UploadTaskContext>()
   constructor () {
@@ -211,8 +249,12 @@ class Uploader {
           throw Error(T('PRIVACY_TIPS'))
         }
         const startTime = Date.now()
+        // Snapshot the active uploader config BEFORE uploading, so that switching
+        // configs mid-upload cannot mis-attribute the resulting album items.
+        const configSnapshot = getActiveUploaderConfigSnapshot()
         const output = await picgo.upload(capturedTask.input, capturedTask.options)
         if (Array.isArray(output) && output.some((item: ImgInfo) => item.imgUrl)) {
+          applyUploaderConfigSnapshot(output, configSnapshot)
           if (context.active && isAvailableWebContents(capturedTask.webContents)) {
             try {
               await dataReportManager.reportUploadData(capturedTask.webContents, {
