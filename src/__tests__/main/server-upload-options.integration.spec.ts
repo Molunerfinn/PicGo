@@ -321,7 +321,7 @@ describe('GUI server upload options integration', () => {
     expect(body.result).toEqual([expectedUrl])
     expect(body.items[0]).toMatchObject({ imgUrl: expectedUrl, type: uploaderA })
     expect(uploadCaptures).toEqual([{ uploader: uploaderA, endpoint: namedA.endpoint, origins: [jsonImagePath] }])
-    expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({ imgUrl: expectedUrl, type: uploaderA }))
+    expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({ imgUrl: expectedUrl, type: uploaderA, _configId: namedA._id, _configName: namedA._configName }))
     await expectConfigUnchanged()
   })
 
@@ -339,7 +339,7 @@ describe('GUI server upload options integration', () => {
     expect(body.result).toEqual([expectedUrl])
     expect(body.items[0]).toMatchObject({ imgUrl: expectedUrl, fileName: 'multipart image.png', type: uploaderB })
     expect(uploadCaptures[0]).toMatchObject({ uploader: uploaderB, endpoint: selectedB.endpoint })
-    expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({ imgUrl: expectedUrl, type: uploaderB }))
+    expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({ imgUrl: expectedUrl, type: uploaderB, _configId: selectedB._id, _configName: selectedB._configName }))
     await expectConfigUnchanged()
   })
 
@@ -357,7 +357,45 @@ describe('GUI server upload options integration', () => {
     expect(body.result[0]).toMatch(new RegExp(`^https://uploads\\.test/${defaultA.endpoint}/\\d+\\.png$`))
     expect(uploadCaptures[0]).toMatchObject({ uploader: uploaderA, endpoint: defaultA.endpoint })
     expect(mocks.clipboardReadImageMock).toHaveBeenCalled()
-    expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({ imgUrl: body.result[0], type: uploaderA }))
+    expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({ imgUrl: body.result[0], type: uploaderA, _configId: defaultA._id, _configName: defaultA._configName }))
+    await expectConfigUnchanged()
+  })
+
+  it('attributes a different uploader without a profile selector to its own active config', async () => {
+    const response = await fetch(`${baseUrl}/upload?uploader=${uploaderB}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ list: [jsonImagePath] })
+    })
+    const body = await parseUploadResponse(response)
+
+    expect(response.status).toBe(200)
+    expect(body.items[0]).toMatchObject({ type: uploaderB })
+    expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({ type: uploaderB, _configId: defaultB._id }))
+    await expectConfigUnchanged()
+  })
+
+  it('keeps each profile attribution isolated across concurrent requests', async () => {
+    const [responseA, responseB] = await Promise.all([
+      fetch(`${baseUrl}/upload?configId=${namedA._id}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ list: [jsonImagePath] })
+      }),
+      fetch(`${baseUrl}/upload?configId=${selectedB._id}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ list: [jsonImagePath] })
+      })
+    ])
+    const [bodyA, bodyB] = await Promise.all([parseUploadResponse(responseA), parseUploadResponse(responseB)])
+
+    expect(responseA.status).toBe(200)
+    expect(responseB.status).toBe(200)
+    expect(bodyA.items[0]).toMatchObject({ type: uploaderA })
+    expect(bodyB.items[0]).toMatchObject({ type: uploaderB })
+    expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({ imgUrl: bodyA.items[0].imgUrl, _configId: namedA._id }))
+    expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({ imgUrl: bodyB.items[0].imgUrl, _configId: selectedB._id }))
     await expectConfigUnchanged()
   })
 
@@ -374,6 +412,284 @@ describe('GUI server upload options integration', () => {
     expect(body.result).toEqual([expectedUrl])
     expect(uploadCaptures).toEqual([{ uploader: uploaderA, endpoint: defaultA.endpoint, origins: [jsonImagePath] }])
     expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({ imgUrl: expectedUrl, type: uploaderA }))
+    await expectConfigUnchanged()
+  })
+
+  it('attributes an upload without options to picBed.uploader when it differs from picBed.current', async () => {
+    picgo.saveConfig({ 'picBed.uploader': uploaderB })
+    try {
+      const response = await fetch(`${baseUrl}/upload`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ list: [jsonImagePath] })
+      })
+      const body = await parseUploadResponse(response)
+      const expectedUrl = `https://uploads.test/${defaultB.endpoint}/json image.png`
+
+      expect(response.status).toBe(200)
+      expect(body.result).toEqual([expectedUrl])
+      expect(uploadCaptures).toEqual([{ uploader: uploaderB, endpoint: defaultB.endpoint, origins: [jsonImagePath] }])
+      expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({
+        imgUrl: expectedUrl,
+        type: uploaderB,
+        _configId: defaultB._id,
+        _configName: defaultB._configName
+      }))
+    } finally {
+      picgo.saveConfig({ 'picBed.uploader': uploaderA })
+    }
+    await expectConfigUnchanged()
+  })
+
+  it('does not persist a stale config when Core falls back from an unregistered uploader', async () => {
+    const cloudUploader = picgo.helper.uploader.get('picgo-cloud')
+    expect(cloudUploader).toBeDefined()
+    if (!cloudUploader) return
+
+    const cloudHandle = vi.spyOn(cloudUploader, 'handle').mockImplementation((ctx: IPicGo) => {
+      ctx.output = ctx.output.map(item => ({ ...item, imgUrl: `https://uploads.test/cloud/${item.fileName}` }))
+    })
+    picgo.saveConfig({
+      'picBed.uploader': 'missing-plugin',
+      'picBed.missing-plugin': { _id: 'stale-id', _configName: 'Stale' }
+    })
+    try {
+      const response = await fetch(`${baseUrl}/upload`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ list: [jsonImagePath] })
+      })
+      const body = await parseUploadResponse(response)
+      const expectedUrl = 'https://uploads.test/cloud/json image.png'
+
+      expect(response.status).toBe(200)
+      expect(body.result).toEqual([expectedUrl])
+      expect(body.items[0]).toMatchObject({ imgUrl: expectedUrl, type: 'picgo-cloud' })
+      expect(mocks.albumInsertMock).toHaveBeenCalledOnce()
+      const stored = mocks.albumInsertMock.mock.calls[0][0] as IImgInfo
+      expect(stored.type).toBe('picgo-cloud')
+      expect(stored).not.toHaveProperty('_configId')
+      expect(stored).not.toHaveProperty('_configName')
+    } finally {
+      cloudHandle.mockRestore()
+      picgo.saveConfig({ 'picBed.uploader': uploaderA })
+      picgo.removeConfig('picBed', 'missing-plugin')
+    }
+    await expectConfigUnchanged()
+  })
+
+  it('keeps the saved profile aligned with a default upload when the global profile switches during transform', async () => {
+    let releaseTransform: () => void = () => undefined
+    let reportTransformStart: () => void = () => undefined
+    const holdTransform = new Promise<void>(resolve => { releaseTransform = resolve })
+    const transformStarted = new Promise<void>(resolve => { reportTransformStart = resolve })
+    const originalHandle = integrationTransformer.handle
+    const transformSpy = vi.spyOn(integrationTransformer, 'handle').mockImplementation(async (ctx: IPicGo) => {
+      reportTransformStart()
+      await holdTransform
+      await originalHandle(ctx)
+    })
+    try {
+      const request = fetch(`${baseUrl}/upload`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ list: [jsonImagePath] })
+      })
+      await transformStarted
+      picgo.saveConfig({
+        [`picBed.${uploaderA}`]: namedA,
+        [`uploader.${uploaderA}.defaultId`]: namedA._id
+      })
+      releaseTransform()
+      const response = await request
+      const body = await parseUploadResponse(response)
+      const expectedUrl = `https://uploads.test/${defaultA.endpoint}/json image.png`
+
+      expect(response.status).toBe(200)
+      expect(body.result).toEqual([expectedUrl])
+      expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({
+        imgUrl: expectedUrl,
+        type: uploaderA,
+        _configId: defaultA._id,
+        _configName: defaultA._configName
+      }))
+    } finally {
+      releaseTransform()
+      transformSpy.mockRestore()
+      picgo.saveConfig({
+        [`picBed.${uploaderA}`]: defaultA,
+        [`uploader.${uploaderA}.defaultId`]: defaultA._id
+      })
+    }
+    await expectConfigUnchanged()
+  })
+
+  it('preserves the active mirror upload target when a saved profile with the same ID differs', async () => {
+    const mirror = { ...defaultA, endpoint: 'a-mirror-new' }
+    picgo.saveConfig({ [`picBed.${uploaderA}`]: mirror })
+    try {
+      const response = await fetch(`${baseUrl}/upload`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ list: [jsonImagePath] })
+      })
+      const body = await parseUploadResponse(response)
+      const expectedUrl = 'https://uploads.test/a-mirror-new/json image.png'
+
+      expect(response.status).toBe(200)
+      expect(body.result).toEqual([expectedUrl])
+      expect(uploadCaptures).toEqual([{ uploader: uploaderA, endpoint: mirror.endpoint, origins: [jsonImagePath] }])
+      expect(mocks.albumInsertMock).toHaveBeenCalledOnce()
+      const stored = mocks.albumInsertMock.mock.calls[0][0] as IImgInfo
+      expect(stored.imgUrl).toBe(expectedUrl)
+      expect(stored.type).toBe(uploaderA)
+      expect(stored).not.toHaveProperty('_configId')
+      expect(stored).not.toHaveProperty('_configName')
+    } finally {
+      picgo.saveConfig({ [`picBed.${uploaderA}`]: defaultA })
+    }
+    await expectConfigUnchanged()
+  })
+
+  it('does not attribute a legacy mirror to the wrong profile when it changes during upload', async () => {
+    let releaseTransform: () => void = () => undefined
+    let reportTransformStart: () => void = () => undefined
+    const holdTransform = new Promise<void>(resolve => { releaseTransform = resolve })
+    const transformStarted = new Promise<void>(resolve => { reportTransformStart = resolve })
+    const originalHandle = integrationTransformer.handle
+    const transformSpy = vi.spyOn(integrationTransformer, 'handle').mockImplementation(async (ctx: IPicGo) => {
+      reportTransformStart()
+      await holdTransform
+      await originalHandle(ctx)
+    })
+    const configFileBeforeLegacyUpload = await readFile(testState.configPath, 'utf8')
+    picgo.removeConfig('uploader', uploaderA)
+    try {
+      const request = fetch(`${baseUrl}/upload`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ list: [jsonImagePath] })
+      })
+      await transformStarted
+      picgo.saveConfig({ [`picBed.${uploaderA}`]: namedA })
+      releaseTransform()
+      const response = await request
+      const body = await parseUploadResponse(response)
+      const expectedUrl = `https://uploads.test/${namedA.endpoint}/json image.png`
+
+      expect(response.status).toBe(200)
+      expect(body.result).toEqual([expectedUrl])
+      expect(mocks.albumInsertMock).toHaveBeenCalledOnce()
+      const stored = mocks.albumInsertMock.mock.calls[0][0] as IImgInfo
+      expect(stored.imgUrl).toBe(expectedUrl)
+      expect(stored.type).toBe(uploaderA)
+      expect(stored._configId).not.toBe(defaultA._id)
+    } finally {
+      releaseTransform()
+      transformSpy.mockRestore()
+      picgo.saveConfig(rootConfigBeforeUploads as IStringKeyMap)
+    }
+    expect(structuredClone(picgo.getConfig())).toEqual(rootConfigBeforeUploads)
+    await expect(readFile(testState.configPath, 'utf8')).resolves.toBe(configFileBeforeLegacyUpload)
+  })
+
+  it.each([
+    ['switches to B and then back to A', true],
+    ['switches from A to B after the uploader reads A', false]
+  ])('leaves an unpinned upload unattributed when the config %s', async (_description, switchBeforeRead) => {
+    const mirror = { ...defaultA, endpoint: 'a-mirror-new' }
+    let releaseTransform: () => void = () => undefined
+    let reportTransformStart: () => void = () => undefined
+    let releaseUpload: () => void = () => undefined
+    let reportUploadRead: () => void = () => undefined
+    const holdTransform = new Promise<void>(resolve => { releaseTransform = resolve })
+    const transformStarted = new Promise<void>(resolve => { reportTransformStart = resolve })
+    const holdUpload = new Promise<void>(resolve => { releaseUpload = resolve })
+    const uploadRead = new Promise<void>(resolve => { reportUploadRead = resolve })
+    const originalTransform = integrationTransformer.handle
+    const transformSpy = vi.spyOn(integrationTransformer, 'handle').mockImplementation(async (ctx: IPicGo) => {
+      reportTransformStart()
+      await holdTransform
+      await originalTransform(ctx)
+    })
+    const originalUpload = integrationUploader.handle
+    const uploaderSpy = vi.spyOn(integrationUploader, 'handle').mockImplementation(async (ctx: IPicGo) => {
+      await originalUpload(ctx)
+      reportUploadRead()
+      await holdUpload
+    })
+    picgo.saveConfig({ [`picBed.${uploaderA}`]: mirror })
+    try {
+      const request = fetch(`${baseUrl}/upload`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ list: [jsonImagePath] })
+      })
+      await transformStarted
+      if (switchBeforeRead) picgo.saveConfig({ [`picBed.${uploaderA}`]: namedA })
+      releaseTransform()
+      await uploadRead
+      picgo.saveConfig({ [`picBed.${uploaderA}`]: switchBeforeRead ? mirror : namedA })
+      releaseUpload()
+      const response = await request
+      const body = await parseUploadResponse(response)
+      const expectedEndpoint = switchBeforeRead ? namedA.endpoint : mirror.endpoint
+      const expectedUrl = `https://uploads.test/${expectedEndpoint}/json image.png`
+
+      expect(response.status).toBe(200)
+      expect(body.result).toEqual([expectedUrl])
+      expect(mocks.albumInsertMock).toHaveBeenCalledOnce()
+      const stored = mocks.albumInsertMock.mock.calls[0][0] as IImgInfo
+      expect(stored.imgUrl).toBe(expectedUrl)
+      expect(stored.type).toBe(uploaderA)
+      expect(stored).not.toHaveProperty('_configId')
+      expect(stored).not.toHaveProperty('_configName')
+    } finally {
+      releaseTransform()
+      releaseUpload()
+      transformSpy.mockRestore()
+      uploaderSpy.mockRestore()
+      picgo.saveConfig({ [`picBed.${uploaderA}`]: defaultA })
+    }
+    await expectConfigUnchanged()
+  })
+
+  it('does not persist attribution copied from an input image after fallback to cloud', async () => {
+    const cloudUploader = picgo.helper.uploader.get('picgo-cloud')
+    expect(cloudUploader).toBeDefined()
+    if (!cloudUploader) return
+
+    const cloudHandle = vi.spyOn(cloudUploader, 'handle').mockImplementation((ctx: IPicGo) => {
+      ctx.output = ctx.output.map(item => ({ ...item, imgUrl: `https://uploads.test/cloud/${item.fileName}` }))
+    })
+    const originalHandle = integrationTransformer.handle
+    const transformerSpy = vi.spyOn(integrationTransformer, 'handle').mockImplementation(async (ctx: IPicGo) => {
+      await originalHandle(ctx)
+      ctx.output.forEach(item => {
+        item._configId = 'stale-id'
+        item._configName = 'Old upload'
+      })
+    })
+    picgo.saveConfig({ 'picBed.uploader': 'missing-plugin' })
+    try {
+      const response = await fetch(`${baseUrl}/upload`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ list: [jsonImagePath] })
+      })
+      const body = await parseUploadResponse(response)
+
+      expect(response.status).toBe(200)
+      expect(body.items[0].type).toBe('picgo-cloud')
+      expect(mocks.albumInsertMock).toHaveBeenCalledOnce()
+      const stored = mocks.albumInsertMock.mock.calls[0][0] as IImgInfo
+      expect(stored).not.toHaveProperty('_configId')
+      expect(stored).not.toHaveProperty('_configName')
+    } finally {
+      transformerSpy.mockRestore()
+      cloudHandle.mockRestore()
+      picgo.saveConfig({ 'picBed.uploader': uploaderA })
+    }
     await expectConfigUnchanged()
   })
 

@@ -6,11 +6,13 @@ import {
 import type { IpcMainEvent, WebContents } from 'electron'
 import { AsyncLocalStorage } from 'node:async_hooks'
 import dayjs from 'dayjs'
+import isEqual from 'lodash/isEqual'
 import picgo from '@core/picgo'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
 import util from 'util'
-import type { IPicGo } from 'picgo'
+import { resolveUploadOptions } from 'picgo'
+import type { IPicGo, UploadOptions } from 'picgo'
 import { showNotification, getClipboardFilePathList } from '~/main/utils/common'
 import { GET_RENAME_FILE_NAME, RENAME_FILE_NAME } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
@@ -95,17 +97,22 @@ const waitForRename = (
 }
 
 interface IUploaderConfigSnapshot {
+  uploader: string
   configId: string
   configName: string
 }
 
 /**
- * Read the uploader config that is currently active, so album items can record
- * which of a picbed's configs produced them. Returns null when the config has
- * no `_id` yet (config created before the multi-config upgrade).
+ * Resolve the config selected for this request before uploading. Only uploads
+ * without a profile override use the globally active config as a fallback.
  */
-const getActiveUploaderConfigSnapshot = (): IUploaderConfigSnapshot | null => {
-  const type = picgo.getConfig<string>('picBed.current')
+const getActiveUploaderConfigSnapshot = (options?: UploadOptions): IUploaderConfigSnapshot | null => {
+  const resolved = resolveUploadOptions(picgo, options)
+  if (resolved) {
+    const config = resolved.config
+    return config?._id ? { uploader: resolved.uploader, configId: config._id, configName: config._configName ?? '' } : null
+  }
+  const type = picgo.getConfig<string>('picBed.uploader') || picgo.getConfig<string>('picBed.current')
   if (!type) {
     return null
   }
@@ -114,6 +121,7 @@ const getActiveUploaderConfigSnapshot = (): IUploaderConfigSnapshot | null => {
     return null
   }
   return {
+    uploader: type,
     configId: config._id,
     configName: typeof config._configName === 'string' ? config._configName : ''
   }
@@ -123,10 +131,10 @@ const applyUploaderConfigSnapshot = (
   output: ImgInfo[],
   snapshot: IUploaderConfigSnapshot | null
 ) => {
-  if (!snapshot) {
-    return
-  }
   output.forEach((item) => {
+    delete item._configId
+    delete item._configName
+    if (!snapshot || item.type !== snapshot.uploader) return
     item._configId = snapshot.configId
     item._configName = snapshot.configName
   })
@@ -249,12 +257,20 @@ class Uploader {
           throw Error(T('PRIVACY_TIPS'))
         }
         const startTime = Date.now()
-        // Snapshot the active uploader config BEFORE uploading, so that switching
-        // configs mid-upload cannot mis-attribute the resulting album items.
-        const configSnapshot = getActiveUploaderConfigSnapshot()
-        const output = await picgo.upload(capturedTask.input, capturedTask.options)
+        // Snapshot this request's uploader config before uploading, so concurrent
+        // uploads and config switches cannot mis-attribute album items.
+        const configSnapshot = getActiveUploaderConfigSnapshot(capturedTask.options)
+        const canPinDefaultConfig = configSnapshot && !capturedTask.options?.uploader && !capturedTask.options?.configId && !capturedTask.options?.configName &&
+          picgo.helper.uploader.get(configSnapshot.uploader) &&
+          picgo.uploaderConfig.getConfigList(configSnapshot.uploader).some(config =>
+            config._id === configSnapshot.configId && isEqual(config, picgo.getConfig(`picBed.${configSnapshot.uploader}`))
+          )
+        const uploadOptions = canPinDefaultConfig
+          ? { ...capturedTask.options, uploader: configSnapshot.uploader, configId: configSnapshot.configId }
+          : capturedTask.options
+        const output = await picgo.upload(capturedTask.input, uploadOptions)
         if (Array.isArray(output) && output.some((item: ImgInfo) => item.imgUrl)) {
-          applyUploaderConfigSnapshot(output, configSnapshot)
+          applyUploaderConfigSnapshot(output, canPinDefaultConfig || capturedTask.options?.uploader || capturedTask.options?.configId || capturedTask.options?.configName ? configSnapshot : null)
           if (context.active && isAvailableWebContents(capturedTask.webContents)) {
             try {
               await dataReportManager.reportUploadData(capturedTask.webContents, {
