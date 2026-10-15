@@ -1,5 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createServer } from 'node:net'
+import childProcess, { ChildProcess } from 'node:child_process'
+import { PassThrough } from 'node:stream'
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -372,6 +374,62 @@ describe('GUI server upload options integration', () => {
     expect(response.status).toBe(200)
     expect(body.items[0]).toMatchObject({ type: uploaderB })
     expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({ type: uploaderB, _configId: defaultB._id }))
+    await expectConfigUnchanged()
+  })
+
+  // 本用例依赖 Core 3.1.0 的行为：PicGo.upload 在 input 为空时先校验一次 options、再 await
+  // 读取系统剪贴板，之后才在 lifecycle.start 中真正解析 options。因此在剪贴板读取挂起期间
+  // 切换活动 profile，未做固定的实现会解析到切换后的 profile——这正是本用例的判别力来源。
+  // 只 mock 掉"启动系统剪贴板助手"这一层外部依赖，其余（HTTP 路由、快照、resolveUploadOptions、
+  // lifecycle.start、上传器插件、相册归属）都走真实链路。
+  it.each([false, true])('pins an uploader-only clipboard request across an active-profile switch (mirror differs: %s)', async (mirrorDiffers) => {
+    // 手工构造 ChildProcess 并挂上 PassThrough，以便精确控制剪贴板助手何时返回路径。
+    const stdout = new PassThrough()
+    const clipboardProcess = new ChildProcess()
+    clipboardProcess.stdout = stdout
+    let reportClipboardStart: () => void = () => undefined
+    const clipboardStarted = new Promise<void>(resolve => { reportClipboardStart = resolve })
+    // 配置必须在安装 spy 之前写入：若 saveConfig 抛错，try/finally 尚未进入，spy 会泄漏到后续用例。
+    picgo.saveConfig({
+      'settings.useBuiltinClipboard': false,
+      [`picBed.${uploaderB}`]: mirrorDiffers ? { ...defaultB, endpoint: 'b-mirror' } : defaultB
+    })
+    const spawnSpy = vi.spyOn(childProcess, 'spawn').mockImplementation(() => {
+      reportClipboardStart()
+      return clipboardProcess
+    })
+    try {
+      const request = fetch(`${baseUrl}/upload?uploader=${uploaderB}`, { method: 'POST' })
+      await clipboardStarted
+      expect(uploadCaptures).toEqual([])
+      picgo.saveConfig({
+        [`picBed.${uploaderB}`]: selectedB,
+        [`uploader.${uploaderB}.defaultId`]: selectedB._id
+      })
+      stdout.write(jsonImagePath)
+      const response = await request
+      const body = await parseUploadResponse(response)
+      const expectedUrl = 'https://uploads.test/b-default/json image.png'
+
+      expect(response.status).toBe(200)
+      expect(body.success).toBe(true)
+      expect(body.result).toEqual([expectedUrl])
+      expect(uploadCaptures).toEqual([{ uploader: uploaderB, endpoint: 'b-default', origins: [jsonImagePath] }])
+      expect(mocks.albumInsertMock).toHaveBeenCalledWith(expect.objectContaining({
+        imgUrl: expectedUrl,
+        type: uploaderB,
+        _configId: 'b-default-id',
+        _configName: 'Default B'
+      }))
+    } finally {
+      stdout.end()
+      spawnSpy.mockRestore()
+      picgo.saveConfig({
+        'settings.useBuiltinClipboard': true,
+        [`picBed.${uploaderB}`]: defaultB,
+        [`uploader.${uploaderB}.defaultId`]: defaultB._id
+      })
+    }
     await expectConfigUnchanged()
   })
 

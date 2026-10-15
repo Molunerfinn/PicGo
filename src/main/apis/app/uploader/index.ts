@@ -260,17 +260,23 @@ class Uploader {
         // Snapshot this request's uploader config before uploading, so concurrent
         // uploads and config switches cannot mis-attribute album items.
         const configSnapshot = getActiveUploaderConfigSnapshot(capturedTask.options)
-        const canPinDefaultConfig = configSnapshot && !capturedTask.options?.uploader && !capturedTask.options?.configId && !capturedTask.options?.configName &&
-          picgo.helper.uploader.get(configSnapshot.uploader) &&
+        const hasUploadSelector = Boolean(
+          capturedTask.options?.uploader || capturedTask.options?.configId || capturedTask.options?.configName
+        )
+        // 显式 selector 解析到已保存的配置时，读取剪贴板前就固定其 ID：Core 会在读取
+        // 剪贴板期间重新解析 options，不固定就会落到切换后的 profile 上。
+        // 无 selector 时仍需确认活动 mirror 与已保存配置一致，保留原上传目标。
+        const canPinConfig = configSnapshot !== null &&
+          Boolean(picgo.helper.uploader.get(configSnapshot.uploader)) &&
           picgo.uploaderConfig.getConfigList(configSnapshot.uploader).some(config =>
-            config._id === configSnapshot.configId && isEqual(config, picgo.getConfig(`picBed.${configSnapshot.uploader}`))
+            config._id === configSnapshot.configId && (hasUploadSelector || isEqual(config, picgo.getConfig(`picBed.${configSnapshot.uploader}`)))
           )
-        const uploadOptions = canPinDefaultConfig
+        const uploadOptions = canPinConfig
           ? { ...capturedTask.options, uploader: configSnapshot.uploader, configId: configSnapshot.configId }
           : capturedTask.options
         const output = await picgo.upload(capturedTask.input, uploadOptions)
         if (Array.isArray(output) && output.some((item: ImgInfo) => item.imgUrl)) {
-          applyUploaderConfigSnapshot(output, canPinDefaultConfig || capturedTask.options?.uploader || capturedTask.options?.configId || capturedTask.options?.configName ? configSnapshot : null)
+          applyUploaderConfigSnapshot(output, canPinConfig || hasUploadSelector ? configSnapshot : null)
           if (context.active && isAvailableWebContents(capturedTask.webContents)) {
             try {
               await dataReportManager.reportUploadData(capturedTask.webContents, {
