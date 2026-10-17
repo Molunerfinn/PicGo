@@ -449,6 +449,7 @@ PRIVACY: "ご利用の前にプライバシーポリシー${privacyUrl}と利用
 PRIVACY_TIPS: アップロードするにはプライバシーポリシーに同意してください
 QUIT: 終了
 ALBUM_ALL_PHOTOS: すべての写真
+ALBUM_CONFIG_UNKNOWN: 未分類
 ALBUM_COLLECTIONS: コレクション
 ALBUM_TAGS: タグ
 ALBUM_MENU: メニュー

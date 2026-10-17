@@ -414,6 +414,7 @@ interface ILocales {
   PRIVACY_TIPS: string
   QUIT: string
   ALBUM_ALL_PHOTOS: string
+  ALBUM_CONFIG_UNKNOWN: string
   ALBUM_COLLECTIONS: string
   ALBUM_TAGS: string
   ALBUM_MENU: string

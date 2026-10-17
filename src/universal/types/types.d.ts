@@ -87,6 +87,17 @@ interface ImgInfo {
    * updated time, Date.now(). if item is updated, such as url rewrite, this will be updated. otherwise, it will be the same as createdAt.
    */
   updatedAt?: number | string | Date
+  /**
+   * `_id` of the uploader config that produced this item. Absent on items
+   * uploaded before this field was introduced; the album falls back to
+   * inferring the config from the URL in that case.
+   */
+  _configId?: string
+  /**
+   * `_configName` of the uploader config at upload time. Display-only snapshot:
+   * renaming a config does not rewrite historical items.
+   */
+  _configName?: string
   [propName: string]: any
 }
 

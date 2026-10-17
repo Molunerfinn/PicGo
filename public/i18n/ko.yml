@@ -449,6 +449,7 @@ PRIVACY: "이용하기 전에 개인정보 처리방침 ${privacyUrl} 및 이용
 PRIVACY_TIPS: 업로드하려면 개인정보 처리방침에 동의해 주세요
 QUIT: 종료
 ALBUM_ALL_PHOTOS: 전체 사진
+ALBUM_CONFIG_UNKNOWN: 미분류
 ALBUM_COLLECTIONS: 컬렉션
 ALBUM_TAGS: 태그
 ALBUM_MENU: 메뉴

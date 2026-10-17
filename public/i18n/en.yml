@@ -449,6 +449,7 @@ PRIVACY: "Please read and agree to the Privacy Policy ${privacyUrl} and Terms of
 PRIVACY_TIPS: Please agree the privacy policy to upload
 QUIT: Quit
 ALBUM_ALL_PHOTOS: All Photos
+ALBUM_CONFIG_UNKNOWN: Unsorted
 ALBUM_COLLECTIONS: Collections
 ALBUM_TAGS: Tags
 ALBUM_MENU: Menu

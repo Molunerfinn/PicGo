@@ -449,6 +449,7 @@ PRIVACY: "使用前请阅读并同意隐私政策 ${privacyUrl} 与服务条款 
 PRIVACY_TIPS: 请同意隐私协议，否则无法上传。
 QUIT: 退出
 ALBUM_ALL_PHOTOS: 全部照片
+ALBUM_CONFIG_UNKNOWN: 未分类
 ALBUM_COLLECTIONS: 合集
 ALBUM_TAGS: 标签
 ALBUM_MENU: 菜单

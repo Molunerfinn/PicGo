@@ -6,11 +6,13 @@ import {
 import type { IpcMainEvent, WebContents } from 'electron'
 import { AsyncLocalStorage } from 'node:async_hooks'
 import dayjs from 'dayjs'
+import isEqual from 'lodash/isEqual'
 import picgo from '@core/picgo'
 import windowManager from 'apis/app/window/windowManager'
 import { IWindowList } from '#/types/enum'
 import util from 'util'
-import type { IPicGo } from 'picgo'
+import { resolveUploadOptions } from 'picgo'
+import type { IPicGo, UploadOptions } from 'picgo'
 import { showNotification, getClipboardFilePathList } from '~/main/utils/common'
 import { GET_RENAME_FILE_NAME, RENAME_FILE_NAME } from '~/universal/events/constants'
 import logger from '@core/picgo/logger'
@@ -91,6 +93,50 @@ const waitForRename = (
     ipcMain.on(replyChannel, handleReply)
     window.on('close', handleClose)
     context?.renameCleanups.add(cancel)
+  })
+}
+
+interface IUploaderConfigSnapshot {
+  uploader: string
+  configId: string
+  configName: string
+}
+
+/**
+ * Resolve the config selected for this request before uploading. Only uploads
+ * without a profile override use the globally active config as a fallback.
+ */
+const getActiveUploaderConfigSnapshot = (options?: UploadOptions): IUploaderConfigSnapshot | null => {
+  const resolved = resolveUploadOptions(picgo, options)
+  if (resolved) {
+    const config = resolved.config
+    return config?._id ? { uploader: resolved.uploader, configId: config._id, configName: config._configName ?? '' } : null
+  }
+  const type = picgo.getConfig<string>('picBed.uploader') || picgo.getConfig<string>('picBed.current')
+  if (!type) {
+    return null
+  }
+  const config = picgo.getConfig<IStringKeyMap>(`picBed.${type}`)
+  if (!config?._id || typeof config._id !== 'string') {
+    return null
+  }
+  return {
+    uploader: type,
+    configId: config._id,
+    configName: typeof config._configName === 'string' ? config._configName : ''
+  }
+}
+
+const applyUploaderConfigSnapshot = (
+  output: ImgInfo[],
+  snapshot: IUploaderConfigSnapshot | null
+) => {
+  output.forEach((item) => {
+    delete item._configId
+    delete item._configName
+    if (!snapshot || item.type !== snapshot.uploader) return
+    item._configId = snapshot.configId
+    item._configName = snapshot.configName
   })
 }
 
@@ -211,8 +257,26 @@ class Uploader {
           throw Error(T('PRIVACY_TIPS'))
         }
         const startTime = Date.now()
-        const output = await picgo.upload(capturedTask.input, capturedTask.options)
+        // Snapshot this request's uploader config before uploading, so concurrent
+        // uploads and config switches cannot mis-attribute album items.
+        const configSnapshot = getActiveUploaderConfigSnapshot(capturedTask.options)
+        const hasUploadSelector = Boolean(
+          capturedTask.options?.uploader || capturedTask.options?.configId || capturedTask.options?.configName
+        )
+        // 显式 selector 解析到已保存的配置时，读取剪贴板前就固定其 ID：Core 会在读取
+        // 剪贴板期间重新解析 options，不固定就会落到切换后的 profile 上。
+        // 无 selector 时仍需确认活动 mirror 与已保存配置一致，保留原上传目标。
+        const canPinConfig = configSnapshot !== null &&
+          Boolean(picgo.helper.uploader.get(configSnapshot.uploader)) &&
+          picgo.uploaderConfig.getConfigList(configSnapshot.uploader).some(config =>
+            config._id === configSnapshot.configId && (hasUploadSelector || isEqual(config, picgo.getConfig(`picBed.${configSnapshot.uploader}`)))
+          )
+        const uploadOptions = canPinConfig
+          ? { ...capturedTask.options, uploader: configSnapshot.uploader, configId: configSnapshot.configId }
+          : capturedTask.options
+        const output = await picgo.upload(capturedTask.input, uploadOptions)
         if (Array.isArray(output) && output.some((item: ImgInfo) => item.imgUrl)) {
+          applyUploaderConfigSnapshot(output, canPinConfig || hasUploadSelector ? configSnapshot : null)
           if (context.active && isAvailableWebContents(capturedTask.webContents)) {
             try {
               await dataReportManager.reportUploadData(capturedTask.webContents, {
