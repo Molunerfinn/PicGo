@@ -29,6 +29,7 @@ export function SettingsSectionNetwork({
   const [serverHostDraft, setServerHostDraft] = useState(settingsConfig.server.host)
   const [serverPortDraft, setServerPortDraft] = useState(String(settingsConfig.server.port))
   const [serverEnableDraft, setServerEnableDraft] = useState(settingsConfig.server.enable)
+  const [serverSecretDraft, setServerSecretDraft] = useState(settingsConfig.server.secret ?? "")
 
   return (
     <>
@@ -65,6 +66,7 @@ export function SettingsSectionNetwork({
                 setServerHostDraft(settingsConfig.server.host)
                 setServerPortDraft(String(settingsConfig.server.port))
                 setServerEnableDraft(settingsConfig.server.enable)
+                setServerSecretDraft(settingsConfig.server.secret ?? "")
                 setServerDialogOpen(true)
               }}
             >
@@ -91,9 +93,11 @@ export function SettingsSectionNetwork({
         serverHostDraft={serverHostDraft}
         serverPortDraft={serverPortDraft}
         serverEnableDraft={serverEnableDraft}
+        serverSecretDraft={serverSecretDraft}
         onServerHostDraftChange={setServerHostDraft}
         onServerPortDraftChange={setServerPortDraft}
         onServerEnableDraftChange={setServerEnableDraft}
+        onServerSecretDraftChange={setServerSecretDraft}
       />
     </>
   )

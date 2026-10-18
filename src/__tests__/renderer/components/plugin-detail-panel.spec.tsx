@@ -249,15 +249,11 @@ describe('PluginDetailPanel — config tab persistence (issue diagnostic)', () =
       expect(modeTrigger.textContent).toContain('advanced')
     })
 
-    // Without the schema sync, verbosity/apiVersion values are saved but
-    // the basic-state choices don't include them, so they render as
-    // placeholder (field.name). This documents the current broken state
-    // and gives us a failing assertion to fix.
-    const verbosityTrigger = getFieldSelectTrigger('Verbosity')
-    const apiVersionTrigger = getFieldSelectTrigger('API version')
-    // After fix: these should contain 'debug' / 'v2'
-    expect(verbosityTrigger.textContent).toContain('debug')
-    expect(apiVersionTrigger.textContent).toContain('v2')
+    // Mode is hydrated synchronously, but verbosity/apiVersion only show the saved values once the async schema sync resolves with advanced-state choices; until then they render the placeholder (field.name), so wait for it instead of asserting right after mode.
+    await waitFor(() => {
+      expect(getFieldSelectTrigger('Verbosity').textContent).toContain('debug')
+      expect(getFieldSelectTrigger('API version').textContent).toContain('v2')
+    })
   })
 
   it('shows saved values end-to-end: user toggles mode, clicks Confirm, form retains new values', async () => {
@@ -326,7 +322,10 @@ describe('PluginDetailPanel — config tab persistence (issue diagnostic)', () =
       expect(modeTrigger.textContent).toContain('advanced')
     })
 
-    expect(getFieldSelectTrigger('Verbosity').textContent).toContain('debug')
-    expect(getFieldSelectTrigger('API version').textContent).toContain('v2')
+    // Same as above: dependent fields need the async schema sync to finish after the rerender.
+    await waitFor(() => {
+      expect(getFieldSelectTrigger('Verbosity').textContent).toContain('debug')
+      expect(getFieldSelectTrigger('API version').textContent).toContain('v2')
+    })
   })
 })

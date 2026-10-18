@@ -40,6 +40,7 @@ const mocks = vi.hoisted(() => {
   }
 
   const uploadMock = vi.fn<(input?: IUploadOption, options?: UploadOptions) => Promise<ImgInfo[] | Error>>()
+  const resolveUploadOptionsMock = vi.fn<(_picgo: unknown, options?: UploadOptions) => { uploader: string, config?: { _id: string, _configName: string } } | undefined>()
   const reportUploadDataMock = vi.fn<(webContents: WebContents, options: ReportOptions) => Promise<void>>()
   const privacyCheckMock = vi.fn<() => Promise<boolean>>()
   const getClipboardFilePathListMock = vi.fn<() => string[]>()
@@ -51,6 +52,7 @@ const mocks = vi.hoisted(() => {
 
   return {
     uploadMock,
+    resolveUploadOptionsMock,
     reportUploadDataMock,
     privacyCheckMock,
     getClipboardFilePathListMock,
@@ -68,7 +70,13 @@ const mocks = vi.hoisted(() => {
       on: vi.fn((event: string, listener: EventListener) => {
         addListener(picgoListeners, event, listener)
       }),
+      uploaderConfig: {
+        getConfigList: vi.fn(() => [])
+      },
       helper: {
+        uploader: {
+          get: vi.fn(() => undefined)
+        },
         beforeUploadPlugins: {
           register: vi.fn((_name: string, plugin: RenamePlugin) => {
             renameHandler = plugin.handle
@@ -111,6 +119,10 @@ vi.mock('electron', () => ({
 
 vi.mock('@core/picgo', () => ({
   default: mocks.picgo
+}))
+
+vi.mock('picgo', () => ({
+  resolveUploadOptions: mocks.resolveUploadOptionsMock
 }))
 
 vi.mock('@core/picgo/logger', () => ({
@@ -270,6 +282,7 @@ describe('Uploader task context', () => {
     vi.clearAllMocks()
     mocks.resetIpcListeners()
     mocks.uploadMock.mockReset()
+    mocks.resolveUploadOptionsMock.mockReset()
     mocks.reportUploadDataMock.mockReset()
     mocks.reportUploadDataMock.mockResolvedValue(undefined)
     mocks.privacyCheckMock.mockReset()
@@ -462,6 +475,23 @@ describe('Uploader task context', () => {
     expect(mocks.loggerErrorMock).toHaveBeenCalledWith(reportError)
   })
 
+  it('does not borrow the globally active config when a selected uploader has no saved profile', async () => {
+    const image = createImage('cloud.png')
+    mocks.picgo.getConfig.mockImplementation((key: string) => {
+      if (key === 'picBed.current') return 's3'
+      if (key === 'picBed.s3') return { _id: 'global-id', _configName: 'Global' }
+      return undefined
+    })
+    mocks.resolveUploadOptionsMock.mockReturnValue({ uploader: 'picgo-cloud' })
+    mocks.uploadMock.mockResolvedValue([image])
+
+    const result = await uploader.upload({ options: { uploader: 'picgo-cloud' } })
+
+    expect(result).toEqual([image])
+    expect(image).not.toHaveProperty('_configId')
+    expect(image).not.toHaveProperty('_configName')
+  })
+
   it('forwards options for the Core clipboard path and preserves default uploads', async () => {
     const window = createWebContents(5)
     const clipboardImage = createImage('core-clipboard.png')
@@ -535,7 +565,8 @@ describe('Uploader task context', () => {
     await unlinkStarted.promise
 
     expect(mocks.writeFileMock).toHaveBeenCalledWith(
-      expect.stringMatching(/^\/picgo-base\/.*\/\d{17}\.png$/),
+      // Separator-agnostic: path.join yields backslashes on Windows.
+      expect.stringMatching(/^[/\\]picgo-base[/\\].*[/\\]\d{17}\.png$/),
       Buffer.from('png')
     )
     const generatedPath = mocks.writeFileMock.mock.calls[0][0]

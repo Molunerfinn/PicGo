@@ -46,7 +46,7 @@ on:
           - test-signing
 
 env:
-  NODE_VERSION: 22.x
+  NODE_VERSION: 24.x
 
 jobs:
   # ============== macOS Builds ==============

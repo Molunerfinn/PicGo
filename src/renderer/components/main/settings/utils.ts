@@ -38,6 +38,8 @@ export interface SettingsServerConfig {
   port: number
   host: string
   enable: boolean
+  // Shared secret for `POST /upload`; empty or missing disables server authentication.
+  secret?: string
 }
 
 export interface SettingsShortcutItem {
@@ -338,6 +340,7 @@ export const defaultSettingsConfig: SettingsConfigState = {
     port: 36677,
     host: "127.0.0.1",
     enable: true,
+    secret: "",
   },
   startupMode: IStartupMode.HIDE,
   shortKey: defaultSettingsShortKeyMap,
@@ -417,7 +420,7 @@ const settingsSearchKeywordsByItemId: Record<string, string[]> = {
   "upload-proxy": ["代理", "镜像", "鏡像", "上传代理", "上傳代理", "代理和镜像", "代理與鏡像"],
   "plugin-proxy": ["插件代理", "外掛代理", "插件安装代理", "外掛安裝代理"],
   "plugin-mirror": ["插件镜像", "外掛鏡像", "插件安装镜像", "外掛安裝鏡像", "镜像源", "鏡像源"],
-  server: ["服务", "服務", "服务端", "服務端", "端口", "埠", "主机", "主機"],
+  server: ["服务", "服務", "服务端", "服務端", "端口", "埠", "主机", "主機", "密钥", "金鑰", "鉴权", "驗證", "secret", "auth"],
   "log-level": ["日志级别", "日誌級別", "日志等级", "日誌等級"],
   "log-size": ["日志大小", "日誌大小", "日志文件大小", "日誌檔案大小"],
   "open-config-file": ["配置文件", "設定檔", "配置檔", "打开配置", "開啟設定檔"],

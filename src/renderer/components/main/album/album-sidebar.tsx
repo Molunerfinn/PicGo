@@ -1,3 +1,5 @@
+import { useState } from "react"
+import { ChevronDownIcon, ChevronRightIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -12,6 +14,7 @@ import { useAppStore } from "@/store"
 import { CloudSidebarSkeleton } from "./cloud-loading"
 import {
   NavType,
+  unknownConfigKey,
   type AlbumProviderFilter,
   type AlbumPhoto,
   type NavContext,
@@ -31,6 +34,19 @@ type AlbumNavButtonProps = {
   count?: number | string
   active: boolean
   onClick: () => void
+}
+
+type AlbumConfigNavButtonProps = {
+  label: string
+  count: number
+  active: boolean
+  onClick: () => void
+}
+
+type AlbumConfigNode = {
+  key: string
+  label: string
+  count: number
 }
 
 type AlbumSidebarProps = {
@@ -111,6 +127,50 @@ function AlbumNavButton({
   )
 }
 
+function AlbumConfigNavButton({
+  label,
+  count,
+  active,
+  onClick,
+}: AlbumConfigNavButtonProps) {
+  return (
+    <Button
+      variant="ghost"
+      className={cn(
+        "h-8 w-full cursor-pointer justify-between rounded-md px-2 transition-all duration-300",
+        "focus-visible:ring-0 focus-visible:border-transparent",
+        "focus-visible:bg-(--app-sidebar-item-hover-bg)",
+        active
+          ? "bg-(--app-sidebar-item-active-bg) text-(--app-sidebar-item-active-color) hover:bg-(--app-sidebar-item-active-bg) hover:text-(--app-sidebar-item-active-color)"
+          : "text-muted-foreground hover:bg-(--app-sidebar-item-hover-bg) hover:text-(--app-sidebar-item-active-color)"
+      )}
+      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+    >
+      <span className="flex min-w-0 items-center gap-2">
+        <span
+          className={cn(
+            "size-1.5 shrink-0 rounded-full",
+            active ? "bg-primary" : "bg-muted-foreground/40"
+          )}
+        />
+        <span className="truncate text-xs">{label}</span>
+      </span>
+      <Badge
+        variant="secondary"
+        className={cn(
+          "h-4 rounded-full px-1.5 text-[10px] font-semibold",
+          active
+            ? "bg-(--app-sidebar-item-active-bg) text-(--app-sidebar-item-active-color)"
+            : "bg-muted text-muted-foreground"
+        )}
+      >
+        {count}
+      </Badge>
+    </Button>
+  )
+}
+
 export function AlbumSidebar({
   images,
   providers,
@@ -123,10 +183,19 @@ export function AlbumSidebar({
   onCloudRefresh,
 }: AlbumSidebarProps) {
   const { t } = useTranslation()
+  const [expandedProviders, setExpandedProviders] = useState<string[]>([])
   const isCloud = albumSource === AlbumSource.CLOUD
   const showCloudNav = isCloud && isCloudAvailable
   const picBeds = useAppStore.use.picBeds()
   const cloudStatsQuery = useCloudAlbumStatsQuery({ enabled: showCloudNav })
+
+  const toggleProviderExpanded = (type: string) => {
+    setExpandedProviders((prev) =>
+      prev.includes(type)
+        ? prev.filter((value) => value !== type)
+        : [...prev, type]
+    )
+  }
 
   const cloudStats = cloudStatsQuery.data
   const cloudStatsError = showCloudNav && cloudStatsQuery.isError
@@ -136,6 +205,9 @@ export function AlbumSidebar({
       type: stat.type,
       name: bed?.name ?? stat.type,
       count: stat.count,
+      // Cloud album items carry no uploader config id, so no config breakdown.
+      configs: [],
+      unknownCount: 0,
     }
   })
 
@@ -193,20 +265,86 @@ export function AlbumSidebar({
                   onFilterChange({ type: NavType.All, value: allPhotosKey })
                 }
               />
-              {displayProviders.map((provider) => (
-                <AlbumNavButton
-                  key={provider.type}
-                  label={provider.name}
-                  count={provider.count}
-                  active={
-                    navContext.type === NavType.Provider &&
+              {displayProviders.map((provider) => {
+                const configNodes: AlbumConfigNode[] = [
+                  ...provider.configs.map((config) => ({
+                    key: config.id,
+                    label: config.name,
+                    count: config.count,
+                  })),
+                  ...(provider.unknownCount > 0
+                    ? [{
+                      key: unknownConfigKey,
+                      label: t("ALBUM_CONFIG_UNKNOWN"),
+                      count: provider.unknownCount,
+                    }]
+                    : []),
+                ]
+                const hasConfigNodes = configNodes.length > 0
+                const isExpanded = expandedProviders.includes(provider.type)
+                const isProviderActive =
+                  navContext.type === NavType.Provider &&
                   navContext.value === provider.type
-                  }
-                  onClick={() =>
-                    onFilterChange({ type: NavType.Provider, value: provider.type })
-                  }
-                />
-              ))}
+
+                return (
+                  <div key={provider.type}>
+                    <div className="flex items-center gap-1">
+                      <div className="min-w-0 flex-1">
+                        <AlbumNavButton
+                          label={provider.name}
+                          count={provider.count}
+                          active={isProviderActive}
+                          onClick={() =>
+                            onFilterChange({ type: NavType.Provider, value: provider.type })
+                          }
+                        />
+                      </div>
+                      {hasConfigNodes ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-xs"
+                          className="text-muted-foreground shrink-0 hover:bg-(--app-sidebar-item-hover-bg) hover:text-(--app-sidebar-item-active-color)"
+                          onClick={() => toggleProviderExpanded(provider.type)}
+                          title={isExpanded ? t("PROVIDER_SIDEBAR_COLLAPSE") : t("PROVIDER_SIDEBAR_EXPAND")}
+                          aria-label={isExpanded ? t("PROVIDER_SIDEBAR_COLLAPSE") : t("PROVIDER_SIDEBAR_EXPAND")}
+                          aria-expanded={isExpanded}
+                        >
+                          {isExpanded ? (
+                            <ChevronDownIcon className="size-4" />
+                          ) : (
+                            <ChevronRightIcon className="size-4" />
+                          )}
+                        </Button>
+                      ) : null}
+                    </div>
+
+                    {hasConfigNodes && isExpanded ? (
+                      <div className="border-sidebar-border/60 mt-1 ml-4 space-y-1 border-l pb-1 pl-2">
+                        {configNodes.map((node) => (
+                          <AlbumConfigNavButton
+                            key={node.key}
+                            label={node.label}
+                            count={node.count}
+                            active={
+                              navContext.type === NavType.Config &&
+                              navContext.providerType === provider.type &&
+                              navContext.value === node.key
+                            }
+                            onClick={() =>
+                              onFilterChange({
+                                type: NavType.Config,
+                                value: node.key,
+                                providerType: provider.type,
+                              })
+                            }
+                          />
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                )
+              })}
             </div>
           ) : (
             <CloudFeatureHighlights />

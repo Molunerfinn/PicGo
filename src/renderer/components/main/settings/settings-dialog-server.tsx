@@ -1,4 +1,6 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { EyeIcon, EyeOffIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -21,9 +23,11 @@ interface SettingsServerDialogProps {
   serverHostDraft: string
   serverPortDraft: string
   serverEnableDraft: boolean
+  serverSecretDraft: string
   onServerHostDraftChange: (value: string) => void
   onServerPortDraftChange: (value: string) => void
   onServerEnableDraftChange: (value: boolean) => void
+  onServerSecretDraftChange: (value: string) => void
 }
 
 export function SettingsServerDialog({
@@ -32,12 +36,21 @@ export function SettingsServerDialog({
   serverHostDraft,
   serverPortDraft,
   serverEnableDraft,
+  serverSecretDraft,
   onServerHostDraftChange,
   onServerPortDraftChange,
   onServerEnableDraftChange,
+  onServerSecretDraftChange,
 }: SettingsServerDialogProps) {
   const { t } = useTranslation()
   const saveSettingsConfig = useSettingsSave()
+  const [isSecretVisible, setIsSecretVisible] = useState(false)
+
+  // Mask the secret again whenever the dialog closes, so it always reopens hidden.
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) setIsSecretVisible(false)
+    onOpenChange(nextOpen)
+  }
 
   const handleConfirm = async () => {
     const port = Number(serverPortDraft)
@@ -45,16 +58,18 @@ export function SettingsServerDialog({
       host: serverHostDraft,
       port: Number.isFinite(port) ? port : 36677,
       enable: serverEnableDraft,
+      // Core trims the secret and treats an empty value as "authentication disabled".
+      secret: serverSecretDraft.trim(),
     }
 
     const isSaved = await saveSettingsConfig("settings.server", nextServer)
     if (isSaved) {
-      onOpenChange(false)
+      handleOpenChange(false)
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t("SETTINGS_SET_PICGO_SERVER")}</DialogTitle>
@@ -90,11 +105,40 @@ export function SettingsServerDialog({
                   placeholder={t("SETTINGS_TIP_PLACEHOLDER_PORT")}
                 />
               </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="settings-server-secret">{t("SETTINGS_SET_SERVER_SECRET")}</Label>
+                <div className="relative">
+                  <Input
+                    id="settings-server-secret"
+                    type={isSecretVisible ? "text" : "password"}
+                    autoComplete="off"
+                    className="pr-10"
+                    value={serverSecretDraft}
+                    onChange={(event) => onServerSecretDraftChange(event.target.value)}
+                    placeholder={t("SETTINGS_TIP_PLACEHOLDER_SECRET")}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xs"
+                    className="absolute top-1/2 right-1 -translate-y-1/2"
+                    aria-label={t(isSecretVisible ? "SETTINGS_HIDE_SECRET" : "SETTINGS_SHOW_SECRET")}
+                    onClick={() => setIsSecretVisible((prev) => !prev)}
+                  >
+                    {isSecretVisible ? (
+                      <EyeOffIcon className="size-4" />
+                    ) : (
+                      <EyeIcon className="size-4" />
+                    )}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">{t("SETTINGS_TIPS_SERVER_SECRET")}</p>
+              </div>
             </>
           ) : null}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => handleOpenChange(false)}>
             {t("CANCEL")}
           </Button>
           <Button onClick={handleConfirm}>{t("CONFIRM")}</Button>
