@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import picgo from '@core/picgo'
 import logger from '@core/picgo/logger'
 import windowManager from 'apis/app/window/windowManager'
@@ -26,13 +27,29 @@ class Server {
   private ensureConfig (): IServerConfig {
     let config = picgo.getConfig<IServerConfig>('settings.server')
     if (this.checkIfConfigIsValid(config)) {
+      // Backfill a secret for configs saved before auth was required by
+      // default. An empty/missing secret is treated by picgo-core as
+      // "authentication disabled", which lets any web page the user visits
+      // reach this always-on localhost server (CORS on /upload is
+      // unrestricted) and make it read arbitrary local files via the
+      // "list" upload parameter.
+      if (!config.secret || !config.secret.trim()) {
+        config = { ...config, secret: crypto.randomBytes(24).toString('hex') }
+        picgo.saveConfig({
+          'settings.server': config
+        })
+      }
       return config
     }
 
     config = {
       port: 36677,
       host: '127.0.0.1',
-      enable: true
+      enable: true,
+      // Generate a per-install random secret so the server requires
+      // authentication from its first run, instead of shipping with
+      // authentication disabled by default.
+      secret: crypto.randomBytes(24).toString('hex')
     }
     picgo.saveConfig({
       'settings.server': config
