@@ -121,6 +121,18 @@ PICGO_CLOUD_PLAN_PERIOD_GRACE_LABEL: 宽限期至
 PICGO_CLOUD_PLAN_PERIOD_GRACE_TOOLTIP: 付费套餐已过期，目前处于宽限期。该日期前 PicGo Cloud 图片仍可正常访问，但配额已临时降级到免费版。大部分付费功能将暂时不可使用。过期后账户将进入冻结状态。
 PICGO_CLOUD_PLAN_PERIOD_FROZEN_LABEL: 冻结期至
 PICGO_CLOUD_PLAN_PERIOD_FROZEN_TOOLTIP: 账户已冻结，PicGo Cloud 图片无法访问。该日期后数据可能被清理，请尽快续费以恢复权益。
+PICGO_CLOUD_PLAN_PERIOD_SUBSCRIPTION: "订阅 · ${plan}"
+PICGO_CLOUD_PLAN_PERIOD_SYNCING: "已生效，续费信息同步中"
+PICGO_CLOUD_PLAN_PERIOD_FIXED_TERM: "限时会员"
+PICGO_CLOUD_PLAN_PERIOD_EXPIRING_SOON: "即将到期"
+PICGO_CLOUD_PLAN_PERIOD_IN_USE: "当前生效"
+PICGO_CLOUD_PLAN_PERIOD_TERM_VALID_UNTIL: "有效期至 ${date}（剩余 ${days} 天）"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_CURRENT: "当前"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_THEN: "之后"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_UNTIL: "至 ${date}"
+PICGO_CLOUD_PLAN_PERIOD_NO_RENEW: "到期后不会自动续费。"
+PICGO_CLOUD_PLAN_PERIOD_CONCURRENT: "${plan} 生效至 ${date}，期间与订阅同时计时，之后回到订阅的 ${subscription}。"
+PICGO_CLOUD_PLAN_PERIOD_CONCURRENT_WASTED: "当前按订阅的 ${subscription} 使用；${plan} 同时计时至 ${date}，不会顺延。"
 PICGO_CLOUD_QUOTA_DOWNGRADED: 宽限期内配额已临时降级到 ${plan}，续费后将恢复
 PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_TITLE: 套餐已进入宽限期
 PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_DESC: 你的付费套餐已过期，目前进入 ${days} 天宽限期。期间配额已临时降级到免费版，大部分付费功能将暂时不可使用。请尽快续费以恢复完整权益。

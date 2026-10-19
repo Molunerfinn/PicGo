@@ -121,6 +121,18 @@ PICGO_CLOUD_PLAN_PERIOD_GRACE_LABEL: 유예 기간 종료일
 PICGO_CLOUD_PLAN_PERIOD_GRACE_TOOLTIP: "유료 요금제가 만료되어 현재 유예 기간입니다. 이 날짜까지는 PicGo Cloud 이미지에 계속 접근할 수 있지만, 할당량은 일시적으로 무료 등급으로 낮아집니다. 대부분의 유료 기능은 일시적으로 사용할 수 없습니다. 이 날짜 이후에는 계정이 정지 상태가 됩니다."
 PICGO_CLOUD_PLAN_PERIOD_FROZEN_LABEL: 정지 종료일
 PICGO_CLOUD_PLAN_PERIOD_FROZEN_TOOLTIP: "계정이 정지되었습니다. PicGo Cloud 이미지는 오류를 반환합니다. 이 날짜 이후에는 데이터가 삭제될 수 있습니다. 접근 권한을 복구하려면 갱신해 주세요."
+PICGO_CLOUD_PLAN_PERIOD_SUBSCRIPTION: "구독 · ${plan}"
+PICGO_CLOUD_PLAN_PERIOD_SYNCING: "활성화됨, 갱신 정보 동기화 중"
+PICGO_CLOUD_PLAN_PERIOD_FIXED_TERM: "기간제 멤버십"
+PICGO_CLOUD_PLAN_PERIOD_EXPIRING_SOON: "곧 만료"
+PICGO_CLOUD_PLAN_PERIOD_IN_USE: "사용 중"
+PICGO_CLOUD_PLAN_PERIOD_TERM_VALID_UNTIL: "${date}까지 유효 (${days}일 남음)"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_CURRENT: "현재"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_THEN: "이후"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_UNTIL: "${date}까지"
+PICGO_CLOUD_PLAN_PERIOD_NO_RENEW: "자동으로 갱신되지 않습니다."
+PICGO_CLOUD_PLAN_PERIOD_CONCURRENT: "${plan}은(는) ${date}까지 적용되며 그동안 구독과 동시에 차감됩니다. 이후에는 구독한 ${subscription}(으)로 돌아갑니다."
+PICGO_CLOUD_PLAN_PERIOD_CONCURRENT_WASTED: "현재 구독한 ${subscription}(으)로 이용 중입니다. ${plan}은(는) ${date}까지 동시에 차감되며 이월되지 않습니다."
 PICGO_CLOUD_QUOTA_DOWNGRADED: "유예 기간 동안 할당량이 일시적으로 ${plan}(으)로 낮아졌습니다. 복구하려면 갱신해 주세요."
 PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_TITLE: 요금제가 유예 기간입니다
 PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_DESC: "유료 요금제가 만료되어 ${days}일간의 유예 기간에 들어갔습니다. 할당량은 일시적으로 무료 등급으로 낮아지고, 대부분의 유료 기능을 사용할 수 없습니다. 전체 기능을 복구하려면 갱신해 주세요."

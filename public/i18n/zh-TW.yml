@@ -121,6 +121,18 @@ PICGO_CLOUD_PLAN_PERIOD_GRACE_LABEL: 寬限期至
 PICGO_CLOUD_PLAN_PERIOD_GRACE_TOOLTIP: 付費套餐已過期，目前處於寬限期。該日期前 PicGo Cloud 圖片仍可正常存取，但配額已暫時降級到免費版。大部分付費功能將暫時不可使用。過期後帳戶將進入凍結狀態。
 PICGO_CLOUD_PLAN_PERIOD_FROZEN_LABEL: 凍結期至
 PICGO_CLOUD_PLAN_PERIOD_FROZEN_TOOLTIP: 帳戶已凍結，PicGo Cloud 圖片無法存取。該日期後資料可能被清理，請儘快續費以恢復權益。
+PICGO_CLOUD_PLAN_PERIOD_SUBSCRIPTION: "訂閱 · ${plan}"
+PICGO_CLOUD_PLAN_PERIOD_SYNCING: "已生效，續費資訊同步中"
+PICGO_CLOUD_PLAN_PERIOD_FIXED_TERM: "限時會員"
+PICGO_CLOUD_PLAN_PERIOD_EXPIRING_SOON: "即將到期"
+PICGO_CLOUD_PLAN_PERIOD_IN_USE: "目前生效"
+PICGO_CLOUD_PLAN_PERIOD_TERM_VALID_UNTIL: "有效期至 ${date}（剩餘 ${days} 天）"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_CURRENT: "目前"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_THEN: "之後"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_UNTIL: "至 ${date}"
+PICGO_CLOUD_PLAN_PERIOD_NO_RENEW: "到期後不會自動續費。"
+PICGO_CLOUD_PLAN_PERIOD_CONCURRENT: "${plan} 生效至 ${date}，期間與訂閱同時計時，之後回到訂閱的 ${subscription}。"
+PICGO_CLOUD_PLAN_PERIOD_CONCURRENT_WASTED: "目前依訂閱的 ${subscription} 使用；${plan} 同時計時至 ${date}，不會順延。"
 PICGO_CLOUD_QUOTA_DOWNGRADED: 寬限期內配額已暫時降級到 ${plan}，續費後將恢復
 PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_TITLE: 套餐已進入寬限期
 PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_DESC: 你的付費套餐已過期，目前進入 ${days} 天寬限期。期間配額已暫時降級到免費版，大部分付費功能將暫時不可使用。請儘快續費以恢復完整權益。
