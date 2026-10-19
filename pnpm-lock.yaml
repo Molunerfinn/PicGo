@@ -131,8 +131,8 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       picgo:
-        specifier: ^3.1.0
-        version: 3.1.0
+        specifier: ^3.2.0
+        version: 3.2.0
       prismjs:
         specifier: ^1.30.0
         version: 1.30.0
@@ -5745,8 +5745,8 @@ packages:
   pend@1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
 
-  picgo@3.1.0:
-    resolution: {integrity: sha512-8GlFd7VaSs92MJpub/qW20Klbvx/FAe/V1MV29l6b2p5s66NTFKN73hqzWS2RZ/phTpjHNxycwq/96uXr6B8wg==}
+  picgo@3.2.0:
+    resolution: {integrity: sha512-wZINcVuF8oP5c7CFMzhegVjMj87GguG/VTJ13VGuPVkvzaNKyYsvGsB8h2zFLlm6Jc12QPbKb40oFHIPJ3sEoA==}
     engines: {node: '>= 20.19.0'}
     hasBin: true
 
@@ -13434,7 +13434,7 @@ snapshots:
 
   pend@1.2.0: {}
 
-  picgo@3.1.0:
+  picgo@3.2.0:
     dependencies:
       '@hono/node-server': 1.19.9(hono@4.12.3)
       '@picgo/i18n': 1.0.0
