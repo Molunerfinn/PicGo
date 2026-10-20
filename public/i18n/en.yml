@@ -121,6 +121,18 @@ PICGO_CLOUD_PLAN_PERIOD_GRACE_LABEL: Grace Until
 PICGO_CLOUD_PLAN_PERIOD_GRACE_TOOLTIP: "Your paid plan has expired and is now in the grace period. PicGo Cloud images remain accessible until this date, but quota is temporarily downgraded to free. Most paid features are temporarily unavailable. After this date, the account enters the frozen state."
 PICGO_CLOUD_PLAN_PERIOD_FROZEN_LABEL: Frozen Until
 PICGO_CLOUD_PLAN_PERIOD_FROZEN_TOOLTIP: "Your account is frozen. PicGo Cloud images return errors. After this date, data may be cleaned up. Renew to restore access."
+PICGO_CLOUD_PLAN_PERIOD_SUBSCRIPTION: "Subscription · ${plan}"
+PICGO_CLOUD_PLAN_PERIOD_SYNCING: "Active, renewal details syncing"
+PICGO_CLOUD_PLAN_PERIOD_FIXED_TERM: "Fixed-term membership"
+PICGO_CLOUD_PLAN_PERIOD_EXPIRING_SOON: "Expiring soon"
+PICGO_CLOUD_PLAN_PERIOD_IN_USE: "In use"
+PICGO_CLOUD_PLAN_PERIOD_TERM_VALID_UNTIL: "Valid until ${date} (${days} days left)"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_CURRENT: "Current"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_THEN: "Then"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_UNTIL: "until ${date}"
+PICGO_CLOUD_PLAN_PERIOD_NO_RENEW: "Does not renew automatically."
+PICGO_CLOUD_PLAN_PERIOD_CONCURRENT: "${plan} is in use until ${date} and counts down alongside your subscription. After that you're back on ${subscription}."
+PICGO_CLOUD_PLAN_PERIOD_CONCURRENT_WASTED: "You're on ${subscription} through your subscription. ${plan} counts down at the same time until ${date} and is not saved for later."
 PICGO_CLOUD_QUOTA_DOWNGRADED: "Quota temporarily downgraded to ${plan} during grace period. Renew to restore."
 PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_TITLE: Plan in grace period
 PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_DESC: "Your paid plan has expired and entered a ${days}-day grace period. Quota is temporarily downgraded to free, and most paid features are temporarily unavailable. Renew to restore full access."

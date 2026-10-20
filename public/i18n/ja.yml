@@ -121,6 +121,18 @@ PICGO_CLOUD_PLAN_PERIOD_GRACE_LABEL: 猶予期限
 PICGO_CLOUD_PLAN_PERIOD_GRACE_TOOLTIP: "有料プランが期限切れとなり、現在猶予期間中です。この日付まではPicGo Cloud画像にアクセスできますが、使用量は一時的に無料枠に引き下げられます。ほとんどの有料機能は一時的に利用できません。この日付以降、アカウントは凍結状態になります。"
 PICGO_CLOUD_PLAN_PERIOD_FROZEN_LABEL: 凍結期限
 PICGO_CLOUD_PLAN_PERIOD_FROZEN_TOOLTIP: "アカウントが凍結されています。PicGo Cloud画像はエラーを返します。この日付以降、データが削除される場合があります。アクセスを復元するには更新してください。"
+PICGO_CLOUD_PLAN_PERIOD_SUBSCRIPTION: "サブスクリプション · ${plan}"
+PICGO_CLOUD_PLAN_PERIOD_SYNCING: "有効・更新情報を同期中"
+PICGO_CLOUD_PLAN_PERIOD_FIXED_TERM: "期間限定メンバーシップ"
+PICGO_CLOUD_PLAN_PERIOD_EXPIRING_SOON: "まもなく期限切れ"
+PICGO_CLOUD_PLAN_PERIOD_IN_USE: "利用中"
+PICGO_CLOUD_PLAN_PERIOD_TERM_VALID_UNTIL: "${date} まで有効（残り ${days} 日）"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_CURRENT: "現在"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_THEN: "その後"
+PICGO_CLOUD_PLAN_PERIOD_TIMELINE_UNTIL: "${date} まで"
+PICGO_CLOUD_PLAN_PERIOD_NO_RENEW: "自動更新されません。"
+PICGO_CLOUD_PLAN_PERIOD_CONCURRENT: "${plan} は ${date} まで有効で、その間サブスクリプションと同時に消化されます。その後はサブスクリプションの ${subscription} に戻ります。"
+PICGO_CLOUD_PLAN_PERIOD_CONCURRENT_WASTED: "現在はサブスクリプションの ${subscription} で利用中です。${plan} は ${date} まで同時に消化され、繰り越されません。"
 PICGO_CLOUD_QUOTA_DOWNGRADED: "猶予期間中、使用量は一時的に${plan}に引き下げられています。復元するには更新してください。"
 PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_TITLE: プランが猶予期間中です
 PICGO_CLOUD_LIFECYCLE_BANNER_GRACE_DESC: "有料プランが期限切れとなり、${days}日間の猶予期間に入りました。使用量は一時的に無料枠に引き下げられ、ほとんどの有料機能が一時的に利用できません。全機能を復元するには更新してください。"
