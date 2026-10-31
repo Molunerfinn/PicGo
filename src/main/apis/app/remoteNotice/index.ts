@@ -19,6 +19,20 @@ const REMOTE_NOTICE_LOCAL_STORAGE_FILE = 'picgo-remote-notice.json'
 
 const REMOTE_NOTICE_LOCAL_STORAGE_PATH = path.join(STORE_PATH, REMOTE_NOTICE_LOCAL_STORAGE_FILE)
 
+
+// Only allow http/https links from remote notice actions, never a custom
+// OS-registered protocol scheme, since the remote notice document is not
+// cryptographically signed and openExternal can dispatch arbitrary URI
+// schemes to the OS.
+function isSafeExternalUrl (url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 class RemoteNoticeHandler {
   private remoteNotice: IRemoteNotice | null = null
   private remoteNoticeLocalCountStorage: IRemoteNoticeLocalCountStorage | null = null
@@ -117,7 +131,7 @@ class RemoteNoticeHandler {
               clickToCopy: !!action.data?.copyToClipboard,
               copyContent: action.data?.copyToClipboard || '',
               callback () {
-                if (action.data?.url) {
+                if (action.data?.url && isSafeExternalUrl(action.data.url)) {
                   shell.openExternal(action.data.url)
                 }
               }
@@ -125,14 +139,16 @@ class RemoteNoticeHandler {
             break
           case IRemoteNoticeActionType.OPEN_URL:
           // OPEN URL
-            shell.openExternal(action.data?.url || '')
+            if (action.data?.url && isSafeExternalUrl(action.data.url)) {
+              shell.openExternal(action.data.url)
+            }
             break
           case IRemoteNoticeActionType.COMMON:
           // DO COMMON CASE
             if (action.data?.copyToClipboard) {
               clipboard.writeText(action.data.copyToClipboard)
             }
-            if (action.data?.url) {
+            if (action.data?.url && isSafeExternalUrl(action.data.url)) {
               shell.openExternal(action.data.url)
             }
             break
