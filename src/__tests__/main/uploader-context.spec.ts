@@ -1,3 +1,6 @@
+import { mkdir, mkdtemp, rm } from 'fs/promises'
+import os from 'os'
+import path from 'path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { WebContents } from 'electron'
 import type { UploadOptions } from 'picgo'
@@ -45,6 +48,7 @@ const mocks = vi.hoisted(() => {
   const privacyCheckMock = vi.fn<() => Promise<boolean>>()
   const getClipboardFilePathListMock = vi.fn<() => string[]>()
   const writeFileMock = vi.fn<(filePath: string, data: Buffer) => Promise<void>>()
+  const ensureDirMock = vi.fn<(dirPath: string) => Promise<void>>()
   const unlinkMock = vi.fn<(filePath: string) => Promise<void>>()
   const readImageMock = vi.fn()
   const createWindowMock = vi.fn()
@@ -57,6 +61,7 @@ const mocks = vi.hoisted(() => {
     privacyCheckMock,
     getClipboardFilePathListMock,
     writeFileMock,
+    ensureDirMock,
     unlinkMock,
     readImageMock,
     createWindowMock,
@@ -166,6 +171,7 @@ vi.mock('write-file-atomic', () => ({
 
 vi.mock('fs-extra', () => ({
   default: {
+    ensureDir: mocks.ensureDirMock,
     unlink: mocks.unlinkMock
   }
 }))
@@ -291,6 +297,8 @@ describe('Uploader task context', () => {
     mocks.getClipboardFilePathListMock.mockReturnValue([])
     mocks.writeFileMock.mockReset()
     mocks.writeFileMock.mockResolvedValue(undefined)
+    mocks.ensureDirMock.mockReset()
+    mocks.ensureDirMock.mockResolvedValue(undefined)
     mocks.unlinkMock.mockReset()
     mocks.unlinkMock.mockResolvedValue(undefined)
     mocks.readImageMock.mockReset()
@@ -578,5 +586,40 @@ describe('Uploader task context', () => {
     await expect(trackedUpload).resolves.toEqual([image])
     expect(uploadSettled).toBe(true)
     expect(mocks.reportUploadDataMock).toHaveBeenCalledWith(asWebContents(window), expect.any(Object))
+  })
+
+  it('creates the clipboard image folder before saving a built-in clipboard image', async () => {
+    const { default: realWriteFile } = await vi.importActual<{ default: typeof import('write-file-atomic') }>('write-file-atomic')
+    // A fresh config folder: picgo-clipboard-images has not been created yet.
+    const baseDir = await mkdtemp(path.join(os.tmpdir(), 'picgo-clipboard-'))
+    const originalBaseDir = mocks.picgo.baseDir
+    mocks.picgo.baseDir = baseDir
+    const window = createWebContents(8)
+    const image = createImage('first-clipboard.png')
+    mocks.readImageMock.mockReturnValue({
+      isEmpty: () => false,
+      toPNG: () => Buffer.from('png')
+    })
+    mocks.ensureDirMock.mockImplementation(async (dirPath: string) => {
+      await mkdir(dirPath, { recursive: true })
+    })
+    mocks.writeFileMock.mockImplementation(async (filePath: string, data: Buffer) => {
+      await realWriteFile(filePath, data)
+    })
+    mocks.uploadMock.mockResolvedValue([image])
+
+    try {
+      await expect(uploader.uploadWithBuildInClipboard({
+        webContents: asWebContents(window)
+      })).resolves.toEqual([image])
+
+      const generatedPath = mocks.writeFileMock.mock.calls[0][0]
+      expect(path.dirname(generatedPath)).toBe(path.join(baseDir, 'picgo-clipboard-images'))
+      expect(mocks.uploadMock).toHaveBeenCalledWith([generatedPath], undefined)
+      expect(mocks.loggerErrorMock).not.toHaveBeenCalled()
+    } finally {
+      mocks.picgo.baseDir = originalBaseDir
+      await rm(baseDir, { recursive: true, force: true })
+    }
   })
 })
