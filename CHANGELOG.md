@@ -1,3 +1,32 @@
+## :tada: 3.0.4 (2026-11-13)
+
+
+### :sparkles: Features
+
+* **gui:** configure server upload secret in settings ([#1451](https://github.com/Molunerfinn/PicGo/issues/1451)) ([7a9bc23](https://github.com/Molunerfinn/PicGo/commit/7a9bc23))
+* **gui:** group album photos by uploader config ([#1452](https://github.com/Molunerfinn/PicGo/issues/1452)) ([78283f4](https://github.com/Molunerfinn/PicGo/commit/78283f4))
+* **gui:** show stacked cloud plan terms in plan period ([25104f6](https://github.com/Molunerfinn/PicGo/commit/25104f6))
+
+
+### :bug: Bug Fixes
+
+* **gui:** create the clipboard image folder before built-in clipboard uploads ([4671a6d](https://github.com/Molunerfinn/PicGo/commit/4671a6d)), closes [#1375](https://github.com/Molunerfinn/PicGo/issues/1375) [#1364](https://github.com/Molunerfinn/PicGo/issues/1364) [#1263](https://github.com/Molunerfinn/PicGo/issues/1263)
+* **gui:** restrict remote notice URLs to HTTP and HTTPS ([01f86c1](https://github.com/Molunerfinn/PicGo/commit/01f86c1)), closes [#1458](https://github.com/Molunerfinn/PicGo/issues/1458)
+
+
+### :package: Chore
+
+* bump node version to 24 ([4c1009e](https://github.com/Molunerfinn/PicGo/commit/4c1009e))
+* **ci:** bump node version to 24 in release workflow ([b6ad099](https://github.com/Molunerfinn/PicGo/commit/b6ad099))
+* **github:** add default code owner for review requests ([2e3e30f](https://github.com/Molunerfinn/PicGo/commit/2e3e30f))
+
+
+### :white_check_mark: Tests
+
+* **gui:** wait for schema sync in plugin detail panel tests ([#1449](https://github.com/Molunerfinn/PicGo/issues/1449)) ([1c0716f](https://github.com/Molunerfinn/PicGo/commit/1c0716f))
+
+
+
 ## :tada: 3.0.3 (2026-10-05)
 
 
