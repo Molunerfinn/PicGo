@@ -223,6 +223,9 @@ class Uploader {
         const baseDir = picgo.baseDir
         const fileName = `${dayjs().format('YYYYMMDDHHmmssSSS')}.png`
         filePath = path.join(baseDir, CLIPBOARD_IMAGE_FOLDER, fileName)
+        // PicGo-Core only creates this folder when its own clipboard script runs,
+        // so it may not exist yet when the built-in clipboard is used.
+        await fse.ensureDir(path.dirname(filePath))
         await writeFile(filePath, buffer)
         return await this.upload({ ...clipboardTask, input: [filePath] })
       } else {
