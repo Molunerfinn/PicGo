@@ -82,6 +82,7 @@
 
 PicGo 原生支持主流图床平台，并可通过插件系统无限扩展：
 
+- **[PicGo Cloud](https://picgo.app/zh/pricing/)**：官方图床，新安装默认使用。登录即可上传，不用配置存储和 CDN，有免费额度。
 - **国内云厂商**：七牛云、腾讯云 COS、又拍云、阿里云 OSS
 - **国际/开源平台**：GitHub、SM.MS(S.EE)、Imgur
 - **更多支持**：通过插件支持 AWS S3、Cloudflare R2、MinIO 等第三方图床
@@ -101,6 +102,15 @@ PicGo 打造了全方位的上传体验，让“传图”这件事变得前所�
 ### 🚀 极速上传体验
 - **多维上传方式**：支持拖拽图片、剪贴板粘贴、快捷键上传，甚至在 macOS/Windows 上支持右键菜单直接上传。
 - **全局快捷键**：默认 `Command+Shift+U` (macOS) / `Ctrl+Shift+U` (Windows/Linux) 即可唤起上传，无需离开当前窗口。 快捷键可自定义。
+
+### ☁️ PicGo Cloud
+PicGo Cloud 是可选的：配合你自己搭建的图床，PicGo 用起来完全一样。登录一个账号就能获得：
+
+- **免配置图床**：登录后直接上传。付费套餐有更大的存储空间和自定义域名。
+- **配置同步**：在多台设备间同步设置、图床和插件配置，支持端到端加密。所有套餐都免费。
+- **云端相册**：在 [cloud.picgo.app](https://cloud.picgo.app) 浏览和管理你在 PicGo Cloud 上传的文件。付费套餐还能在每台设备的 PicGo 客户端里打开云端相册，并通过自动导入把传到 GitHub、S3、R2 等其他图床的记录也加进来。只同步记录，文件仍然留在原来的图床。
+
+详见 [套餐价格](https://picgo.app/zh/pricing/) 和 [PicGo Cloud 文档](https://docs.picgo.app/zh/cloud/)。
 
 ### 🧩 强大的插件生态
 - **高度可扩展**：PicGo 拥有丰富的插件系统，已有插件支持 AWS S3、Cloudflare R2、MinIO 等第三方图床。

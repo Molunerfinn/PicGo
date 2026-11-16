@@ -82,6 +82,7 @@ Whether you’re writing a blog post, taking notes, or authoring developer docs,
 
 PicGo supports mainstream Image hosts out of the box, and can be extended indefinitely through its plugin system:
 
+- **[PicGo Cloud](https://picgo.app/pricing/)** (official, default on new installs): sign in and upload, with no storage or CDN to set up. Free tier included.
 - **China cloud vendors**: Qiniu, Tencent Cloud COS, UPYUN, Alibaba Cloud OSS
 - **International / open platforms**: GitHub, SM.MS(S.EE), Imgur
 - **More options via plugins**: AWS S3, Cloudflare R2, MinIO, and more
@@ -101,6 +102,15 @@ PicGo is built around a fast, low-friction image upload experience:
 ### 🚀 Fast uploads
 - **Multiple ways to upload**: drag & drop, paste from clipboard, hotkeys, and even right-click context menu upload on macOS/Windows.
 - **Global hotkey**: press `Command+Shift+U` (macOS) / `Ctrl+Shift+U` (Windows/Linux) to open the upload window without leaving your current app. The global key can be customized.
+
+### ☁️ PicGo Cloud
+PicGo Cloud is optional: PicGo works the same with any host you set up yourself. One account adds:
+
+- **Hosting with no setup**: upload right after you sign in. Paid plans add more storage and custom domains.
+- **Config sync**: your settings, uploaders and plugin config across devices, with an end-to-end encrypted mode. Free on every plan.
+- **Cloud album**: browse and manage your PicGo Cloud uploads at [cloud.picgo.app](https://cloud.picgo.app). On paid plans the album also opens in the PicGo app on every device, and auto-import adds uploads to GitHub, S3, R2 or any other host. Only the records are synced; the files stay where they are.
+
+See [plans](https://picgo.app/pricing/) and the [PicGo Cloud docs](https://docs.picgo.app/cloud/).
 
 ### 🧩 Powerful plugin ecosystem
 - **Highly extensible**: plugins already exist for AWS S3, Cloudflare R2, MinIO, and many other Image hosts.
