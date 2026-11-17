@@ -167,6 +167,7 @@ If you’re new to PicGo, start with the [User Guide](https://docs.picgo.app/gui
 | [Homebrew](https://brew.sh/)                                                     | `brew install picgo --cask`                                 | macOS      | Thanks to @womeimingzi11                |
 | [AUR](https://aur.archlinux.org/packages/yay)                                    | `yay -S picgo-appimage`                                     | Arch Linux | Thanks to @houbaron                     |
 | [Nix](https://search.nixos.org/packages?channel=unstable&query=picgo&show=picgo) | `nix-shell -p picgo`                                        | Nix/NixOS  | Thanks to @qrzbing                      |
+| [Snap Store](https://snapcraft.io/picgo)                                         | `sudo snap install picgo`                                   | Linux      | Thanks to @sidalit                      |
 
 ## Screenshots
 

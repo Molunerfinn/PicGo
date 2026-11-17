@@ -167,6 +167,7 @@ PicGo Cloud 是可选的：配合你自己搭建的图床，PicGo 用起来完�
 | [Homebrew](https://brew.sh/)                                                     | `brew install picgo --cask`                                 | macOS      | 感谢 @womeimingzi11 的贡献                                        |
 | [AUR](https://aur.archlinux.org/packages/yay)                                    | `yay -S picgo-appimage`                                     | Arch-Linux | 感谢 @houbaron 的贡献                                             |
 | [Nix](https://search.nixos.org/packages?channel=unstable&query=picgo&show=picgo) | `nix-shell -p picgo`                                        | Nix/NixOS  | 感谢 @qrzbing 的贡献                                              |
+| [Snap Store](https://snapcraft.io/picgo)                                         | `sudo snap install picgo`                                   | Linux      | 感谢 @sidalit 的贡献                                              |
 
 ## 应用截图
 
