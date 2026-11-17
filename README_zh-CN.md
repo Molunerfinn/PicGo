@@ -14,7 +14,7 @@
           <img alt="Castaly sponsorship" width="400" src="https://pics.picgo.app/m/284def41-2f23-47e6-9d64-7017d386a221.png">
         </a>
         <h3><a href="https://castaly.modelflare.dev/zh/sign-up?partner=1GIMVVBLWP1V">Castaly</a></h3>
-        <p>Castaly: 满血不超分，含 NSFW 在内 40+图片视频模型。</p>
+        <p>Castaly: 满血不超分，40+图片视频模型。</p>
       </td>
     </tr>
     <tr>
@@ -70,6 +70,22 @@
       <img src="https://atomgit.com/Molunerfinn/PicGo/star/badge.svg" alt="">
     </a>
   </p>
+  <p align="center">
+    <a href="https://www.star-history.com/molunerfinn/picgo">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=Molunerfinn/PicGo&type=trending&theme=dark">
+        <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=Molunerfinn/PicGo&type=trending">
+        <img alt="GitHub Trending Repository of the Day" src="https://api.star-history.com/badge?repo=Molunerfinn/PicGo&type=trending" width="202" height="48">
+      </picture>
+    </a>
+    <a href="https://www.betterlaunch.co/product/picgo" target="_blank" rel="nofollow noopener">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://www.betterlaunch.co/badge-week-dark.svg">
+        <source media="(prefers-color-scheme: light)" srcset="https://www.betterlaunch.co/badge-week-light.svg">
+        <img alt="Product of the week on Better Launch" src="https://www.betterlaunch.co/badge-week-light.svg" width="176" height="48">
+      </picture>
+    </a>
+  </p>
 </div>
 
 ## 📖 应用概述
@@ -82,6 +98,7 @@
 
 PicGo 原生支持主流图床平台，并可通过插件系统无限扩展：
 
+- **[PicGo Cloud](https://picgo.app/zh/pricing/)**：官方图床，新安装默认使用。登录即可上传，不用配置存储和 CDN，有免费额度。
 - **国内云厂商**：七牛云、腾讯云 COS、又拍云、阿里云 OSS
 - **国际/开源平台**：GitHub、SM.MS(S.EE)、Imgur
 - **更多支持**：通过插件支持 AWS S3、Cloudflare R2、MinIO 等第三方图床
@@ -101,6 +118,15 @@ PicGo 打造了全方位的上传体验，让“传图”这件事变得前所�
 ### 🚀 极速上传体验
 - **多维上传方式**：支持拖拽图片、剪贴板粘贴、快捷键上传，甚至在 macOS/Windows 上支持右键菜单直接上传。
 - **全局快捷键**：默认 `Command+Shift+U` (macOS) / `Ctrl+Shift+U` (Windows/Linux) 即可唤起上传，无需离开当前窗口。 快捷键可自定义。
+
+### ☁️ PicGo Cloud
+PicGo Cloud 是可选的：配合你自己搭建的图床，PicGo 用起来完全一样。登录一个账号就能获得：
+
+- **免配置图床**：登录后直接上传。付费套餐有更大的存储空间和自定义域名。
+- **配置同步**：在多台设备间同步设置、图床和插件配置，支持端到端加密。所有套餐都免费。
+- **云端相册**：在 [cloud.picgo.app](https://cloud.picgo.app) 浏览和管理你在 PicGo Cloud 上传的文件。付费套餐还能在每台设备的 PicGo 客户端里打开云端相册，并通过自动导入把传到 GitHub、S3、R2 等其他图床的记录也加进来。只同步记录，文件仍然留在原来的图床。
+
+详见 [套餐价格](https://picgo.app/zh/pricing/) 和 [PicGo Cloud 文档](https://docs.picgo.app/zh/cloud/)。
 
 ### 🧩 强大的插件生态
 - **高度可扩展**：PicGo 拥有丰富的插件系统，已有插件支持 AWS S3、Cloudflare R2、MinIO 等第三方图床。
