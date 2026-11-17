@@ -70,6 +70,22 @@
       <img src="https://atomgit.com/Molunerfinn/PicGo/star/badge.svg" alt="">
     </a>
   </p>
+  <p align="center">
+    <a href="https://www.star-history.com/molunerfinn/picgo">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=Molunerfinn/PicGo&type=trending&theme=dark">
+        <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=Molunerfinn/PicGo&type=trending">
+        <img alt="GitHub Trending Repository of the Day" src="https://api.star-history.com/badge?repo=Molunerfinn/PicGo&type=trending" width="202" height="48">
+      </picture>
+    </a>
+    <a href="https://www.betterlaunch.co/product/picgo" target="_blank" rel="nofollow noopener">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://www.betterlaunch.co/badge-week-dark.svg">
+        <source media="(prefers-color-scheme: light)" srcset="https://www.betterlaunch.co/badge-week-light.svg">
+        <img alt="Product of the week on Better Launch" src="https://www.betterlaunch.co/badge-week-light.svg" width="176" height="48">
+      </picture>
+    </a>
+  </p>
 </div>
 
 ## 📖 应用概述
