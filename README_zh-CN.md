@@ -14,7 +14,7 @@
           <img alt="Castaly sponsorship" width="400" src="https://pics.picgo.app/m/284def41-2f23-47e6-9d64-7017d386a221.png">
         </a>
         <h3><a href="https://castaly.modelflare.dev/zh/sign-up?partner=1GIMVVBLWP1V">Castaly</a></h3>
-        <p>Castaly: 满血不超分，含 NSFW 在内 40+图片视频模型。</p>
+        <p>Castaly: 满血不超分，40+图片视频模型。</p>
       </td>
     </tr>
     <tr>

@@ -14,7 +14,7 @@
           <img alt="Castaly sponsorship" width="400" src="https://pics.picgo.app/m/284def41-2f23-47e6-9d64-7017d386a221.png">
         </a>
         <h3><a href="https://castaly.modelflare.dev/sign-up?partner=1GIMVVBLWP1V">Castaly</a></h3>
-        <p>Castaly: Full strength, no upscaling. 40+ image and video models, including NSFW.</p>
+        <p>Castaly: Full strength, no upscaling. 40+ image and video models.</p>
       </td>
     </tr>
     <tr>
